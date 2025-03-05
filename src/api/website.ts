@@ -1,0 +1,98 @@
+import fetch from '@/libs/fetch/fetch';
+import { Website } from '@/types/website';
+import { IPaginationResponse } from '@/types/public';
+import { WebsiteArgs } from './args';
+import { Playlist } from '@/types/playlist';
+
+/**
+ * API class for website related operations
+ */
+export default class WebsiteApi {
+    /**
+     * Get list of user's websites
+     * @returns Promise with array of Website objects
+     */
+    static list() {
+        return fetch.get<Website[]>('/api/site/list');
+    }
+
+    /**
+     * Create a new website
+     * @param args Website creation parameters
+     * @returns Promise with created Website object
+     */
+    static create(args: WebsiteArgs.Modify) {
+        return fetch.post<Website>('/api/site/create', args);
+    }
+
+    /**
+     * Get website information by ID
+     * @param siteId Website ID
+     * @returns Promise with Website object
+     */
+    static get(siteId: string) {
+        return fetch.get<Website>('/api/site/get', { siteId });
+    }
+
+    /**
+     * Modify website information
+     * @param args Website modification parameters
+     * @returns Promise with updated Website object
+     */
+    static modify(args: WebsiteArgs.Modify) {
+        return fetch.post<Website>('/api/site/modify', args);
+    }
+
+    /**
+     * Add playlists to a website
+     * @param siteId Website ID
+     * @param playlistIds Array of playlist IDs to add
+     * @returns Promise
+     */
+    static addPlaylists(siteId: string, playlistIds: string[]) {
+        return fetch.post('/api/site/add-playlists', { siteId, playlistIds });
+    }
+
+    /**
+     * Remove playlists from a website
+     * @param siteId Website ID
+     * @param playlistIds Array of playlist IDs to remove
+     * @returns Promise
+     */
+    static removePlaylists(siteId: string, playlistIds: string[]) {
+        return fetch.post('/api/site/remove-playlists', { siteId, playlistIds });
+    }
+
+    /**
+     * Get playlists associated with a website
+     * @param siteId Website ID
+     * @param page Page number (default: 1)
+     * @param pageSize Items per page (default: 20)
+     * @returns Promise with paginated Playlist objects
+     */
+    static getPlaylists(siteId: string, page: number = 1, pageSize: number = 20) {
+        return fetch.get<IPaginationResponse<Playlist>>('/api/site/playlists', {
+            siteId,
+            page,
+            pageSize
+        });
+    }
+
+    /**
+     * Delete a website
+     * @param siteId Website ID to delete
+     * @returns Promise
+     */
+    static delete(siteId: string) {
+        return fetch.post('/api/site/delete', { siteId });
+    }
+
+    /**
+     * Search websites
+     * @param args Search parameters
+     * @returns Promise with paginated Website objects
+     */
+    static search(args: WebsiteArgs.Search) {
+        return fetch.get<IPaginationResponse<Website>>('/api/site/search', args);
+    }
+}
