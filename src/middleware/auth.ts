@@ -5,7 +5,7 @@ import CookieMap from '@/config/cookie-map';
 /**
  * List of paths that do not require authentication
  */
-const publicPaths = ['/login', '/register', '/terms', '/privacy', '/forgot-password', '/not-found'];
+const publicPaths = ['/login', '/register', '/terms', '/privancy', '/forgot-password', '/not-found'];
 
 /**
  * Authentication middleware for Next.js
@@ -18,6 +18,7 @@ export function authMiddleware(request: NextRequest) {
     const isPublicPath = publicPaths.some(path => pathname.endsWith(path));
     const isAuthenticated = request.cookies.has(CookieMap.UserState);
     
+    console.log('pathname:', pathname);
     // Redirect authenticated users away from public pages
     if (isAuthenticated && isPublicPath) {
         return NextResponse.redirect(new URL('/', request.url));

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Select, Menu, Image, Pagination } from '@mantine/core';
+import { Select, Menu, Image, Pagination, Modal, Button } from '@mantine/core';
 import VideoCard from '@/components/business/videoCard';
 import Search from '@/components/common/search';
 import UploadButton from '@/components/common/uploadButton';
@@ -61,6 +61,8 @@ const VideosPageView = ({
     const [total, setTotal] = useState(0);
     const uploadFileListRef = useRef<IVideo[] | null>();
     const isCheckingRef = useRef(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const videoToDeleteRef = useRef<string | null>(null);
 
     // Fetch video data and set up event listeners
     useEffect(() => {
@@ -351,16 +353,28 @@ const VideosPageView = ({
         setReplaceLoading(false);
     };
 
-    /**
-     * Handle video deletion
-     * @param id Video ID to delete
-     */
-    const handleDelete = (id: string) => {
+    const handleDeleteClick = (id: string) => {
+        videoToDeleteRef.current = id;
+        if(playlistId) {
+            handleConfirmDelete();
+            return;
+        }
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        const id = videoToDeleteRef.current;
+        if (!id) return;
+
         const video = videos.find(v => v.vid === id);
         if (video) {
             setVideos(videos.filter(v => v.vid !== id));
             deleteVideo(id);
+            setEditingVideo(null);
+            setTotal(total - 1);
         }
+        setDeleteModalOpen(false);
+        videoToDeleteRef.current = null;
     };
 
     /**
@@ -428,15 +442,22 @@ const VideosPageView = ({
                             <div className="h-full overflow-y-auto">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4 p-4">
                                     {videos.map(video => (
-                                        <VideoCard key={video.vid} {...video} onEdit={handleEdit} onDelete={handleDelete} onCopyLink={handleCopyLink} onClick={handleEdit} />
+                                        <VideoCard deleteString={playlistId ? 'Remove' : 'Delete'} key={video.vid} {...video} onEdit={handleEdit} onDelete={handleDeleteClick} onCopyLink={handleCopyLink} onClick={handleEdit} />
                                     ))}
                                 </div>
                             </div>
                         ) : (
+                           searchQuery.length > 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center">
-                                <p className="text-gray-500 mb-4">No videos available</p>
+                                <p className="text-black-purple text-lg mb-2">No video found</p>
+                                <p className="text-gray-500 text-sm">No video with filtered condition</p>
+                            </div>
+                           ) : (
+                            <div className="h-full flex flex-col items-center justify-center text-center">
+                                <p className="text-gray-500 mb-4"> No content available</p>
                                 <UploadButton text={playlistId ? 'Add Videos' : undefined} onClick={playlistId ? addVideos : handleOpenUploadModal} />
                             </div>
+                           )
                         )}
                     </div>
 
@@ -467,7 +488,7 @@ const VideosPageView = ({
                             onClose={() => setEditingVideo(null)}
                             onSave={handleSave}
                             onDelete={video => {
-                                handleDelete(video.vid);
+                                handleDeleteClick(video.vid);
                             }}
                             onReplace={handleReplace}
                             isUploading={saveLoading}
@@ -478,6 +499,22 @@ const VideosPageView = ({
 
             {/* upload modal */}
             <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUpload={handleUpload} />
+
+            <Modal
+                opened={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                title="Confirm Delete"
+                centered
+                radius="lg"
+            >
+                <div className="space-y-4">
+                    <p>Are you sure you want to delete this video? This action cannot be undone.</p>
+                    <div className="flex justify-end gap-4">
+                        <Button variant="outline" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+                        <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
+                    </div>
+                </div>
+            </Modal>
         </>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { IconPlayerPlay } from '@tabler/icons-react';
+import { IconPlayerPlay, IconVolume, IconVolumeOff } from '@tabler/icons-react';
 import VideoInfo from '../videoInfo/videoInfo';
 
 /**
@@ -35,6 +35,7 @@ const WebsiteVideoPlayer: React.FC<WebsiteVideoPlayerProps> = ({ src, poster, is
     const videoRef = useRef<HTMLVideoElement>(null);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [isMuted, setIsMuted] = useState(true);
 
     // Control video play/pause
     useEffect(() => {
@@ -90,13 +91,20 @@ const WebsiteVideoPlayer: React.FC<WebsiteVideoPlayerProps> = ({ src, poster, is
         }
     };
 
+    const toggleMute = () => {
+        if (videoRef.current) {
+            videoRef.current.muted = !videoRef.current.muted;
+            setIsMuted(!isMuted);
+        }
+    };
+
     const handleError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
         console.error('Video loading error:', e);
     };
 
     return (
         <div className="relative w-full h-full">
-            <video ref={videoRef} className="w-full h-full object-cover" playsInline muted loop={false} onEnded={onEnded} onError={handleError}>
+            <video ref={videoRef} className="w-full h-full object-cover" playsInline muted={isMuted} loop={false} onEnded={onEnded} onError={handleError}>
                 <source src={src} type="video/mp4" />
                 <source src={src} type="video/webm" />
                 <source src={src} type="video/ogg" />
@@ -121,6 +129,13 @@ const WebsiteVideoPlayer: React.FC<WebsiteVideoPlayerProps> = ({ src, poster, is
                     <div className="h-full bg-white rounded-full transition-all duration-100" style={{ width: `${progress}%` }} />
                 </div>
             </div>
+
+            <button 
+                onClick={toggleMute}
+                className="absolute top-12 right-4 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors text-white"
+            >
+                {isMuted ? <IconVolumeOff size={12} /> : <IconVolume size={12} />}
+            </button>
         </div>
     );
 };

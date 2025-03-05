@@ -46,14 +46,19 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         });
     }, [searchQuery, activePage, orderType]);
 
-    /**
-     * Handle select all playlists action
-     */
+    const isAllSelected = () => {
+        return playlists.every(playlist => selectedItems.includes(playlist.playlistId));
+    };
+
     const handleSelectAll = () => {
-        if (selectedItems.length === playlists.length) {
-            setSelectedItems([]);
+        if (isAllSelected()) {
+            // 取消当前页面所有选中的播放列表
+            const currentPagePlaylistIds = playlists.map(playlist => playlist.playlistId);
+            setSelectedItems(selectedItems.filter(id => !currentPagePlaylistIds.includes(id)));
         } else {
-            setSelectedItems(playlists.map(item => item.playlistId));
+            // 选中当前页面所有未选中的播放列表
+            const newSelectedItems = new Set([...selectedItems, ...playlists.map(playlist => playlist.playlistId)]);
+            setSelectedItems(Array.from(newSelectedItems));
         }
     };
 
@@ -88,7 +93,6 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                         <div className="flex-1">
                             <Search value={searchQuery} onChange={handleSearch} placeholder="Search Playlists" className="w-full" />
                         </div>
-                        <div className="text-base font-medium text-gray-500">{'Selected:' + selectedItems.length}</div>
                     </div>
 
                     {/* Playlist Grid */}
@@ -128,9 +132,12 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                     {/* Footer Actions */}
                     <div className=" bg-white border-t p-4">
                         <div className="flex justify-between items-center">
-                            <Button variant="subtle" onClick={handleSelectAll}>
-                                Select all
-                            </Button>
+                            <div className='flex flex-row items-center'>
+                                <div className="text-sm font-medium text-gray-500">{selectedItems.length+' Selected'}</div>
+                                <Button variant="subtle" onClick={handleSelectAll}>
+                                    {isAllSelected() ? 'Unselect All' : 'Select All'}
+                                </Button>
+                            </div>
                             <Button variant="filled" onClick={() => onAdd(selectedItems)}>
                                 Add to site
                             </Button>

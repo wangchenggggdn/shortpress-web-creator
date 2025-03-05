@@ -252,10 +252,18 @@ const PlaylistsPage = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-full flex flex-col items-center justify-center text-center">
-                                <p className="text-gray-500 mb-4">No playlists available</p>
-                                <Button onClick={handleCreatePlaylist}>Create Playlist</Button>
-                            </div>
+                            searchQuery.length > 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-center">
+                                    <p className="text-black-purple text-lg mb-2">No playlists found</p>
+                                    <p className="text-gray-500 text-sm">No playlists with filtered condition</p>
+                                </div>
+                               ) : 
+                           (
+                              <div className="h-full flex flex-col items-center justify-center text-center">
+                                   <p className="text-gray-500 mb-4">No playlists available</p>
+                                   <Button onClick={handleCreatePlaylist}>Create Playlist</Button>
+                              </div>
+                           )
                         )}
                     </div>
 

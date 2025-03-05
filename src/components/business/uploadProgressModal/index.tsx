@@ -33,7 +33,7 @@ const UploadProgressModal: React.FC = () => {
 
     return (
         <div
-            className={`fixed  top-[12vh] right-[1vw] max-w-lg rounded-xl z-50 bg-white ${openUploadProgressModal ? 'block' : 'hidden'}`}
+            className={`fixed  bottom-[12vh] right-[1vw] max-w-lg rounded-xl z-50 bg-white ${openUploadProgressModal ? 'block' : 'hidden'}`}
             style={{
                 boxShadow: '0px 2px 12px 0px rgba(0,0,0,0.5)',
             }}
@@ -56,7 +56,7 @@ const UploadProgressModal: React.FC = () => {
                     </div>
 
                     {/* Upload List */}
-                    {(uploadFileList ?? []).map((item, index) => (
+                    {(uploadFileList ?? []).slice().reverse().map((item, index) => (
                         <div key={index} className="flex items-center gap-4 py-1">
                             <div className="flex-1">
                                 <div className="flex justify-between mb-1">

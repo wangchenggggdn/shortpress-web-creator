@@ -58,11 +58,17 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         }
     }, [isOpen]);
 
+    const isAllSelected = () => {
+        return videoList.every(video => selectedItems.includes(video.vid));
+    };
+
     const handleSelectAll = () => {
-        if (selectedItems.length === videoList.length) {
-            setSelectedItems([]);
+        if (isAllSelected()) {
+            const currentPageVideoIds = videoList.map(video => video.vid);
+            setSelectedItems(selectedItems.filter(id => !currentPageVideoIds.includes(id)));
         } else {
-            setSelectedItems(videoList.map(item => item.vid));
+            const newSelectedItems = new Set([...selectedItems, ...videoList.map(video => video.vid)]);
+            setSelectedItems(Array.from(newSelectedItems));
         }
     };
 
@@ -89,7 +95,6 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                         <div className="flex-1">
                             <Search value={searchQuery} onChange={handleSearch} placeholder="Search Videos" className="w-full" />
                         </div>
-                        <div className="text-base font-medium text-gray-500">{'Selected:' + selectedItems.length}</div>
                     </div>
 
                     <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto px-4">
@@ -125,9 +130,12 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
 
                     <div className="w-full p-4 bg-white border-t">
                         <div className="flex justify-between items-center">
-                            <Button variant="subtle" onClick={handleSelectAll}>
-                                Select all
-                            </Button>
+                            <div className='flex flex-row items-center justify-center'>
+                                    <div className="text-sm font-medium text-gray-500">{selectedItems.length+' Selected'}</div>
+                                    <Button variant="subtle" onClick={handleSelectAll}>
+                                        {isAllSelected() ? 'Unselect All' : 'Select All'}
+                                    </Button>
+                            </div>
                             <Button variant="filled" onClick={() => onAdd(selectedItems)}>
                                 Add to Playlist
                             </Button>

@@ -52,6 +52,7 @@ const HomePage = () => {
                 </div>
 
                 {/* No Content State */}
+               {stats?.videoCount === 0 && (
                 <Card className="flex-1 text-center py-12 flex flex-col items-center justify-center gap-4" radius="lg">
                     <Text size="lg" fw={500} className="mb-4">
                         No content available
@@ -66,6 +67,7 @@ const HomePage = () => {
                         Upload Videos
                     </Button>
                 </Card>
+               )}
             </div>
         </div>
     );

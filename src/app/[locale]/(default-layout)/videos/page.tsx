@@ -7,6 +7,7 @@ import VideoApi from '@/api/video';
 import { IVideo } from '@/types/video';
 import { VideoArgs } from '@/api/args';
 import VideosPageView from '@/components/business/videoPageView';
+import { toast } from 'sonner';
 
 /**
  * Videos management page component
@@ -32,7 +33,9 @@ const VideosPage = () => {
      * @returns Promise
      */
     const deleteVideo = async (id: string) => {
-        VideoApi.delete([id]);
+        VideoApi.delete([id]).then(() => {
+            toast.success('Video deleted successfully');
+        });
     };
 
     /**

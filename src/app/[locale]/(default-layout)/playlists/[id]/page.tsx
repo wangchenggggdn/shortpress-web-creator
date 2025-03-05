@@ -112,6 +112,7 @@ const PlaylistVideosPage = () => {
      */
     const handleDeleteVideo = (id: string) => {
         PlaylistApi.removeVideos(paramsP.id as string, [id]);
+        toast.success('Video removed from playlist');
         setEditingVideo(null);
     };
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { TextInput, PasswordInput, Button, Text, Tooltip } from '@mantine/core';
-import { IconUser, IconLock, IconMail, IconInfoCircle } from '@tabler/icons-react';
+import { IconUser, IconLock, IconMail, IconInfoCircle, IconEye, IconEyeOff } from '@tabler/icons-react';
 import Link from 'next/link';
 import CreatorApi from '@/api/creator';
 import { useRouter } from '@/libs/navigation';
@@ -13,6 +13,7 @@ const RegisterPage = () => {
     const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -33,6 +34,20 @@ const RegisterPage = () => {
         } else {
             toast.error(res.info);
         }
+    };
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            setEmailError('Email is required');
+            return false;
+        }
+        if (!emailRegex.test(email)) {
+            setEmailError('Please enter a valid email address');
+            return false;
+        }
+        setEmailError('');
+        return true;
     };
 
     return (
@@ -62,8 +77,26 @@ const RegisterPage = () => {
                 </div>
                 {/* nickname */}
                 <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required />
-                <TextInput value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" leftSection={<IconMail size={16} />} required />
-                <PasswordInput value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" leftSection={<IconLock size={16} />} required />
+                <TextInput 
+                    value={email} 
+                    onChange={e => {
+                        setEmail(e.target.value);
+                        validateEmail(e.target.value);
+                    }} 
+                    placeholder="Email" 
+                    leftSection={<IconMail size={16} />} 
+                    required 
+                    error={emailError}
+                    onBlur={() => validateEmail(email)}
+                />
+                <PasswordInput 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    placeholder="Password" 
+                    leftSection={<IconLock size={16} />} 
+                    visibilityToggleIcon={({ reveal }) => !reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                    required 
+                />
                 <div className="flex flex-row w-full items-center justify-center">
                     <Text size="sm">
                         Already have an account?{' '}
@@ -84,7 +117,7 @@ const RegisterPage = () => {
                         Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/privacy" className="text-primary hover:underline">
+                    <Link href="/privancy" className="text-primary hover:underline">
                         Privacy Policy
                     </Link>
                 </Text>
