@@ -1,4 +1,4 @@
-FROM registry.cn-beijing.aliyuncs.com/wenuts/node:20.10.0 AS base
+FROM node:20-alpine AS base
 
 # ---- deps ----
 FROM base AS deps
