@@ -31,6 +31,7 @@ const RegisterPage = () => {
         });
         if (res.code === 0) {
             router.push('/login');
+            toast.success('Register success');
         } else {
             toast.error(res.info);
         }
@@ -77,25 +78,25 @@ const RegisterPage = () => {
                 </div>
                 {/* nickname */}
                 <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required />
-                <TextInput 
-                    value={email} 
+                <TextInput
+                    value={email}
                     onChange={e => {
                         setEmail(e.target.value);
                         validateEmail(e.target.value);
-                    }} 
-                    placeholder="Email" 
-                    leftSection={<IconMail size={16} />} 
-                    required 
+                    }}
+                    placeholder="Email"
+                    leftSection={<IconMail size={16} />}
+                    required
                     error={emailError}
                     onBlur={() => validateEmail(email)}
                 />
-                <PasswordInput 
-                    value={password} 
-                    onChange={e => setPassword(e.target.value)} 
-                    placeholder="Password" 
-                    leftSection={<IconLock size={16} />} 
-                    visibilityToggleIcon={({ reveal }) => !reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />}
-                    required 
+                <PasswordInput
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    leftSection={<IconLock size={16} />}
+                    visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
+                    required
                 />
                 <div className="flex flex-row w-full items-center justify-center">
                     <Text size="sm">
