@@ -86,7 +86,9 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     {/* Basic Information */}
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Title <span className="text-red-500">*</span></label>
+                            <label className="block text-sm font-medium mb-2">
+                                Title <span className="text-red-500">*</span>
+                            </label>
                             <TextInput
                                 defaultValue={playlist?.title}
                                 placeholder="Enter playlist title"

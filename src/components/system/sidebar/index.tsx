@@ -139,11 +139,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                             <div className="p-3 border-b">
                                 <div className="flex items-center">
                                     <Avatar src={userInfo?.avatarUrl} radius="xl" size={32} />
-                                    <div className="ml-3">
-                                        <Text size="sm" fw={500}>
+                                    <div className="ml-3 overflow-hidden">
+                                        <Text size="sm" fw={500} truncate>
                                             {userInfo?.nickname}
                                         </Text>
-                                        <Text size="xs" c="dimmed">
+                                        <Text size="xs" c="dimmed" truncate>
                                             {userInfo?.email}
                                         </Text>
                                     </div>

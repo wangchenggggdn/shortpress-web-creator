@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { TextInput, PasswordInput, Button, Text } from '@mantine/core';
-import { IconUser, IconLock } from '@tabler/icons-react';
+import { IconUser, IconLock, IconEyeOff, IconEye } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from '@/libs/navigation';
 import CreatorApi from '@/api/creator';
@@ -43,7 +43,14 @@ const LoginPage = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 <TextInput value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" leftSection={<IconUser size={16} />} required />
 
-                <PasswordInput value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" leftSection={<IconLock size={16} />} required />
+                <PasswordInput
+                    visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    leftSection={<IconLock size={16} />}
+                    required
+                />
 
                 {/* <div className="text-right">
                     <Link href="/forgot-password" className="text-sm text-primary hover:underline">

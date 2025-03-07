@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { IconCheck, IconChevronDown, IconChevronUp, IconLoader, IconX } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
 import { VideoUploadStatus } from '@/types/video';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 /**
  * Upload progress modal component
@@ -14,8 +15,31 @@ const UploadProgressModal: React.FC = () => {
     const { openUploadProgressModal, uploadFileList, setUploadFileList, setOpenUploadProgressModal } = fileUploadStore();
     const [isExpand, setIsExpand] = useState(true);
     const [showClose, setShowClose] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-    // Check if all files have been uploaded successfully
+    // 监听页面刷新事件
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            const hasUnfinishedUploads = uploadFileList?.some(
+                item =>
+                    item.uploadStatus === VideoUploadStatus.NOT_UPLOADED ||
+                    item.uploadStatus === VideoUploadStatus.UPLOADING ||
+                    item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED
+            );
+
+            if (hasUnfinishedUploads) {
+                e.preventDefault();
+                // setShowConfirmDialog(true);
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [uploadFileList]);
+
+    // 检查是否所有文件都上传成功
     useEffect(() => {
         if (uploadFileList?.map(item => item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS).every(item => item)) {
             setShowClose(true);
@@ -31,59 +55,79 @@ const UploadProgressModal: React.FC = () => {
         setOpenUploadProgressModal(false);
     };
 
-    return (
-        <div
-            className={`fixed  bottom-[12vh] right-[1vw] max-w-lg rounded-xl z-50 bg-white ${openUploadProgressModal ? 'block' : 'hidden'}`}
-            style={{
-                boxShadow: '0px 2px 12px 0px rgba(0,0,0,0.5)',
-            }}
-        >
-            {isExpand ? (
-                <div className="px-4 py-2">
-                    {/* Header */}
-                    <div className="flex justify-between items-center gap-8 border-b-[1px] mb-2">
-                        <div className="py-1 ">Uploading</div>
-                        <div className="flex items-center gap-2 py-1">
-                            <div className="text-sm text-gray-500 cursor-pointer" onClick={() => setIsExpand(!isExpand)}>
-                                <IconChevronUp size={22} />
-                            </div>
-                            {showClose && (
-                                <div className="text-sm text-gray-500 cursor-pointer" onClick={onClose}>
-                                    <IconX size={22} />
-                                </div>
-                            )}
-                        </div>
-                    </div>
+    const handleConfirmRefresh = () => {
+        setShowConfirmDialog(false);
+        window.location.reload();
+    };
 
-                    {/* Upload List */}
-                    {(uploadFileList ?? []).slice().reverse().map((item, index) => (
-                        <div key={index} className="flex items-center gap-4 py-1">
-                            <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                    <span className="text-sm truncate pr-8 max-w-sm">{item.title}</span>
-                                    <span className="text-sm">
-                                        {item.uploadStatus === VideoUploadStatus.UPLOADING && `${item.progress ?? 0}%`}
-                                        {item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS && <IconCheck className="text-green-500" size={18} />}
-                                        {item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED && <IconX className="text-red-500" size={18} />}
-                                        {item.progress === 0 || (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED && <span className="text-gray-400">Waiting...</span>)}
-                                    </span>
+    return (
+        <>
+            <div
+                className={`fixed  bottom-[12vh] right-[1vw] max-w-lg rounded-xl z-50 bg-white ${openUploadProgressModal ? 'block' : 'hidden'}`}
+                style={{
+                    boxShadow: '0px 2px 12px 0px rgba(0,0,0,0.5)',
+                }}
+            >
+                {isExpand ? (
+                    <div className="px-4 py-2">
+                        {/* Header */}
+                        <div className="flex justify-between items-center gap-8 border-b-[1px] mb-2">
+                            <div className="py-1 ">Uploading</div>
+                            <div className="flex items-center gap-2 py-1">
+                                <div className="text-sm text-gray-500 cursor-pointer" onClick={() => setIsExpand(!isExpand)}>
+                                    <IconChevronUp size={22} />
                                 </div>
-                                {/* Progress Bar */}
-                                {item.uploadStatus === VideoUploadStatus.UPLOADING && (
-                                    <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${item.progress ?? 0}%` }} />
+                                {showClose && (
+                                    <div className="text-sm text-gray-500 cursor-pointer" onClick={onClose}>
+                                        <IconX size={22} />
                                     </div>
                                 )}
                             </div>
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="p-4 bg-white" onClick={() => setIsExpand(true)}>
-                    <div className="flex justify-center items-center">{showClose ? <IconChevronDown size={22} /> : <IconLoader size={22} className="animate-spin" />}</div>
-                </div>
-            )}
-        </div>
+
+                        {/* Upload List */}
+                        {(uploadFileList ?? [])
+                            .slice()
+                            .reverse()
+                            .map((item, index) => (
+                                <div key={index} className="flex items-center gap-4 py-1">
+                                    <div className="flex-1">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="text-sm truncate pr-8 max-w-sm">{item.title}</span>
+                                            <span className="text-sm">
+                                                {item.uploadStatus === VideoUploadStatus.UPLOADING && `${item.progress ?? 0}%`}
+                                                {item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS && <IconCheck className="text-green-500" size={18} />}
+                                                {item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED && <IconX className="text-red-500" size={18} />}
+                                                {item.progress === 0 || (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED && <span className="text-gray-400">Waiting...</span>)}
+                                            </span>
+                                        </div>
+                                        {/* Progress Bar */}
+                                        {item.uploadStatus === VideoUploadStatus.UPLOADING && (
+                                            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                                                <div className="h-full bg-primary transition-all duration-300" style={{ width: `${item.progress ?? 0}%` }} />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                ) : (
+                    <div className="p-4 bg-white" onClick={() => setIsExpand(true)}>
+                        <div className="flex justify-center items-center">{showClose ? <IconChevronDown size={22} /> : <IconLoader size={22} className="animate-spin" />}</div>
+                    </div>
+                )}
+            </div>
+
+            <ConfirmDialog
+                opened={showConfirmDialog}
+                onClose={() => setShowConfirmDialog(false)}
+                onConfirm={handleConfirmRefresh}
+                title="Cancel upload"
+                message="Are you sure you want to cancel upload?"
+                confirmText="Cancel upload"
+                cancelText="Close"
+            />
+        </>
     );
 };
 

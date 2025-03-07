@@ -76,7 +76,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         <>
             {/* Modal Overlay */}
             <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-            
+
             {/* Modal Content */}
             <div className="fixed right-0 top-0 h-full w-[480px] bg-white shadow-lg z-50 animate-in slide-in-from-right duration-300">
                 <div className="flex flex-col h-full">
@@ -96,30 +96,39 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                     </div>
 
                     {/* Playlist Grid */}
-                    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto px-4">
-                        {playlists.map(item => (
-                            <div key={item.playlistId} className="relative bg-gray-50 rounded-lg p-2">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedItems.includes(item.playlistId)}
-                                    onChange={e => {
-                                        if (e.target.checked) {
-                                            setSelectedItems([...selectedItems, item.playlistId]);
-                                        } else {
-                                            setSelectedItems(selectedItems.filter(id => id !== item.playlistId));
-                                        }
-                                    }}
-                                    className="absolute top-2 left-2 z-10"
-                                />
-                                <div className="aspect-[9/16] relative bg-gray-200 rounded-md overflow-hidden mb-2">
-                                    {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
-                                </div>
-                                <div className="text-sm">
-                                    <div>{item.videoCount} videos</div>
-                                    <div className="text-blue-600 overflow-hidden text-ellipsis whitespace-nowrap">{item.title}</div>
-                                </div>
+
+                    <div className="flex-1 overflow-y-auto">
+                        {playlists.length === 0 ? (
+                            <div className="flex justify-center items-center h-full">
+                                <div className="text-sm font-medium text-gray-500">No content found</div>
                             </div>
-                        ))}
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4">
+                                {playlists.map(item => (
+                                    <div key={item.playlistId} className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(item.playlistId)}
+                                            onChange={e => {
+                                                if (e.target.checked) {
+                                                    setSelectedItems([...selectedItems, item.playlistId]);
+                                                } else {
+                                                    setSelectedItems(selectedItems.filter(id => id !== item.playlistId));
+                                                }
+                                            }}
+                                            className="absolute top-2 left-2 z-10"
+                                        />
+                                        <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
+                                            {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
+                                        </div>
+                                        <div className="absolute text-sm bottom-8 left-0 right-0 p-2">{item.videoCount} videos</div>
+                                        <div className="absolute text-sm bottom-0 left-0 right-0 bg-white p-2 rounded-b-md">
+                                            <div className="text-black-purple line-clamp-1 text-ellipsis">{item.title}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Pagination */}
@@ -132,8 +141,8 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                     {/* Footer Actions */}
                     <div className=" bg-white border-t p-4">
                         <div className="flex justify-between items-center">
-                            <div className='flex flex-row items-center'>
-                                <div className="text-sm font-medium text-gray-500">{selectedItems.length+' Selected'}</div>
+                            <div className="flex flex-row items-center">
+                                <div className="text-sm font-medium text-gray-500">{selectedItems.length + ' Selected'}</div>
                                 <Button variant="subtle" onClick={handleSelectAll}>
                                     {isAllSelected() ? 'Unselect All' : 'Select All'}
                                 </Button>

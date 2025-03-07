@@ -20,7 +20,7 @@ interface CreateSiteModalProps {
     /** Whether the modal is in edit mode */
     isEdit?: boolean;
     /** Website data for editing */
-    website?: Website;
+    websiteOld?: Website;
     /** Loading state for submit button */
     loading?: boolean;
     /** Callback function when form is submitted */
@@ -32,10 +32,11 @@ interface CreateSiteModalProps {
  * Provides form fields for website details and SEO settings
  * @returns React component with website creation/editing interface
  */
-const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEdit = false, onSubmit, website = {} as Website, loading = false }) => {
+const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEdit = false, onSubmit, websiteOld = {} as Website, loading = false }) => {
     const { userInfo } = userStore();
+    const [website, setWebsite] = React.useState<Website>(JSON.parse(JSON.stringify(websiteOld)));
     let coverFile: File | undefined;
-
+    console.log('siteId:', website?.siteId);
     /**
      * Handle form submission
      * @param websiteData Website data to submit
@@ -45,6 +46,10 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEd
             toast.error('Please enter a site name');
             return;
         }
+        websiteOld = {
+            ...websiteOld,
+            ...websiteData,
+        };
         onSubmit(
             {
                 siteId: website?.siteId ?? '',

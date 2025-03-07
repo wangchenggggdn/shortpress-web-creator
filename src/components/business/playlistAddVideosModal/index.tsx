@@ -97,29 +97,37 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                         </div>
                     </div>
 
-                    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto px-4">
-                        {videoList.map(item => (
-                            <div key={item.vid} className="relative bg-gray-50 rounded-lg p-2 aspect-[9/16] shadow-md">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedItems.includes(item.vid)}
-                                    onChange={e => {
-                                        if (e.target.checked) {
-                                            setSelectedItems([...selectedItems, item.vid]);
-                                        } else {
-                                            setSelectedItems(selectedItems.filter(id => id !== item.vid));
-                                        }
-                                    }}
-                                    className="absolute top-2 left-2 z-10"
-                                />
-                                <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
-                                    {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
-                                </div>
-                                <div className="absolute text-sm bottom-0 left-0 right-0 h-14 bg-white p-2 rounded-b-md">
-                                    <div className="text-black-purple line-clamp-2 text-ellipsis">{item.title}</div>
-                                </div>
+                    <div className="flex-1 overflow-y-auto">
+                        {videoList.length === 0 ? (
+                            <div className="flex justify-center items-center h-full">
+                                <div className="text-sm font-medium text-gray-500">No content found</div>
                             </div>
-                        ))}
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4">
+                                {videoList.map(item => (
+                                    <div key={item.vid} className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedItems.includes(item.vid)}
+                                            onChange={e => {
+                                                if (e.target.checked) {
+                                                    setSelectedItems([...selectedItems, item.vid]);
+                                                } else {
+                                                    setSelectedItems(selectedItems.filter(id => id !== item.vid));
+                                                }
+                                            }}
+                                            className="absolute top-2 left-2 z-10"
+                                        />
+                                        <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
+                                            {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
+                                        </div>
+                                        <div className="absolute text-sm bottom-0 left-0 right-0 h-14 bg-white p-2 rounded-b-md">
+                                            <div className="text-black-purple line-clamp-2 text-ellipsis">{item.title}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {videoList.length > 0 && (
@@ -130,11 +138,11 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
 
                     <div className="w-full p-4 bg-white border-t">
                         <div className="flex justify-between items-center">
-                            <div className='flex flex-row items-center justify-center'>
-                                    <div className="text-sm font-medium text-gray-500">{selectedItems.length+' Selected'}</div>
-                                    <Button variant="subtle" onClick={handleSelectAll}>
-                                        {isAllSelected() ? 'Unselect All' : 'Select All'}
-                                    </Button>
+                            <div className="flex flex-row items-center justify-center">
+                                <div className="text-sm font-medium text-gray-500">{selectedItems.length + ' Selected'}</div>
+                                <Button variant="subtle" onClick={handleSelectAll}>
+                                    {isAllSelected() ? 'Unselect All' : 'Select All'}
+                                </Button>
                             </div>
                             <Button variant="filled" onClick={() => onAdd(selectedItems)}>
                                 Add to Playlist

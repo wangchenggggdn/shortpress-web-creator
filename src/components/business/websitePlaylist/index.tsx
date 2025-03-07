@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import type { Playlist } from '@/types/playlist';
 import Search from '@/components/common/search';
-import { Pagination } from '@mantine/core';
+import { Button, Pagination } from '@mantine/core';
 import WebsitePlaylistItem from './playlistItem';
 import { useRouter } from 'next/navigation';
+import { IconPlus } from '@tabler/icons-react';
 
 /**
  * Props interface for WebsitePlaylist component
@@ -17,6 +18,7 @@ interface WebsitePlaylistProps {
     page?: number;
     /** Number of items per page */
     pageSize?: number;
+    children?: React.ReactNode;
     /** Callback function when page changes */
     onPageChange?: (page: number) => void;
     /** Callback function when search query changes */
@@ -30,7 +32,7 @@ interface WebsitePlaylistProps {
  * Displays a list of playlists with search, pagination, and selection capabilities
  * @returns React component with playlist management interface
  */
-const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, total = 0, page = 1, pageSize = 10, onPageChange, onSearch, onDelete }) => {
+const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, children, total = 0, page = 1, pageSize = 10, onPageChange, onSearch, onDelete }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const router = useRouter();
@@ -119,6 +121,7 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, total = 0,
                         </div>
                     ))}
                 </div>
+                {children}
             </div>
             {total > 0 && (
                 <div className="pt-4 mt-4">

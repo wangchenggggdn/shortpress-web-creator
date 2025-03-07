@@ -10,11 +10,12 @@ interface VideoPreviewProps {
     video: IVideo | File;
     deleteString?: string;
     isReplace?: boolean;
+    playlistId?: string;
     onReplace?: () => void;
     onDelete?: () => void;
 }
 
-const VideoPreview: React.FC<VideoPreviewProps> = ({ video, deleteString = 'Delete Video', isReplace = false, onReplace, onDelete }) => {
+const VideoPreview: React.FC<VideoPreviewProps> = ({ video, playlistId, deleteString = 'Delete Video', isReplace = false, onReplace, onDelete }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     return (
         <div className="w-full bg-layout flex flex-col">
@@ -29,9 +30,11 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video, deleteString = 'Dele
                 />
             </div>
             <div className="mt-4 space-y-2">
-                <Button loading={isReplace} fullWidth variant="filled" color="primary" onClick={onReplace}>
-                    Replace Video
-                </Button>
+                {!playlistId && (
+                    <Button loading={isReplace} fullWidth variant="filled" color="primary" onClick={onReplace}>
+                        Replace Video
+                    </Button>
+                )}
                 <Button fullWidth variant="subtle" color="red" onClick={onDelete}>
                     {deleteString}
                 </Button>

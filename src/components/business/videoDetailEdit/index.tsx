@@ -19,6 +19,8 @@ interface VideoDetailEditProps {
     isUploading: boolean;
     /** Whether the video is being replaced */
     isReplace: boolean;
+    /** Playlist ID */
+    playlistId?: string;
     /** Callback function when modal is closed */
     onClose: () => void;
     /** Callback function when form is submitted */
@@ -34,15 +36,20 @@ interface VideoDetailEditProps {
  * Provides form for editing video details including title, description, cover, and SEO settings
  * @returns React component with video editing interface
  */
-const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, isUploading, isReplace, onClose, onSave, onReplace, onDelete }) => {
+const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, isUploading, isReplace, playlistId, onClose, onSave, onReplace, onDelete }) => {
     const [coverFile, setCoverFile] = useState<File>();
     const [videoFile, setVideoFile] = useState<File>();
+    const [editVideo, setEditVideo] = useState<IVideo>(JSON.parse(JSON.stringify(video)));
 
     /**
      * Handle form submission
      * @param videoData Video data to submit
      */
     const handleSave = async (videoData: Partial<IVideo>) => {
+        video = {
+            ...video,
+            ...videoData,
+        };
         onSave(
             {
                 vid: video.vid,
@@ -94,6 +101,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
             <div className="flex flex-row h-[calc(100vh-4rem)]">
                 <div className="w-52 pr-1 pl-8 bg-layout flex items-center">
                     <VideoPreview
+                        playlistId={playlistId}
                         isReplace={isReplace}
                         video={videoFile ? videoFile : video}
                         deleteString={deleteString}
@@ -112,10 +120,10 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                 <div>
                                     <label className="block text-sm font-medium mb-2">Title</label>
                                     <TextInput
-                                        defaultValue={video.title}
+                                        defaultValue={editVideo.title}
                                         placeholder="Enter video title"
                                         onChange={e => {
-                                            video.title = e.target.value;
+                                            editVideo.title = e.target.value;
                                         }}
                                         variant="filled"
                                     />
@@ -126,9 +134,9 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                     <Textarea
                                         placeholder="Add some description"
                                         minRows={4}
-                                        defaultValue={video.description}
+                                        defaultValue={editVideo.description}
                                         onChange={e => {
-                                            video.description = e.target.value;
+                                            editVideo.description = e.target.value;
                                         }}
                                         variant="filled"
                                     />
@@ -140,7 +148,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                         placeholder="Add tags"
                                         defaultValue={video.tags}
                                         onChange={e => {
-                                            video.tags = e.target.value;
+                                            editVideo.tags = e.target.value;
                                         }}
                                         variant="filled"
                                     />
@@ -152,7 +160,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                 <label className="block text-sm font-medium mb-2">Cover</label>
                                 <div className="flex items-center justify-between gap-2">
                                     <div className="w-[120px] aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                                        {video.cover && !coverFile && <img src={video.cover} alt="cover" className="w-full h-full object-cover rounded-lg" />}
+                                        {editVideo.cover && !coverFile && <img src={editVideo.cover} alt="cover" className="w-full h-full object-cover rounded-lg" />}
                                         {coverFile && <img src={URL.createObjectURL(coverFile)} alt="cover" className="w-full h-full object-cover rounded-lg" />}
                                     </div>
                                     <div className="flex-1 px-6">
@@ -167,13 +175,13 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                             <div>
                                 <label className="block text-sm font-medium mb-2">Status</label>
                                 <Select
-                                    defaultValue={video.status.toString()}
+                                    defaultValue={editVideo.status.toString()}
                                     data={[
                                         { value: VideoStatus.PUBLISHED.toString(), label: 'Published' },
                                         { value: VideoStatus.UNPUBLISHED.toString(), label: 'Unpublished' },
                                     ]}
                                     onChange={value => {
-                                        video.status = parseInt(value ?? '0');
+                                        editVideo.status = parseInt(value ?? '0');
                                     }}
                                     variant="filled"
                                 />
@@ -185,13 +193,13 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                 <div>
                                     <label className="block text-sm font-medium mb-2">Title</label>
                                     <TextInput
-                                        defaultValue={video.seo?.title ?? ''}
+                                        defaultValue={editVideo.seo?.title ?? ''}
                                         placeholder="SEO title"
                                         onChange={e => {
-                                            video.seo = {
+                                            editVideo.seo = {
                                                 title: e.target.value,
-                                                description: video.seo?.description ?? '',
-                                                keywords: video.seo?.keywords ?? '',
+                                                description: editVideo.seo?.description ?? '',
+                                                keywords: editVideo.seo?.keywords ?? '',
                                             };
                                         }}
                                         variant="filled"
@@ -202,12 +210,16 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                     <Textarea
                                         placeholder="Add description"
                                         minRows={3}
+                                        defaultValue={editVideo.seo?.description ?? ''}
                                         onChange={e => {
-                                            video.seo = {
-                                                title: video.seo?.title ?? '',
-                                                description: e.target.value,
-                                                keywords: video.seo?.keywords ?? '',
-                                            };
+                                            setEditVideo({
+                                                ...editVideo,
+                                                seo: {
+                                                    title: editVideo.seo?.title ?? '',
+                                                    description: e.target.value,
+                                                    keywords: editVideo.seo?.keywords ?? '',
+                                                },
+                                            });
                                         }}
                                         variant="filled"
                                     />
@@ -216,12 +228,16 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                     <label className="block text-sm font-medium mb-2">Keywords</label>
                                     <TextInput
                                         placeholder="Add keywords, comma separated"
+                                        defaultValue={editVideo.seo?.keywords ?? ''}
                                         onChange={e => {
-                                            video.seo = {
-                                                title: video.seo?.title ?? '',
-                                                description: video.seo?.description ?? '',
-                                                keywords: e.target.value,
-                                            };
+                                            setEditVideo({
+                                                ...editVideo,
+                                                seo: {
+                                                    title: editVideo.seo?.title ?? '',
+                                                    description: editVideo.seo?.description ?? '',
+                                                    keywords: e.target.value,
+                                                },
+                                            });
                                         }}
                                         variant="filled"
                                     />
@@ -232,7 +248,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
 
                     {/* Footer Actions */}
                     <div className="px-6 py-4 bg-white flex-shrink-0">
-                        <Button loading={isUploading} fullWidth color="primary" onClick={() => handleSave(video)}>
+                        <Button loading={isUploading} fullWidth color="primary" onClick={() => handleSave(editVideo)}>
                             Save Changes
                         </Button>
                     </div>

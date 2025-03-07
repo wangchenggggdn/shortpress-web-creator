@@ -131,7 +131,7 @@ const WebsiteDetailPage = () => {
      * Copy website URL to clipboard
      */
     const handleCopy = useCallback(() => {
-        navigator.clipboard.writeText(`https://${website?.domain}/${website?.path}`);
+        navigator.clipboard.writeText(`${website?.domain}/${website?.path}`);
         toast.success('Copy success');
     }, [website]);
 
@@ -224,7 +224,7 @@ const WebsiteDetailPage = () => {
                     <h2 className="text-xl font-medium text-black-purple ">Websites</h2>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 text-gray-600">
-                            <span className="text-primary">{`https://${website?.domain}/${website?.path}`}</span>
+                            <span className="text-primary">{`${website?.domain}/${website?.path}`}</span>
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">
                                 Copy
                             </Button>
@@ -242,17 +242,16 @@ const WebsiteDetailPage = () => {
                 </div>
             </div>
 
-            {/* Title Area */}
-            <div className="py-4 px-11 flex items-center justify-between">
-                <h2 className="text-lg font-medium text-black-purple">Contents</h2>
-                <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)} className="border border-primary">
-                    Add Content
-                </Button>
-            </div>
-
             <div className="flex-1 flex">
                 {/* Left Content Area */}
                 <div className="flex-1 px-6">
+                    {/* Title Area */}
+                    <div className="py-4 px-11 flex items-center justify-between">
+                        <h2 className="text-lg font-medium text-black-purple">Contents</h2>
+                        <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)} className="border border-primary">
+                            Add Content
+                        </Button>
+                    </div>
                     <WebsitePlaylist
                         key={playlists.length}
                         playlists={playlists}
@@ -262,29 +261,31 @@ const WebsiteDetailPage = () => {
                         onPageChange={handlePageChange}
                         onSearch={handleSearch}
                         onDelete={handleDelete}
+                        children={
+                            playlists.length === 0 && (
+                                <div className="h-full flex flex-col items-center justify-center">
+                                    <h3 className="text-xl font-medium mb-4">No content added</h3>
+                                    <Button
+                                        leftSection={<IconPlus size={20} />}
+                                        variant="filled"
+                                        color="primary"
+                                        size="lg"
+                                        onClick={() => setIsAddContentOpen(true)}
+                                        className="border border-primary"
+                                    >
+                                        Add content
+                                    </Button>
+                                </div>
+                            )
+                        }
                     />
-                    {playlists.length === 0 && (
-                        <div className="bg-layout rounded-[32px] h-[calc(100vh-160px)] p-6">
-                            <div className="flex-1 flex flex-col items-center justify-center h-full">
-                                <h3 className="text-xl font-medium mb-4">No content added</h3>
-                                <Button
-                                    leftSection={<IconPlus size={20} />}
-                                    variant="filled"
-                                    color="primary"
-                                    size="lg"
-                                    onClick={() => setIsAddContentOpen(true)}
-                                    className="border border-primary"
-                                >
-                                    Add content
-                                </Button>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Right Preview Area */}
-                <div className="w-72 lg:w-80 h-full pr-6">
-                    <div className='w-full aspect-[9/16]'><WebsitePreview playlist={videos} onLoadMore={handleLoadMore} /></div>
+                <div className="w-72 lg:w-80 h-full pr-6 pt-16">
+                    <div className="w-full aspect-[9/16]">
+                        <WebsitePreview playlist={videos} onLoadMore={handleLoadMore} />
+                    </div>
                 </div>
             </div>
 
@@ -297,7 +298,7 @@ const WebsiteDetailPage = () => {
                         <CreateSiteModal
                             opened={createModalOpened}
                             loading={loading}
-                            website={website}
+                            websiteOld={website}
                             isEdit={true}
                             onClose={() => setCreateModalOpened(false)}
                             onSubmit={handleSubmit}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, Select, Menu, Image, Pagination, Card } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import Header from '@/components/system/header';
@@ -13,6 +13,7 @@ import orderImage from '@/assets/images/public/order.webp';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 /**
  * Playlists management page component
@@ -29,6 +30,8 @@ const PlaylistsPage = () => {
     const [isCreating, setIsCreating] = useState(false);
     const [activePage, setActivePage] = useState(1);
     const [total, setTotal] = useState(0);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const playlistToDeleteRef = useRef<string | null>(null);
 
     /**
      * Calculate number of items to display per page based on screen width
@@ -180,12 +183,26 @@ const PlaylistsPage = () => {
     };
 
     /**
-     * Handle playlist deletion
+     * Handle playlist deletion click
      * @param playlistId ID of playlist to delete
      */
-    const handleDelete = (playlistId: string) => {
+    const handleDeleteClick = (playlistId: string) => {
+        playlistToDeleteRef.current = playlistId;
+        setDeleteModalOpen(true);
+    };
+
+    /**
+     * Handle playlist deletion confirmation
+     */
+    const handleConfirmDelete = () => {
+        const playlistId = playlistToDeleteRef.current;
+        if (!playlistId) return;
+
         PlaylistApi.delete([playlistId]);
         setPlaylists(playlists.filter(item => item.playlistId !== playlistId));
+        setDeleteModalOpen(false);
+        playlistToDeleteRef.current = null;
+        toast.success('Playlist deleted successfully');
     };
 
     return (
@@ -247,23 +264,20 @@ const PlaylistsPage = () => {
                             <div className="h-full overflow-y-auto">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4 p-4">
                                     {playlists.map(playlist => (
-                                        <PlaylistCard playlist={playlist} key={playlist.playlistId} onEdit={handleEdit} onDelete={handleDelete} />
+                                        <PlaylistCard playlist={playlist} key={playlist.playlistId} onEdit={handleEdit} onDelete={handleDeleteClick} />
                                     ))}
                                 </div>
                             </div>
+                        ) : searchQuery.length > 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center text-center">
+                                <p className="text-black-purple text-lg mb-2">No playlists found</p>
+                                <p className="text-gray-500 text-sm">No playlists with filtered condition</p>
+                            </div>
                         ) : (
-                            searchQuery.length > 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center">
-                                    <p className="text-black-purple text-lg mb-2">No playlists found</p>
-                                    <p className="text-gray-500 text-sm">No playlists with filtered condition</p>
-                                </div>
-                               ) : 
-                           (
-                              <div className="h-full flex flex-col items-center justify-center text-center">
-                                   <p className="text-gray-500 mb-4">No playlists available</p>
-                                   <Button onClick={handleCreatePlaylist}>Create Playlist</Button>
-                              </div>
-                           )
+                            <div className="h-full flex flex-col items-center justify-center text-center">
+                                <p className="text-gray-500 mb-4">No playlists available</p>
+                                <Button onClick={handleCreatePlaylist}>Create Playlist</Button>
+                            </div>
                         )}
                     </div>
 
@@ -305,6 +319,16 @@ const PlaylistsPage = () => {
                     </div>
                 </>
             )}
+
+            <ConfirmDialog
+                opened={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Delete"
+                message="Are you sure you want to delete this playlist? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+            />
         </div>
     );
 };

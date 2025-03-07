@@ -17,6 +17,7 @@ import CreatorApi from '@/api/creator';
 import { VideoArgs } from '@/api/args';
 import { IPaginationResponse, IResponse } from '@/types/public';
 import profileEventBus from '@/utils/profileEventBus';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 /**
  * Props interface for VideosPageView component
@@ -63,6 +64,7 @@ const VideosPageView = ({
     const isCheckingRef = useRef(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const videoToDeleteRef = useRef<string | null>(null);
+    const [isNotFind, setIsNotFind] = useState(false);
 
     // Fetch video data and set up event listeners
     useEffect(() => {
@@ -72,7 +74,6 @@ const VideosPageView = ({
 
     // Search videos when filters change
     useEffect(() => {
-        console.log('sortType:', sortType);
         searchVideos();
     }, [status, sortType, searchQuery, activePage]);
 
@@ -355,7 +356,7 @@ const VideosPageView = ({
 
     const handleDeleteClick = (id: string) => {
         videoToDeleteRef.current = id;
-        if(playlistId) {
+        if (playlistId) {
             handleConfirmDelete();
             return;
         }
@@ -442,22 +443,28 @@ const VideosPageView = ({
                             <div className="h-full overflow-y-auto">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4 p-4">
                                     {videos.map(video => (
-                                        <VideoCard deleteString={playlistId ? 'Remove' : 'Delete'} key={video.vid} {...video} onEdit={handleEdit} onDelete={handleDeleteClick} onCopyLink={handleCopyLink} onClick={handleEdit} />
+                                        <VideoCard
+                                            deleteString={playlistId ? 'Remove' : 'Delete'}
+                                            key={video.vid}
+                                            {...video}
+                                            onEdit={handleEdit}
+                                            onDelete={handleDeleteClick}
+                                            onCopyLink={handleCopyLink}
+                                            onClick={handleEdit}
+                                        />
                                     ))}
                                 </div>
                             </div>
-                        ) : (
-                           searchQuery.length > 0 ? (
+                        ) : searchQuery.length > 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center">
                                 <p className="text-black-purple text-lg mb-2">No video found</p>
                                 <p className="text-gray-500 text-sm">No video with filtered condition</p>
                             </div>
-                           ) : (
+                        ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center">
                                 <p className="text-gray-500 mb-4"> No content available</p>
                                 <UploadButton text={playlistId ? 'Add Videos' : undefined} onClick={playlistId ? addVideos : handleOpenUploadModal} />
                             </div>
-                           )
                         )}
                     </div>
 
@@ -483,6 +490,7 @@ const VideosPageView = ({
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
                     <div className="fixed top-0 right-0 flex h-screen z-50">
                         <VideoDetailEdit
+                            playlistId={playlistId}
                             isReplace={replaceLoading}
                             video={editingVideo}
                             onClose={() => setEditingVideo(null)}
@@ -490,6 +498,7 @@ const VideosPageView = ({
                             onDelete={video => {
                                 handleDeleteClick(video.vid);
                             }}
+                            deleteString={playlistId ? 'Remove from playlist' : 'Delete'}
                             onReplace={handleReplace}
                             isUploading={saveLoading}
                         />
@@ -500,21 +509,15 @@ const VideosPageView = ({
             {/* upload modal */}
             <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUpload={handleUpload} />
 
-            <Modal
+            <ConfirmDialog
                 opened={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
                 title="Confirm Delete"
-                centered
-                radius="lg"
-            >
-                <div className="space-y-4">
-                    <p>Are you sure you want to delete this video? This action cannot be undone.</p>
-                    <div className="flex justify-end gap-4">
-                        <Button variant="outline" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
-                        <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
-                    </div>
-                </div>
-            </Modal>
+                message="Are you sure you want to delete this video? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+            />
         </>
     );
 };
