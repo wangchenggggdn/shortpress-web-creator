@@ -15,7 +15,7 @@ const WebsitesPage = async () => {
         const res = await WebsiteApi.list();
         if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
         const resD = await WebsiteApi.batchGet(res.data.items.join(','));
-        if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
+        if (resD.code !== 0 && (resD.data?.items ?? []).length === 0) return [];
         return resD.data.items;
     };
 
