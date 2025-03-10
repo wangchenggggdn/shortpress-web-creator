@@ -3,8 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { Button } from '@mantine/core';
 import { IVideo } from '@/types/video';
-import VideoPlayer from '@/components/common/videoPlayer/videoPlayer';
-import { IconPhoto } from '@tabler/icons-react';
+import VideoPlayer from '@/components/common/videoPlayer';
 
 interface VideoPreviewProps {
     video: IVideo | File;
