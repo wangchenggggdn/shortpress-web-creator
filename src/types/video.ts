@@ -2,16 +2,17 @@
  * Enum for video upload status
  */
 export enum VideoUploadStatus {
+    NULL = 0,
     /** Video has not been uploaded yet */
-    NOT_UPLOADED = 0,
+    NOT_UPLOADED = 1,
     /** Video is currently being uploaded */
-    UPLOADING = 1,
+    UPLOADING = 2,
     /** Video upload failed */
-    UPLOAD_FAILED = 2,
+    UPLOAD_FAILED = 3,
     /** Video upload was cancelled */
-    UPLOAD_CANCELLED = 3,
+    UPLOAD_CANCELLED = 4,
     /** Video upload completed successfully */
-    UPLOAD_SUCCESS = 4
+    UPLOAD_SUCCESS = 5
 }
 
 /**
