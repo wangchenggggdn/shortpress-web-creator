@@ -13,7 +13,16 @@ export default class WebsiteApi {
      * @returns Promise with array of Website objects
      */
     static list() {
-        return fetch.get<Website[]>('/api/site/list');
+        return fetch.get<IPaginationResponse<string>>('/api/site/list');
+    }
+
+    /**
+     * Get website list
+     * @param args Website list parameters
+     * @returns Promise with paginated Website list
+     */
+    static batchGet(siteIds: string) {
+        return fetch.get<IPaginationResponse<Website>>('/api/site/batch-get', { siteIds });
     }
 
     /**
