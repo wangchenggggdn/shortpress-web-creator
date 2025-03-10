@@ -17,7 +17,7 @@ import CreatorApi from '@/api/creator';
 import { VideoArgs } from '@/api/args';
 import { IPaginationResponse, IResponse } from '@/types/public';
 import profileEventBus from '@/utils/profileEventBus';
-import ConfirmDialog from '@/components/common/confirmDialog';
+import ConfirmDialog from '@/components/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
 
 /**
