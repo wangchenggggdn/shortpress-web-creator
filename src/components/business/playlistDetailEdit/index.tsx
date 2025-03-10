@@ -146,7 +146,7 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     <div>
                         <label className="block text-sm font-medium mb-2">Status</label>
                         <Select
-                            defaultValue={playlist?.status?.toString() ?? '0'}
+                            defaultValue={playlist?.status?.toString() ?? '1'}
                             data={[
                                 { value: PlaylistStatus.PUBLISHED.toString(), label: 'Published' },
                                 { value: PlaylistStatus.UNPUBLISHED.toString(), label: 'Unpublished' },

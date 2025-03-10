@@ -27,6 +27,11 @@ const VideosPage = () => {
         const res = await VideoApi.search(params);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
         const videos = await VideoApi.batchGet(res.data.items.join(','));
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+        videos.data.total = res.data.total;
+        videos.data.page = res.data.page;
+        videos.data.pageSize = res.data.pageSize;
+        videos.data.hasMore = res.data.hasMore;
         return videos;
     };
 

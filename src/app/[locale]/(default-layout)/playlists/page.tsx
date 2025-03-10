@@ -66,8 +66,13 @@ const PlaylistsPage = () => {
                 status: Number(status),
             });
             if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
-            setTotal(res.data.total);
             const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+            if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+            resD.data.total = res.data.total;
+            resD.data.page = res.data.page;
+            resD.data.pageSize = res.data.pageSize;
+            resD.data.hasMore = res.data.hasMore;
+            setTotal(res.data.total);
             setPlaylists(resD.data.items ?? []);
         } catch (error) {
             console.error('Failed to fetch playlists:', error);
@@ -90,8 +95,13 @@ const PlaylistsPage = () => {
                 pageSize: getItemsPerPage(),
             });
             if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
-            setTotal(res.data.total);
             const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+            if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+            resD.data.total = res.data.total;
+            resD.data.page = res.data.page;
+            resD.data.pageSize = res.data.pageSize;
+            resD.data.hasMore = res.data.hasMore;
+            setTotal(res.data.total);
             setPlaylists(resD.data.items);
         } catch (error) {
             console.error('Failed to search playlists:', error);
