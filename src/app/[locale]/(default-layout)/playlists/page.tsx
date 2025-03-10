@@ -13,7 +13,7 @@ import orderImage from '@/assets/images/public/order.webp';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
-import ConfirmDialog from '@/components/confirmDialog';
+import ConfirmDialog from '@/components/common/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
 
 /**

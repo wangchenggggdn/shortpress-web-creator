@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { IconCheck, IconChevronDown, IconChevronUp, IconLoader, IconX } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
 import { VideoUploadStatus } from '@/types/video';
-import ConfirmDialog from '@/components/confirmDialog';
+import ConfirmDialog from '@/components/common/confirmDialog';
 
 /**
  * Upload progress modal component
