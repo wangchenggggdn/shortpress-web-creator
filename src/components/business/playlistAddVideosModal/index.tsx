@@ -44,8 +44,10 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
             pageSize: pageSize,
             orderType: orderType,
         });
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);
         const resD = await VideoApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
         setVideoList(resD.data.items);
     };
 
