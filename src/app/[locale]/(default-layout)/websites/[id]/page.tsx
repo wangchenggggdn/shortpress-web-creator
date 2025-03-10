@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { Website } from '@/types/website';
 import PlaylistApi from '@/api/playlist';
 import { IVideo } from '@/types/video';
+import VideoApi from '@/api/video';
 
 /**
  * Website detail page component
@@ -74,11 +75,17 @@ const WebsiteDetailPage = () => {
             orderType: 1,
             status: 2,
         });
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+        resD.data.total = res.data.total;
+        resD.data.page = res.data.page;
+        resD.data.pageSize = res.data.pageSize;
+        resD.data.hasMore = res.data.hasMore;
         setTotal(res.data.total);
         setPlaylists(resD.data.items);
         setCurrentPlaylistsIndex(0);
-        //fetchVideos(res.data.items);
+        fetchVideos(resD.data.items);
     };
 
     /**
@@ -94,8 +101,15 @@ const WebsiteDetailPage = () => {
                 playlistId: playlists[i]?.playlistId ?? '',
                 page: videoPage,
             });
+            if (res.code !== 0 || (res.data.items ?? []).length === 0) continue;
+            const resD = await VideoApi.batchGet(res.data.items.join(','));
+            if (res.code !== 0 || (res.data.items ?? []).length === 0) continue;
+            resD.data.total = res.data.total;
+            resD.data.page = res.data.page;
+            resD.data.pageSize = res.data.pageSize;
+            resD.data.hasMore = res.data.hasMore;
             setVideoPage(res.data.page);
-            videosNew = videosNew.concat(res.data.items);
+            videosNew = videosNew.concat(resD.data.items ?? []);
         }
         setVideos(videosNew);
     };
@@ -112,13 +126,18 @@ const WebsiteDetailPage = () => {
             status: 2,
             keyword: searchQuery,
         });
-
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+        resD.data.total = res.data.total;
+        resD.data.page = res.data.page;
+        resD.data.pageSize = res.data.pageSize;
+        resD.data.hasMore = res.data.hasMore;
         setTotal(res.data.total);
         setPlaylists(resD.data.items);
         setVideoPage(1);
         setVideos([]);
-        //fetchVideos(resD.data.items);
+        fetchVideos(resD.data.items);
     };
 
     // Fetch playlists when search query or page changes
@@ -162,6 +181,7 @@ const WebsiteDetailPage = () => {
      * Handle loading more videos
      */
     const handleLoadMore = () => {
+        console.log('load more');
         //fetchVideos(playlists[currentPlaylistsIndex]?.playlistId ?? '');
     };
 

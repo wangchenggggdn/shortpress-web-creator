@@ -79,7 +79,7 @@ export default class PlaylistApi {
      * @returns Promise with paginated Video objects
      */
     static getVideos(args: PlaylistArgs.GetVideos) {
-        return fetch.get<IPaginationResponse<IVideo>>('/api/playlist/videos', args);
+        return fetch.get<IPaginationResponse<string>>('/api/playlist/videos', args);
     }
 
     /**

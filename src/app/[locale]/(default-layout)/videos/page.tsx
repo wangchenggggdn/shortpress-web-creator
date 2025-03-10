@@ -26,13 +26,13 @@ const VideosPage = () => {
     const searchFetch = async (params: VideoArgs.Search) => {
         const res = await VideoApi.search(params);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
-        const videos = await VideoApi.batchGet(res.data.items.join(','));
+        const resD = await VideoApi.batchGet(res.data.items.join(','));
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
-        videos.data.total = res.data.total;
-        videos.data.page = res.data.page;
-        videos.data.pageSize = res.data.pageSize;
-        videos.data.hasMore = res.data.hasMore;
-        return videos;
+        resD.data.total = res.data.total;
+        resD.data.page = res.data.page;
+        resD.data.pageSize = res.data.pageSize;
+        resD.data.hasMore = res.data.hasMore;
+        return resD;
     };
 
     /**
