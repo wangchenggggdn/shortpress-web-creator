@@ -13,7 +13,8 @@ import orderImage from '@/assets/images/public/order.webp';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
-import ConfirmDialog from '@/components/common/ConfirmDialog';
+import ConfirmDialog from '@/components/common/confirmDialog';
+import NoLoadingData from '@/components/common/noLoadingData';
 
 /**
  * Playlists management page component
@@ -272,7 +273,7 @@ const PlaylistsPage = () => {
                     <div className="flex-1 min-h-0 ">
                         {loading ? (
                             <div className="h-full flex items-center justify-center">
-                                <span>Loading...</span>
+                                <NoLoadingData />
                             </div>
                         ) : playlists.length > 0 ? (
                             <div className="h-full overflow-y-auto">
