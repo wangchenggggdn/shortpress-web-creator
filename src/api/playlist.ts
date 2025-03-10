@@ -23,7 +23,7 @@ export default class PlaylistApi {
      * @returns Promise with paginated Playlist objects
      */
     static list(args: PlaylistArgs.List) {
-        return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/list', args);
+        return fetch.get<IPaginationResponse<string>>('/api/playlist/list', args);
     }
 
     /**
@@ -88,6 +88,11 @@ export default class PlaylistApi {
      * @returns Promise with paginated Playlist objects
      */
     static search(args: PlaylistArgs.Search) {
-        return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/search', args);
+        return fetch.get<IPaginationResponse<string>>('/api/playlist/search', args);
+    }
+
+
+    static batchGet(playlistIds: string) {
+        return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/batch-get', { playlistIds });
     }
 }

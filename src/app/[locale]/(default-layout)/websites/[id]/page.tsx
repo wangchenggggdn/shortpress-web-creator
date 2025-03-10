@@ -72,14 +72,13 @@ const WebsiteDetailPage = () => {
             pageSize,
             siteId: params.id as string,
             orderType: 1,
-            status: 0,
+            status: 2,
         });
-        if (res.code === 0) {
-            setTotal(res.data.total);
-            setPlaylists(res.data.items);
-            setCurrentPlaylistsIndex(0);
-            fetchVideos(res.data.items);
-        }
+        const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        setTotal(res.data.total);
+        setPlaylists(resD.data.items);
+        setCurrentPlaylistsIndex(0);
+        //fetchVideos(res.data.items);
     };
 
     /**
@@ -110,16 +109,16 @@ const WebsiteDetailPage = () => {
             pageSize,
             siteId: params.id as string,
             orderType: 1,
-            status: 0,
+            status: 2,
             keyword: searchQuery,
         });
-        if (res.code === 0) {
-            setTotal(res.data.total);
-            setPlaylists(res.data.items);
-            setVideoPage(1);
-            setVideos([]);
-            fetchVideos(res.data.items);
-        }
+
+        const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        setTotal(res.data.total);
+        setPlaylists(resD.data.items);
+        setVideoPage(1);
+        setVideos([]);
+        //fetchVideos(resD.data.items);
     };
 
     // Fetch playlists when search query or page changes

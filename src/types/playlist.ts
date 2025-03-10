@@ -33,4 +33,22 @@ export interface Playlist {
     createdAt: number;
     /** Last update timestamp */
     updatedAt: number;
-} 
+}
+
+
+/**
+ * Enum for video status
+ */
+export enum PlaylistStatus {
+    NULL = 0,
+    /** Video is not published */
+    UNPUBLISHED = 1,
+    /** Video is published */
+    PUBLISHED = 2,
+    /** Video is disabled */
+    DISABLED = 3,
+    /** Video is deleted */
+    DELETED = 127,
+    /** All video statuses */
+    ALL = 128
+}

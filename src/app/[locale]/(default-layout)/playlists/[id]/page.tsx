@@ -45,7 +45,8 @@ const PlaylistVideosPage = () => {
     const searchFetch = async (params: VideoArgs.Search) => {
         params.playlistId = paramsP.id as string;
         const res = await VideoApi.search(params);
-        return res;
+        const videos = await VideoApi.batchGet(res.data.items.join(','));
+        return videos;
     };
 
     /**

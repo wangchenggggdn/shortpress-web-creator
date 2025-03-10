@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { TextInput, Textarea, Button, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
-import { Playlist } from '@/types/playlist';
+import { Playlist, PlaylistStatus } from '@/types/playlist';
 import { PlaylistArgs } from '@/api/args';
 import PlaylistApi from '@/api/playlist';
 
@@ -148,8 +148,8 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                         <Select
                             defaultValue={playlist?.status?.toString() ?? '0'}
                             data={[
-                                { value: '1', label: 'Published' },
-                                { value: '0', label: 'Unpublished' },
+                                { value: PlaylistStatus.PUBLISHED.toString(), label: 'Published' },
+                                { value: PlaylistStatus.UNPUBLISHED.toString(), label: 'Unpublished' },
                             ]}
                             onChange={e => {
                                 playlist.status = Number(e);

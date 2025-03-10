@@ -49,7 +49,7 @@ export default class VideoApi {
      * @returns Promise with paginated Video objects
      */
     static list(args: VideoArgs.List) {
-        return fetch.get<IPaginationResponse<IVideo>>('/api/video/list', args);
+        return fetch.get<IPaginationResponse<string>>('/api/video/list', args);
     }
 
     /**
@@ -58,7 +58,7 @@ export default class VideoApi {
      * @returns Promise with paginated Video objects
      */
     static search(args: VideoArgs.Search) {
-        return fetch.get<IPaginationResponse<IVideo>>('/api/video/search', args);
+        return fetch.get<IPaginationResponse<string>>('/api/video/search', args);
     }
 
     /**

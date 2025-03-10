@@ -32,7 +32,6 @@ const WebsitesPage = () => {
             localStorage.setItem('sites', JSON.stringify(res.data));
             upgateWebsites(res.data);
         });
-
         const sitesStr = localStorage.getItem('sites');
         if (sitesStr) {
             const sites = JSON.parse(sitesStr);

@@ -24,7 +24,10 @@ const VideosPage = () => {
      * @returns Promise with search results
      */
     const searchFetch = async (params: VideoArgs.Search) => {
-        return await VideoApi.search(params);
+        const res = await VideoApi.search(params);
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+        const videos = await VideoApi.batchGet(res.data.items.join(','));
+        return videos;
     };
 
     /**

@@ -33,19 +33,21 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     const [total, setTotal] = useState(0);
     const currentPage = useRef(1);
 
-    console.log('activePage111;', activePage);
     useEffect(() => {
-        console.log('activePage;', activePage);
-        VideoApi.search({
+        searchRequest();
+    }, [searchQuery, activePage, orderType]);
+
+    const searchRequest = async () => {
+        const res = await VideoApi.search({
             keyword: searchQuery,
             page: activePage,
             pageSize: pageSize,
             orderType: orderType,
-        }).then(res => {
-            setVideoList(res.data.items);
-            setTotal(res.data.total);
         });
-    }, [searchQuery, activePage, orderType]);
+        setTotal(res.data.total);
+        const resD = await VideoApi.batchGet(res.data.items.join(','));
+        setVideoList(resD.data.items);
+    };
 
     useEffect(() => {
         currentPage.current = activePage;

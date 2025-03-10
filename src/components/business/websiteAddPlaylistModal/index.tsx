@@ -35,16 +35,20 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
 
     // Fetch playlists when search parameters change
     useEffect(() => {
-        PlaylistApi.search({
+        searcRequest();
+    }, [searchQuery, activePage, orderType]);
+
+    const searcRequest = async () => {
+        const res = await PlaylistApi.search({
             page: activePage,
             pageSize: pageSize,
             orderType: orderType,
             keyword: searchQuery,
-        }).then(res => {
-            setPlaylists(res.data.items);
-            setTotal(res.data.total);
         });
-    }, [searchQuery, activePage, orderType]);
+        setTotal(res.data.total);
+        const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        setPlaylists(resD.data.items);
+    };
 
     const isAllSelected = () => {
         return playlists.every(playlist => selectedItems.includes(playlist.playlistId));

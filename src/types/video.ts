@@ -18,16 +18,17 @@ export enum VideoUploadStatus {
  * Enum for video status
  */
 export enum VideoStatus {
+    NULL = 0,
     /** Video is not published */
-    UNPUBLISHED = 0,
+    UNPUBLISHED = 1,
     /** Video is published */
-    PUBLISHED = 1,
+    PUBLISHED = 2,
     /** Video is disabled */
-    DISABLED = 2,
+    DISABLED = 3,
     /** Video is deleted */
-    DELETED = 3,
+    DELETED = 127,
     /** All video statuses */
-    ALL = 4
+    ALL = 128
 }
 
 /**

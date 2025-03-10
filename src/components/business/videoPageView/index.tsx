@@ -23,7 +23,7 @@ import ConfirmDialog from '@/components/common/ConfirmDialog';
  * Props interface for VideosPageView component
  */
 interface VideosPageViewProps {
-    searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>>>;
+    searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
     deleteVideo: (id: string) => void;
     setUploadModalOpened: (opened: boolean) => void;
     setEditingVideo: (video: IVideo | null) => void;
@@ -98,9 +98,9 @@ const VideosPageView = ({
         };
         playlistId && (params.playlistId = playlistId);
         const res = await searchFetch(params);
-        if (res.code === 0) {
-            setTotal(res.data.total);
-            setVideos(res.data.items);
+        if (res?.code === 0) {
+            setTotal(res?.data?.total ?? 0);
+            setVideos(res?.data?.items ?? []);
         }
         setLoading(false);
     };
@@ -133,9 +133,9 @@ const VideosPageView = ({
         setLoading(true);
         const params: VideoArgs.Search = { keyword: searchQuery, status: Number(status), orderType: sortType, page: activePage, pageSize: getItemsPerPage() };
         const res = await searchFetch(params);
-        if (res.code === 0) {
-            setTotal(res.data.total);
-            setVideos(res.data.items);
+        if (res?.code === 0) {
+            setTotal(res?.data?.total ?? 0);
+            setVideos(res?.data?.items ?? []);
         }
         setLoading(false);
     };
