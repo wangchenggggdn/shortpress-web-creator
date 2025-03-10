@@ -59,6 +59,7 @@ const PlaylistsPage = () => {
      */
     const fetchPlaylists = async () => {
         setLoading(true);
+        setPlaylists([]);
         try {
             const res = await PlaylistApi.list({
                 page: activePage,
@@ -86,6 +87,7 @@ const PlaylistsPage = () => {
      * Search playlists based on current filters
      */
     const searchPlaylists = async () => {
+        setPlaylists([]);
         setLoading(true);
         try {
             const res = await PlaylistApi.search({

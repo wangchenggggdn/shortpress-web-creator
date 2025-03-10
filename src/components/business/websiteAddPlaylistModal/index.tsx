@@ -39,12 +39,14 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     }, [searchQuery, activePage, orderType]);
 
     const searcRequest = async () => {
+        setPlaylists([]);
         const res = await PlaylistApi.search({
             page: activePage,
             pageSize: pageSize,
             orderType: orderType,
             keyword: searchQuery,
         });
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;

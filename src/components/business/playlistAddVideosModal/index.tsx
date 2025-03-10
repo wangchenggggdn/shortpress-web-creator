@@ -38,6 +38,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     }, [searchQuery, activePage, orderType]);
 
     const searchRequest = async () => {
+        setVideoList([]);
         const res = await VideoApi.search({
             keyword: searchQuery,
             page: activePage,
