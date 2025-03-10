@@ -1,8 +1,8 @@
 import React from 'react';
 import LoadingSVG from '../loadingSVG';
 
-const NoLoadingData: React.FC = () => {
+const LoadingData: React.FC = () => {
     return <LoadingSVG />;
 };
 
-export default NoLoadingData;
+export default LoadingData;

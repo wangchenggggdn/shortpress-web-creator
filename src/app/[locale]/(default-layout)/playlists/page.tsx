@@ -14,7 +14,7 @@ import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
 import ConfirmDialog from '@/components/common/confirmDialog';
-import NoLoadingData from '@/components/common/noLoadingData';
+import LoadingData from '@/components/common/loadingData';
 
 /**
  * Playlists management page component
@@ -273,7 +273,7 @@ const PlaylistsPage = () => {
                     <div className="flex-1 min-h-0 ">
                         {loading ? (
                             <div className="h-full flex items-center justify-center">
-                                <NoLoadingData />
+                                <LoadingData />
                             </div>
                         ) : playlists.length > 0 ? (
                             <div className="h-full overflow-y-auto">

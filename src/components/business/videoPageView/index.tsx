@@ -18,7 +18,7 @@ import { VideoArgs } from '@/api/args';
 import { IPaginationResponse, IResponse } from '@/types/public';
 import profileEventBus from '@/utils/profileEventBus';
 import ConfirmDialog from '@/components/common/confirmDialog';
-import NoLoadingData from '@/components/common/noLoadingData';
+import LoadingData from '@/components/common/loadingData';
 
 /**
  * Props interface for VideosPageView component
@@ -438,7 +438,7 @@ const VideosPageView = ({
                     <div className="flex-1 min-h-0 ">
                         {loading ? (
                             <div className="h-full flex items-center justify-center">
-                                <NoLoadingData />
+                                <LoadingData />
                             </div>
                         ) : videos.length > 0 ? (
                             <div className="h-full overflow-y-auto">
