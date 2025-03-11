@@ -75,6 +75,7 @@ export interface IVideo {
         /** SEO keywords */
         keywords?: string;
     };
+    file?: File;
 }
 
 /**

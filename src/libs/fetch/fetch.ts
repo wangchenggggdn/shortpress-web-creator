@@ -155,7 +155,7 @@ class Fetch {
      * @param params Additional query parameters
      * @returns Promise with API response
      */
-    public async upload<T>(url: string, data: FormData, params: Record<string, any> = {}): Promise<IResponse<T>> {
+    public async upload0<T>(url: string, data: FormData, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
 
         const config: any = {
@@ -168,13 +168,10 @@ class Fetch {
         };
 
         let qsUrl = `?${qs.stringify(params)}`;
-
         const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
-
         return fetch(fetchUrl, config)
             .then(async response => {
                 const result = await response.json();
-
                 if (result.code !== undefined && typeof result.code === 'number') {
                     if (response.status === 401) {
                         return Promise.resolve({
@@ -197,6 +194,75 @@ class Fetch {
                     info: String(error),
                 };
             });
+    }
+
+    public async upload<T>(
+        url: string,
+        data: FormData,
+        params: Record<string, any> = {},
+        onProgress?: (progress: number) => void
+    ): Promise<IResponse<T>> {
+        const token = await this.getToken();
+        let qsUrl = `?${qs.stringify(params)}`;
+        const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
+        return new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            // 监听上传进度
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable && onProgress) {
+                    const progress = (event.loaded / event.total) * 100;
+                    onProgress(progress);
+                }
+            };
+
+            xhr.open('POST', fetchUrl);
+
+            // 设置请求头
+            Object.entries({
+                ...this.publicHeaders,
+                ...token,
+            }).forEach(([key, value]) => {
+                xhr.setRequestHeader(key, value as string);
+            });
+
+            xhr.onload = async () => {
+                console.log('start upload onload');
+                try {
+                    const result = JSON.parse(xhr.responseText);
+                    if (result.code !== undefined && typeof result.code === 'number') {
+                        if (xhr.status === 401) {
+                            return Promise.resolve({
+                                code: 401,
+                                info: result.info,
+                            });
+
+                        }
+
+                        resolve(result);
+                    } else {
+
+                        return Promise.resolve({
+                            code: xhr.status,
+                            info: xhr.statusText,
+                        });
+                    }
+                } catch (error) {
+                    return Promise.resolve({
+                        code: -1,
+                        info: String(error),
+                    });
+                }
+            };
+
+            xhr.onerror = () => {
+                return Promise.resolve({
+                    code: -1,
+                    info: 'network error',
+                });
+            };
+
+            xhr.send(data);
+        });
     }
 }
 

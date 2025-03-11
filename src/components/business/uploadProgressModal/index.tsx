@@ -5,6 +5,7 @@ import { IconCheck, IconChevronDown, IconChevronUp, IconLoader, IconX } from '@t
 import fileUploadStore from '@/store/useFileUploadStore';
 import { VideoUploadStatus } from '@/types/video';
 import ConfirmDialog from '@/components/common/confirmDialog';
+import UploadProgressItem from './comment';
 
 /**
  * Upload progress modal component
@@ -90,25 +91,7 @@ const UploadProgressModal: React.FC = () => {
                             .slice()
                             .reverse()
                             .map((item, index) => (
-                                <div key={index} className="flex items-center gap-4 py-1">
-                                    <div className="flex-1">
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-sm truncate pr-8 max-w-sm">{item.title}</span>
-                                            <span className="text-sm">
-                                                {item.uploadStatus === VideoUploadStatus.UPLOADING && `${item.progress ?? 0}%`}
-                                                {item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS && <IconCheck className="text-green-500" size={18} />}
-                                                {item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED && <IconX className="text-red-500" size={18} />}
-                                                {item.progress === 0 || (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED && <span className="text-gray-400">Waiting...</span>)}
-                                            </span>
-                                        </div>
-                                        {/* Progress Bar */}
-                                        {item.uploadStatus === VideoUploadStatus.UPLOADING && (
-                                            <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                                                <div className="h-full bg-primary transition-all duration-300" style={{ width: `${item.progress ?? 0}%` }} />
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <UploadProgressItem key={index} index={index} item={item} />
                             ))}
                     </div>
                 ) : (

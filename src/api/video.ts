@@ -12,8 +12,8 @@ export default class VideoApi {
      * @param formData FormData containing video file and metadata
      * @returns Promise with array of video IDs
      */
-    static upload(formData: FormData) {
-        return fetch.upload<{ vids: string[] }>('/api/video/upload', formData);
+    static upload(formData: FormData, onProgress?: (progress: number) => void) {
+        return fetch.upload<{ vids: string[] }>('/api/video/upload', formData, {}, onProgress);
     }
 
     /**

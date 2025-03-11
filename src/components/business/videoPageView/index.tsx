@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Select, Menu, Image, Pagination, Modal, Button } from '@mantine/core';
+import { Select, Menu, Image, Pagination } from '@mantine/core';
 import VideoCard from '@/components/business/videoCard';
 import Search from '@/components/common/search';
 import UploadButton from '@/components/common/uploadButton';
@@ -51,7 +51,7 @@ const VideosPageView = ({
     deleteVideo,
     addVideos,
 }: VideosPageViewProps) => {
-    const { uploadFileList, setUploadFileList, setOpenUploadProgressModal } = fileUploadStore();
+    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal } = fileUploadStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [status, setStatus] = useState<string | null>('-1');
     const [sortType, setSortType] = useState<number>(1);
@@ -65,7 +65,6 @@ const VideosPageView = ({
     const isCheckingRef = useRef(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const videoToDeleteRef = useRef<string | null>(null);
-    const [isNotFind, setIsNotFind] = useState(false);
 
     // Fetch video data and set up event listeners
     useEffect(() => {
@@ -82,6 +81,10 @@ const VideosPageView = ({
     useEffect(() => {
         uploadFileListRef.current = uploadFileList;
     }, [uploadFileList]);
+
+    useEffect(() => {
+        openUploadProgressModal && checkUploadStatus();
+    }, [openUploadProgressModal]);
 
     /**
      * Fetch videos from API based on search parameters
@@ -117,10 +120,19 @@ const VideosPageView = ({
             // Update upload status for each video in the list
             const newItems = (uploadFileListRef.current ?? []).map(item => {
                 const newItem = (res.data.items ?? []).find(oldItem => oldItem.vid === item.vid);
-                return { ...item, uploadStatus: newItem?.uploadStatus ?? VideoUploadStatus.NOT_UPLOADED };
+                if (newItem) {
+                    return { ...item, uploadStatus: newItem?.uploadStatus ?? VideoUploadStatus.NOT_UPLOADED };
+                } else {
+                    return item;
+                }
             });
             setUploadFileList(newItems);
-            if (!(newItems ?? []).some(item => item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED)) {
+            if (
+                !(newItems ?? []).some(
+                    item =>
+                        item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
+                )
+            ) {
                 searchVideos();
                 isCheckingRef.current = false;
             }
@@ -186,15 +198,6 @@ const VideosPageView = ({
     }, []);
 
     /**
-     * Open upload progress modal
-     * @param items Array of videos being uploaded
-     */
-    const openUploadProgressModal = (items: IVideo[]) => {
-        setUploadFileList(items);
-        setOpenUploadProgressModal(items.length !== 0);
-    };
-
-    /**
      * Handle file upload
      * @param files Array of files to upload
      */
@@ -202,44 +205,24 @@ const VideosPageView = ({
         if (files.length === 0) {
             return;
         }
-        let uploadFileListN: IVideo[] = (uploadFileListRef.current ?? []).concat(initUploadFileList(files));
-
+        if (!isCheckingRef.current) {
+            isCheckingRef.current = true;
+        }
+        let uploadFileListN: IVideo[] = (uploadFileList ?? []).concat(initUploadFileList(files));
         setOpenUploadProgressModal(true);
         setUploadFileList(uploadFileListN);
-        uploadRes(files);
-        checkUploadStatus();
-    };
-
-    /**
-     * Upload files to server
-     * @param files Array of files to upload
-     */
-    const uploadRes = (files: File[]) => {
-        if (files.length > 0) {
-            const formData = new FormData();
-            files.forEach(file => {
-                formData.append('files', file);
-            });
-            VideoApi.upload(formData).then(res => {
-                const videos = reloadUploadFileList(res.data.vids);
-                setUploadFileList(videos);
-            });
-        }
     };
 
     /**
      * Check upload status periodically
      */
     const checkUploadStatus = async () => {
-        if (!isCheckingRef.current) {
-            isCheckingRef.current = true;
-            while (isCheckingRef.current) {
-                const vids = uploadFileListRef.current?.map(item => item.vid) ?? [];
-                const isHaveVids = vids.some(item => item !== '');
-                console.log('vids:', vids, 'isHaveVids:', isHaveVids);
-                isHaveVids && (await checkUploadStatusR(vids));
-                await new Promise(resolve => setTimeout(resolve, 2000));
-            }
+        while (true) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            if (!isCheckingRef.current) continue;
+            const vids = uploadFileListRef.current?.map(item => item.vid) ?? [];
+            const isHaveVids = vids.some(item => item !== '');
+            isHaveVids && (await checkUploadStatusR(vids));
         }
     };
 
@@ -252,31 +235,14 @@ const VideosPageView = ({
         const items: IVideo[] = files.map(file => ({
             vid: '',
             title: file.name,
-            uploadStatus: VideoUploadStatus.NOT_UPLOADED,
+            uploadStatus: VideoUploadStatus.NULL,
             status: 0,
             creatorId: '',
             createdAt: 0,
             updatedAt: 0,
+            file: file,
         }));
         return items;
-    };
-
-    /**
-     * Reload upload file list with video IDs
-     * @param vids Array of video IDs
-     * @returns Updated array of video objects
-     */
-    const reloadUploadFileList = (vids: string[]): IVideo[] => {
-        for (let index = 0; index < (uploadFileListRef.current ?? []).length; index++) {
-            const element = (uploadFileListRef.current ?? [])[index];
-            if (element.vid === '') {
-                element.vid = vids[0] ?? '';
-                if (vids.length > 0) {
-                    vids.splice(0, 1);
-                }
-            }
-        }
-        return uploadFileListRef.current ?? [];
     };
 
     /**

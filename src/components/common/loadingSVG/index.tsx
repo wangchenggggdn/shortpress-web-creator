@@ -4,7 +4,7 @@ const LoadingSVG: React.FC = () => {
     return (
         <svg stroke="#6355FFFF" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <g>
-                <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="3" stroke-linecap="round">
+                <circle cx="12" cy="12" r="9.5" fill="none" strokeWidth="3" strokeLinecap="round">
                     <animate
                         attributeName="stroke-dasharray"
                         dur="1.5s"
