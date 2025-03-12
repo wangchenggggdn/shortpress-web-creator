@@ -230,31 +230,35 @@ class Fetch {
                     const result = JSON.parse(xhr.responseText);
                     if (result.code !== undefined && typeof result.code === 'number') {
                         if (xhr.status === 401) {
-                            return Promise.resolve({
+                            return resolve({
                                 code: 401,
                                 info: result.info,
+                                data: result.data,
                             });
 
                         }
-                        return Promise.resolve(result);
+                        resolve(result);
                     } else {
-                        return Promise.resolve({
+                        resolve({
                             code: xhr.status,
                             info: xhr.statusText,
+                            data: result.data,
                         });
                     }
                 } catch (error) {
-                    return Promise.resolve({
+                    resolve({
                         code: -1,
                         info: String(error),
+                        data: JSON.parse(xhr.response),
                     });
                 }
             };
 
             xhr.onerror = () => {
-                return Promise.resolve({
+                resolve({
                     code: -1,
                     info: 'network error',
+                    data: JSON.parse(xhr.response),
                 });
             };
 
