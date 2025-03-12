@@ -204,6 +204,7 @@ const WebsiteDetailPage = () => {
         WebsiteApi.modify(args).then(res => {
             if (res.code === 0) {
                 toast.success('save success');
+                fetchWebsite();
                 setCreateModalOpened(false);
             } else {
                 toast.error(res.info);
