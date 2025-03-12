@@ -162,6 +162,8 @@ export namespace VideoArgs {
             keywords?: string;
         };
         cover?: string;
+        videoPath?: string;
+        videoSourceUrl?: string;
         tags?: string;
     }
 

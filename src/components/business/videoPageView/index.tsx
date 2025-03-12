@@ -19,6 +19,7 @@ import { IPaginationResponse, IResponse } from '@/types/public';
 import profileEventBus from '@/utils/profileEventBus';
 import ConfirmDialog from '@/components/common/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
+import { on } from 'events';
 
 /**
  * Props interface for VideosPageView component
@@ -271,7 +272,7 @@ const VideosPageView = ({
      * @param videoData Video data to save
      * @param coverFile Optional cover image file
      */
-    const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File) => {
+    const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => {
         setSaveLoading(true);
         if (coverFile) {
             const formData = new FormData();
@@ -279,6 +280,15 @@ const VideosPageView = ({
             const res = await CreatorApi.uploadFile(formData);
             if (res.code === 0) {
                 videoData.cover = res.data ?? '';
+            }
+        }
+        if (videoFile) {
+            const formData = new FormData();
+            formData.append('file', videoFile);
+            const replaceRes = await VideoApi.replace({ vid: editingVideo?.vid ?? '', formData });
+            if (replaceRes.code === 0) {
+                videoData.videoPath = replaceRes.data.videoSourceUrl ?? '';
+                videoData.videoSourceUrl = replaceRes.data.videoSourceUrl ?? '';
             }
         }
         const res = await VideoApi.modify(videoData);

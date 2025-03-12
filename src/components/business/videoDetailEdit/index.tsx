@@ -84,7 +84,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
         fileInput.onchange = async e => {
             const file = (e.target as HTMLInputElement).files?.[0];
             setVideoFile(file);
-            onReplace(file);
+            //onReplace(file);
         };
         fileInput.click();
     };
