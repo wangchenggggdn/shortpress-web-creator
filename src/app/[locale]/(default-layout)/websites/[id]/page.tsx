@@ -130,7 +130,9 @@ const WebsiteDetailPage = () => {
             status: 2,
             keyword: searchQuery,
         });
+        setLoadingData(false);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+        setLoadingData(true);
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
         resD.data.total = res.data.total;

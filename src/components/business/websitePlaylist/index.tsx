@@ -127,7 +127,7 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, isLoading,
                         ))
                     )}
                 </div>
-                {children}
+                {!isLoading && children}
             </div>
             {total > 0 && (
                 <div className="pt-4 mt-4">
