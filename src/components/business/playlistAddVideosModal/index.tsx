@@ -115,7 +115,17 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4">
                                 {videoList.map(item => (
-                                    <div key={item.vid} className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md">
+                                    <div
+                                        key={item.vid}
+                                        className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md"
+                                        onClick={() => {
+                                            if (selectedItems.includes(item.vid)) {
+                                                setSelectedItems(selectedItems.filter(i => i !== item.vid));
+                                                return;
+                                            }
+                                            setSelectedItems([...selectedItems, item.vid]);
+                                        }}
+                                    >
                                         <input
                                             type="checkbox"
                                             checked={selectedItems.includes(item.vid)}

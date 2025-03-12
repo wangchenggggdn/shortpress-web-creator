@@ -117,11 +117,22 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4">
                                 {playlists.map(item => (
-                                    <div key={item.playlistId} className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md">
+                                    <div
+                                        key={item.playlistId}
+                                        className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md"
+                                        onClick={() => {
+                                            if (selectedItems.includes(item.playlistId)) {
+                                                setSelectedItems(selectedItems.filter(i => i !== item.playlistId));
+                                                return;
+                                            }
+                                            setSelectedItems([...selectedItems, item.playlistId]);
+                                        }}
+                                    >
                                         <input
                                             type="checkbox"
                                             checked={selectedItems.includes(item.playlistId)}
                                             onChange={e => {
+                                                e.stopPropagation();
                                                 if (e.target.checked) {
                                                     setSelectedItems([...selectedItems, item.playlistId]);
                                                 } else {
