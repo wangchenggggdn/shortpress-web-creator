@@ -35,6 +35,7 @@ const WebsiteDetailPage = () => {
     const [total, setTotal] = useState(0);
     const [createModalOpened, setCreateModalOpened] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingData, setLoadingData] = useState(false);
     const [currentPlaylistsIndex, setCurrentPlaylistsIndex] = useState(0);
     const [videoPage, setVideoPage] = useState(1);
     const currentPlaylist = useRef<Playlist[]>([]);
@@ -68,6 +69,7 @@ const WebsiteDetailPage = () => {
      * Fetch playlists for the website
      */
     const fetchPlaylists = async () => {
+        setLoadingData(false);
         const res = await PlaylistApi.list({
             page,
             pageSize,
@@ -86,6 +88,7 @@ const WebsiteDetailPage = () => {
         setPlaylists(resD.data.items);
         setCurrentPlaylistsIndex(0);
         fetchVideos(resD.data.items);
+        setLoadingData(true);
     };
 
     /**
@@ -118,6 +121,7 @@ const WebsiteDetailPage = () => {
      * Search playlists based on query
      */
     const fetchPlaylistsBySearch = async () => {
+        setLoadingData(true);
         const res = await PlaylistApi.search({
             page,
             pageSize,
@@ -138,6 +142,7 @@ const WebsiteDetailPage = () => {
         setVideoPage(1);
         setVideos([]);
         fetchVideos(resD.data.items);
+        setLoadingData(false);
     };
 
     // Fetch playlists when search query or page changes
@@ -273,6 +278,7 @@ const WebsiteDetailPage = () => {
                         </Button>
                     </div>
                     <WebsitePlaylist
+                        isLoading={loadingData}
                         key={playlists.length}
                         playlists={playlists}
                         total={total}

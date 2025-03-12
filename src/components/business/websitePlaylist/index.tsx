@@ -5,6 +5,7 @@ import { Button, Pagination } from '@mantine/core';
 import WebsitePlaylistItem from './playlistItem';
 import { useRouter } from 'next/navigation';
 import { IconPlus } from '@tabler/icons-react';
+import LoadingData from '@/components/common/loadingData';
 
 /**
  * Props interface for WebsitePlaylist component
@@ -19,6 +20,7 @@ interface WebsitePlaylistProps {
     /** Number of items per page */
     pageSize?: number;
     children?: React.ReactNode;
+    isLoading?: boolean;
     /** Callback function when page changes */
     onPageChange?: (page: number) => void;
     /** Callback function when search query changes */
@@ -32,7 +34,7 @@ interface WebsitePlaylistProps {
  * Displays a list of playlists with search, pagination, and selection capabilities
  * @returns React component with playlist management interface
  */
-const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, children, total = 0, page = 1, pageSize = 10, onPageChange, onSearch, onDelete }) => {
+const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, isLoading, children, total = 0, page = 1, pageSize = 10, onPageChange, onSearch, onDelete }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const router = useRouter();
@@ -109,17 +111,21 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, children, 
             </div>
             <div className="flex-1 overflow-auto">
                 <div className="space-y-2">
-                    {playlists.map(playlist => (
-                        <div key={playlist.playlistId} className="group">
-                            <WebsitePlaylistItem
-                                playlist={playlist}
-                                checked={selectedItems.includes(playlist.playlistId)}
-                                onCheck={checked => handleSelectItem(playlist.playlistId, checked)}
-                                onDelete={() => handleDelete(playlist.playlistId)}
-                                onClick={() => handlePlaylistClick(playlist.playlistId)}
-                            />
-                        </div>
-                    ))}
+                    {isLoading ? (
+                        <LoadingData />
+                    ) : (
+                        playlists.map(playlist => (
+                            <div key={playlist.playlistId} className="group">
+                                <WebsitePlaylistItem
+                                    playlist={playlist}
+                                    checked={selectedItems.includes(playlist.playlistId)}
+                                    onCheck={checked => handleSelectItem(playlist.playlistId, checked)}
+                                    onDelete={() => handleDelete(playlist.playlistId)}
+                                    onClick={() => handlePlaylistClick(playlist.playlistId)}
+                                />
+                            </div>
+                        ))
+                    )}
                 </div>
                 {children}
             </div>

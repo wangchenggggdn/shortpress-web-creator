@@ -132,7 +132,9 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                             <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Cover</h3>
                             <div className="flex items-center gap-4">
                                 <div className="w-32 h-32 bg-[#F4F4F7] rounded-lg flex items-center justify-center">
-                                    {playlist.cover && !coverFile && <img src={playlist.cover} alt="logo" className="w-full h-full object-cover rounded-lg" />}
+                                    {playlist.cover && playlist.cover.length > 0 && !coverFile && (
+                                        <img src={playlist.cover} alt="logo" className="w-full h-full object-cover rounded-lg" />
+                                    )}
                                     {coverFile && <img src={URL.createObjectURL(coverFile)} alt="logo" className="w-full h-full object-cover rounded-lg" />}
                                 </div>
                                 <Button variant="filled" color="primary" size="md" onClick={() => handleUploadImage()}>
