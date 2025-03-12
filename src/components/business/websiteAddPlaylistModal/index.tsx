@@ -157,7 +157,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                     {/* Pagination */}
                     {playlists.length > 0 && (
                         <div className="py-4">
-                            <Pagination value={activePage} onChange={setActivePage} total={Math.ceil(total / 20)} color="primary" radius="xl" className="flex justify-center" />
+                            <Pagination value={activePage} onChange={setActivePage} total={Math.ceil(total / 9)} color="primary" radius="xl" className="flex justify-center" />
                         </div>
                     )}
 
