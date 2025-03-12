@@ -32,7 +32,7 @@ interface CreateSiteModalProps {
  * Provides form fields for website details and SEO settings
  * @returns React component with website creation/editing interface
  */
-const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEdit = false, onSubmit, websiteOld = {} as Website, loading = false }) => {
+const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEdit = false, onSubmit, websiteOld = { status: 2 } as Website, loading = false }) => {
     const { userInfo } = userStore();
     const [website, setWebsite] = React.useState<Website>(JSON.parse(JSON.stringify(websiteOld)));
     let coverFile: File | undefined;
@@ -112,9 +112,9 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEd
                     <div>
                         <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Status</h3>
                         <Select
-                            defaultValue={(website?.status ?? 0) === 1 ? 'published' : 'unpublished'}
+                            defaultValue={(website?.status ?? 0) === 2 ? 'published' : 'unpublished'}
                             onChange={value => {
-                                website.status = value === 'published' ? 1 : 0;
+                                website.status = value === 'published' ? 2 : 1;
                             }}
                             data={[
                                 { value: 'published', label: 'Published' },
