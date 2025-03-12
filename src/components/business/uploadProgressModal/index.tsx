@@ -5,7 +5,7 @@ import { IconChevronDown, IconChevronUp, IconLoader, IconX } from '@tabler/icons
 import fileUploadStore from '@/store/useFileUploadStore';
 import { VideoUploadStatus } from '@/types/video';
 import ConfirmDialog from '@/components/common/confirmDialog';
-import UploadProgressItem from '../components';
+import UploadProgressItem from './components';
 
 /**
  * Upload progress modal component
