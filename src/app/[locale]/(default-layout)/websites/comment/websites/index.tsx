@@ -33,7 +33,7 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
         console.log('res:', res);
         if (res.code !== 0 && (res?.data?.items ?? []).length === 0) return [];
         if ((res?.data?.items ?? []).length >= 1) {
-            route.push(`/websites/${websites[0].siteId}`);
+            route.push(`/websites/${(res?.data?.items ?? [])[0]}`);
         }
         const resD = await WebsiteApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 && (resD?.data?.items ?? []).length === 0) return [];
