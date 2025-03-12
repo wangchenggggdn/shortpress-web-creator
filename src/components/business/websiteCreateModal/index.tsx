@@ -87,7 +87,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEd
                     <div>
                         <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Domain</h3>
                         <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
-                            <span className="text-gray-400">{`${website?.domain ?? 'myshortify.com'}/`}</span>
+                            <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
                             <span className="">{website?.path ?? userInfo?.creatorName ?? ''}</span>
                         </div>
                     </div>
