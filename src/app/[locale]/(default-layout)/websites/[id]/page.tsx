@@ -69,7 +69,7 @@ const WebsiteDetailPage = () => {
      * Fetch playlists for the website
      */
     const fetchPlaylists = async () => {
-        setLoadingData(false);
+        // setLoadingData(true);
         const res = await PlaylistApi.list({
             page,
             pageSize,
@@ -88,7 +88,7 @@ const WebsiteDetailPage = () => {
         setPlaylists(resD.data.items);
         setCurrentPlaylistsIndex(0);
         fetchVideos(resD.data.items);
-        setLoadingData(true);
+        // setLoadingData(false);
     };
 
     /**
