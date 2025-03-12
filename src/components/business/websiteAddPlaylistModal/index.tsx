@@ -5,6 +5,7 @@ import Search from '@/components/common/search';
 import { IconX } from '@tabler/icons-react';
 import { Playlist } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
+import LoadingData from '@/components/common/loadingData';
 
 /**
  * Props interface for AddContentModal component
@@ -39,6 +40,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     }, [searchQuery, activePage, orderType]);
 
     const searcRequest = async () => {
+        setLoading(true);
         setPlaylists([]);
         const res = await PlaylistApi.search({
             page: activePage,
@@ -51,6 +53,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
         setPlaylists(resD.data.items);
+        setLoading(false);
     };
 
     const isAllSelected = () => {
@@ -105,7 +108,9 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                     {/* Playlist Grid */}
 
                     <div className="flex-1 overflow-y-auto">
-                        {playlists.length === 0 ? (
+                        {loading ? (
+                            <LoadingData className="w-10 h-10" />
+                        ) : playlists.length === 0 ? (
                             <div className="flex justify-center items-center h-full">
                                 <div className="text-sm font-medium text-gray-500">No content found</div>
                             </div>

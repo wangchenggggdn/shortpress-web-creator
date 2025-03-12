@@ -4,6 +4,7 @@ import Search from '@/components/common/search';
 import { IconX } from '@tabler/icons-react';
 import { IVideo } from '@/types/video';
 import VideoApi from '@/api/video';
+import LoadingData from '@/components/common/loadingData';
 
 /**
  * Props interface for AddContentModal component
@@ -30,6 +31,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     const [pageSize, setPageSize] = useState(9);
     const [orderType, setOrderType] = useState(0);
     const [total, setTotal] = useState(0);
+    const [loading, setLoading] = useState(false);
     const currentPage = useRef(1);
 
     useEffect(() => {
@@ -38,6 +40,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
 
     const searchRequest = async () => {
         setVideoList([]);
+        setLoading(true);
         const res = await VideoApi.search({
             keyword: searchQuery,
             page: activePage,
@@ -49,6 +52,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         const resD = await VideoApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
         setVideoList(resD.data.items);
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -102,7 +106,9 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                     </div>
 
                     <div className="flex-1 overflow-y-auto">
-                        {videoList.length === 0 ? (
+                        {loading ? (
+                            <LoadingData className="w-10 h-10" />
+                        ) : videoList.length === 0 ? (
                             <div className="flex justify-center items-center h-full">
                                 <div className="text-sm font-medium text-gray-500">No content found</div>
                             </div>
@@ -114,6 +120,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                                             type="checkbox"
                                             checked={selectedItems.includes(item.vid)}
                                             onChange={e => {
+                                                e.stopPropagation();
                                                 if (e.target.checked) {
                                                     setSelectedItems([...selectedItems, item.vid]);
                                                 } else {
