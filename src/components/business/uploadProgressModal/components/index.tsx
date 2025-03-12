@@ -36,17 +36,15 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                 const res = await VideoApi.upload(formData, (progress: number) => {
                     item.progress = Math.floor(progress);
                     item.uploadStatus = VideoUploadStatus.UPLOADING;
-                    setUploadFileList(uploadFileListRef.current ?? []);
                 });
                 if (res.code === 0) {
                     item.vid = res.data.vids[0];
-                    setUploadFileList(uploadFileListRef.current ?? []);
                 } else {
                     item.uploadStatus = VideoUploadStatus.UPLOAD_FAILED;
-                    setUploadFileList(uploadFileListRef.current ?? []);
                 }
             } catch (error) {
                 item.uploadStatus = VideoUploadStatus.UPLOAD_FAILED;
+            } finally {
                 setUploadFileList(uploadFileListRef.current ?? []);
             }
         }

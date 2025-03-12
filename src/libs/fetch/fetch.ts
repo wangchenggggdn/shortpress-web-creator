@@ -226,7 +226,6 @@ class Fetch {
             });
 
             xhr.onload = async () => {
-                console.log('start upload onload');
                 try {
                     const result = JSON.parse(xhr.responseText);
                     if (result.code !== undefined && typeof result.code === 'number') {
@@ -237,10 +236,8 @@ class Fetch {
                             });
 
                         }
-
-                        resolve(result);
+                        return Promise.resolve(result);
                     } else {
-
                         return Promise.resolve({
                             code: xhr.status,
                             info: xhr.statusText,
