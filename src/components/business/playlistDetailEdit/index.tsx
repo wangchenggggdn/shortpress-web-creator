@@ -26,7 +26,7 @@ interface PlaylistDetailEditProps {
  * Provides form fields for playlist details and SEO settings
  * @returns React component with playlist creation/editing interface
  */
-const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {} as Playlist, onClose, onSave, isLoading = false }) => {
+const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = { status: 2 } as Playlist, onClose, onSave, isLoading = false }) => {
     const [coverFile, setCoverFile] = useState<File>();
     const isEdit = !!playlistOld.playlistId;
     const [playlist, setPlaylist] = useState<Playlist>(playlistOld);
@@ -146,7 +146,7 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     <div>
                         <label className="block text-sm font-medium mb-2">Status</label>
                         <Select
-                            defaultValue={playlist?.status?.toString() ?? '1'}
+                            defaultValue={playlist?.status?.toString() ?? '2'}
                             data={[
                                 { value: PlaylistStatus.PUBLISHED.toString(), label: 'Published' },
                                 { value: PlaylistStatus.UNPUBLISHED.toString(), label: 'Unpublished' },
