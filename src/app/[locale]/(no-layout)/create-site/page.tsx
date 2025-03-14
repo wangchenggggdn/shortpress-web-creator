@@ -42,7 +42,7 @@ const CreateSitePage = () => {
                     siteData.logo = uploadRes.data;
                 }
             }
-
+            siteData.path = siteData.name;
             const res = await WebsiteApi.create(siteData);
             if (res.code === 0) {
                 toast.success('Site created successfully');
