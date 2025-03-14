@@ -20,6 +20,8 @@ import profileEventBus from '@/utils/profileEventBus';
 import ConfirmDialog from '@/components/common/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
 import { on } from 'events';
+import { GuideName } from '@/types/guide';
+import userStore from '@/store/useUserStore';
 
 /**
  * Props interface for VideosPageView component
@@ -66,6 +68,7 @@ const VideosPageView = ({
     const isCheckingRef = useRef(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const videoToDeleteRef = useRef<string | null>(null);
+    const { userInfo } = userStore();
 
     // Fetch video data and set up event listeners
     useEffect(() => {
@@ -118,6 +121,10 @@ const VideosPageView = ({
         if (vids.length === 0) return;
         const res = await VideoApi.batchGet(vids.join(','));
         if (res.code === 0) {
+            if (userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status !== 1) {
+                CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
+            }
+
             // Update upload status for each video in the list
             const newItems = (uploadFileListRef.current ?? []).map(item => {
                 const newItem = (res.data.items ?? []).find(oldItem => oldItem.vid === item.vid);

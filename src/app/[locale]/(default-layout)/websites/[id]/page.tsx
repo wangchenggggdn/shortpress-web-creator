@@ -17,6 +17,7 @@ import { Website } from '@/types/website';
 import PlaylistApi from '@/api/playlist';
 import { IVideo } from '@/types/video';
 import VideoApi from '@/api/video';
+import LoadingData from '@/components/common/loadingData';
 
 /**
  * Website detail page component
@@ -35,7 +36,7 @@ const WebsiteDetailPage = () => {
     const [total, setTotal] = useState(0);
     const [createModalOpened, setCreateModalOpened] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [loadingData, setLoadingData] = useState(false);
+    const [loadingData, setLoadingData] = useState(true);
     const [currentPlaylistsIndex, setCurrentPlaylistsIndex] = useState(0);
     const [videoPage, setVideoPage] = useState(1);
     const currentPlaylist = useRef<Playlist[]>([]);
@@ -273,12 +274,14 @@ const WebsiteDetailPage = () => {
                 {/* Left Content Area */}
                 <div className="flex-1 px-6">
                     {/* Title Area */}
+
                     <div className="py-4 px-11 flex items-center justify-between">
                         <h2 className="text-lg font-medium text-black-purple">Contents</h2>
                         <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)} className="border border-primary">
                             Add Content
                         </Button>
                     </div>
+
                     <WebsitePlaylist
                         isLoading={loadingData}
                         key={playlists.length}

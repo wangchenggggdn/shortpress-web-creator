@@ -35,6 +35,20 @@ export interface Playlist {
     updatedAt: number;
 }
 
+/**
+ * Interface for playlist video order response
+ */
+export interface PlaylistVideoOrder {
+    /** Playlist identifier */
+    playlistId: string;
+    /** Version of the order */
+    version: string;
+    /** Video order data */
+    sortData: {
+        /** Array of video IDs in order */
+        vids: string[];
+    };
+}
 
 /**
  * Enum for video status

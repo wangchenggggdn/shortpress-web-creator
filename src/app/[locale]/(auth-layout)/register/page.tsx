@@ -9,8 +9,8 @@ import { useRouter } from '@/libs/navigation';
 import { toast } from 'sonner';
 
 const RegisterPage = () => {
-    const [creatorName, setCreatorName] = useState('');
-    const [nickname, setNickname] = useState('');
+    // const [creatorName, setCreatorName] = useState('');
+    // const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
@@ -24,8 +24,8 @@ const RegisterPage = () => {
             return;
         }
         const res = await CreatorApi.register({
-            creatorName,
-            nickname,
+            // creatorName,
+            // nickname,
             email,
             password,
         });
@@ -61,7 +61,7 @@ const RegisterPage = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* createName with tooltip */}
-                <div className="relative">
+                {/* <div className="relative">
                     <TextInput
                         value={creatorName}
                         onChange={e => setCreatorName(e.target.value)}
@@ -74,28 +74,28 @@ const RegisterPage = () => {
                         }
                         required
                     />
-                </div>
+                </div> */}
                 {/* nickname */}
-                <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required />
-                <TextInput 
-                    value={email} 
+                {/* <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required /> */}
+                <TextInput
+                    value={email}
                     onChange={e => {
                         setEmail(e.target.value);
                         validateEmail(e.target.value);
-                    }} 
-                    placeholder="Email" 
-                    leftSection={<IconMail size={16} />} 
-                    required 
+                    }}
+                    placeholder="Email"
+                    leftSection={<IconMail size={16} />}
+                    required
                     error={emailError}
                     onBlur={() => validateEmail(email)}
                 />
-                <PasswordInput 
-                    value={password} 
-                    onChange={e => setPassword(e.target.value)} 
-                    placeholder="Password" 
-                    leftSection={<IconLock size={16} />} 
-                    visibilityToggleIcon={({ reveal }) => !reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />}
-                    required 
+                <PasswordInput
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    leftSection={<IconLock size={16} />}
+                    visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
+                    required
                 />
                 <div className="flex flex-row w-full items-center justify-center">
                     <Text size="sm">

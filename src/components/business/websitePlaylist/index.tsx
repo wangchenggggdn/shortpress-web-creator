@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import type { Playlist } from '@/types/playlist';
 import Search from '@/components/common/search';
-import { Button, Pagination } from '@mantine/core';
+import { Pagination } from '@mantine/core';
 import WebsitePlaylistItem from './playlistItem';
 import { useRouter } from 'next/navigation';
-import { IconPlus } from '@tabler/icons-react';
 import LoadingData from '@/components/common/loadingData';
 
 /**
@@ -109,23 +108,21 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, isLoading,
                     <Search value={searchQuery} onChange={handleSearch} placeholder="Search playlist" className="bg-white/80" />
                 </div>
             </div>
+
+            {isLoading && <LoadingData />}
             <div className="flex-1 overflow-auto">
                 <div className="space-y-2">
-                    {isLoading ? (
-                        <LoadingData />
-                    ) : (
-                        playlists.map(playlist => (
-                            <div key={playlist.playlistId} className="group">
-                                <WebsitePlaylistItem
-                                    playlist={playlist}
-                                    checked={selectedItems.includes(playlist.playlistId)}
-                                    onCheck={checked => handleSelectItem(playlist.playlistId, checked)}
-                                    onDelete={() => handleDelete(playlist.playlistId)}
-                                    onClick={() => handlePlaylistClick(playlist.playlistId)}
-                                />
-                            </div>
-                        ))
-                    )}
+                    {playlists.map(playlist => (
+                        <div key={playlist.playlistId} className="group">
+                            <WebsitePlaylistItem
+                                playlist={playlist}
+                                checked={selectedItems.includes(playlist.playlistId)}
+                                onCheck={checked => handleSelectItem(playlist.playlistId, checked)}
+                                onDelete={() => handleDelete(playlist.playlistId)}
+                                onClick={() => handlePlaylistClick(playlist.playlistId)}
+                            />
+                        </div>
+                    ))}
                 </div>
                 {!isLoading && children}
             </div>

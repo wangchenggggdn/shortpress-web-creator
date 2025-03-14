@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Sidebar from '../sidebar';
+import { Website } from '@/types/website';
+import WebsiteApi from '@/api/website';
+import useUserStore from '@/store/useUserStore';
 
 /**
  * Props interface for MainLayout component

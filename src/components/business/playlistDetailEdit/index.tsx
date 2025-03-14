@@ -6,6 +6,7 @@ import { IconX } from '@tabler/icons-react';
 import { Playlist, PlaylistStatus } from '@/types/playlist';
 import { PlaylistArgs } from '@/api/args';
 import PlaylistApi from '@/api/playlist';
+import userStore from '@/store/useUserStore';
 
 /**
  * Props interface for PlaylistDetailEdit component
@@ -18,7 +19,7 @@ interface PlaylistDetailEditProps {
     /** Callback function when modal is closed */
     onClose: () => void;
     /** Callback function when form is submitted */
-    onSave: (playlistData: PlaylistArgs.Modify, coverFile?: File) => void;
+    onSave: (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File) => void;
 }
 
 /**
@@ -30,6 +31,7 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
     const [coverFile, setCoverFile] = useState<File>();
     const isEdit = !!playlistOld.playlistId;
     const [playlist, setPlaylist] = useState<Playlist>(playlistOld);
+    const { userInfo } = userStore();
 
     // Fetch playlist data when editing
     useEffect(() => {
@@ -46,12 +48,12 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
      * @param coverFile Optional cover image file
      */
     const handleSave = (playlistData: Partial<Playlist>, coverFile?: File) => {
-        console.log('playlistData:', playlistData);
         onSave(
             {
                 ...playlistData,
                 playlistId: playlistData?.playlistId ?? '',
             },
+            userInfo?.website?.siteId ?? undefined,
             coverFile
         );
         onClose();

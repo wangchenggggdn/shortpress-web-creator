@@ -1,74 +1,90 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { Button } from '@mantine/core';
-import { IconArrowLeft, IconPlus } from '@tabler/icons-react';
+import { IconArrowLeft, IconPlus, IconArrowsUpDown, IconEdit } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Header from '@/components/system/header';
 import PlaylistDetailEdit from '@/components/business/playlistDetailEdit';
 import { IVideo } from '@/types/video';
-import { Playlist } from '@/types/playlist';
+import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
 import { toast } from 'sonner';
-import { PlaylistArgs, VideoArgs } from '@/api/args';
+import { PlaylistArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
 import AddContentModal from '@/components/business/playlistAddVideosModal';
 import VideoApi from '@/api/video';
-import VideosPageView from '@/components/business/videoPageView';
-import profileEventBus from '@/utils/profileEventBus';
+import PlaylistVideoItem from '@/components/business/playlistVideoItem';
+import userStore from '@/store/useUserStore';
+import { GuideName } from '@/types/guide';
 
-/**
- * Playlist detail page component
- * Displays playlist information and manages its videos
- * @returns React component with playlist detail view
- */
 const PlaylistVideosPage = () => {
     const paramsP = useParams();
     const [playlist, setPlaylist] = useState<Playlist | null>(null);
+    const [videos, setVideos] = useState<IVideo[]>([]);
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditingOrder, setIsEditingOrder] = useState(false);
     const [isAddContentOpen, setIsAddContentOpen] = useState(false);
     const [editingVideo, setEditingVideo] = useState<IVideo | null>(null);
-    const [uploadModalOpened, setUploadModalOpened] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const orderParamCurrentRef = useRef<PlaylistVideoOrder | null>();
+    const { userInfo } = userStore();
+    const videosRef = useRef<IVideo[]>([]);
 
-    // Fetch playlist data when ID changes
     useEffect(() => {
         playlistFetch();
+        fetchVideos();
     }, [paramsP.id]);
 
-    /**
-     * Search videos in the playlist
-     * @param params Search parameters
-     * @returns Promise with search results
-     */
-    const searchFetch = async (params: VideoArgs.Search) => {
-        params.playlistId = paramsP.id as string;
-        const res = await VideoApi.search(params);
-        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
-        const videos = await VideoApi.batchGet(res.data.items.join(','));
-        if (videos.code !== 0 || (videos.data.items ?? []).length === 0) return null;
-        videos.data.total = res.data.total;
-        videos.data.page = res.data.page;
-        videos.data.pageSize = res.data.pageSize;
-        videos.data.hasMore = res.data.hasMore;
-        return videos;
+    useEffect(() => {
+        console.log('videos:', videos);
+        videosRef.current = videos;
+    }, [videos]);
+
+    const fetchVideos = async () => {
+        const res = await PlaylistApi.videoOrder(paramsP.id as string);
+        if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) return;
+        orderParamCurrentRef.current = res.data;
+        const videoIds = res.data.sortData.vids;
+        const batchSize = 20;
+        const batches = [];
+
+        const totalBatches = Math.ceil(videoIds.length / batchSize);
+        for (let i = 0; i < totalBatches; i++) {
+            const start = i * batchSize;
+            const end = Math.min(start + batchSize, videoIds.length);
+            const batch = videoIds.slice(start, end);
+            batches.push(VideoApi.batchGet(batch.join(',')));
+        }
+
+        try {
+            const results = await Promise.all(batches);
+            const videoMap = results.reduce(
+                (acc, result) => {
+                    if (result.code === 0) {
+                        (result.data.items ?? []).forEach(video => {
+                            acc[video.vid] = video;
+                        });
+                    }
+                    return acc;
+                },
+                {} as { [key: string]: IVideo }
+            );
+
+            const orderedVideos = videoIds.map(vid => videoMap[vid]).filter(Boolean);
+            setVideos(orderedVideos);
+        } catch (error) {
+            console.error('Failed to fetch videos:', error);
+        }
     };
 
-    /**
-     * Fetch playlist data from API
-     */
     const playlistFetch = async () => {
         const res = await PlaylistApi.get(paramsP.id as string);
         setPlaylist(res.data);
     };
 
-    /**
-     * Handle playlist save action
-     * @param playlistData Playlist data to save
-     * @param coverFile Optional cover image file
-     */
-    const handleSavePlaylist = async (playlistData: PlaylistArgs.Modify, coverFile?: File) => {
+    const handleSavePlaylist = async (playlistData: PlaylistArgs.Modify, website?: string, coverFile?: File) => {
         setIsSaving(true);
         if (coverFile) {
             const formData = new FormData();
@@ -81,6 +97,7 @@ const PlaylistVideosPage = () => {
 
         PlaylistApi.modify(playlistData).then(res => {
             if (res.code === 0) {
+                toast.success('Playlist updated successfully');
                 playlistFetch();
                 setIsEditing(false);
             }
@@ -88,39 +105,74 @@ const PlaylistVideosPage = () => {
         setIsSaving(false);
     };
 
-    /**
-     * Handle adding videos to playlist
-     * @param selectedItems Array of video IDs to add
-     */
     const handleAddContent = (selectedItems: string[]) => {
         PlaylistApi.addVideos(paramsP.id as string, selectedItems).then(res => {
             if (res.code === 0) {
+                if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
+                    CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
+                }
                 setIsAddContentOpen(false);
-                playlistFetch();
-                // Notify about added videos
-                profileEventBus.emit('addVideo', selectedItems);
-                toast.success('add videos success');
+                fetchVideos();
+                toast.success('Videos added successfully');
             } else {
                 toast.error(res.info);
             }
         });
     };
 
-    /**
-     * Open add videos modal
-     */
-    const handleAddVideos = () => {
-        setIsAddContentOpen(true);
+    const handleDeleteVideo = (id: string) => {
+        PlaylistApi.removeVideos(paramsP.id as string, [id]).then(res => {
+            if (res.code === 0) {
+                fetchVideos();
+                toast.success('Video removed from playlist');
+            } else {
+                toast.error(res.info);
+            }
+        });
     };
 
-    /**
-     * Handle video deletion from playlist
-     * @param id Video ID to delete
-     */
-    const handleDeleteVideo = (id: string) => {
-        PlaylistApi.removeVideos(paramsP.id as string, [id]);
-        toast.success('Video removed from playlist');
-        setEditingVideo(null);
+    const handleOrderChange = (oldIndex: number, newIndex: number) => {
+        const newVideos = [...videos];
+        const [movedItem] = newVideos.splice(oldIndex, 1);
+        newVideos.splice(newIndex, 0, movedItem);
+        setVideos(newVideos);
+    };
+
+    const handleIndexChange = (oldIndex: number, newIndex: number) => {
+        console.log('handleIndexChange', oldIndex, newIndex);
+        const targetIndex = newIndex - 1;
+        let finalIndex;
+        if (targetIndex <= 0) {
+            finalIndex = 0;
+        } else if (targetIndex >= videos.length) {
+            finalIndex = videos.length - 1;
+        } else {
+            finalIndex = targetIndex;
+        }
+        const newVideos = [...videos];
+        const [movedItem] = newVideos.splice(oldIndex, 1);
+        const newVideos0 = newVideos.splice(finalIndex, 0, movedItem);
+        const updatedVideos = newVideos.map((video, index) => ({
+            ...video,
+            index: index + 1,
+        }));
+        const sortedVideos = [...updatedVideos].sort((a, b) => a.index - b.index);
+        setVideos(sortedVideos);
+    };
+
+    const handleSaveOrder = () => {
+        if (orderParamCurrentRef.current === null) return;
+        const videoIds = videosRef.current.map(video => video.vid);
+        orderParamCurrentRef.current!.sortData.vids = videoIds;
+        PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!).then(res => {
+            if (res.code === 0) {
+                toast.success('Video order updated successfully');
+                setIsEditingOrder(false);
+            } else {
+                toast.error('Failed to update video order');
+                fetchVideos();
+            }
+        });
     };
 
     return (
@@ -132,37 +184,97 @@ const PlaylistVideosPage = () => {
                             <IconArrowLeft size={20} />
                         </Link>
                         <h1 className="text-xl font-medium">{playlist?.title}</h1>
-                        <Button variant="subtle" color="primary" onClick={() => setIsEditing(true)}>
-                            Edit Detail
-                        </Button>
                     </div>
                 }
             >
-                <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)}>
-                    Add Videos
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="subtle" color="primary" onClick={() => setIsEditing(true)}>
+                        Edit Detail
+                    </Button>
+                    <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)}>
+                        Add Videos
+                    </Button>
+                </div>
             </Header>
 
-            <VideosPageView
-                uploadModalOpened={uploadModalOpened}
-                editingVideo={editingVideo}
-                setUploadModalOpened={setUploadModalOpened}
-                setEditingVideo={setEditingVideo}
-                searchFetch={searchFetch}
-                deleteVideo={handleDeleteVideo}
-                addVideos={handleAddVideos}
-                playlistId={paramsP.id as string}
-            ></VideosPageView>
+            <div className="px-6 pt-4 flex flex-row items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <span className="text-gray-600">{videos.length} videos</span>
+                </div>
+                <div className="flex">
+                    <Button variant="subtle" color={isEditingOrder ? 'red' : 'primary'} onClick={() => (isEditingOrder ? handleSaveOrder() : setIsEditingOrder(true))} px={'sm'}>
+                        {isEditingOrder ? 'Save Order' : 'Edit Order'}
+                    </Button>
+                    {isEditingOrder && (
+                        <Button
+                            variant="subtle"
+                            color="primary"
+                            onClick={() => {
+                                setIsEditingOrder(false);
+                                fetchVideos();
+                            }}
+                            px={'sm'}
+                        >
+                            Cancel
+                        </Button>
+                    )}
+                </div>
+            </div>
 
-            {/* Add Videos Modal */}
+            <div className="flex-1">
+                <div className="max-w-full mx-auto p-6">
+                    <div className="bg-white rounded-lg shadow-sm h-[calc(100vh-180px)] overflow-y-auto">
+                        {videos.map((video, index) => (
+                            <PlaylistVideoItem
+                                key={video.vid}
+                                video={video}
+                                index={index}
+                                isEditing={isEditingOrder}
+                                onEdit={setEditingVideo}
+                                onDelete={handleDeleteVideo}
+                                onOrderChange={handleOrderChange}
+                                onIndexChange={handleIndexChange}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} />
 
-            {/* Edit Modal */}
             {isEditing && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setIsEditing(false)} />
                     <div className="fixed top-0 right-0 z-50">
                         <PlaylistDetailEdit isLoading={isSaving} playlistOld={playlist ?? undefined} onClose={() => setIsEditing(false)} onSave={handleSavePlaylist} />
+                    </div>
+                </>
+            )}
+
+            {editingVideo && (
+                <>
+                    <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
+                    <div className="fixed top-0 right-0 z-50">
+                        <PlaylistDetailEdit
+                            isLoading={isSaving}
+                            playlistOld={editingVideo as any}
+                            onClose={() => setEditingVideo(null)}
+                            onSave={data => {
+                                // Handle video edit save
+                                VideoApi.modify({
+                                    ...data,
+                                    vid: editingVideo.vid,
+                                }).then(res => {
+                                    if (res.code === 0) {
+                                        fetchVideos();
+                                        setEditingVideo(null);
+                                        toast.success('Video updated successfully');
+                                    } else {
+                                        toast.error(res.info);
+                                    }
+                                });
+                            }}
+                        />
                     </div>
                 </>
             )}

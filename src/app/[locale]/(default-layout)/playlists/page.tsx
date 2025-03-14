@@ -15,6 +15,9 @@ import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
 import ConfirmDialog from '@/components/common/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
+import WebsiteApi from '@/api/website';
+import { GuideName } from '@/types/guide';
+import userStore from '@/store/useUserStore';
 
 /**
  * Playlists management page component
@@ -33,6 +36,7 @@ const PlaylistsPage = () => {
     const [total, setTotal] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const playlistToDeleteRef = useRef<string | null>(null);
+    const { userInfo } = userStore();
 
     /**
      * Calculate number of items to display per page based on screen width
@@ -157,7 +161,7 @@ const PlaylistsPage = () => {
      * @param playlistData Playlist data to save
      * @param coverFile Optional cover image file
      */
-    const handleSave = useCallback(async (playlistData: PlaylistArgs.Modify, coverFile?: File) => {
+    const handleSave = useCallback(async (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File) => {
         setLoading(true);
 
         if (coverFile) {
@@ -169,21 +173,23 @@ const PlaylistsPage = () => {
             }
         }
         if (playlistData.playlistId) {
-            PlaylistApi.modify(playlistData).then(res => {
-                if (res.code === 0) {
-                    saveSuccess();
-                } else {
-                    toast.error(res.info);
-                }
-            });
+            const res = await PlaylistApi.modify(playlistData);
+            if (res.code === 0) {
+                saveSuccess();
+            } else {
+                toast.error(res.info);
+            }
         } else {
-            PlaylistApi.create({ ...playlistData, title: playlistData.title ?? '' }).then(res => {
-                if (res.code === 0) {
-                    saveSuccess();
-                } else {
-                    toast.error(res.info);
+            const res = await PlaylistApi.create({ ...playlistData, title: playlistData.title ?? '' });
+            if (res.code === 0) {
+                if (userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status !== 1) {
+                    CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
                 }
-            });
+                saveSuccess();
+            } else {
+                toast.error(res.info);
+            }
+            websiteId && (await WebsiteApi.addPlaylists(websiteId, [res.data]));
         }
 
         setLoading(false);

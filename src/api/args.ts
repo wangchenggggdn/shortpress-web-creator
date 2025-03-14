@@ -16,8 +16,8 @@ export namespace CreatorArgs {
     export interface Register {
         email: string;
         password: string;
-        creatorName: string;  // Unique path name for creator
-        nickname: string;
+        // creatorName: string;  // Unique path name for creator
+        // nickname: string;
     }
 
     /**
@@ -26,6 +26,10 @@ export namespace CreatorArgs {
     export interface ResetPassword {
         email: string;
         newPassword: string;
+    }
+
+    export interface CompleteGuides {
+        guides: string[];
     }
 }
 
@@ -183,7 +187,7 @@ export namespace VideoArgs {
      */
     export interface Search extends List {
         playlistId?: string;
-        keyword: string;
+        keyword?: string;
     }
 
     /**

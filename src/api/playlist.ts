@@ -1,5 +1,5 @@
 import fetch from '@/libs/fetch/fetch';
-import { Playlist } from '@/types/playlist';
+import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import { IVideo } from '@/types/video';
 import { IPaginationResponse } from '@/types/public';
 import { PlaylistArgs } from './args';
@@ -14,7 +14,7 @@ export default class PlaylistApi {
      * @returns Promise with created Playlist object
      */
     static create(args: PlaylistArgs.Create) {
-        return fetch.post<Playlist>('/api/playlist/create', args);
+        return fetch.post<string>('/api/playlist/create', args);
     }
 
     /**
@@ -94,5 +94,13 @@ export default class PlaylistApi {
 
     static batchGet(playlistIds: string) {
         return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/batch-get', { playlistIds });
+    }
+
+    static videoOrder(playlistId: string) {
+        return fetch.get<PlaylistVideoOrder>('/api/playlist/videos/order', { playlistId });
+    }
+
+    static updateVideosOrder(args: PlaylistVideoOrder) {
+        return fetch.post('/api/playlist/videos/update-order', args);
     }
 }

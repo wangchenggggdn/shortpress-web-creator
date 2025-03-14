@@ -2,6 +2,7 @@ import React from 'react';
 import WebsiteApi from '@/api/website';
 import WebsitesView from './comment/websites';
 import { Website } from '@/types/website';
+import { redirect } from 'next/navigation';
 /**
  * Websites management page component
  * Displays and manages user's websites with creation, editing, and deletion capabilities
@@ -20,6 +21,10 @@ const WebsitesPage = async () => {
     };
 
     const websites = await fetchWebsites();
+
+    if (websites.length >= 1) {
+        redirect(`/websites/${websites[0].siteId}`);
+    }
 
     return <WebsitesView websites={websites} />;
 };

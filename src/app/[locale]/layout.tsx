@@ -10,6 +10,8 @@ import appConfig from '@/appConfig';
 import { initLangTags } from '@/libs/seo';
 
 import ClientLayout from '@/components/system/clientLayout';
+import { Website } from '@/types/website';
+import WebsiteApi from '@/api/website';
 
 /**
  * Props interface for the LocaleLayout component
@@ -30,15 +32,28 @@ const LocaleLayout: React.FC<IProps> = async ({ children }) => {
     const userState = cookieStore.get(CookieMap.UserState);
     let profile: null | IUserProfile = null;
 
+    const fetchWebsites = async (): Promise<Website[]> => {
+        const res = await WebsiteApi.list();
+        if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
+        const resD = await WebsiteApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 && (resD.data?.items ?? []).length === 0) return [];
+        return resD.data.items;
+    };
+
     if (userState) {
         const res = await UserApi.profile();
         if (res.code === 0 && res.data) {
             profile = { ...res.data };
-            console.log('profile:', profile);
         } else {
             console.warn('profile-error:', res.info);
         }
+        const websites = await fetchWebsites();
+        if (profile) {
+            profile.website = websites[0];
+        }
+        console.log('profile:', profile);
     }
+
     console.log('profile:', profile);
     return (
         <NextIntlClientProvider messages={messages}>
