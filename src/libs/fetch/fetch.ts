@@ -91,10 +91,10 @@ class Fetch {
                 }
             })
             .catch(error => {
-                return {
+                return Promise.resolve({
                     code: -1,
                     info: String(error),
-                };
+                });
             });
     }
 
@@ -141,10 +141,10 @@ class Fetch {
                 }
             })
             .catch(error => {
-                return {
+                return Promise.resolve({
                     code: -1,
                     info: String(error),
-                };
+                });
             });
     }
 

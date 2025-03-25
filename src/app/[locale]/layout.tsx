@@ -33,7 +33,6 @@ const LocaleLayout: React.FC<IProps> = async ({ children }) => {
     let profile: null | IUserProfile = null;
 
     const fetchWebsites = async (): Promise<Website[]> => {
-        return [];
         const res = await WebsiteApi.list();
         if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
         const resD = await WebsiteApi.batchGet(res.data.items.join(','));
