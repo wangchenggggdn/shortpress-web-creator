@@ -6,55 +6,29 @@ import VideoCard from '@/components/business/videoCard';
 import Search from '@/components/common/search';
 import UploadButton from '@/components/common/uploadButton';
 import VideoApi from '@/api/video';
-import { IVideo, VideoUploadStatus } from '@/types/video';
+import { IVideo } from '@/types/video';
 import VideoDetailEdit from '@/components/business/videoDetailEdit';
 import UploadVideoModal from '@/components/business/uploadVideoModal';
 import orderImage from '@/assets/images/public/order.webp';
 
-import fileUploadStore from '@/store/useFileUploadStore';
 import { toast } from 'sonner';
-import CreatorApi from '@/api/creator';
 import { VideoArgs } from '@/api/args';
 import { IPaginationResponse, IResponse } from '@/types/public';
-import profileEventBus from '@/utils/profileEventBus';
 import ConfirmDialog from '@/components/common/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
-import { on } from 'events';
-import { GuideName } from '@/types/guide';
-import userStore from '@/store/useUserStore';
+import CreatorApi from '@/api/creator';
 
-/**
- * Props interface for VideosPageView component
- */
 interface VideosPageViewProps {
     searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
     deleteVideo: (id: string) => void;
     setUploadModalOpened: (opened: boolean) => void;
     setEditingVideo: (video: IVideo | null) => void;
-    onUpload?: (items: IVideo[]) => void;
-    addVideos?: () => void;
     uploadModalOpened?: boolean;
     editingVideo?: IVideo | null;
     playlistId?: string;
 }
 
-/**
- * Video page view component
- * Manages video listing, uploading, editing, and deletion with search and filtering capabilities
- * @returns React component with video management interface
- */
-const VideosPageView = ({
-    onUpload,
-    uploadModalOpened = false,
-    editingVideo,
-    playlistId,
-    setUploadModalOpened,
-    setEditingVideo,
-    searchFetch,
-    deleteVideo,
-    addVideos,
-}: VideosPageViewProps) => {
-    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal } = fileUploadStore();
+const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, setUploadModalOpened, setEditingVideo, searchFetch, deleteVideo }: VideosPageViewProps) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [status, setStatus] = useState<string | null>('-1');
     const [sortType, setSortType] = useState<number>(1);
@@ -64,42 +38,22 @@ const VideosPageView = ({
     const [replaceLoading, setReplaceLoading] = useState(false);
     const [activePage, setActivePage] = useState(1);
     const [total, setTotal] = useState(0);
-    const uploadFileListRef = useRef<IVideo[] | null>();
-    const isCheckingRef = useRef(false);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const videoToDeleteRef = useRef<string | null>(null);
-    const { userInfo } = userStore();
 
-    // Fetch video data and set up event listeners
     useEffect(() => {
-        fetchVideos({ func: uploadVideo });
-        profileEventBus.on('addVideo', reloadVideos);
+        fetchVideos();
     }, []);
 
-    // Search videos when filters change
     useEffect(() => {
         searchVideos();
     }, [status, sortType, searchQuery, activePage]);
 
-    // Update upload file list reference
-    useEffect(() => {
-        uploadFileListRef.current = uploadFileList;
-    }, [uploadFileList]);
-
-    useEffect(() => {
-        openUploadProgressModal && checkUploadStatus();
-    }, [openUploadProgressModal]);
-
-    /**
-     * Fetch videos from API based on search parameters
-     * @param params Search parameters including upload status and callback function
-     */
-    const fetchVideos = async ({ uploadStatus, func }: { uploadStatus?: string; func?: (items: IVideo[]) => void }) => {
+    const fetchVideos = async () => {
         setLoading(true);
         const params: VideoArgs.Search = {
             keyword: searchQuery,
             page: activePage,
-            uploadStatus: uploadStatus,
             pageSize: getItemsPerPage(),
             status: Number(status),
             orderType: sortType,
@@ -113,43 +67,6 @@ const VideosPageView = ({
         setLoading(false);
     };
 
-    /**
-     * Check upload status for a list of videos
-     * @param vids Array of video IDs to check
-     */
-    const checkUploadStatusR = async (vids: string[]) => {
-        if (vids.length === 0) return;
-        const res = await VideoApi.batchGet(vids.join(','));
-        if (res.code === 0) {
-            if (userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status !== 1) {
-                CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
-            }
-
-            // Update upload status for each video in the list
-            const newItems = (uploadFileListRef.current ?? []).map(item => {
-                const newItem = (res.data.items ?? []).find(oldItem => oldItem.vid === item.vid);
-                if (newItem) {
-                    return { ...item, uploadStatus: newItem?.uploadStatus ?? VideoUploadStatus.NOT_UPLOADED };
-                } else {
-                    return item;
-                }
-            });
-            setUploadFileList(newItems);
-            if (
-                !(newItems ?? []).some(
-                    item =>
-                        item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
-                )
-            ) {
-                searchVideos();
-                isCheckingRef.current = false;
-            }
-        }
-    };
-
-    /**
-     * Search videos based on current filters
-     */
     const searchVideos = async () => {
         setLoading(true);
         const params: VideoArgs.Search = { keyword: searchQuery, status: Number(status), orderType: sortType, page: activePage, pageSize: getItemsPerPage() };
@@ -161,17 +78,6 @@ const VideosPageView = ({
         setLoading(false);
     };
 
-    /**
-     * Reload video list
-     */
-    const reloadVideos = () => {
-        searchVideos();
-    };
-
-    /**
-     * Calculate number of items to display per page based on screen width
-     * @returns Number of items per page
-     */
     const getItemsPerPage = () => {
         let itemsPerPage = 20;
         if (window.innerWidth >= 1536) {
@@ -188,82 +94,15 @@ const VideosPageView = ({
         return itemsPerPage;
     };
 
-    /**
-     * Update videos state with uploaded items
-     * @param items Array of uploaded videos
-     */
-    const uploadVideo = (items: IVideo[]) => {
-        setVideos(items);
-    };
-
-    /**
-     * Handle search input changes
-     * @param value Search query string
-     */
     const handleSearch = useCallback((value: string) => {
         setSearchQuery(value);
         setActivePage(1);
     }, []);
 
-    /**
-     * Handle file upload
-     * @param files Array of files to upload
-     */
-    const handleUpload = async (files: File[]) => {
-        if (files.length === 0) {
-            return;
-        }
-        if (!isCheckingRef.current) {
-            isCheckingRef.current = true;
-        }
-        let uploadFileListN: IVideo[] = (uploadFileList ?? []).concat(initUploadFileList(files));
-        setOpenUploadProgressModal(true);
-        setUploadFileList(uploadFileListN);
-    };
-
-    /**
-     * Check upload status periodically
-     */
-    const checkUploadStatus = async () => {
-        while (true) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            if (!isCheckingRef.current) continue;
-            const vids = uploadFileListRef.current?.map(item => item.vid) ?? [];
-            const isHaveVids = vids.some(item => item !== '');
-            isHaveVids && (await checkUploadStatusR(vids));
-        }
-    };
-
-    /**
-     * Initialize upload file list from files
-     * @param files Array of files to initialize from
-     * @returns Array of video objects
-     */
-    const initUploadFileList = (files: File[]): IVideo[] => {
-        const items: IVideo[] = files.map(file => ({
-            vid: '',
-            title: file.name,
-            uploadStatus: VideoUploadStatus.NULL,
-            status: 0,
-            creatorId: '',
-            createdAt: 0,
-            updatedAt: 0,
-            file: file,
-        }));
-        return items;
-    };
-
-    /**
-     * Open upload modal
-     */
     const handleOpenUploadModal = () => {
         setUploadModalOpened(true);
     };
 
-    /**
-     * Handle video edit action
-     * @param id Video ID to edit
-     */
     const handleEdit = useCallback(
         (id: string) => {
             const video = videos.find(v => v.vid === id);
@@ -274,11 +113,6 @@ const VideosPageView = ({
         [videos]
     );
 
-    /**
-     * Handle video save action
-     * @param videoData Video data to save
-     * @param coverFile Optional cover image file
-     */
     const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => {
         setSaveLoading(true);
         if (coverFile) {
@@ -316,10 +150,6 @@ const VideosPageView = ({
         setSaveLoading(false);
     };
 
-    /**
-     * Handle video file replacement
-     * @param videoFile New video file to replace existing one
-     */
     const handleReplace = async (videoFile: File | undefined) => {
         if (!videoFile) return;
         setReplaceLoading(true);
@@ -362,10 +192,6 @@ const VideosPageView = ({
         videoToDeleteRef.current = null;
     };
 
-    /**
-     * Handle video link copy
-     * @param id Video ID to copy link for
-     */
     const handleCopyLink = (id: string) => {
         const video = videos.find(v => v.vid === id);
         if (video) {
@@ -376,18 +202,15 @@ const VideosPageView = ({
 
     return (
         <>
-            {/* 搜索栏 */}
             <div className="px-11 py-4 grid grid-cols-4">
                 <div className="flex items-center gap-4">
                     <span className="text-gray-600">{total} videos</span>
                 </div>
 
-                {/* Search Input */}
                 <div className="col-span-2 flex justify-center items-center">
                     <Search className="w-80" value={searchQuery} onChange={handleSearch} placeholder="Search video" />
                 </div>
 
-                {/* Filter Controls */}
                 <div className="flex items-center justify-end gap-4">
                     <Select
                         value={status}
@@ -415,7 +238,6 @@ const VideosPageView = ({
                 </div>
             </div>
 
-            {/* Video Grid Container */}
             <div className="flex-1 px-6 pb-6 min-h-0">
                 <div className="h-full p-2 flex flex-col bg-layout rounded-lg">
                     <div className="flex-1 min-h-0 ">
@@ -447,12 +269,11 @@ const VideosPageView = ({
                         ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center">
                                 <p className="text-gray-500 mb-4"> No content available</p>
-                                <UploadButton text={playlistId ? 'Add Videos' : undefined} onClick={playlistId ? addVideos : handleOpenUploadModal} />
+                                <UploadButton text={playlistId ? 'Add Videos' : undefined} onClick={handleOpenUploadModal} />
                             </div>
                         )}
                     </div>
 
-                    {/* Pagination */}
                     {videos.length > 0 && (
                         <div className="pb-3 flex-shrink-0">
                             <Pagination
@@ -468,7 +289,6 @@ const VideosPageView = ({
                 </div>
             </div>
 
-            {/* edit modal */}
             {editingVideo && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
@@ -490,8 +310,7 @@ const VideosPageView = ({
                 </>
             )}
 
-            {/* upload modal */}
-            <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUpload={handleUpload} />
+            <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUploadSuccess={fetchVideos} />
 
             <ConfirmDialog
                 opened={deleteModalOpen}

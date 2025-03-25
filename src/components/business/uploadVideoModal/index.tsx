@@ -5,63 +5,119 @@ import { Modal, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
 import { toast } from 'sonner';
+import { IVideo, VideoUploadStatus } from '@/types/video';
+import VideoApi from '@/api/video';
+import CreatorApi from '@/api/creator';
+import { GuideName } from '@/types/guide';
+import userStore from '@/store/useUserStore';
 
-/**
- * Props interface for UploadVideoModal component
- */
 interface UploadVideoModalProps {
-    /** Whether the modal is open */
     opened: boolean;
-    /** Callback function when modal is closed */
     onClose: () => void;
-    /** Callback function when files are selected for upload */
-    onUpload: (files: File[]) => void;
+    onUploadSuccess?: () => void;
 }
 
-/**
- * Modal component for uploading video files
- * Supports drag and drop and file selection
- * @returns React component with video upload interface
- */
-const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, onUpload }) => {
+const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, onUploadSuccess }) => {
     const [isDragging, setIsDragging] = useState(false);
+    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal } = fileUploadStore();
+    const uploadFileListRef = useRef<IVideo[] | null>();
+    const isCheckingRef = useRef(false);
+    const { userInfo } = userStore();
 
-    /**
-     * Handle drag over event
-     * @param event Drag event
-     */
+    useEffect(() => {
+        uploadFileListRef.current = uploadFileList;
+    }, [uploadFileList]);
+
+    useEffect(() => {
+        openUploadProgressModal && checkUploadStatus();
+    }, [openUploadProgressModal]);
+
+    const checkUploadStatusR = async (vids: string[]) => {
+        if (vids.length === 0) return;
+        const res = await VideoApi.batchGet(vids.join(','));
+        if (res.code === 0) {
+            if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
+                CreatorApi.completeGuides({ guides: [GuideName.UploadVideo] });
+            }
+
+            const newItems = (uploadFileListRef.current ?? []).map(item => {
+                const newItem = (res.data.items ?? []).find(oldItem => oldItem.vid === item.vid);
+                if (newItem) {
+                    return { ...item, uploadStatus: newItem?.uploadStatus ?? VideoUploadStatus.NOT_UPLOADED };
+                } else {
+                    return item;
+                }
+            });
+            setUploadFileList(newItems);
+            if (
+                !(newItems ?? []).some(
+                    item =>
+                        item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
+                )
+            ) {
+                onUploadSuccess?.();
+                isCheckingRef.current = false;
+            }
+        }
+    };
+
+    const checkUploadStatus = async () => {
+        while (true) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            if (!isCheckingRef.current) continue;
+            const vids = uploadFileListRef.current?.map(item => item.vid) ?? [];
+            const isHaveVids = vids.some(item => item !== '');
+            isHaveVids && (await checkUploadStatusR(vids));
+        }
+    };
+
+    const initUploadFileList = (files: File[]): IVideo[] => {
+        const items: IVideo[] = files.map(file => ({
+            vid: '',
+            title: file.name,
+            uploadStatus: VideoUploadStatus.NULL,
+            status: 0,
+            creatorId: '',
+            createdAt: 0,
+            updatedAt: 0,
+            file: file,
+        }));
+        return items;
+    };
+
+    const handleUpload = async (files: File[]) => {
+        if (files.length === 0) {
+            return;
+        }
+        if (!isCheckingRef.current) {
+            isCheckingRef.current = true;
+        }
+        let uploadFileListN: IVideo[] = (uploadFileList ?? []).concat(initUploadFileList(files));
+        setOpenUploadProgressModal(true);
+        setUploadFileList(uploadFileListN);
+    };
+
     const handleDragOver = (event: React.DragEvent) => {
         event.preventDefault();
         setIsDragging(true);
     };
 
-    /**
-     * Handle drag leave event
-     * @param event Drag event
-     */
     const handleDragLeave = (event: React.DragEvent) => {
         event.preventDefault();
         setIsDragging(false);
     };
 
-    /**
-     * Handle file drop event
-     * @param event Drag event
-     */
     const handleDrop = (event: React.DragEvent) => {
         event.preventDefault();
         setIsDragging(false);
 
         const files = Array.from(event.dataTransfer.files);
         if (files.length > 0) {
-            onUpload(files);
+            handleUpload(files);
             onClose();
         }
     };
 
-    /**
-     * Handle file selection button click
-     */
     const handleButtonClick = () => {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
@@ -72,7 +128,7 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
             if (target.files) {
                 const files = Array.from(target.files);
                 if (files.length > 0) {
-                    onUpload(files);
+                    handleUpload(files);
                     onClose();
                 }
             }
@@ -106,7 +162,6 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
             }}
         >
             <div className="py-12">
-                {/* Upload Area */}
                 <div
                     className={`flex flex-col items-center py-8 border-2 border-dashed rounded-lg transition-colors cursor-pointer
                         ${isDragging ? 'border-primary bg-primary/5' : 'border-gray-300'}`}

@@ -14,12 +14,12 @@ const GuideCard: React.FC = () => {
     const { userInfo } = userStore();
     return (
         <>
-            {(userInfo?.guides ?? []).length !== 0 && (
+            {!(userInfo?.guides ?? []).every(item => item.status === 1) && (
                 <div className="flex flex-col gap-4">
                     <div className="text-2xl text-black-purple font-bold">Hey, follow these steps to launch your site</div>
 
                     <div className="flex flex-col gap-4">
-                        {userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status === 0 && (
+                        {userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status === 0 && (
                             <GuideItem
                                 title="Add Your First Playlist!"
                                 description="Easily create a playlist that your audience will love, and it will be automatically added to your site."
@@ -42,7 +42,7 @@ const GuideCard: React.FC = () => {
                             />
                         )}
 
-                        {userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status === 0 && (
+                        {userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status === 0 && (
                             <GuideItem
                                 title="Add a Video to a Playlist"
                                 description="Add a video to the playlist—your audience will see it in seconds!"

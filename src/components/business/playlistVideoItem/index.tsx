@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { ActionIcon, Menu } from '@mantine/core';
-import { IconDots, IconPencil, IconTrash, IconGripVertical } from '@tabler/icons-react';
-import { IVideo } from '@/types/video';
+import { IconPencil, IconTrash, IconGripVertical } from '@tabler/icons-react';
+import { IVideo, VideoStatus } from '@/types/video';
 import { dateFormatSecond } from '@/utils/formatUtil';
 
 interface PlaylistVideoItemProps {
@@ -136,25 +136,40 @@ const PlaylistVideoItem: React.FC<PlaylistVideoItemProps> = ({ video, index, isE
             <div className="flex-shrink-0 w-32 h-20 bg-gray-100 rounded overflow-hidden">
                 {video.cover && <img src={video.cover} alt={video.title} className="w-full h-full object-cover" />}
             </div>
-            <div className="flex-1 min-w-0">
-                <h3 className="text-base font-medium truncate max-w-xs md:max-w-sm lg:max-w-xl">{video.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{dateFormatSecond(video.createdAt)}</p>
+            <div className="flex-1 h-20 min-w-0 flex flex-col justify-between">
+                <div>
+                    <h3 className="text-base font-medium truncate max-w-xs md:max-w-sm lg:max-w-xl">{video.title}</h3>
+                    <div className="flex items-center gap-1 text-sm">
+                        {video.status === VideoStatus.PUBLISHED && (
+                            <div className="flex items-center gap-1 text-green-500">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                <span>Published</span>
+                            </div>
+                        )}
+                        {video.status === VideoStatus.UNPUBLISHED && (
+                            <div className="flex items-center gap-1 text-gray-500">
+                                <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+                                <span>Unpublished</span>
+                            </div>
+                        )}
+                        {video.status === VideoStatus.DELETED && (
+                            <div className="flex items-center gap-1 text-red-500">
+                                <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                                <span>Deleted</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                <p className="text-sm text-gray-500">{dateFormatSecond(video.createdAt)}</p>
             </div>
-            <Menu position="bottom-end" shadow="md">
-                <Menu.Target>
-                    <ActionIcon variant="subtle" color="gray">
-                        <IconDots size={20} />
-                    </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                    <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => onEdit(video)}>
-                        Edit
-                    </Menu.Item>
-                    <Menu.Item leftSection={<IconTrash size={14} />} color="red" onClick={() => onDelete(video.vid)}>
-                        Remove from playlist
-                    </Menu.Item>
-                </Menu.Dropdown>
-            </Menu>
+            <div className="flex gap-2">
+                <ActionIcon variant="subtle" color="bg-black-purple" onClick={() => onEdit(video)}>
+                    <IconPencil size={20} />
+                </ActionIcon>
+                <ActionIcon variant="subtle" color="red" onClick={() => onDelete(video.vid)}>
+                    <IconTrash size={20} />
+                </ActionIcon>
+            </div>
         </div>
     );
 };

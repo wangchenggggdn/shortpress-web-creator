@@ -204,10 +204,14 @@ class Fetch {
     ): Promise<IResponse<T>> {
         const token = await this.getToken();
         let qsUrl = `?${qs.stringify(params)}`;
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                data.append(key, params[key]);
+            }
+        }
         const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
         return new Promise((resolve) => {
             const xhr = new XMLHttpRequest();
-            // 监听上传进度
             xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable && onProgress) {
                     const progress = (event.loaded / event.total) * 100;
@@ -216,8 +220,7 @@ class Fetch {
             };
 
             xhr.open('POST', fetchUrl);
-
-            // 设置请求头
+            // Set request headers
             Object.entries({
                 ...this.publicHeaders,
                 ...token,

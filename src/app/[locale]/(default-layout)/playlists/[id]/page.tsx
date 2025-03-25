@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@mantine/core';
-import { IconArrowLeft, IconPlus, IconArrowsUpDown, IconEdit } from '@tabler/icons-react';
+import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Header from '@/components/system/header';
@@ -18,6 +18,10 @@ import VideoApi from '@/api/video';
 import PlaylistVideoItem from '@/components/business/playlistVideoItem';
 import userStore from '@/store/useUserStore';
 import { GuideName } from '@/types/guide';
+import AddVideoButton from '@/components/business/addVideoButton';
+import UploadVideoModal from '@/components/business/uploadVideoModal';
+import fileUploadStore from '@/store/useFileUploadStore';
+import LoadingData from '@/components/common/loadingData';
 
 const PlaylistVideosPage = () => {
     const paramsP = useParams();
@@ -26,15 +30,23 @@ const PlaylistVideosPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [isEditingOrder, setIsEditingOrder] = useState(false);
     const [isAddContentOpen, setIsAddContentOpen] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [editingVideo, setEditingVideo] = useState<IVideo | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const orderParamCurrentRef = useRef<PlaylistVideoOrder | null>();
     const { userInfo } = userStore();
+    const { setPlaylistId } = fileUploadStore();
     const videosRef = useRef<IVideo[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         playlistFetch();
-        fetchVideos();
+        const loadFetchVideo = async () => {
+            setLoading(true);
+            await fetchVideos();
+            setLoading(false);
+        };
+        loadFetchVideo();
     }, [paramsP.id]);
 
     useEffect(() => {
@@ -79,6 +91,10 @@ const PlaylistVideosPage = () => {
         }
     };
 
+    const reloadEditVersion = async () => {
+        const res = await PlaylistApi.videoOrder(paramsP.id as string);
+        orderParamCurrentRef.current = res.data;
+    };
     const playlistFetch = async () => {
         const res = await PlaylistApi.get(paramsP.id as string);
         setPlaylist(res.data);
@@ -105,35 +121,35 @@ const PlaylistVideosPage = () => {
         setIsSaving(false);
     };
 
-    const handleAddContent = (selectedItems: string[]) => {
-        PlaylistApi.addVideos(paramsP.id as string, selectedItems).then(res => {
-            if (res.code === 0) {
-                if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
-                    CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
-                }
-                console.log(orderParamCurrentRef.current);
-                if (orderParamCurrentRef.current !== null) {
-                    orderParamCurrentRef.current!.sortData.vids = selectedItems;
-                }
-                PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!);
-                setIsAddContentOpen(false);
-                fetchVideos();
-                toast.success('Videos added successfully');
-            } else {
-                toast.error(res.info);
-            }
-        });
+    const handleAddContent = async (selectedItems: string[]) => {
+        await reloadEditVersion();
+
+        if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
+            CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
+        }
+        if (orderParamCurrentRef.current !== null) {
+            orderParamCurrentRef.current!.sortData.vids = [...orderParamCurrentRef.current!.sortData.vids, ...selectedItems];
+        }
+        await PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!);
+        setIsAddContentOpen(false);
+        fetchVideos();
+        toast.success('Videos added successfully');
     };
 
-    const handleDeleteVideo = (id: string) => {
-        PlaylistApi.removeVideos(paramsP.id as string, [id]).then(res => {
-            if (res.code === 0) {
-                fetchVideos();
-                toast.success('Video removed from playlist');
-            } else {
-                toast.error(res.info);
+    const handleDeleteVideo = async (id: string) => {
+        if (isEditingOrder) {
+            setVideos(prevVideos => prevVideos.filter(video => video.vid !== id));
+            if (orderParamCurrentRef.current) {
+                orderParamCurrentRef.current.sortData.vids = orderParamCurrentRef.current.sortData.vids.filter(vid => vid !== id);
             }
-        });
+        } else {
+            await reloadEditVersion();
+            orderParamCurrentRef.current!.sortData.vids = orderParamCurrentRef.current!.sortData.vids.filter(vid => vid !== id);
+            PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!).then(async () => {
+                await fetchVideos();
+                toast.success('Video removed from playlist');
+            });
+        }
     };
 
     const handleOrderChange = (oldIndex: number, newIndex: number) => {
@@ -144,7 +160,6 @@ const PlaylistVideosPage = () => {
     };
 
     const handleIndexChange = (oldIndex: number, newIndex: number) => {
-        console.log('handleIndexChange', oldIndex, newIndex);
         const targetIndex = newIndex - 1;
         let finalIndex;
         if (targetIndex <= 0) {
@@ -156,7 +171,7 @@ const PlaylistVideosPage = () => {
         }
         const newVideos = [...videos];
         const [movedItem] = newVideos.splice(oldIndex, 1);
-        const newVideos0 = newVideos.splice(finalIndex, 0, movedItem);
+        newVideos.splice(finalIndex, 0, movedItem);
         const updatedVideos = newVideos.map((video, index) => ({
             ...video,
             index: index + 1,
@@ -165,17 +180,18 @@ const PlaylistVideosPage = () => {
         setVideos(sortedVideos);
     };
 
-    const handleSaveOrder = () => {
+    const handleSaveOrder = async () => {
         if (orderParamCurrentRef.current === null) return;
+        await reloadEditVersion();
         const videoIds = videosRef.current.map(video => video.vid);
         orderParamCurrentRef.current!.sortData.vids = videoIds;
         PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!).then(res => {
             if (res.code === 0) {
                 toast.success('Video order updated successfully');
+                fetchVideos();
                 setIsEditingOrder(false);
             } else {
                 toast.error('Failed to update video order');
-                fetchVideos();
             }
         });
     };
@@ -188,7 +204,9 @@ const PlaylistVideosPage = () => {
                         <Link href="/playlists" className="text-gray-600 hover:text-gray-900">
                             <IconArrowLeft size={20} />
                         </Link>
-                        <h1 className="text-xl font-medium">{playlist?.title}</h1>
+                        <h1 className="font-medium">
+                            <span className="text-gray-500">Playlists</span> {' / ' + playlist?.title}
+                        </h1>
                     </div>
                 }
             >
@@ -196,9 +214,15 @@ const PlaylistVideosPage = () => {
                     <Button variant="subtle" color="primary" onClick={() => setIsEditing(true)}>
                         Edit Detail
                     </Button>
-                    <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)}>
-                        Add Videos
-                    </Button>
+                    {!isEditingOrder && (
+                        <AddVideoButton
+                            onChooseExisting={() => setIsAddContentOpen(true)}
+                            onUploadNew={() => {
+                                setPlaylistId(playlist?.playlistId ?? null);
+                                setIsUploadModalOpen(true);
+                            }}
+                        />
+                    )}
                 </div>
             </Header>
 
@@ -206,24 +230,31 @@ const PlaylistVideosPage = () => {
                 <div className="flex items-center gap-4">
                     <span className="text-gray-600">{videos.length} videos</span>
                 </div>
-                <div className="flex">
-                    <Button variant="subtle" color={isEditingOrder ? 'red' : 'primary'} onClick={() => (isEditingOrder ? handleSaveOrder() : setIsEditingOrder(true))} px={'sm'}>
-                        {isEditingOrder ? 'Save Order' : 'Edit Order'}
-                    </Button>
-                    {isEditingOrder && (
+                {videos.length !== 0 && (
+                    <div className="flex">
                         <Button
                             variant="subtle"
-                            color="primary"
-                            onClick={() => {
-                                setIsEditingOrder(false);
-                                fetchVideos();
-                            }}
+                            color={isEditingOrder ? 'red' : 'primary'}
+                            onClick={() => (isEditingOrder ? handleSaveOrder() : setIsEditingOrder(true))}
                             px={'sm'}
                         >
-                            Cancel
+                            {isEditingOrder ? 'Save Order' : 'Edit Order'}
                         </Button>
-                    )}
-                </div>
+                        {isEditingOrder && (
+                            <Button
+                                variant="subtle"
+                                color="primary"
+                                onClick={() => {
+                                    setIsEditingOrder(false);
+                                    fetchVideos();
+                                }}
+                                px={'sm'}
+                            >
+                                Cancel
+                            </Button>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className="flex-1">
@@ -231,7 +262,7 @@ const PlaylistVideosPage = () => {
                     <div className="bg-white rounded-lg shadow-sm h-[calc(100vh-180px)] overflow-y-auto">
                         {videos.map((video, index) => (
                             <PlaylistVideoItem
-                                key={video.vid}
+                                key={video.vid + index}
                                 video={video}
                                 index={index}
                                 isEditing={isEditingOrder}
@@ -241,11 +272,34 @@ const PlaylistVideosPage = () => {
                                 onIndexChange={handleIndexChange}
                             />
                         ))}
+
+                        {!loading && videos.length === 0 && (
+                            <div className="h-full text-center text-gray-500 flex flex-col items-center justify-center gap-2">
+                                <div>No videos found</div>
+                                <AddVideoButton
+                                    onChooseExisting={() => setIsAddContentOpen(true)}
+                                    onUploadNew={() => {
+                                        setPlaylistId(playlist?.playlistId ?? null);
+                                        setIsUploadModalOpen(true);
+                                    }}
+                                />
+                            </div>
+                        )}
+                        {loading && <LoadingData />}
                     </div>
                 </div>
             </div>
 
             <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} />
+
+            <UploadVideoModal
+                opened={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUploadSuccess={() => {
+                    fetchVideos();
+                    setIsUploadModalOpen(false);
+                }}
+            />
 
             {isEditing && (
                 <>

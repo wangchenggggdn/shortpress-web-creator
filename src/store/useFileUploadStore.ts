@@ -10,9 +10,13 @@ interface IUploadFileStore {
     /** Function to update upload file list */
     setUploadFileList: (info: null | IVideo[]) => void;
     /** Whether upload progress modal is open */
-    openUploadProgressModal: boolean; 
+    openUploadProgressModal: boolean;
     /** Function to update upload progress modal state */
-    setOpenUploadProgressModal: (result: boolean) => void; 
+    setOpenUploadProgressModal: (result: boolean) => void;
+    /** Playlist ID */
+    playlistId: string | null;
+    /** Function to update playlist ID */
+    setPlaylistId: (id: string | null) => void;
 }
 
 /**
@@ -23,6 +27,8 @@ const fileUploadStore = create<IUploadFileStore>(set => ({
     setUploadFileList: info => set({ uploadFileList: info }),
     openUploadProgressModal: false,
     setOpenUploadProgressModal: result => set({ openUploadProgressModal: result }),
+    playlistId: null,
+    setPlaylistId: id => set({ playlistId: id }),
 }));
 
 export default fileUploadStore;

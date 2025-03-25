@@ -16,7 +16,7 @@ interface IProps {
  * @returns React component with upload progress interface
  */
 const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
-    const { uploadFileList, setUploadFileList } = fileUploadStore();
+    const { uploadFileList, setUploadFileList, playlistId } = fileUploadStore();
     const uploadFileListRef = useRef<IVideo[] | null>();
 
     useEffect(() => {
@@ -33,7 +33,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
             const formData = new FormData();
             formData.append('files', item.file);
             try {
-                const res = await VideoApi.upload(formData, (progress: number) => {
+                const res = await VideoApi.upload(formData, playlistId, (progress: number) => {
                     item.progress = Math.floor(progress);
                     item.uploadStatus = VideoUploadStatus.UPLOADING;
                 });

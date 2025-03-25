@@ -8,6 +8,7 @@ import { IVideo } from '@/types/video';
 import { VideoArgs } from '@/api/args';
 import VideosPageView from '@/components/business/videoPageView';
 import { toast } from 'sonner';
+import fileUploadStore from '@/store/useFileUploadStore';
 
 /**
  * Videos management page component
@@ -17,6 +18,7 @@ import { toast } from 'sonner';
 const VideosPage = () => {
     const [editingVideo, setEditingVideo] = useState<IVideo | null>(null);
     const [uploadModalOpened, setUploadModalOpened] = useState(false);
+    const { setPlaylistId } = fileUploadStore();
 
     /**
      * Search videos based on provided parameters
@@ -62,7 +64,10 @@ const VideosPage = () => {
             <VideosPageView
                 uploadModalOpened={uploadModalOpened}
                 editingVideo={editingVideo}
-                setUploadModalOpened={setUploadModalOpened}
+                setUploadModalOpened={opened => {
+                    setPlaylistId(null);
+                    setUploadModalOpened(opened);
+                }}
                 setEditingVideo={setEditingVideo}
                 searchFetch={searchFetch}
                 deleteVideo={deleteVideo}
