@@ -44,8 +44,8 @@ const PlaylistVideosPage = () => {
 
     const fetchVideos = async () => {
         const res = await PlaylistApi.videoOrder(paramsP.id as string);
-        if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) return;
         orderParamCurrentRef.current = res.data;
+        if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) return;
         const videoIds = res.data.sortData.vids;
         const batchSize = 20;
         const batches = [];
@@ -111,6 +111,11 @@ const PlaylistVideosPage = () => {
                 if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
                     CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
                 }
+                console.log(orderParamCurrentRef.current);
+                if (orderParamCurrentRef.current !== null) {
+                    orderParamCurrentRef.current!.sortData.vids = selectedItems;
+                }
+                PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!);
                 setIsAddContentOpen(false);
                 fetchVideos();
                 toast.success('Videos added successfully');

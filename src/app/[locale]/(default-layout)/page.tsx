@@ -10,7 +10,7 @@ import { redirect } from 'next/navigation';
  */
 const MainPage = async () => {
     const res = await CreatorApi.stats();
-    if (res.data.siteCount === 0) {
+    if (res.code === 0 && res.data.siteCount === 0) {
         redirect('/create-site');
     }
     return <HomePage stats={res.data} />;

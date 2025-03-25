@@ -51,7 +51,6 @@ const LocaleLayout: React.FC<IProps> = async ({ children }) => {
         if (profile) {
             profile.website = websites[0];
         }
-        console.log('profile:', profile);
     }
 
     console.log('profile:', profile);

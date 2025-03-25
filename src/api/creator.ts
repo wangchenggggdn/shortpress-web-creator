@@ -72,7 +72,7 @@ export default class CreatorApi {
     }
 
     static completeGuides(args: CreatorArgs.CompleteGuides) {
-        return fetch.get('/api/creator/complete-guides');
+        return fetch.post('/api/creator/complete-guides', args);
     }
 
 } 
