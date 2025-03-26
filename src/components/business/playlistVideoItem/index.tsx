@@ -134,10 +134,10 @@ const PlaylistVideoItem: React.FC<PlaylistVideoItemProps> = ({ video, index, isE
                     <span className="w-16 text-center text-gray-500">{index + 1}</span>
                 )}
             </div>
-            <div className="flex-shrink-0 w-32 h-20 bg-gray-100 rounded overflow-hidden">
+            <div className="flex-shrink-0 h-24 aspect-[9/16] bg-gray-100 rounded overflow-hidden">
                 {video.cover && <img src={video.cover} alt={video.title} className="w-full h-full object-cover" />}
             </div>
-            <div className="flex-1 h-20 min-w-0 flex flex-col justify-between">
+            <div className="flex-1 h-24 min-w-0 flex flex-col justify-between">
                 <div>
                     <h3 className="text-base font-medium truncate max-w-xs md:max-w-sm lg:max-w-xl">{video.title}</h3>
                     <div className="flex items-center gap-1 text-sm">
