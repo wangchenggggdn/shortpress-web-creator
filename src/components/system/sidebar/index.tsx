@@ -95,28 +95,30 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
 
                 {/* Navigation Menu */}
                 <div className={`flex-1 ${collapsed ? 'pr-2' : 'pr-12'} py-4`}>
-                    {menuItems.map(item => (
-                        <Link
-                            key={item.path}
-                            href={item.path}
-                            className={`
-                                relative flex items-center gap-3 px-4 py-2 my-1
-                                ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
-                                ${!collapsed && 'pl-6'}
-                            `}
-                        >
-                            <div
+                    {menuItems.map((item, index) => {
+                        return (
+                            <Link
+                                key={item.path}
+                                href={item.path}
                                 className={`
-                                    absolute inset-y-0 left-0 w-full
-                                    bg-primary rounded-r-full
-                                    transition-transform duration-300 origin-left
-                                    ${isActive(item.path) ? 'scale-x-100' : 'scale-x-0'}
-                                `}
-                            />
-                            <span className="relative z-10 w-6">{item.icon}</span>
-                            {!collapsed && <span className="relative z-10 text-base">{item.label}</span>}
-                        </Link>
-                    ))}
+                            relative flex items-center gap-3 px-4 py-2 my-1
+                            ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
+                            ${!collapsed && 'pl-6'}
+                        `}
+                            >
+                                <div
+                                    className={`
+                                absolute inset-y-0 left-0 w-full
+                                bg-primary rounded-r-full
+                                transition-transform duration-300 origin-left
+                                ${isActive(item.path) ? 'scale-x-100' : 'scale-x-0'}
+                            `}
+                                />
+                                <span className="relative z-10 w-6">{item.icon}</span>
+                                {!collapsed && <span className="relative z-10 text-base">{item.label}</span>}
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* User Profile Section */}
@@ -128,7 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                                 {!collapsed && (
                                     <div className="ml-3 overflow-hidden">
                                         <Text size="sm" fw={500} truncate>
-                                            {userInfo?.nickname}
+                                            {userInfo?.email}
                                         </Text>
                                     </div>
                                 )}

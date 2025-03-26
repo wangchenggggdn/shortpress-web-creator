@@ -17,7 +17,6 @@ import { Website } from '@/types/website';
 import PlaylistApi from '@/api/playlist';
 import { IVideo } from '@/types/video';
 import VideoApi from '@/api/video';
-import LoadingData from '@/components/common/loadingData';
 
 /**
  * Website detail page component
@@ -252,7 +251,12 @@ const WebsiteDetailPage = () => {
                     <h2 className="text-xl font-medium text-black-purple ">Websites</h2>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 text-gray-600">
-                            <span className="text-primary">{`${website?.domain}/${website?.path}`}</span>
+                            <div
+                                className="text-primary cursor-pointer"
+                                onClick={() => {
+                                    window.open(`${website?.domain}/${website?.path}`, '_blank');
+                                }}
+                            >{`${website?.domain}/${website?.path}`}</div>
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">
                                 Copy
                             </Button>
