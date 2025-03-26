@@ -210,6 +210,7 @@ class Fetch {
             }
         }
         const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
+
         return new Promise((resolve) => {
             const xhr = new XMLHttpRequest();
             xhr.upload.onprogress = (event) => {
@@ -228,7 +229,7 @@ class Fetch {
                 xhr.setRequestHeader(key, value as string);
             });
 
-            xhr.onload = async () => {
+            xhr.onload = () => {
                 try {
                     const result = JSON.parse(xhr.responseText);
                     if (result.code !== undefined && typeof result.code === 'number') {
@@ -240,34 +241,33 @@ class Fetch {
                             });
 
                         }
-                        resolve(result);
-                    } else {
-                        resolve({
-                            code: xhr.status,
-                            info: xhr.statusText,
-                            data: result.data,
-                        });
+                        return resolve(result);
                     }
+                    return resolve({
+                        code: xhr.status,
+                        info: xhr.statusText,
+                        data: result.data,
+                    });
                 } catch (error) {
-                    resolve({
+                    return resolve({
                         code: -1,
                         info: String(error),
-                        data: JSON.parse(xhr.response),
+                        data: JSON.parse('{}'),
                     });
                 }
             };
 
             xhr.onerror = () => {
-                resolve({
+                return resolve({
                     code: -1,
                     info: 'network error',
-                    data: JSON.parse(xhr.response),
+                    data: JSON.parse('{}'),
                 });
             };
 
             xhr.send(data);
         });
-    }
+    };
 }
 
 export default new Fetch();

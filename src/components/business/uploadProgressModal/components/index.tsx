@@ -37,6 +37,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                     item.progress = Math.floor(progress);
                     item.uploadStatus = VideoUploadStatus.UPLOADING;
                 });
+
                 if (res.code === 0) {
                     item.vid = res.data.vids[0];
                 } else {
