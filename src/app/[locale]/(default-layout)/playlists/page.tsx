@@ -254,8 +254,8 @@ const PlaylistsPage = () => {
                         onChange={setStatus}
                         data={[
                             { value: '-1', label: 'All' },
-                            { value: '1', label: 'Published' },
-                            { value: '0', label: 'Unpublished' },
+                            { value: '2', label: 'Published' },
+                            { value: '1', label: 'Unpublished' },
                         ]}
                         placeholder="All"
                         className="w-36"

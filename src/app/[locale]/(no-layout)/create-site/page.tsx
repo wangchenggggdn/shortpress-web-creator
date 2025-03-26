@@ -61,6 +61,11 @@ const CreateSitePage = () => {
         coverFile = file;
     };
 
+    const checkUrlName = (name: string) => {
+        const regex = /^[a-zA-Z0-9_-]+$/;
+        return regex.test(name);
+    };
+
     return (
         <div className="flex flex-col h-screen">
             <div className="flex-1 flex items-center justify-center p-6">
@@ -72,6 +77,10 @@ const CreateSitePage = () => {
                             <TextInput
                                 value={siteData.name}
                                 onChange={e => {
+                                    if (!checkUrlName(e.target.value) && e.target.value.length > 0) {
+                                        setNameError('Please enter a valid URL name');
+                                        return;
+                                    }
                                     setSiteData({ ...siteData, name: e.target.value });
                                     setNameError('');
                                 }}

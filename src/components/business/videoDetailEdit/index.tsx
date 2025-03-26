@@ -99,7 +99,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                 </Button>
             </div>
             <div className="flex flex-row h-[calc(100vh-4rem)]">
-                <div className="w-52 pr-1 pl-8 bg-layout flex items-center">
+                <div className="w-56 pr-1 pl-8 bg-layout flex items-center">
                     <VideoPreview
                         playlistId={playlistId}
                         isReplace={isReplace}

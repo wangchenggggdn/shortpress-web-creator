@@ -27,7 +27,7 @@ const HomePage: React.FC<IProps> = ({ stats }) => {
                 <GuideCard />
 
                 <div className="flex flex-col gap-4">
-                    <h1 className="text-2xl text-black-purple font-bold">Hey {userInfo?.creatorName}, welcome back</h1>
+                    <h1 className="text-2xl text-black-purple font-bold">Overview</h1>
 
                     {/* Stats Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

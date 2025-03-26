@@ -11,7 +11,7 @@ import { IVideo } from '@/types/video';
 import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
 import { toast } from 'sonner';
-import { PlaylistArgs } from '@/api/args';
+import { PlaylistArgs, VideoArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
 import AddContentModal from '@/components/business/playlistAddVideosModal';
 import VideoApi from '@/api/video';
@@ -22,6 +22,7 @@ import AddVideoButton from '@/components/business/addVideoButton';
 import UploadVideoModal from '@/components/business/uploadVideoModal';
 import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loadingData';
+import VideoDetailEdit from '@/components/business/videoDetailEdit';
 
 const PlaylistVideosPage = () => {
     const paramsP = useParams();
@@ -38,6 +39,8 @@ const PlaylistVideosPage = () => {
     const { setPlaylistId } = fileUploadStore();
     const videosRef = useRef<IVideo[]>([]);
     const [loading, setLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [replaceLoading, setReplaceLoading] = useState(false);
 
     useEffect(() => {
         playlistFetch();
@@ -196,6 +199,51 @@ const PlaylistVideosPage = () => {
         });
     };
 
+    const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => {
+        setSaveLoading(true);
+        if (coverFile) {
+            const formData = new FormData();
+            formData.append('file', coverFile);
+            const res = await CreatorApi.uploadFile(formData);
+            if (res.code === 0) {
+                videoData.cover = res.data ?? '';
+            } else {
+                toast.error('Failed to upload cover image');
+                setSaveLoading(false);
+                return;
+            }
+        }
+        if (videoFile) {
+            const formData = new FormData();
+            formData.append('file', videoFile);
+            const replaceRes = await VideoApi.replace({ vid: editingVideo?.vid ?? '', formData });
+            if (replaceRes.code === 0) {
+                videoData.videoPath = replaceRes.data.videoSourceUrl ?? '';
+                videoData.videoSourceUrl = replaceRes.data.videoSourceUrl ?? '';
+            } else {
+                toast.error('Failed to replace video');
+                setSaveLoading(false);
+                return;
+            }
+        }
+        const res = await VideoApi.modify(videoData);
+        if (res.code === 0) {
+            toast.success('Video saved successfully');
+            setVideos(
+                videos.map(v =>
+                    v.vid === videoData.vid
+                        ? {
+                              ...v,
+                              ...videoData,
+                          }
+                        : v
+                )
+            );
+        }
+        setEditingVideo(null);
+        setSaveLoading(false);
+    };
+
     return (
         <div className="flex flex-col h-screen">
             <Header
@@ -314,25 +362,19 @@ const PlaylistVideosPage = () => {
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
                     <div className="fixed top-0 right-0 z-50">
-                        <PlaylistDetailEdit
-                            isLoading={isSaving}
-                            playlistOld={editingVideo as any}
+                        <VideoDetailEdit
+                            playlistId={playlist?.playlistId}
+                            isReplace={replaceLoading}
+                            video={editingVideo}
                             onClose={() => setEditingVideo(null)}
-                            onSave={data => {
-                                // Handle video edit save
-                                VideoApi.modify({
-                                    ...data,
-                                    vid: editingVideo.vid,
-                                }).then(res => {
-                                    if (res.code === 0) {
-                                        fetchVideos();
-                                        setEditingVideo(null);
-                                        toast.success('Video updated successfully');
-                                    } else {
-                                        toast.error(res.info);
-                                    }
-                                });
+                            onSave={handleSave}
+                            onDelete={video => {
+                                handleDeleteVideo(video.vid);
+                                setEditingVideo(null);
                             }}
+                            deleteString={playlist?.playlistId ? 'Remove from playlist' : 'Delete'}
+                            onReplace={() => {}}
+                            isUploading={saveLoading}
                         />
                     </div>
                 </>
