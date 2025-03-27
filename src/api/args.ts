@@ -142,6 +142,7 @@ export namespace PlaylistArgs {
     export interface Search {
         orderType?: number;  // Sort method (0: creation time desc, 1: name asc)
         siteId?: string;    // Site ID
+        excludeSiteld?: string;
         status?: number;    // Playlist status
         page?: number;      // Page number, default 1
         pageSize?: number;  // Items per page, default 10

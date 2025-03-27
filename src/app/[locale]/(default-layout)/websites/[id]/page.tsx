@@ -324,7 +324,7 @@ const WebsiteDetailPage = () => {
                 </div>
             </div>
 
-            <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} />
+            <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} siteId={params.id as string} />
             {/* Settings Modal */}
             {createModalOpened && (
                 <>

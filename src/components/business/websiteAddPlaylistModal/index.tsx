@@ -17,6 +17,7 @@ interface AddContentModalProps {
     onClose: () => void;
     /** Callback function when playlists are added to site */
     onAdd: (selectedItems: string[]) => void;
+    siteId: string;
 }
 
 /**
@@ -24,7 +25,7 @@ interface AddContentModalProps {
  * Provides search, selection, and pagination functionality
  * @returns React component with playlist selection interface
  */
-const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAdd }) => {
+const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAdd, siteId }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const [playlists, setPlaylists] = React.useState<Playlist[]>([]);
@@ -47,6 +48,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
             pageSize: pageSize,
             orderType: orderType,
             keyword: searchQuery,
+            excludeSiteId: siteId,
         });
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);
