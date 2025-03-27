@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Modal, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
-import { toast } from 'sonner';
 import { IVideo, VideoUploadStatus } from '@/types/video';
 import VideoApi from '@/api/video';
 import CreatorApi from '@/api/creator';
