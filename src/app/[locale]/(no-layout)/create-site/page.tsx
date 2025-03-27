@@ -61,9 +61,10 @@ const CreateSitePage = () => {
         coverFile = file;
     };
 
-    const checkUrlName = (name: string) => {
-        const regex = /^[a-zA-Z0-9_-]+$/;
-        return regex.test(name);
+    const disposeSiteName = () => {
+        if (!siteData.name) return '';
+        const newSiteName = siteData.name.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|｜,.\/;'\\[\]·~!！@#￥%……&*（）——\-+={}|《》〈〉？：“”【】「」、；‘’，。、]/g, '').replace(/\s/g, '-');
+        return newSiteName;
     };
 
     return (
@@ -77,10 +78,6 @@ const CreateSitePage = () => {
                             <TextInput
                                 value={siteData.name}
                                 onChange={e => {
-                                    if (!checkUrlName(e.target.value) && e.target.value.length > 0) {
-                                        setNameError('Please enter a valid URL name');
-                                        return;
-                                    }
                                     setSiteData({ ...siteData, name: e.target.value });
                                     setNameError('');
                                 }}
@@ -95,7 +92,7 @@ const CreateSitePage = () => {
                             <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Domain</h3>
                             <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
                                 <span className="text-gray-400">{`${userInfo?.defultSiteDomain}/`}</span>
-                                <span>{siteData.name}</span>
+                                <span>{disposeSiteName()}</span>
                             </div>
                         </div>
 
