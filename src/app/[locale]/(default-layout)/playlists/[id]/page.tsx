@@ -36,7 +36,7 @@ const PlaylistVideosPage = () => {
     const [isSaving, setIsSaving] = useState(false);
     const orderParamCurrentRef = useRef<PlaylistVideoOrder | null>();
     const { userInfo } = userStore();
-    const { setPlaylistId } = fileUploadStore();
+    const { setPlaylistId, setMaxLimit } = fileUploadStore();
     const videosRef = useRef<IVideo[]>([]);
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
@@ -244,6 +244,19 @@ const PlaylistVideosPage = () => {
         setSaveLoading(false);
     };
 
+    const addButton = () => {
+        return (
+            <AddVideoButton
+                onChooseExisting={() => setIsAddContentOpen(true)}
+                onUploadNew={() => {
+                    setMaxLimit(200 - videos.length);
+                    setPlaylistId(playlist?.playlistId ?? null);
+                    setIsUploadModalOpen(true);
+                }}
+            />
+        );
+    };
+
     return (
         <div className="flex flex-col h-screen">
             <Header
@@ -262,15 +275,7 @@ const PlaylistVideosPage = () => {
                     <Button variant="subtle" color="primary" onClick={() => setIsEditing(true)}>
                         Edit Detail
                     </Button>
-                    {!isEditingOrder && (
-                        <AddVideoButton
-                            onChooseExisting={() => setIsAddContentOpen(true)}
-                            onUploadNew={() => {
-                                setPlaylistId(playlist?.playlistId ?? null);
-                                setIsUploadModalOpen(true);
-                            }}
-                        />
-                    )}
+                    {!isEditingOrder && addButton()}
                 </div>
             </Header>
 
@@ -324,13 +329,7 @@ const PlaylistVideosPage = () => {
                         {!loading && videos.length === 0 && (
                             <div className="h-full text-center text-gray-500 flex flex-col items-center justify-center gap-2">
                                 <div>No videos found</div>
-                                <AddVideoButton
-                                    onChooseExisting={() => setIsAddContentOpen(true)}
-                                    onUploadNew={() => {
-                                        setPlaylistId(playlist?.playlistId ?? null);
-                                        setIsUploadModalOpen(true);
-                                    }}
-                                />
+                                {addButton()}
                             </div>
                         )}
                         {loading && <LoadingData />}

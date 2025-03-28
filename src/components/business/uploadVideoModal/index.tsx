@@ -9,6 +9,7 @@ import VideoApi from '@/api/video';
 import CreatorApi from '@/api/creator';
 import { GuideName } from '@/types/guide';
 import userStore from '@/store/useUserStore';
+import { toast } from 'sonner';
 
 interface UploadVideoModalProps {
     opened: boolean;
@@ -18,7 +19,7 @@ interface UploadVideoModalProps {
 
 const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, onUploadSuccess }) => {
     const [isDragging, setIsDragging] = useState(false);
-    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal } = fileUploadStore();
+    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal, maxLimit } = fileUploadStore();
     const uploadFileListRef = useRef<IVideo[] | null>();
     const isCheckingRef = useRef(false);
     const { userInfo } = userStore();
@@ -109,12 +110,10 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
     const handleDrop = (event: React.DragEvent) => {
         event.preventDefault();
         setIsDragging(false);
-
         const files = Array.from(event.dataTransfer.files);
-        if (files.length > 0) {
-            handleUpload(files);
-            onClose();
-        }
+        if (maxLimitCheck(files)) return;
+        handleUpload(files);
+        onClose();
     };
 
     const handleButtonClick = () => {
@@ -126,6 +125,7 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
             const target = e.target as HTMLInputElement;
             if (target.files) {
                 const files = Array.from(target.files);
+                if (maxLimitCheck(files)) return;
                 if (files.length > 0) {
                     handleUpload(files);
                     onClose();
@@ -133,6 +133,21 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
             }
         };
         fileInput.click();
+    };
+
+    const maxLimitCheck = (files: File[]) => {
+        if (files.length === 0) {
+            return true;
+        }
+        if ((uploadFileList ?? []).length + files.length > 20) {
+            toast.warning('Maximum upload limit of 20 files at once reached. Please remove some files before uploading more.');
+            return true;
+        }
+
+        if (maxLimit && maxLimit < files.length) {
+            toast.warning(`Maximum upload limit of ${maxLimit} files for this playlist reached. Please remove some files before uploading more.`);
+            return true;
+        }
     };
 
     return (

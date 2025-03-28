@@ -17,6 +17,10 @@ interface IUploadFileStore {
     playlistId: string | null;
     /** Function to update playlist ID */
     setPlaylistId: (id: string | null) => void;
+    /** Maximum file size limit */
+    maxLimit: number;
+    /** Function to update maximum file size limit */
+    setMaxLimit: (limit: number) => void;
 }
 
 /**
@@ -29,6 +33,8 @@ const fileUploadStore = create<IUploadFileStore>(set => ({
     setOpenUploadProgressModal: result => set({ openUploadProgressModal: result }),
     playlistId: null,
     setPlaylistId: id => set({ playlistId: id }),
+    maxLimit: 100000,
+    setMaxLimit: limit => set({ maxLimit: limit }),
 }));
 
 export default fileUploadStore;

@@ -18,7 +18,7 @@ import fileUploadStore from '@/store/useFileUploadStore';
 const VideosPage = () => {
     const [editingVideo, setEditingVideo] = useState<IVideo | null>(null);
     const [uploadModalOpened, setUploadModalOpened] = useState(false);
-    const { setPlaylistId } = fileUploadStore();
+    const { setPlaylistId, setMaxLimit } = fileUploadStore();
 
     /**
      * Search videos based on provided parameters
@@ -66,6 +66,7 @@ const VideosPage = () => {
                 editingVideo={editingVideo}
                 setUploadModalOpened={opened => {
                     setPlaylistId(null);
+                    setMaxLimit(100000);
                     setUploadModalOpened(opened);
                 }}
                 setEditingVideo={setEditingVideo}
