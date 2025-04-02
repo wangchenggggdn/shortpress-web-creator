@@ -3,7 +3,9 @@
 import React from 'react';
 import Header from '@/components/system/header';
 
-const AnalyticsPage = () => {
+interface AnalyticsPageProps {}
+
+const AnalyticsPage: React.FC<AnalyticsPageProps> = () => {
     return (
         <div>
             <Header />

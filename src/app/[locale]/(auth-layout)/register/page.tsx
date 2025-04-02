@@ -8,7 +8,9 @@ import CreatorApi from '@/api/creator';
 import { useRouter } from '@/libs/navigation';
 import { toast } from 'sonner';
 
-const RegisterPage = () => {
+interface RegisterPageProps {}
+
+const RegisterPage: React.FC<RegisterPageProps> = () => {
     // const [creatorName, setCreatorName] = useState('');
     // const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');

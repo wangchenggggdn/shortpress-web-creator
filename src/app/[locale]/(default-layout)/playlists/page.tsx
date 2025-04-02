@@ -19,12 +19,14 @@ import WebsiteApi from '@/api/website';
 import { GuideName } from '@/types/guide';
 import userStore from '@/store/useUserStore';
 
+interface PlaylistsPageProps {}
+
 /**
  * Playlists management page component
  * Handles playlist listing, creation, editing, and deletion with search and filtering capabilities
  * @returns React component with playlist management interface
  */
-const PlaylistsPage = () => {
+const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [status, setStatus] = useState<string | null>('-1');
     const [orderType, setOrderType] = useState<number>(0);

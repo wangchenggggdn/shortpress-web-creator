@@ -6,7 +6,9 @@ import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
 import { redirect } from 'next/navigation';
 
-export default async function MonetizePage() {
+interface MonetizePageProps {}
+
+const MonetizePage: React.FC<MonetizePageProps> = async () => {
     /**
      * Fetch websites from API and update local storage
      */
@@ -28,4 +30,6 @@ export default async function MonetizePage() {
     const initialAdUnits = response?.data?.items ?? [];
 
     return <MonetizeView initialAdUnits={initialAdUnits} />;
-}
+};
+
+export default MonetizePage;

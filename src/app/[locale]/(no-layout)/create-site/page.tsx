@@ -13,7 +13,9 @@ import userStore from '@/store/useUserStore';
 import { useRouter } from '@/libs/navigation';
 import WebsiteApi from '@/api/website';
 
-const CreateSitePage = () => {
+interface CreateSitePageProps {}
+
+const CreateSitePage: React.FC<CreateSitePageProps> = () => {
     const { userInfo } = userStore();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -63,7 +65,9 @@ const CreateSitePage = () => {
 
     const disposeSiteName = () => {
         if (!siteData.name) return '';
-        const newSiteName = siteData.name.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|｜,.\/;'\\[\]·~!！@#￥%……&*（）——\-+={}|《》〈〉？：“”【】「」、；‘’，。、]/g, '').replace(/\s/g, '-');
+        const newSiteName = siteData.name
+            .replace(/[`~!@#$%^&*()_\-+=<>?:"{}|｜,.\/;'\\[\]·~!！@#￥%……&*（）——\-+={}|《》〈〉？："""【】「」、；''，。、]/g, '')
+            .replace(/\s/g, '-');
         return newSiteName;
     };
 

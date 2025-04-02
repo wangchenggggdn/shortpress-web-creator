@@ -13,17 +13,17 @@ import { WebsiteArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
 import WebsiteApi from '@/api/website';
 import { toast } from 'sonner';
-import { Website } from '@/types/website';
-import PlaylistApi from '@/api/playlist';
 import { IVideo } from '@/types/video';
 import VideoApi from '@/api/video';
+
+interface WebsiteDetailPageProps {}
 
 /**
  * Website detail page component
  * Manages website content, playlists, and preview functionality
  * @returns React component with website detail view
  */
-const WebsiteDetailPage = () => {
+const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
     const params = useParams();
     const [website, setWebsite] = useState<Website>();
     const [videos, setVideos] = useState<IVideo[]>([]);

@@ -10,7 +10,9 @@ import CookieMap from '@/config/cookie-map';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
-const LoginPage = () => {
+interface LoginPageProps {}
+
+const LoginPage: React.FC<LoginPageProps> = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();

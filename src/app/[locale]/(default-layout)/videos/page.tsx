@@ -10,12 +10,14 @@ import VideosPageView from '@/components/business/videos/videoPageView';
 import { toast } from 'sonner';
 import fileUploadStore from '@/store/useFileUploadStore';
 
+interface VideosPageProps {}
+
 /**
  * Videos management page component
  * Handles video listing, uploading, editing, and deletion
  * @returns React component with video management interface
  */
-const VideosPage = () => {
+const VideosPage: React.FC<VideosPageProps> = () => {
     const [editingVideo, setEditingVideo] = useState<IVideo | null>(null);
     const [uploadModalOpened, setUploadModalOpened] = useState(false);
     const { setPlaylistId, setMaxLimit } = fileUploadStore();

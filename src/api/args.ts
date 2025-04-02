@@ -244,3 +244,23 @@ export namespace AdsArgs {
         siteId: string;
     }
 }
+
+export namespace CustomerArgs {
+    export interface Search {
+        keyword?: string;
+        page?: number;
+        pageSize?: number;
+        siteId: string;
+    }
+
+    export interface ChangeStatus {
+        email: string;
+        siteId: string;
+        status: number;  // 2=activate, 3=forbidden, 127=delete
+    }
+
+    export interface GetInfo {
+        email: string;
+        siteId: string;
+    }
+}

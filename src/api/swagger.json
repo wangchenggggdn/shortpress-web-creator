@@ -19,6 +19,64 @@
     "host": "localhost:8000",
     "basePath": "/",
     "paths": {
+        "/api/ads/unit/conf": {
+            "get": {
+                "description": "Retrieve ad unit configuration for a specific location in a site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Get ad unit configuration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"feed_top\"",
+                        "description": "Ad location identifier",
+                        "name": "location",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns ad unit configuration",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.AdUnitConfResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Ad unit not found",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/ads/unit/create": {
             "post": {
                 "security": [
@@ -1604,6 +1662,153 @@
                 }
             }
         },
+        "/api/site/user/change/status": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Change a user's status (activate, forbidden, delete) within a site. If deleted, the user is truly removed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "Change user status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Parameters for changing user status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserChangeStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status changed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve user information for a specific email within a site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "Get user information by email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"site-123456\"",
+                        "description": "Site ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"user@example.com\"",
+                        "description": "User email",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns user information",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/site/user/list": {
             "get": {
                 "security": [
@@ -2270,14 +2475,10 @@
         "shortpress-server_internal_api.AdUnit": {
             "type": "object",
             "properties": {
-                "ad_id": {
-                    "description": "Add this field",
+                "adNetwork": {
                     "type": "string"
                 },
-                "ad_network": {
-                    "type": "string"
-                },
-                "client_id": {
+                "clientId": {
                     "type": "string"
                 },
                 "format": {
@@ -2286,19 +2487,63 @@
                 "frequency": {
                     "type": "integer"
                 },
+                "id": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
                 "page": {
                     "type": "string"
                 },
-                "site_id": {
+                "siteId": {
                     "type": "string"
                 },
                 "status": {
                     "type": "integer"
                 },
-                "unit_id": {
+                "unitId": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.AdUnitConf": {
+            "type": "object",
+            "properties": {
+                "adNetwork": {
+                    "description": "Ad network platform (e.g., AdMob, Facebook)",
+                    "type": "string"
+                },
+                "conf": {
+                    "description": "Ad configuration values",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "format": {
+                    "description": "Ad format type",
+                    "type": "integer"
+                },
+                "page": {
+                    "description": "Ad location on the page",
+                    "type": "string"
+                },
+                "showStg": {
+                    "description": "Show strategy values",
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "shortpress-server_internal_api.AdUnitConfResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.AdUnitConf"
+                },
+                "info": {
                     "type": "string"
                 }
             }
@@ -2899,6 +3144,26 @@
                 }
             }
         },
+        "shortpress-server_internal_api.UserChangeStatusRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "siteId",
+                "status"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Allowed: 2=activate, 3=forbidden, 127=delete",
+                    "type": "integer"
+                }
+            }
+        },
         "shortpress-server_internal_api.UserInfo": {
             "type": "object",
             "properties": {
@@ -2907,6 +3172,7 @@
                     "example": 1609459200
                 },
                 "email": {
+                    "description": "UserID    string `json:\"userId\" example:\"user-123456\"`",
                     "type": "string",
                     "example": "user@example.com"
                 },
@@ -2925,10 +3191,6 @@
                 "updatedAt": {
                     "type": "integer",
                     "example": 1609459200
-                },
-                "userId": {
-                    "type": "string",
-                    "example": "user-123456"
                 }
             }
         },
@@ -2999,10 +3261,11 @@
         "shortpress-server_internal_api.UserProfileData": {
             "type": "object",
             "properties": {
-                "avatar_url": {
+                "avatarUrl": {
                     "type": "string"
                 },
                 "email": {
+                    "description": "UserID    string `json:\"userId\"`",
                     "type": "string"
                 },
                 "nickname": {
@@ -3010,9 +3273,6 @@
                 },
                 "status": {
                     "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },

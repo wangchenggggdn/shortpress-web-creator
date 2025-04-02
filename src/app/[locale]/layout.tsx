@@ -16,7 +16,7 @@ import WebsiteApi from '@/api/website';
 /**
  * Props interface for the LocaleLayout component
  */
-interface IProps {
+interface LocaleLayoutProps {
     children: React.ReactNode;
     params: { locale: string };
 }
@@ -26,7 +26,7 @@ interface IProps {
  * @param children Child components to be rendered
  * @returns React component with internationalization provider and client layout
  */
-const LocaleLayout: React.FC<IProps> = async ({ children }) => {
+const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) => {
     const messages = await getMessages();
     const cookieStore = cookies();
     const userState = cookieStore.get(CookieMap.UserState);
@@ -68,7 +68,7 @@ export default LocaleLayout;
  * @param props Component props containing locale information
  * @returns Metadata object for SEO
  */
-export const generateMetadata: (props: IProps) => void = ({ params }) => {
+export const generateMetadata: (props: LocaleLayoutProps) => void = ({ params }) => {
     const path = pathname(); // Current URL path
 
     let lang = path.split('/')[1];

@@ -2,11 +2,10 @@
 
 import React from 'react';
 
-const TermsPage = () => {
-    return (
-        <div className="">
-        </div>
-    );
+interface TermsPageProps {}
+
+const TermsPage: React.FC<TermsPageProps> = () => {
+    return <div className=""></div>;
 };
 
 export default TermsPage;

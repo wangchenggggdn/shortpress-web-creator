@@ -1,12 +1,9 @@
 import React from 'react';
 
+interface PrivancyPageProps {}
 
-const PrivancyPage = () => {
-    return (
-        <div className="">
-
-        </div>
-    );
+const PrivancyPage: React.FC<PrivancyPageProps> = () => {
+    return <div className=""></div>;
 };
 
 export default PrivancyPage;

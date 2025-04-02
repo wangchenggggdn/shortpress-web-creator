@@ -8,7 +8,9 @@ import { redirect } from 'next/navigation';
  * Displays and manages user's websites with creation, editing, and deletion capabilities
  * @returns React component with website management interface
  */
-const WebsitesPage = async () => {
+interface WebsitesPageProps {}
+
+const WebsitesPage: React.FC<WebsitesPageProps> = async () => {
     /**
      * Fetch websites from API and update local storage
      */

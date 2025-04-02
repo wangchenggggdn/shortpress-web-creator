@@ -8,7 +8,9 @@ import { redirect } from 'next/navigation';
  * Shows a welcome message, stats cards, and a call-to-action for content creation
  * @returns React component with dashboard layout
  */
-const MainPage = async () => {
+interface MainPageProps {}
+
+const MainPage: React.FC<MainPageProps> = async () => {
     const res = await CreatorApi.stats();
     if (res.code === 0 && res.data.siteCount === 0) {
         redirect('/create-site');

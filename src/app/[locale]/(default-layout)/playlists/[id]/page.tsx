@@ -24,7 +24,9 @@ import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loadingData';
 import VideoDetailEdit from '@/components/business/videos/videoDetailEdit';
 
-const PlaylistVideosPage = () => {
+interface PlaylistVideosPageProps {}
+
+const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const paramsP = useParams();
     const [playlist, setPlaylist] = useState<Playlist | null>(null);
     const [videos, setVideos] = useState<IVideo[]>([]);
