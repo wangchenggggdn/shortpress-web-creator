@@ -8,10 +8,8 @@ import CookieMap from '@/config/cookie-map';
 import UserApi from '@/api/creator';
 import appConfig from '@/appConfig';
 import { initLangTags } from '@/libs/seo';
-
-import ClientLayout from '@/components/system/clientLayout';
-import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
+import ClientLayout from '@/components/system/clientLayout';
 
 /**
  * Props interface for the LocaleLayout component
@@ -32,7 +30,7 @@ const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) =
     const userState = cookieStore.get(CookieMap.UserState);
     let profile: null | IUserProfile = null;
 
-    const fetchWebsites = async (): Promise<Website[]> => {
+    const fetchWebsites = async () => {
         const res = await WebsiteApi.list();
         if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
         const resD = await WebsiteApi.batchGet(res.data.items.join(','));
@@ -44,12 +42,12 @@ const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) =
         const res = await UserApi.profile();
         if (res.code === 0 && res.data) {
             profile = { ...res.data };
+            const resD = await fetchWebsites();
+            if (resD.length !== 0) {
+                profile.website = resD[0];
+            }
         } else {
             console.warn('profile-error:', res.info);
-        }
-        const websites = await fetchWebsites();
-        if (profile) {
-            profile.website = websites[0];
         }
     }
 

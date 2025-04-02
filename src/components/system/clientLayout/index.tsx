@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { IUserProfile } from '@/types/user';
 import { refreshUserInfo } from '@/utils/user';
 import useUserStore from '@/store/useUserStore';
-import UploadProgressModal from '@/components/business/uploadProgressModal';
 
 interface IProps {
     children: React.ReactNode;

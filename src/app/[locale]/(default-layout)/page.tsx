@@ -1,5 +1,5 @@
 import React from 'react';
-import HomePage from './components/home';
+import HomePage from '../../../components/business/home';
 import CreatorApi from '@/api/creator';
 import { redirect } from 'next/navigation';
 

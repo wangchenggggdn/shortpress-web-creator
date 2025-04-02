@@ -14,6 +14,8 @@ interface HeaderProps {
     customTitle?: React.ReactNode;
     /** Additional CSS classes */
     className?: string;
+    /** Title of the header */
+    title?: string;
 }
 
 /**

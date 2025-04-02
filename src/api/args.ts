@@ -247,7 +247,7 @@ export namespace AdsArgs {
 
 export namespace CustomerArgs {
     export interface Search {
-        keyword?: string;
+        query?: string;
         page?: number;
         pageSize?: number;
         siteId: string;

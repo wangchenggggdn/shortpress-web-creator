@@ -1,6 +1,6 @@
 import React from 'react';
 import WebsiteApi from '@/api/website';
-import WebsitesView from './comment/websites';
+import WebsitesView from '../../../../components/business/websites/websites';
 import { Website } from '@/types/website';
 import { redirect } from 'next/navigation';
 /**
