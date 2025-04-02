@@ -6,7 +6,7 @@ import UploadButton from '@/components/common/uploadButton';
 import VideoApi from '@/api/video';
 import { IVideo } from '@/types/video';
 import { VideoArgs } from '@/api/args';
-import VideosPageView from '@/components/business/videoPageView';
+import VideosPageView from '@/components/business/videos/videoPageView';
 import { toast } from 'sonner';
 import fileUploadStore from '@/store/useFileUploadStore';
 

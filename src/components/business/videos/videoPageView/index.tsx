@@ -2,12 +2,12 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Select, Menu, Image, Pagination } from '@mantine/core';
-import VideoCard from '@/components/business/videoCard';
+import VideoCard from '@/components/business/videos/videoCard';
 import Search from '@/components/common/search';
 import UploadButton from '@/components/common/uploadButton';
 import VideoApi from '@/api/video';
 import { IVideo } from '@/types/video';
-import VideoDetailEdit from '@/components/business/videoDetailEdit';
+import VideoDetailEdit from '@/components/business/videos/videoDetailEdit';
 import UploadVideoModal from '@/components/business/uploadVideoModal';
 import orderImage from '@/assets/images/public/order.webp';
 

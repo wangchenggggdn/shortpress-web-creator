@@ -30,7 +30,7 @@ const RootLayout: React.FC<IProps> = ({ children }) => {
                 <ColorSchemeScript defaultColorScheme={appConfig.colorScheme} />
             </head>
 
-            <body className="bg-back">
+            <body className="bg-back text-black-purple">
                 <Toaster position="top-center" richColors />
                 <NextTopLoader color={appConfig.subjectColor} showSpinner={false} />
 

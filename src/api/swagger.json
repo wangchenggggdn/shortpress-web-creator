@@ -1,0 +1,3281 @@
+{
+    "schemes": [],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is shortpress server.",
+        "title": "Shortpress Server API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "shortpress",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.8"
+    },
+    "host": "localhost:8000",
+    "basePath": "/",
+    "paths": {
+        "/api/ads/unit/create": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new advertising unit with specified configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Create a new advertising unit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Ad unit creation parameters",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.AdUnit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回创建的广告单元信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ads/unit/list": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a list of advertising units",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "List advertising units",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"site123\"",
+                        "description": "Site ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回广告单元列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.AdUnitListResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ads/unit/modify": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Modify an existing advertisement unit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Modify an ad unit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer creator token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Ad unit modification parameters",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.AdUnit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success response",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/anonymous/register": {
+            "post": {
+                "description": "匿名注册",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-player"
+                ],
+                "summary": "匿名注册",
+                "parameters": [
+                    {
+                        "description": "匿名注册请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.AnonRegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.RegisterResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/feed": {
+            "get": {
+                "description": "分页查询用户Feed视频数据，支持页码和每页数量参数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-player"
+                ],
+                "summary": "用户刷Feed视频数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "xxxx-xxxxx-xxxxx",
+                        "description": "游客ID",
+                        "name": "guestId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "xxxx-xxxxx-xxxxx",
+                        "description": "播放列表ID, 如无，则随机或者根据其他策略出",
+                        "name": "playlistId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "videopath",
+                        "description": "站点路径",
+                        "name": "sitePath",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 50,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 10,
+                        "description": "每页数量，默认10",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回Feed视频数据",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/player/playlist/videos": {
+            "get": {
+                "description": "有序获取播放列表下的视频列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-player"
+                ],
+                "summary": "有序获取播放列表下的视频列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "playlist-123456",
+                        "description": "播放列表ID",
+                        "name": "playlistId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表下的视频列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/playlist/info": {
+            "get": {
+                "description": "获取播放列表详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-player"
+                ],
+                "summary": "获取播放列表详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "playlist-123456",
+                        "description": "播放列表ID",
+                        "name": "playlistId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "是否需要获取视频列表",
+                        "name": "needVid",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表详情",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/site/info": {
+            "get": {
+                "description": "获取站点信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-player"
+                ],
+                "summary": "获取站点信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "sitepath",
+                        "description": "站点路径",
+                        "name": "sitePath",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回站点信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/complete-guides": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "完成指引",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "完成指引",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创作者登录参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CompleteGuidesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "完成指引成功返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/login": {
+            "post": {
+                "description": "创作者登录接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "创作者登录",
+                "parameters": [
+                    {
+                        "description": "创作者登录参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CreatorLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回包含 accessToken 的登录响应",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CreatorLoginResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/profile": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据创作者ID获取详细的创作者个人信息，包括昵称、头像地址、创建时间等",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "获取创作者个人信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回创作者个人信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CreatorProfileResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/register": {
+            "post": {
+                "description": "Currently only supports email registration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "注册创作者",
+                "parameters": [
+                    {
+                        "description": "params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.RegisterCreatorRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/resetpwd": {
+            "post": {
+                "description": "根据邮箱重置创作者密码。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "重置创作者密码",
+                "parameters": [
+                    {
+                        "description": "重置密码参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.ResetCreatorPwdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/stats": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "获取创作者视频总数，播放列表总数，站点总数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "获取创作者视频总数，播放列表总数，站点总数",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回创作者视频统计信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CreatorStatsResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/creator/upload-file": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "创作者上传图片接口，支持jpg、png、gif等常见图片格式",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "creator"
+                ],
+                "summary": "上传图片",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "要上传的图片文件",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回上传成功的图片路径",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/add-videos": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "向指定播放列表添加多个视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "添加视频到播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "添加视频参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistAddVideosRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "添加成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/batch-get": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "批量获取播放列表的详细信息，包括基本信息和SEO信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "批量获取播放列表信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"playlist-123456,playlist-123457\"",
+                        "description": "播放列表ID列表",
+                        "name": "playlistIds",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表详细信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/create": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "创建一个新的播放列表及其SEO信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "创建播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建播放列表参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回创建的播放列表信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/delete": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "删除一个或多个播放列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "删除播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "删除播放列表参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistDeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/get": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "获取指定播放列表的详细信息，包括基本信息和SEO信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "获取播放列表信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"playlist-123456\"",
+                        "description": "播放列表ID",
+                        "name": "playlistId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表详细信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/list": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "分页查询指定站点下的所有播放列表信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "查询站点下的播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "排序方式 (0:创建时间倒序 1:名称排序)",
+                        "name": "orderType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "播放列表状态,无此参数默认查询全部",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"123e4567-e89b-12d3-a456-426614174000\"",
+                        "description": "站点ID, 如果无此参数，则默认查询全站",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 20,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 10,
+                        "description": "每页数量，默认10",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回站点下的播放列表信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/modify": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改指定播放列表的信息，包括基本信息和SEO信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "修改播放列表信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "修改播放列表参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "修改成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/remove-videos": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "从指定播放列表中移除多个视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "从播放列表移除视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "移除视频参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistDelVideosRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "移除成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/search": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据关键字搜索视频，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "搜索播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "排序方式 (0:创建时间倒序 1:名称排序)",
+                        "name": "orderType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"123e4567-e89b-12d3-a456-426614174000\"",
+                        "description": "站点ID, 如果无此参数，则默认查询全站",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"123e4567-e89b-12d3-a456-426614174000\"",
+                        "description": "排除的站点ID, 如果设置，查询结果将不包含该站点的播放列表， 不能和siteID一样",
+                        "name": "excludeSiteId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "视频播放列表状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 20,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认10",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "播放列表",
+                        "description": "查询关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回搜索结果",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/videos": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "分页获取播放列表中的视频，支持按状态筛选",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "获取播放列表中的视频V2",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"playlist-123456\"",
+                        "description": "播放列表ID",
+                        "name": "playlistId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "视频状态,-1 为全部",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表中的视频列表ID",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/videos/order": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "获取播放列表中视频的排序",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "获取播放列表中视频的排序",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"playlist-123456\"",
+                        "description": "播放列表ID",
+                        "name": "playlistId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表中的视频列表ID",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistVideosOrder"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/videos/update-order": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "播放列表中视频排序的顺序",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "播放列表中视频排序的顺序",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建播放列表参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistVideosOrder"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回创建的播放列表信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/add-playlists": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "为目标站点添加一个或多个视频播放列表。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "向站点添加播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "添加播放列表参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteAddPlaylistsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "添加播放列表成功返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/batch-get": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据站点D批量查询站点简要信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "批量获站点信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"site-123456,site-123457\"",
+                        "description": "站点ID列表，逗号分隔",
+                        "name": "siteIds",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回站点简要信息列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoListResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/create": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "创建一个站点及其默认SEO信息，包含站点基本信息和SEO配置。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "创建站点及默认SEO信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "创建站点参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "创建成功返回站点信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteCreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/get": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据站点ID查询站点基本信息及对应的SEO信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "查询站点及SEO信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"123e4567-e89b-12d3-a456-426614174000\"",
+                        "description": "站点唯一ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回站点及SEO信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteGetResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/list": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "分页查询当前用户所拥有的所有站点信息，包括站点基本信息和状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "获取用户的站点列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回站点列表数据",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/modify": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改站点信息和SEO配置，siteId 为必填字段。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "修改站点及SEO信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "修改站点参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回修改是否成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/remove-playlists": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "从目标站点移除一个或多个视频播放列表。",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "在站点中移除播放列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "删除播放列表参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.SiteDelPlaylistsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除播放列表成功返回结果",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/site/user/list": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve users associated with a site with pagination, filtering, and sorting",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "site"
+                ],
+                "summary": "Get users for a specific site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"site-123456\"",
+                        "description": "Site ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Page size",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"john\"",
+                        "description": "Search term for email or nickname",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Sort type: 0=login time desc, 1=created time desc, 2=login time asc, 3=created time asc",
+                        "name": "sortType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": -1,
+                        "description": "Status filter: -1=all, 1=inactive, 2=active, 3=disabled, 4=deleted",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns list of users",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserListResponseData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "description": "User login with email and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Login parameters",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns access token",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserLoginResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/profile": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get user profile information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer user token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns user profile",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserProfileResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/register": {
+            "post": {
+                "description": "Register a new user with email and password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Site ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Registration parameters",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.UserRegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.RegisterResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/batch-get": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据视频ID批量查询视频简要信息(注意数量控制...)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "批量获取视频简要信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"vid-123456,vid-123457\"",
+                        "description": "视频ID列表，逗号分隔",
+                        "name": "vids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回视频简要信息列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoListResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/delete": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "批量删除指定的视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "删除视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "视频删除参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoDeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "删除成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/get": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据视频ID查询视频详细信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "获取视频详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"vid-123456\"",
+                        "description": "视频ID",
+                        "name": "vid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "是否需要SEO信息",
+                        "name": "need_seo",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回视频详细信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/list": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据关键字搜索视频，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "展示当前创作者的所有视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "排序方式 (0:创建时间倒序 1:名称排序)",
+                        "name": "sortType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "视频状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "视频上传的状态,逗号分隔，支持多状态组合",
+                        "name": "uploadStatus",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 20,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认10",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回播放列表中的视频列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/modify": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改指定视频的基本信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "修改视频信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "视频修改参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "修改成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/replace": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "同步替换视频",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "替换视频， 视频ID不变",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"vid-123456\"",
+                        "description": "要替换的视频ID",
+                        "name": "vid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "替换成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoReplaceResonse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/search": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "根据关键字搜索视频，支持分页",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "搜索视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "playlistid",
+                        "description": "播放列表ID，不传默认搜索全部",
+                        "name": "playlistId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "排序方式 (0:创建时间倒序 1:名称排序)",
+                        "name": "orderType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "视频状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "视频上传的状态,逗号分隔，支持多状态组合",
+                        "name": "uploadStatus",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 20,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认10",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "教程",
+                        "description": "查询关键字",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回搜索结果",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/video/upload": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "批量上传视频文件，返回创建的视频VID列表",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "video"
+                ],
+                "summary": "批量上传视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "playlistid",
+                        "description": "播放列表ID，不传默认不加入播放列表",
+                        "name": "playlistId",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回上传的视频VID列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoUploadResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "shortpress-server_internal_api.AdUnit": {
+            "type": "object",
+            "properties": {
+                "ad_id": {
+                    "description": "Add this field",
+                    "type": "string"
+                },
+                "ad_network": {
+                    "type": "string"
+                },
+                "client_id": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "integer"
+                },
+                "frequency": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "unit_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.AdUnitListResponseData": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "广告单元列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.AdUnit"
+                    }
+                }
+            }
+        },
+        "shortpress-server_internal_api.AnonRegisterRequest": {
+            "type": "object",
+            "required": [
+                "sitePath"
+            ],
+            "properties": {
+                "sitePath": {
+                    "description": "站点路径",
+                    "type": "string",
+                    "example": "abc"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CompleteGuidesRequest": {
+            "type": "object",
+            "required": [
+                "guides"
+            ],
+            "properties": {
+                "guides": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"guide1\"",
+                        "\"guide2\"]"
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorGuides": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "1 完成 非1 未完成",
+                    "type": "integer"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorLoginData": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "description": "AccessToken 为登录成功后返回的 token，类型 VARCHAR(255)",
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6xxxxxc"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorLoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "description": "Email 对应 MySQL 表中 email 字段，类型 VARCHAR(255)，不能为空",
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "password": {
+                    "description": "Password 对应 MySQL 表中密码校验使用的明文密码，类型 VARCHAR(255)，不能为空",
+                    "type": "string",
+                    "example": "secret"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorLoginResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.CreatorLoginData"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorProfileData": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "description": "AvatarURL",
+                    "type": "string",
+                    "example": "http://example.com/avatar.jpg"
+                },
+                "createdAt": {
+                    "description": "CreatedAt 创建时间，Unix时间戳",
+                    "type": "string",
+                    "example": "1609459200"
+                },
+                "defultSiteDomain": {
+                    "description": "DefaultDomain",
+                    "type": "string",
+                    "example": "https://myshortpress.ai"
+                },
+                "email": {
+                    "description": "Email",
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "guides": {
+                    "description": "新任务引导",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.CreatorGuides"
+                    }
+                },
+                "nickname": {
+                    "description": "Nickname",
+                    "type": "string",
+                    "example": "JohnDoe"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt 更新时间，Unix时间戳",
+                    "type": "string",
+                    "example": "1609545600"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorProfileResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.CreatorProfileData"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CreatorStatsResponseData": {
+            "type": "object",
+            "properties": {
+                "playlistCount": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "siteCount": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "videoCount": {
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "shortpress-server_internal_api.IDListResponseData-string": {
+            "type": "object",
+            "properties": {
+                "hasMore": {
+                    "description": "是否还有更多",
+                    "type": "boolean",
+                    "example": true
+                },
+                "items": {
+                    "description": "ID 信息列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "每页数量",
+                    "type": "integer",
+                    "example": 20
+                },
+                "total": {
+                    "description": "视频总数",
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistAddVideosRequest": {
+            "type": "object",
+            "required": [
+                "playlistId",
+                "vids"
+            ],
+            "properties": {
+                "playlistId": {
+                    "description": "播放列表ID",
+                    "type": "string",
+                    "example": "playlist-123"
+                },
+                "vids": {
+                    "description": "要添加的视频ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "["
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistDelVideosRequest": {
+            "type": "object",
+            "required": [
+                "playlistId",
+                "vids"
+            ],
+            "properties": {
+                "playlistId": {
+                    "description": "播放列表ID",
+                    "type": "string",
+                    "example": "playlist-123"
+                },
+                "vids": {
+                    "description": "要移除的视频ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "["
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistDeleteRequest": {
+            "type": "object",
+            "required": [
+                "playlistIds"
+            ],
+            "properties": {
+                "playlistIds": {
+                    "description": "SiteID\t string   `json:\"siteId\" binding:\"required\" example:\"site-123\"` // 站点ID",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"playlist-123\"",
+                        "\"playlist-456\"]"
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistInfo": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "description": {
+                    "type": "string"
+                },
+                "playlistId": {
+                    "type": "string"
+                },
+                "seo": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.PlaylistSeo"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "integer"
+                },
+                "videoCount": {
+                    "description": "视频数量",
+                    "type": "integer"
+                },
+                "videos": {
+                    "description": "视频列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.PlaylistVideData"
+                    }
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistList": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "播放列表列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.PlaylistInfo"
+                    }
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.PlaylistInfo"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistSeo": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistVideData": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "视频状态",
+                    "type": "integer"
+                },
+                "vid": {
+                    "description": "视频ID",
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistVideosOrder": {
+            "type": "object",
+            "required": [
+                "playlistId",
+                "sortData",
+                "version"
+            ],
+            "properties": {
+                "playlistId": {
+                    "description": "播放列表ID",
+                    "type": "string",
+                    "example": "playlist-123"
+                },
+                "sortData": {
+                    "description": "视频排序数据",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoSortData"
+                        }
+                    ]
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "integer"
+                }
+            }
+        },
+        "shortpress-server_internal_api.RegisterCreatorRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "nickname": {
+                    "type": "string",
+                    "example": "shortpress"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "secret"
+                }
+            }
+        },
+        "shortpress-server_internal_api.RegisterResponseData": {
+            "type": "object",
+            "properties": {
+                "siteId": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.ResetCreatorPwdRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "newPassword"
+            ],
+            "properties": {
+                "email": {
+                    "description": "email 对应 MySQL 表中 email 字段",
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "newPassword": {
+                    "description": "newPassword 为新密码，",
+                    "type": "string",
+                    "example": "newSecret"
+                }
+            }
+        },
+        "shortpress-server_internal_api.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.SiteAddPlaylistsRequest": {
+            "type": "object",
+            "required": [
+                "playlistIds",
+                "siteId"
+            ],
+            "properties": {
+                "playlistIds": {
+                    "description": "播放列表ID数组",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"playlist-1\"",
+                        "\"playlist-2\"]"
+                    ]
+                },
+                "siteId": {
+                    "description": "站点ID，CHAR(36)",
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "shortpress-server_internal_api.SiteCreateResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.SiteDelPlaylistsRequest": {
+            "type": "object",
+            "required": [
+                "playlistIds",
+                "siteId"
+            ],
+            "properties": {
+                "playlistIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"playlist-1\"",
+                        "\"playlist-2\"]"
+                    ]
+                },
+                "siteId": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        },
+        "shortpress-server_internal_api.SiteGetResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.SiteInfo"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.SiteInfo": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string",
+                    "example": "example.com"
+                },
+                "logo": {
+                    "type": "string",
+                    "example": "http://example.com/logo_updated.png"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "MySite Updated"
+                },
+                "path": {
+                    "type": "string",
+                    "example": "/home"
+                },
+                "redirect": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "seo": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.SiteSeo"
+                },
+                "siteId": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "shortpress-server_internal_api.SiteSeo": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "SEO描述，TEXT，可选",
+                    "type": "string",
+                    "example": "This is my updated website"
+                },
+                "keywords": {
+                    "description": "SEO关键词，VARCHAR(1024)，可选",
+                    "type": "string",
+                    "example": "site,example,updated"
+                },
+                "title": {
+                    "description": "SEO标题，VARCHAR(1024)，可选",
+                    "type": "string",
+                    "example": "Welcome to MySite Updated"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserInfo": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                },
+                "lastLoginAt": {
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "nickname": {
+                    "type": "string",
+                    "example": "John Doe"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updatedAt": {
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "userId": {
+                    "type": "string",
+                    "example": "user-123456"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserListResponseData": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "User list",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.UserInfo"
+                    }
+                },
+                "page": {
+                    "description": "Current page number",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "Page size",
+                    "type": "integer",
+                    "example": 20
+                },
+                "total": {
+                    "description": "Total number of users",
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserLoginData": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserLoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserLoginResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.UserLoginData"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserProfileData": {
+            "type": "object",
+            "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserProfileResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.UserProfileData"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserRegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoDeleteRequest": {
+            "type": "object",
+            "required": [
+                "vids"
+            ],
+            "properties": {
+                "vids": {
+                    "description": "要删除的视频ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"vid-123\"",
+                        "\"vid-456\"]"
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoInfo": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "description": "视频封面",
+                    "type": "string",
+                    "example": "http://example.com/cover.jpg"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "description": {
+                    "description": "视频描述",
+                    "type": "string",
+                    "example": "这是一个示例视频"
+                },
+                "duration": {
+                    "description": "视频时长(秒)",
+                    "type": "integer",
+                    "example": 180
+                },
+                "fileSize": {
+                    "description": "文件大小(字节)",
+                    "type": "integer",
+                    "example": 1024000
+                },
+                "seo": {
+                    "description": "视频SEO信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/shortpress-server_internal_api.VideoSeo"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "视频状态：1-未发布，2-已发布，3-下架，127-删除",
+                    "type": "integer",
+                    "example": 1
+                },
+                "tags": {
+                    "description": "视频标签",
+                    "type": "string",
+                    "example": "示例,教程"
+                },
+                "title": {
+                    "description": "视频标题",
+                    "type": "string",
+                    "example": "示例视频"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "integer",
+                    "example": 1609459200
+                },
+                "uploadStatus": {
+                    "description": "上传状态：1-未上传，2-上传中，3-上传失败，4-上传取消，5-上传成功",
+                    "type": "integer",
+                    "example": 4
+                },
+                "vid": {
+                    "description": "视频唯一标识",
+                    "type": "string",
+                    "example": "vid-123456"
+                },
+                "videoPath": {
+                    "description": "视频文件路径",
+                    "type": "string",
+                    "example": "user/abc/v.mp4"
+                },
+                "videoSourceUrl": {
+                    "description": "视频源播放地址",
+                    "type": "string",
+                    "example": "http://example.com/user/abc/v.mp4"
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoListResponseData": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "视频列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.VideoInfo"
+                    }
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "每页数量",
+                    "type": "integer",
+                    "example": 20
+                },
+                "total": {
+                    "description": "总数",
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoReplaceData": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string"
+                },
+                "vid": {
+                    "type": "string"
+                },
+                "videoSourceUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoReplaceResonse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.VideoReplaceData"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoSeo": {
+            "type": "object",
+            "properties": {
+                "Keywords": {
+                    "description": "Keywords",
+                    "type": "string",
+                    "example": "示例,教程"
+                },
+                "description": {
+                    "description": "视频描述",
+                    "type": "string",
+                    "example": "这是一个示例视频"
+                },
+                "title": {
+                    "description": "视频标题",
+                    "type": "string",
+                    "example": "示例视频"
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoSortData": {
+            "type": "object",
+            "required": [
+                "vids"
+            ],
+            "properties": {
+                "vids": {
+                    "description": "视频ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"vid-1\"",
+                        "\"vid-2\"]"
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoUploadResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/shortpress-server_internal_api.VideoUploadResponseData"
+                },
+                "info": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoUploadResponseData": {
+            "type": "object",
+            "properties": {
+                "vids": {
+                    "description": "上传成功的视频ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"vid-123\"",
+                        "\"vid-456\"]"
+                    ]
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

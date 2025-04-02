@@ -6,23 +6,23 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Header from '@/components/system/header';
-import PlaylistDetailEdit from '@/components/business/playlistDetailEdit';
+import PlaylistDetailEdit from '@/components/business/playlists/playlistDetailEdit';
 import { IVideo } from '@/types/video';
 import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
 import { toast } from 'sonner';
 import { PlaylistArgs, VideoArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
-import AddContentModal from '@/components/business/playlistAddVideosModal';
+import AddContentModal from '@/components/business/playlists/playlistAddVideosModal';
 import VideoApi from '@/api/video';
-import PlaylistVideoItem from '@/components/business/playlistVideoItem';
+import PlaylistVideoItem from '@/components/business/playlists/playlistVideoItem';
 import userStore from '@/store/useUserStore';
 import { GuideName } from '@/types/guide';
 import AddVideoButton from '@/components/business/addVideoButton';
 import UploadVideoModal from '@/components/business/uploadVideoModal';
 import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loadingData';
-import VideoDetailEdit from '@/components/business/videoDetailEdit';
+import VideoDetailEdit from '@/components/business/videos/videoDetailEdit';
 
 const PlaylistVideosPage = () => {
     const paramsP = useParams();

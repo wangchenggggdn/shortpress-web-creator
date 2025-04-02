@@ -43,6 +43,10 @@ const config: Config = {
             white: '#ffffff',
             black: '#000000',
             transparent: 'transparent',
+            'black-purple': {
+                DEFAULT: '#1F1A37',
+                light: '#2F2955',
+            },
         },
         extend: {
             fontFamily: {

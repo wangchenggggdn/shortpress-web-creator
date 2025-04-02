@@ -206,3 +206,41 @@ export namespace VideoArgs {
         formData: FormData;
     }
 }
+
+/**
+ * Request parameters for Ads related operations
+ */
+export namespace AdsArgs {
+    /**
+     * Ad unit base interface
+     */
+    export interface AdUnit {
+        adId?: string;
+        adNetwork: string;
+        clientId: string;
+        format: number;
+        frequency: number;
+        name: string;
+        page: string;
+        siteId: string;
+        status: number;
+        unitId: string;
+    }
+
+    /**
+     * Create ad unit request parameters
+     */
+    export interface Create extends AdUnit { }
+
+    /**
+     * Modify ad unit request parameters
+     */
+    export interface Modify extends AdUnit { }
+
+    /**
+     * Get ad units list request parameters
+     */
+    export interface List {
+        siteId: string;
+    }
+}

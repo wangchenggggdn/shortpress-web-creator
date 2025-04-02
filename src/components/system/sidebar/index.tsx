@@ -42,7 +42,7 @@ const menuItems: MenuItem[] = [
     { icon: <IconBrowser size={20} />, label: 'Websites', path: '/websites' },
     { icon: <IconChartBar size={20} />, label: 'Analytics', path: '/analytics' },
     { icon: <IconUsers size={20} />, label: 'Members', path: '/members' },
-    { icon: <IconCoin size={20} />, label: 'Monetize', path: '/monetize' },
+    { icon: <IconCoin size={20} />, label: 'Monetization', path: '/monetization' },
 ];
 
 /**

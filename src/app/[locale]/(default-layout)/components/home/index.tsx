@@ -32,19 +32,19 @@ const HomePage: React.FC<IProps> = ({ stats }) => {
                     {/* Stats Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <Card className="text-center p-6" radius="lg">
-                            <Text size="xl" fw={700} className="text-primary">
+                            <Text size="xl" fw={700} className="!text-black-purple">
                                 {stats?.videoCount ?? 0}
                             </Text>
                             <Text c="dimmed">videos</Text>
                         </Card>
                         <Card className="text-center p-6" radius="lg">
-                            <Text size="xl" fw={700} className="text-primary">
+                            <Text size="xl" fw={700} className="!text-black-purple">
                                 {stats?.playlistCount ?? 0}
                             </Text>
                             <Text c="dimmed">playlists</Text>
                         </Card>
                         <Card className="text-center p-6" radius="lg">
-                            <Text size="xl" fw={700} className="text-primary">
+                            <Text size="xl" fw={700} className="!text-black-purple">
                                 {stats?.siteCount ?? 0}
                             </Text>
                             <Text c="dimmed">websites</Text>
