@@ -62,7 +62,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                         {/* Upload Status UPLOADING */}
                         {item.uploadStatus === VideoUploadStatus.UPLOADING && (
                             <div className="flex flex-row gap-2">
-                                <div>`${item.progress ?? 0}%`</div>
+                                <div>{item.progress ?? 0}%</div>
                                 <IconX className="text-red-500" size={18} onClick={handleDelectUploadFile}></IconX>
                             </div>
                         )}
