@@ -78,8 +78,8 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 label="Ad Network"
                                 data={[
                                     { value: AdNetwork.GOOGLE, label: 'Google AdSense' },
-                                    { value: AdNetwork.FACEBOOK, label: 'Facebook Ads' },
-                                    { value: AdNetwork.ADMOB, label: 'AdMob' },
+                                    // { value: AdNetwork.FACEBOOK, label: 'Facebook Ads' },
+                                    // { value: AdNetwork.ADMOB, label: 'AdMob' },
                                 ]}
                                 value={adUnit.adNetwork}
                                 onChange={value => setAdUnit({ ...adUnit, adNetwork: value || AdNetwork.GOOGLE })}
