@@ -26,7 +26,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
             adNetwork: AdNetwork.GOOGLE,
             clientId: '',
             format: AdFormat.DISPLAY,
-            frequency: 1,
+            frequency: 3,
             name: '',
             page: PAGE_FORMAT_MAP[0].page,
             siteId: '',
@@ -104,7 +104,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 <label className="text-sm font-medium">Frequency</label>
                                 <div className="flex flex-row items-center gap-2">
                                     One ad every
-                                    <NumberInput className="w-20" value={adUnit.frequency} onChange={value => setAdUnit({ ...adUnit, frequency: Number(value) })} min={1} />
+                                    <NumberInput className="w-20" value={adUnit.frequency} onChange={value => setAdUnit({ ...adUnit, frequency: Number(value) })} min={3} />
                                     videos
                                 </div>
                             </div>

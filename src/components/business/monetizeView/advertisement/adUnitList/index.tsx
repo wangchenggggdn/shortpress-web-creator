@@ -53,8 +53,8 @@ const AdUnitList: React.FC<AdUnitListProps> = ({ adUnits, onEdit, onStatusChange
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-                {adUnits.map(adUnit => (
-                    <Table.Tr key={adUnit.adId}>
+                {adUnits.map((adUnit, index) => (
+                    <Table.Tr key={adUnit.adId + 'adUnit' + index}>
                         <Table.Td className="text-black-purple/90">{adUnit.name}</Table.Td>
                         <Table.Td className="text-black-purple/70">{adUnit.page}</Table.Td>
                         <Table.Td className="text-black-purple/70">{getFormatLabel(adUnit.format)}</Table.Td>

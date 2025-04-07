@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@mantine/core';
 import AdUnitList from '@/components/business/monetizeView/advertisement/adUnitList';
 import AdUnitEdit from '@/components/business/monetizeView/advertisement/adUnitEdit';
@@ -19,6 +19,10 @@ const Advertisement: React.FC<AdvertisementProps> = ({ initialAdUnits }) => {
     const [editingAdUnit, setEditingAdUnit] = useState<AdUnit | undefined>();
     const [isLoading, setIsLoading] = useState(false);
     const { userInfo } = userStore();
+
+    useEffect(() => {
+        console.log('userInfo', userInfo);
+    }, [userInfo]);
 
     const loadAdUnits = async () => {
         try {

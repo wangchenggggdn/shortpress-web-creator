@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { TextInput, PasswordInput, Button, Text } from '@mantine/core';
 import { IconUser, IconLock, IconEyeOff, IconEye } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useRouter } from '@/libs/navigation';
 import CreatorApi from '@/api/creator';
 import CookieMap from '@/config/cookie-map';
 import Cookies from 'js-cookie';
@@ -15,7 +14,6 @@ interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

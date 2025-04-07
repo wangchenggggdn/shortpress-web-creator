@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import GuideItem from './guideItem';
 import userStore from '@/store/useUserStore';
 import { GuideName } from '@/types/guide';
@@ -12,14 +12,8 @@ import CreatorApi from '@/api/creator';
  * @returns React component with onboarding card layout
  */
 const GuideCard: React.FC = () => {
-    const { userInfo, setUserInfo } = userStore();
-    useEffect(() => {
-        const reloadUserInfo = async () => {
-            const res = await CreatorApi.profile();
-            setUserInfo(res.data);
-        };
-        reloadUserInfo();
-    }, []);
+    const { userInfo } = userStore();
+
     return (
         <>
             {!(userInfo?.guides ?? []).every(item => item.status === 1) && (

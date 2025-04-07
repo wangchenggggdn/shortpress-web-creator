@@ -9,6 +9,7 @@ import useUserStore from '@/store/useUserStore';
 import Cookies from 'js-cookie';
 import { useRouter } from '@/libs/navigation';
 import CookieMap from '@/config/cookie-map';
+import CreatorApi from '@/api/creator';
 
 /**
  * Interface for menu item configuration
@@ -52,7 +53,7 @@ const menuItems: MenuItem[] = [
  */
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
     const pathname = usePathname();
-    const { userInfo } = useUserStore();
+    const { userInfo, setUserInfo } = useUserStore();
     const router = useRouter();
 
     /**
@@ -77,6 +78,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
         router.push('/login');
     };
 
+    const reloadUserInfo = async () => {
+        const res = await CreatorApi.profile();
+        console.log('resProfile', userInfo, res);
+        setUserInfo({ ...userInfo, ...res.data });
+    };
+
     return (
         <div
             className={`
@@ -97,26 +104,34 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                 <div className={`flex-1 ${collapsed ? 'pr-2' : 'pr-12'} py-4`}>
                     {menuItems.map((item, index) => {
                         return (
-                            <Link
-                                key={item.path}
-                                href={item.path}
-                                className={`
-                            relative flex items-center gap-3 px-4 py-2 my-1
-                            ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
-                            ${!collapsed && 'pl-6'}
-                        `}
+                            <div
+                                key={item.path + index}
+                                onClick={() => {
+                                    if (index === 0) {
+                                        reloadUserInfo();
+                                    }
+                                }}
                             >
-                                <div
+                                <Link
+                                    href={item.path}
                                     className={`
-                                absolute inset-y-0 left-0 w-full
-                                bg-primary rounded-r-full
-                                transition-transform duration-300 origin-left
-                                ${isActive(item.path) ? 'scale-x-100' : 'scale-x-0'}
-                            `}
-                                />
-                                <span className="relative z-10 w-6">{item.icon}</span>
-                                {!collapsed && <span className="relative z-10 text-base">{item.label}</span>}
-                            </Link>
+                       relative flex items-center gap-3 px-4 py-2 my-1
+                       ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
+                       ${!collapsed && 'pl-6'}
+                   `}
+                                >
+                                    <div
+                                        className={`
+                           absolute inset-y-0 left-0 w-full
+                           bg-primary rounded-r-full
+                           transition-transform duration-300 origin-left
+                           ${isActive(item.path) ? 'scale-x-100' : 'scale-x-0'}
+                       `}
+                                    />
+                                    <span className="relative z-10 w-6">{item.icon}</span>
+                                    {!collapsed && <span className="relative z-10 text-base">{item.label}</span>}
+                                </Link>
+                            </div>
                         );
                     })}
                 </div>
