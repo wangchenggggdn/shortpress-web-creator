@@ -39,7 +39,7 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, l
      * Handle card click to navigate to website detail page
      */
     const handleClick = () => {
-        router.push(`/websites/${siteId}`);
+        router.push(`/websites/${siteId}/content`);
     };
 
     /**

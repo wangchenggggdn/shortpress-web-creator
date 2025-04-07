@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 
 interface CustomerDetailPageProps {
     params: {
-        id: string;
+        customerId: string;
     };
 }
 
@@ -25,10 +25,10 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
 
     useEffect(() => {
         loadCustomerInfo();
-    }, [params.id]);
+    }, [params.customerId]);
 
     const getEmail = () => {
-        const base64Email = decodeURIComponent(params.id);
+        const base64Email = decodeURIComponent(params.customerId);
         const decodedEmail = atob(base64Email);
         return decodedEmail;
     };

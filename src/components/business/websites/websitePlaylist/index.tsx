@@ -95,7 +95,7 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, isLoading,
     };
 
     return (
-        <div className="bg-layout rounded-[32px] p-6 flex flex-col h-[calc(100vh-160px)]">
+        <div className="bg-layout rounded-lg p-6 flex flex-col h-[calc(100vh-160px)]">
             {/* Search Bar */}
             <div className="mb-4 flex items-center gap-3">
                 {/* <input

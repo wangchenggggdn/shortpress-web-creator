@@ -53,7 +53,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
         }
     };
 
-    const isEdit = !!adUnitOld?.adId;
+    const isEdit = !adUnitOld === undefined;
 
     return (
         <div className="fixed inset-0 bg-black/20 z-50 flex justify-end">

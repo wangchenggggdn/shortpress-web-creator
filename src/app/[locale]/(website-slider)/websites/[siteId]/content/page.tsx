@@ -41,12 +41,13 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
     const [currentPlaylistsIndex, setCurrentPlaylistsIndex] = useState(0);
     const [videoPage, setVideoPage] = useState(1);
     const currentPlaylist = useRef<Playlist[]>([]);
+    console.log('params:', params);
 
     // Fetch website and playlist data when ID changes
     useEffect(() => {
         fetchWebsite();
         fetchPlaylists();
-    }, [params.id]);
+    }, [params.siteId]);
 
     useEffect(() => {
         if (playlists.length > 0) {
@@ -58,10 +59,10 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
      * Fetch website data from API
      */
     const fetchWebsite = async () => {
-        WebsiteApi.get(params.id as string).then(res => {
+        WebsiteApi.get(params.siteId as string).then(res => {
             setWebsite({
                 ...res.data,
-                siteId: params.id as string,
+                siteId: params.siteId as string,
             });
             console.log('website', res.data);
         });
@@ -256,7 +257,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                             <div
                                 className="text-primary cursor-pointer"
                                 onClick={() => {
-                                    window.open(`${website?.domain}/${website?.path}`, '_blank');
+                                    window.open(`${website?.domain}/${website?.path}/content`, '_blank');
                                 }}
                             >{`${website?.domain}/${website?.path}`}</div>
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">
@@ -319,11 +320,11 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                 </div>
 
                 {/* Right Preview Area */}
-                <div className="w-72 lg:w-80 h-full pr-6 pt-16">
+                {/* <div className="w-72 lg:w-80 h-full pr-6 pt-16">
                     <div className="w-full aspect-[9/16]">
                         <WebsitePreview playlist={videos} onLoadMore={handleLoadMore} />
                     </div>
-                </div>
+                </div> */}
             </div>
 
             <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} siteId={params.id as string} />

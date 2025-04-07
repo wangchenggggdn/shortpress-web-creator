@@ -17,8 +17,6 @@ interface IProps {
  * @returns React component with dashboard layout
  */
 const HomePage: React.FC<IProps> = ({ stats }) => {
-    const { userInfo } = userStore();
-
     return (
         <div className="flex flex-col h-screen overflow-y-scroll">
             <Header />

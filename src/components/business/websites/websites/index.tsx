@@ -71,7 +71,7 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
 
             {/* Content Area */}
             <div className="flex-1 px-6 pb-6">
-                <div className="bg-layout rounded-t-[32px] h-full p-6 flex flex-col">
+                <div className="bg-layout rounded-lg h-full p-6 flex flex-col">
                     {websites.length > 0 ? (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
                             {websites.map(website => (

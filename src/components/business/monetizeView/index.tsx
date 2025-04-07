@@ -25,9 +25,9 @@ const MonetizeView: React.FC<MonetizeViewProps> = ({ initialAdUnits }) => {
     return (
         <div className="flex flex-col h-screen">
             <Header />
-            <div className="flex-1 min-h-0 p-6 flex flex-col">
+            <div className="flex-1 min-h-0 px-6 flex flex-col">
                 {/* Custom Navigation */}
-                <div className="flex gap-4 mb-6">
+                <div className="flex gap-4 my-4">
                     {TABS.map(tab => (
                         <button
                             key={tab.id}
@@ -43,7 +43,7 @@ const MonetizeView: React.FC<MonetizeViewProps> = ({ initialAdUnits }) => {
                 </div>
 
                 {/* Tab Content */}
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 mb-6">
                     {activeTab === 'advertisement' && <Advertisement initialAdUnits={initialAdUnits} />}
 
                     {activeTab === 'payPerView' && <div className="text-center py-12 text-gray-500">Pay per View feature coming soon</div>}
