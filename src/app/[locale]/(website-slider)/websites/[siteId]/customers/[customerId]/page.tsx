@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { IconArrowLeft, IconDotsVertical } from '@tabler/icons-react';
-import Link from 'next/link';
+import { IconDotsVertical } from '@tabler/icons-react';
 import Header from '@/components/system/header';
 import { Customer, CustomerStatus } from '@/types/customer';
 import CustomerApi from '@/api/customer';
 import { toast } from 'sonner';
 import userStore from '@/store/useUserStore';
 import LoadingData from '@/components/common/loadingData';
-import { Card, Badge, Stack, Group, Menu, ActionIcon, Table } from '@mantine/core';
+import { Menu, Table } from '@mantine/core';
 import dayjs from 'dayjs';
 
 interface CustomerDetailPageProps {

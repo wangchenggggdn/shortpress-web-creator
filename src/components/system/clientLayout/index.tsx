@@ -14,7 +14,7 @@ const ClientLayout: React.FC<IProps> = ({ children, profile }) => {
         refreshUserInfo(profile, useUserStore.setState);
     }, [profile]);
 
-    return <>{children}</>;
+    return <main>{children}</main>;
 };
 
 export default ClientLayout;

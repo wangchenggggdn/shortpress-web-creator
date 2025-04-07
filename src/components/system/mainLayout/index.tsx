@@ -37,7 +37,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     ${collapsed ? 'md:ml-[60px]' : ''}
                 `}
             >
-                <main className="flex-1">{children}</main>
+                <div className="flex-1">{children}</div>
             </div>
         </div>
     );
