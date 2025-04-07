@@ -101,7 +101,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
             className={`
             fixed top-0 left-0 h-screen bg-layout transition-all duration-300
             rounded-r-[32px]
-            ${collapsed ? 'w-16' : 'w-48'}
+            ${collapsed ? 'w-16' : 'w-60'}
         `}
         >
             <div className="h-full w-full overflow-hidden rounded-r-[32px]">
@@ -167,7 +167,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                            absolute inset-y-0 left-0 w-full
                            bg-primary rounded-r-full
                            transition-transform duration-300 origin-left
-                           ${isActive(item.path) ? 'scale-x-125' : 'scale-x-0'}
+                           ${isActive(item.path) ? 'scale-x-110' : 'scale-x-0'}
                        `}
                                 />
                                 <span className="relative z-10 w-6">{item.icon}</span>
