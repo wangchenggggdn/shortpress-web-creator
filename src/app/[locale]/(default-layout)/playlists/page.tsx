@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, Select, Menu, Image, Pagination, Card } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconCheck, IconPlus, IconSelect } from '@tabler/icons-react';
 import Header from '@/components/system/header';
 import Search from '@/components/common/search';
 import PlaylistCard from '@/components/business/playlists/playlistCard';
@@ -74,8 +74,14 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                 status: Number(status),
             });
             if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+
             const resD = await PlaylistApi.batchGet(res.data.items.join(','));
             if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+            const items = res.data.items.map((item: string) => {
+                const playlist = resD.data.items.find((playlist: Playlist) => playlist.playlistId === item);
+                if (playlist) return playlist;
+            });
+            resD.data.items = items as Playlist[]; // Type assertion to Playlist[] here to avoid type mismatches in the vide
             resD.data.total = res.data.total;
             resD.data.page = res.data.page;
             resD.data.pageSize = res.data.pageSize;
@@ -264,14 +270,18 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                         variant="filled"
                     />
 
-                    <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu shadow="md" width={160} position="bottom-end">
                         <Menu.Target>
                             <Image src={orderImage.src} alt="order" className="w-5 h-5" />
                         </Menu.Target>
 
                         <Menu.Dropdown>
-                            <Menu.Item onClick={() => setOrderType(1)}>Title</Menu.Item>
-                            <Menu.Item onClick={() => setOrderType(0)}>Created time</Menu.Item>
+                            <Menu.Item onClick={() => setOrderType(1)}>
+                                <div className="flex items-center gap-2">{orderType === 1 && <IconCheck size={20} />}Title</div>
+                            </Menu.Item>
+                            <Menu.Item onClick={() => setOrderType(0)}>
+                                <div className="flex items-center gap-2">{orderType === 0 && <IconCheck size={20} />}Created time</div>
+                            </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
                 </div>

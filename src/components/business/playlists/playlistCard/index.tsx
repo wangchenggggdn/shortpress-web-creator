@@ -77,7 +77,7 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist, onEdit, onDelete 
                     <div className="mr-2 px-2 py-1 bg-black/50 rounded text-xs text-white">{playlist.videoCount} videos</div>
                     {/* Info Section */}
                     <div className="w-full mt-2 bg-layout p-2">
-                        <h3 className="font-medium text-sm line-clamp-2" title={playlist.title}>
+                        <h3 className="font-medium text-sm truncate" title={playlist.title}>
                             {playlist.title}
                         </h3>
                         <div className="mt-1 text-xs text-gray-500">{dateFormatSecond(playlist.createdAt)}</div>

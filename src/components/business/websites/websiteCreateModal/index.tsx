@@ -14,9 +14,9 @@ import LogoUploader from '@/components/common/logoUploader';
  */
 interface CreateSiteModalProps {
     /** Whether the modal is open */
-    opened: boolean;
+    opened?: boolean;
     /** Callback function when modal is closed */
-    onClose: () => void;
+    onClose?: () => void;
     /** Whether the modal is in edit mode */
     isEdit?: boolean;
     /** Website data for editing */
@@ -25,6 +25,7 @@ interface CreateSiteModalProps {
     loading?: boolean;
     /** Callback function when form is submitted */
     onSubmit: (siteData: WebsiteArgs.Modify, coverFile?: File) => void;
+    type?: 'setting' | 'modal';
 }
 
 /**
@@ -32,7 +33,15 @@ interface CreateSiteModalProps {
  * Provides form fields for website details and SEO settings
  * @returns React component with website creation/editing interface
  */
-const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEdit = false, onSubmit, websiteOld = { status: 2 } as Website, loading = false }) => {
+const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
+    opened = false,
+    onClose,
+    isEdit = false,
+    onSubmit,
+    websiteOld = { status: 2 } as Website,
+    loading = false,
+    type = 'modal',
+}) => {
     const { userInfo } = userStore();
     const [website, setWebsite] = React.useState<Website>(JSON.parse(JSON.stringify(websiteOld)));
     let coverFile: File | undefined;
@@ -71,115 +80,115 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({ opened, onClose, isEd
     if (!opened) return null;
 
     return (
-        <div className="fixed top-0 right-0 h-screen shadow-lg">
-            <div className="w-[480px] bg-white h-full flex flex-col">
-                {/* Header */}
+        <div>
+            {/* Header */}
+            {type === 'modal' && (
                 <div className="flex items-center justify-between px-6 h-16">
-                    <h2 className="text-2xl font-medium text-[#1a1b1e]">{isEdit ? 'Edit Site' : 'Create Site'}</h2>
+                    <h2 className="text-2xl font-medium">{isEdit ? 'Edit Site' : 'Create Site'}</h2>
                     <Button variant="subtle" color="gray" onClick={onClose} className="hover:bg-gray-100">
                         <IconX size={20} />
                     </Button>
                 </div>
+            )}
 
-                {/* Content Area */}
-                <div className="flex-1 px-6 space-y-6 overflow-y-auto">
-                    {/* Domain Section */}
-                    <div>
-                        <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Domain</h3>
-                        <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
-                            <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
-                            <span className="">{website?.path ?? userInfo?.creatorName ?? ''}</span>
-                        </div>
+            {/* Content Area */}
+            <div className="flex-1 px-6 space-y-6 overflow-y-auto">
+                {/* Domain Section */}
+                <div>
+                    <h3 className="text-lg font-medium mb-4">Domain</h3>
+                    <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
+                        <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
+                        <span className="">{website?.path ?? userInfo?.creatorName ?? ''}</span>
                     </div>
-
-                    {/* Site Name Section */}
-                    <div>
-                        <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Site name</h3>
-                        <TextInput
-                            onChange={e => {
-                                website.name = e.target.value;
-                            }}
-                            defaultValue={website?.name ?? ''}
-                            placeholder="Site name"
-                            variant="filled"
-                        />
-                    </div>
-
-                    {/* Logo Upload Section */}
-                    <LogoUploader logo={website?.logo} onFileSelect={onFileSelect} />
-
-                    {/* Status Section */}
-                    <div>
-                        <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Status</h3>
-                        <Select
-                            defaultValue={(website?.status ?? 0) === 2 ? 'published' : 'unpublished'}
-                            onChange={value => {
-                                website.status = value === 'published' ? 2 : 1;
-                            }}
-                            data={[
-                                { value: 'published', label: 'Published' },
-                                { value: 'unpublished', label: 'Unpulished' },
-                            ]}
-                            variant="filled"
-                        />
-                    </div>
-
-                    {/* SEO Section (Edit Mode Only) */}
-                    {isEdit && (
-                        <div>
-                            <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">SEO</h3>
-                            <div className="space-y-4">
-                                <TextInput
-                                    label="Title"
-                                    defaultValue={website?.seo?.title ?? ''}
-                                    onChange={e => {
-                                        website.seo = {
-                                            title: e.target.value,
-                                            description: website.seo?.description ?? '',
-                                            keywords: website.seo?.keywords ?? '',
-                                        };
-                                    }}
-                                    placeholder="Add title"
-                                    variant="filled"
-                                />
-                                <Textarea
-                                    label="Description"
-                                    defaultValue={website?.seo?.description ?? ''}
-                                    onChange={e => {
-                                        website.seo = {
-                                            title: website.seo?.title ?? '',
-                                            description: e.target.value,
-                                            keywords: website.seo?.keywords ?? '',
-                                        };
-                                    }}
-                                    placeholder="Add description"
-                                    minRows={3}
-                                    variant="filled"
-                                />
-                                <TextInput
-                                    label="Keywords"
-                                    defaultValue={website?.seo?.keywords ?? ''}
-                                    onChange={e => {
-                                        website.seo = {
-                                            title: website.seo?.title ?? '',
-                                            description: website.seo?.description ?? '',
-                                            keywords: e.target.value,
-                                        };
-                                    }}
-                                    placeholder="Add keywords"
-                                    variant="filled"
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
 
-                {/* Footer Actions */}
-                <div className="p-6">
-                    <Button loading={loading} fullWidth size="md" color="primary" onClick={() => handleSubmit(website)}>
-                        {isEdit ? 'Save Changes' : 'Create Site'}
-                    </Button>
+                {/* Site Name Section */}
+                <div>
+                    <h3 className="text-lg font-medium mb-4">Site name</h3>
+                    <TextInput
+                        onChange={e => {
+                            website.name = e.target.value;
+                        }}
+                        defaultValue={website?.name ?? ''}
+                        placeholder="Site name"
+                        variant="filled"
+                    />
                 </div>
+
+                {/* Logo Upload Section */}
+                <LogoUploader logo={website?.logo} onFileSelect={onFileSelect} />
+
+                {/* Status Section */}
+                <div>
+                    <h3 className="text-lg font-medium mb-4">Status</h3>
+                    <Select
+                        defaultValue={(website?.status ?? 0) === 2 ? 'published' : 'unpublished'}
+                        onChange={value => {
+                            website.status = value === 'published' ? 2 : 1;
+                        }}
+                        data={[
+                            { value: 'published', label: 'Published' },
+                            { value: 'unpublished', label: 'Unpulished' },
+                        ]}
+                        variant="filled"
+                    />
+                </div>
+
+                {/* SEO Section (Edit Mode Only) */}
+                {isEdit && (
+                    <div>
+                        <h3 className="text-lg font-medium mb-4">SEO</h3>
+                        <div className="space-y-4">
+                            <TextInput
+                                label="Title"
+                                defaultValue={website?.seo?.title ?? ''}
+                                onChange={e => {
+                                    website.seo = {
+                                        title: e.target.value,
+                                        description: website.seo?.description ?? '',
+                                        keywords: website.seo?.keywords ?? '',
+                                    };
+                                }}
+                                placeholder="Add title"
+                                variant="filled"
+                            />
+                            <Textarea
+                                label="Description"
+                                defaultValue={website?.seo?.description ?? ''}
+                                onChange={e => {
+                                    website.seo = {
+                                        title: website.seo?.title ?? '',
+                                        description: e.target.value,
+                                        keywords: website.seo?.keywords ?? '',
+                                    };
+                                }}
+                                placeholder="Add description"
+                                minRows={3}
+                                variant="filled"
+                            />
+                            <TextInput
+                                label="Keywords"
+                                defaultValue={website?.seo?.keywords ?? ''}
+                                onChange={e => {
+                                    website.seo = {
+                                        title: website.seo?.title ?? '',
+                                        description: website.seo?.description ?? '',
+                                        keywords: e.target.value,
+                                    };
+                                }}
+                                placeholder="Add keywords"
+                                variant="filled"
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Footer Actions */}
+            <div className="p-6">
+                <Button loading={loading} fullWidth size="md" color="primary" onClick={() => handleSubmit(website)}>
+                    {isEdit ? 'Save Changes' : 'Create Site'}
+                </Button>
             </div>
         </div>
     );

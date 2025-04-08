@@ -88,7 +88,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ vid, title, cover, status, durati
 
                     {/* Video Details */}
                     <div className="w-full p-2 bg-layout">
-                        <h3 className="font-medium text-sm mb-1 truncate line-clamp-1 text-ellipsis" title={title}>
+                        <h3 className="font-medium text-sm mb-1 line-clamp-1" title={title}>
                             {title}
                         </h3>
                         <div className="flex items-center justify-between text-xs text-gray-500">

@@ -131,7 +131,7 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     {/* Cover Image */}
                     {isEdit && (
                         <div>
-                            <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Cover</h3>
+                            <h3 className="text-lg font-medium mb-4">Cover</h3>
                             <div className="flex items-center gap-4">
                                 <div className="w-32 h-32 bg-[#F4F4F7] rounded-lg flex items-center justify-center">
                                     {playlist.cover && playlist.cover.length > 0 && !coverFile && (

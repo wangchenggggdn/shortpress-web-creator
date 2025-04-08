@@ -1,26 +1,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+
 import { usePathname, useRouter } from 'next/navigation';
-import {
-    IconHome,
-    IconVideo,
-    IconPlaylist,
-    IconBrowser,
-    IconChartBar,
-    IconChevronLeft,
-    IconArrowBack,
-    IconUsers,
-    IconSettings,
-    IconCoin,
-    IconArrowDown,
-    IconChevronDown,
-} from '@tabler/icons-react';
+import { IconBrowser, IconChartBar, IconChevronLeft, IconArrowBack, IconUsers, IconSettings, IconCoin, IconArrowDown, IconChevronDown } from '@tabler/icons-react';
 import { Avatar, Text, Menu } from '@mantine/core';
 import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
-import { Router } from 'next/router';
 
 /**
  * Interface for menu item configuration
@@ -64,7 +50,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
         { icon: <IconUsers size={20} />, label: 'Customers', path: `/customers` },
         { icon: <IconCoin size={20} />, label: 'Monetization', path: `/monetization` },
         { icon: <IconChartBar size={20} />, label: 'Analytics', path: `/analytics` },
-        // { icon: <IconSettings size={20} />, label: 'Settings', path: `/settings` },
+        { icon: <IconSettings size={20} />, label: 'Settings', path: `/settings` },
     ];
 
     const getWebsite = async () => {
@@ -104,10 +90,10 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
             ${collapsed ? 'w-16' : 'w-60'}
         `}
         >
-            <div className="h-full w-full overflow-hidden rounded-r-[32px]">
+            <div className="h-full w-full overflow-hidden rounded-r-[32px] cursor-pointer">
                 <div
                     onClick={() => {
-                        window.location.href = `/websites`;
+                        window.location.href = `/`;
                     }}
                     className="px-4 pt-4 pb-2 bg-white"
                 >
@@ -157,7 +143,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                                     route.replace(`/websites/${websiteId}${item.path}`);
                                 }}
                                 className={`
-                       relative flex items-center gap-3 px-4 py-2 my-1
+                       relative flex items-center gap-3 px-4 py-2 my-1 cursor-pointer
                        ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
                        ${!collapsed && 'pl-6'}
                    `}

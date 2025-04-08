@@ -332,15 +332,17 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
             {createModalOpened && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setCreateModalOpened(false)} />
-                    <div className="fixed top-0 right-0 z-50">
-                        <CreateSiteModal
-                            opened={createModalOpened}
-                            loading={loading}
-                            websiteOld={website}
-                            isEdit={true}
-                            onClose={() => setCreateModalOpened(false)}
-                            onSubmit={handleSubmit}
-                        />
+                    <div className="fixed top-0 right-0 z-50 h-screen shadow-lg">
+                        <div className="w-[480px] bg-white h-full flex flex-col">
+                            <CreateSiteModal
+                                opened={createModalOpened}
+                                loading={loading}
+                                websiteOld={website}
+                                isEdit={true}
+                                onClose={() => setCreateModalOpened(false)}
+                                onSubmit={handleSubmit}
+                            />
+                        </div>
                     </div>
                 </>
             )}

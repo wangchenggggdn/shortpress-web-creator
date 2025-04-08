@@ -31,7 +31,13 @@ const VideosPage: React.FC<VideosPageProps> = () => {
         const res = await VideoApi.search(params);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
         const resD = await VideoApi.batchGet(res.data.items.join(','));
+
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+        const items = res.data.items.map((item: string) => {
+            const video = resD.data.items.find((video: IVideo) => video.vid === item);
+            if (video) return video;
+        });
+        resD.data.items = items as IVideo[];
         resD.data.total = res.data.total;
         resD.data.page = res.data.page;
         resD.data.pageSize = res.data.pageSize;

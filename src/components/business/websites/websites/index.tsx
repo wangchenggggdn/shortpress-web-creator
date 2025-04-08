@@ -23,6 +23,8 @@ interface IProps {
 const WebsitesView: React.FC<IProps> = ({ websites }) => {
     const route = useRouter();
     const [createModalOpened, setCreateModalOpened] = useState(false);
+
+    console.log('websites:', websites);
     /**
      * Handle website creation action
      */
@@ -45,20 +47,19 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
         }
     };
 
-    /**
-     * Handle website edit action
-     * @param id Website ID to edit
-     */
-    const handleEdit = (id: string) => {
-        console.log('Edit website:', id);
-    };
+    const handleEdit = async (website: Website) => {
+        website.status = website.status === 2 ? 1 : 2;
+        const args = {
+            siteId: website.siteId,
+            name: website.name,
+            domain: website.domain,
+            path: website.path,
+            logo: website.logo,
+            status: website.status,
+        } as WebsiteArgs.Modify;
 
-    /**
-     * Handle website deletion
-     * @param id Website ID to delete
-     */
-    const handleDelete = (id: string) => {
-        console.log('Delete website:', id);
+        const res = await WebsiteApi.modify(args);
+        if (res.code === 0) toast.success('save success');
     };
 
     return (
@@ -75,7 +76,13 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
                     {websites.length > 0 ? (
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
                             {websites.map(website => (
-                                <WebsiteCard key={website.siteId} {...website} onEdit={handleEdit} onDelete={handleDelete} />
+                                <WebsiteCard
+                                    key={website.siteId}
+                                    {...website}
+                                    publishChange={() => {
+                                        handleEdit(website);
+                                    }}
+                                />
                             ))}
                         </div>
                     ) : (
@@ -93,8 +100,10 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
             {createModalOpened && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setCreateModalOpened(false)} />
-                    <div className="fixed top-0 right-0 z-50">
-                        <CreateSiteModal opened={createModalOpened} onClose={() => setCreateModalOpened(false)} onSubmit={handleSubmit} />
+                    <div className="fixed top-0 right-0 z-50 h-screen shadow-lg">
+                        <div className="w-[480px] bg-white h-full flex flex-col">
+                            <CreateSiteModal opened={createModalOpened} onClose={() => setCreateModalOpened(false)} onSubmit={handleSubmit} />
+                        </div>
                     </div>
                 </>
             )}

@@ -24,9 +24,9 @@ const WebsitesPage: React.FC<WebsitesPageProps> = async () => {
 
     const websites = await fetchWebsites();
 
-    // if (websites.length >= 1) {
-    //     redirect(`/websites/${websites[0].siteId}`);
-    // }
+    if (websites.length >= 1) {
+        redirect(`/websites/${websites[0].siteId}/content`);
+    }
 
     return <WebsitesView websites={websites} />;
 };

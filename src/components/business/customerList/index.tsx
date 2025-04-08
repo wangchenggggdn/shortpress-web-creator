@@ -12,6 +12,7 @@ import Header from '@/components/system/header';
 import Search from '@/components/common/search';
 import LoadingData from '@/components/common/loadingData';
 import { useRouter } from '@/libs/navigation';
+import { usePathname } from 'next/navigation';
 
 interface CustomerListProps {}
 
@@ -23,6 +24,7 @@ const CustomerList: React.FC<CustomerListProps> = () => {
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
     const { userInfo } = userStore();
+    const pathName = usePathname();
 
     const getItemsPerPage = () => {
         return 20;
@@ -117,7 +119,7 @@ const CustomerList: React.FC<CustomerListProps> = () => {
         const encodedEmail = btoa(customer.email);
         // Then make it URL safe
         const urlSafeEmail = encodeURIComponent(encodedEmail);
-        router.push(`/customers/${urlSafeEmail}`);
+        router.push(`${pathName}/${urlSafeEmail}`);
     };
 
     return (

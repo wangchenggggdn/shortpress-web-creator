@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Card, Text, Button } from '@mantine/core';
-import userStore from '@/store/useUserStore';
 import Header from '@/components/system/header';
 import { IUserStats } from '@/types/user';
 import GuideCard from '@/components/business/guideCard';
+import { useRouter } from 'next/navigation';
 
 interface IProps {
     stats: IUserStats | null;
@@ -17,6 +17,7 @@ interface IProps {
  * @returns React component with dashboard layout
  */
 const HomePage: React.FC<IProps> = ({ stats }) => {
+    const router = useRouter();
     return (
         <div className="flex flex-col h-screen overflow-y-scroll">
             <Header />
@@ -29,19 +30,37 @@ const HomePage: React.FC<IProps> = ({ stats }) => {
 
                     {/* Stats Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Card className="text-center p-6" radius="lg">
+                        <Card
+                            className="text-center p-6 cursor-pointer"
+                            radius="lg"
+                            onClick={() => {
+                                router.push('/videos');
+                            }}
+                        >
                             <Text size="xl" fw={700} className="!text-black-purple">
                                 {stats?.videoCount ?? 0}
                             </Text>
                             <Text c="dimmed">videos</Text>
                         </Card>
-                        <Card className="text-center p-6" radius="lg">
+                        <Card
+                            className="text-center p-6 cursor-pointer"
+                            radius="lg"
+                            onClick={() => {
+                                router.push('/playlists');
+                            }}
+                        >
                             <Text size="xl" fw={700} className="!text-black-purple">
                                 {stats?.playlistCount ?? 0}
                             </Text>
                             <Text c="dimmed">playlists</Text>
                         </Card>
-                        <Card className="text-center p-6" radius="lg">
+                        <Card
+                            className="text-center p-6 cursor-pointer"
+                            radius="lg"
+                            onClick={() => {
+                                router.push('/websites');
+                            }}
+                        >
                             <Text size="xl" fw={700} className="!text-black-purple">
                                 {stats?.siteCount ?? 0}
                             </Text>
@@ -60,7 +79,7 @@ const HomePage: React.FC<IProps> = ({ stats }) => {
                             variant="filled"
                             color="primary"
                             onClick={() => {
-                                window.location.href = '/videos';
+                                router.push('/videos');
                             }}
                         >
                             Upload Videos

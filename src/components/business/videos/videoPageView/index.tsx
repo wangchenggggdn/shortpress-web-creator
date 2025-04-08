@@ -17,6 +17,7 @@ import { IPaginationResponse, IResponse } from '@/types/public';
 import ConfirmDialog from '@/components/common/confirmDialog';
 import LoadingData from '@/components/common/loadingData';
 import CreatorApi from '@/api/creator';
+import { IconCheck } from '@tabler/icons-react';
 
 interface VideosPageViewProps {
     searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
@@ -231,8 +232,12 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                         </Menu.Target>
 
                         <Menu.Dropdown>
-                            <Menu.Item onClick={() => setSortType(1)}>Title</Menu.Item>
-                            <Menu.Item onClick={() => setSortType(0)}>Upload time</Menu.Item>
+                            <Menu.Item onClick={() => setSortType(1)}>
+                                <div className="flex items-center gap-2">{sortType === 1 && <IconCheck size={20} />}Title</div>
+                            </Menu.Item>
+                            <Menu.Item onClick={() => setSortType(0)}>
+                                <div className="flex items-center gap-2">{sortType === 0 && <IconCheck size={20} />}Created time</div>
+                            </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
                 </div>

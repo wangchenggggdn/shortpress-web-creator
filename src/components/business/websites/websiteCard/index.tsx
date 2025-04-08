@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Menu, ActionIcon } from '@mantine/core';
-import { IconDots, IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconCopy, IconDots, IconEye, IconEyeClosed, IconPencil, IconTrash } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 
 /**
@@ -19,10 +19,10 @@ interface WebsiteCardProps {
     path: string;
     /** Optional logo image URL */
     logo?: string;
-    /** Publication status (1: Published, 0: Unpublished) */
+    /** Publication status (2: Published, 1: Unpublished) */
     status: number;
     /** Callback function when edit action is triggered */
-    onEdit?: (id: string) => void;
+    publishChange?: () => void;
     /** Callback function when delete action is triggered */
     onDelete?: (id: string) => void;
 }
@@ -32,8 +32,9 @@ interface WebsiteCardProps {
  * Displays website information with logo, status, and action menu
  * @returns React component with website card interface
  */
-const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, logo, status, onEdit, onDelete }) => {
+const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, logo, status, publishChange, onDelete }) => {
     const router = useRouter();
+    const [published, setPublished] = React.useState(status);
 
     /**
      * Handle card click to navigate to website detail page
@@ -41,6 +42,8 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, l
     const handleClick = () => {
         router.push(`/websites/${siteId}/content`);
     };
+
+    const handleCopyLink = () => {};
 
     /**
      * Handle menu click to prevent card click event
@@ -51,45 +54,55 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, l
     };
 
     return (
-        <div className="group cursor-pointer" onClick={handleClick}>
+        <div className="group cursor-pointer shadow-md  rounded-lg p-2" onClick={handleClick}>
             {/* Logo Container */}
-            <div className="relative aspect-[9/16] rounded-lg overflow-hidden bg-[#F4F4F7]">
-                {logo ? (
-                    <img src={logo} alt={name} className="w-full h-full object-cover" />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">No logo</div>
-                )}
+            <div className="relative  overflow-hidden ">
+                <div className="h-16 w-16 bg-[#F4F4F7]">
+                    {logo ? (
+                        <img src={logo} alt={name} className="rounded-lg object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">No logo</div>
+                    )}
+                </div>
 
                 {/* Action Menu */}
                 <div className="absolute top-2 right-2" onClick={handleMenuClick}>
                     <Menu position="bottom-end" shadow="md">
                         <Menu.Target>
-                            <ActionIcon variant="filled" className="bg-black/50 hover:bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <IconDots size={16} color="white" />
-                            </ActionIcon>
+                            <IconDots size={16} color="black" />
                         </Menu.Target>
 
                         <Menu.Dropdown>
-                            <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => onEdit?.(siteId)}>
-                                Edit
+                            <Menu.Item leftSection={<IconCopy size={14} />} onClick={() => handleCopyLink()}>
+                                Copy URL
                             </Menu.Item>
-                            <Menu.Item leftSection={<IconTrash size={14} />} color="red" onClick={() => onDelete?.(siteId)}>
-                                Delete
+                            <Menu.Item leftSection={<IconPencil size={14} />} onClick={handleClick}>
+                                View Site
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={published === 1 ? <IconEye size={14} /> : <IconEyeClosed size={14} />}
+                                color={published === 2 ? 'red' : 'green'}
+                                onClick={() => {
+                                    setPublished(published !== 2 ? 2 : 1);
+                                    publishChange?.();
+                                }}
+                            >
+                                {published !== 2 ? 'Publish' : 'Unpublish'}
                             </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
                 </div>
 
                 {/* Status Label */}
-                <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-xs text-white capitalize">{status === 1 ? 'Published' : 'Unpublished'}</div>
+                <div className={`absolute top-1 left-1 rounded-full border-[1px] border-white h-3 w-3 text-xs ${published ? 'bg-green-500' : 'bg-red-500'} capitalize`}></div>
             </div>
 
             {/* Info Section */}
             <div className="mt-2">
-                <h3 className="font-medium text-sm line-clamp-2" title={name}>
-                    {name}
-                </h3>
                 <div className="mt-1 text-xs text-gray-500">{domain + '/' + path}</div>
+                <h2 className="font-medium text-lg line-clamp-2" title={name}>
+                    {name}
+                </h2>
             </div>
         </div>
     );
