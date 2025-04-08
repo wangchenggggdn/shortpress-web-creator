@@ -72,10 +72,8 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
         setLoading(true);
         const params: VideoArgs.Search = { keyword: searchQuery, status: Number(status), orderType: sortType, page: activePage, pageSize: getItemsPerPage() };
         const res = await searchFetch(params);
-        if (res?.code === 0) {
-            setTotal(res?.data?.total ?? 0);
-            setVideos(res?.data?.items ?? []);
-        }
+        setTotal(res?.data?.total ?? 0);
+        setVideos(res?.data?.items ?? []);
         setLoading(false);
     };
 

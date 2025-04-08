@@ -3,7 +3,20 @@
 import React, { useEffect, useState } from 'react';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { IconBrowser, IconChartBar, IconChevronLeft, IconArrowBack, IconUsers, IconSettings, IconCoin, IconArrowDown, IconChevronDown } from '@tabler/icons-react';
+import {
+    IconBrowser,
+    IconChartBar,
+    IconChevronLeft,
+    IconArrowBack,
+    IconUsers,
+    IconSettings,
+    IconCoin,
+    IconArrowDown,
+    IconChevronDown,
+    IconChevronLeftPipe,
+    IconSquareChevronsLeft,
+    IconChevronsLeft,
+} from '@tabler/icons-react';
 import { Avatar, Text, Menu } from '@mantine/core';
 import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
@@ -99,7 +112,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                     className="px-4 pt-4 pb-2 bg-white"
                 >
                     <div className={`${collapsed ? 'p-1' : 'p-2'} flex items-center border-gray-400 border-[1px] rounded-full gap-2`}>
-                        <IconArrowBack className={`${collapsed ? '' : 'ml-1'}`} size={20} />
+                        <IconChevronLeft className={`${collapsed ? '' : 'ml-1'}`} size={20} />
                         {!collapsed && <div className="font-medium">Websites</div>}
                     </div>
                 </div>

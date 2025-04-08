@@ -97,7 +97,7 @@ const Advertisement: React.FC<AdvertisementProps> = ({ initialAdUnits }) => {
                 </Button>
             </div>
 
-            <div className="flex-1 h-full overflow-scroll">
+            <div className="flex-1 h-full">
                 <AdUnitList
                     adUnits={adUnits}
                     onEdit={adUnit => {

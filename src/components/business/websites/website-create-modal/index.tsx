@@ -80,7 +80,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
     if (!opened) return null;
 
     return (
-        <div>
+        <div className="overflow-y-scroll">
             {/* Header */}
             {type === 'modal' && (
                 <div className="flex items-center justify-between px-6 h-16">
@@ -92,13 +92,13 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
             )}
 
             {/* Content Area */}
-            <div className="flex-1 px-6 space-y-6 overflow-y-auto">
+            <div className="flex-1 px-6 space-y-6 ">
                 {/* Domain Section */}
                 <div>
                     <h3 className="text-lg font-medium mb-4">Domain</h3>
                     <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
                         <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
-                        <span className="">{website?.path ?? userInfo?.creatorName ?? ''}</span>
+                        <span className="line-clamp-1">{website?.path ?? userInfo?.creatorName ?? ''}</span>
                     </div>
                 </div>
 

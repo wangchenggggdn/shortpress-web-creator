@@ -38,7 +38,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     // Fetch playlists when search parameters change
     useEffect(() => {
         searcRequest();
-    }, [searchQuery, activePage, orderType]);
+    }, [searchQuery, activePage, orderType, isOpen]);
 
     const searcRequest = async () => {
         setLoading(true);
@@ -50,9 +50,11 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
             keyword: searchQuery,
             excludeSiteId: siteId,
         });
+        setLoading(false);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        setLoading(true);
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
         setPlaylists(resD.data.items);
         setLoading(false);

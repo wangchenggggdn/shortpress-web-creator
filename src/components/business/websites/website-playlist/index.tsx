@@ -38,19 +38,14 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, isLoading,
     const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
     const router = useRouter();
 
-    // Trigger search when query changes
-    useEffect(() => {
-        if (onSearch) {
-            onSearch(searchQuery, page, pageSize);
-        }
-    }, [searchQuery]);
-
     /**
      * Handle search input changes
      * @param value Search query string
      */
     const handleSearch = (value: string) => {
+        console.log('handleSearch', value);
         setSearchQuery(value);
+        onSearch && onSearch(value, page, pageSize);
     };
 
     /**

@@ -134,6 +134,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
             keyword: searchQuery,
         });
         setLoadingData(false);
+        setPlaylists([]);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
         setLoadingData(true);
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
@@ -291,7 +292,6 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
 
                     <WebsitePlaylist
                         isLoading={loadingData}
-                        key={playlists.length}
                         playlists={playlists}
                         total={total}
                         page={page}

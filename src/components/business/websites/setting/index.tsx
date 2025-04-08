@@ -67,7 +67,7 @@ const WebsiteSetting: React.FC<WebsiteSettingProps> = ({ website }) => {
                         </button>
                     ))}
                 </div>
-                <div className="bg-white flex justify-start  overflow-y-scroll rounded-lg p-6 h-full">
+                <div className="bg-white flex justify-start overflow-y-scroll rounded-lg p-6 h-full">
                     {activeTab === 'general' && (
                         <div className="w-full">
                             <CreateSiteModal loading={loading} isEdit={true} opened={true} onSubmit={handleSubmit} type="setting" websiteOld={website} />
