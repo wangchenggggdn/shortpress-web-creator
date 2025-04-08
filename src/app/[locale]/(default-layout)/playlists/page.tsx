@@ -247,7 +247,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
             {/* Search Bar */}
             <div className="px-11 py-4 grid grid-cols-4">
                 <div className="flex items-center gap-4">
-                    <span className="text-gray-600">{playlists.length} playlist</span>
+                    <span className="text-gray-600">{playlists.length} playlists</span>
                 </div>
 
                 {/* Search Input */}
