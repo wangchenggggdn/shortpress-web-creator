@@ -7,7 +7,7 @@ import { Customer, CustomerStatus } from '@/types/customer';
 import CustomerApi from '@/api/customer';
 import { toast } from 'sonner';
 import userStore from '@/store/useUserStore';
-import LoadingData from '@/components/common/loadingData';
+import LoadingData from '@/components/common/loading-data';
 import { Menu, Table } from '@mantine/core';
 import dayjs from 'dayjs';
 

@@ -5,7 +5,7 @@ import Search from '@/components/common/search';
 import { IconX } from '@tabler/icons-react';
 import { Playlist } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
-import LoadingData from '@/components/common/loadingData';
+import LoadingData from '@/components/common/loading-data';
 
 /**
  * Props interface for AddContentModal component

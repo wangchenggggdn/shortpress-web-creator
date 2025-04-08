@@ -6,23 +6,23 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Header from '@/components/system/header';
-import PlaylistDetailEdit from '@/components/business/playlists/playlistDetailEdit';
+import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';
 import { IVideo } from '@/types/video';
 import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
 import { toast } from 'sonner';
 import { PlaylistArgs, VideoArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
-import AddContentModal from '@/components/business/playlists/playlistAddVideosModal';
+import AddContentModal from '@/components/business/playlists/playlist-add-videos-modal';
 import VideoApi from '@/api/video';
-import PlaylistVideoItem from '@/components/business/playlists/playlistVideoItem';
+import PlaylistVideoItem from '@/components/business/playlists/playlist-video-item';
 import userStore from '@/store/useUserStore';
 import { GuideName } from '@/types/guide';
-import AddVideoButton from '@/components/business/addVideoButton';
-import UploadVideoModal from '@/components/business/uploadVideoModal';
+import AddVideoButton from '@/components/business/add-video-button';
+import UploadVideoModal from '@/components/business/upload-video-modal';
 import fileUploadStore from '@/store/useFileUploadStore';
-import LoadingData from '@/components/common/loadingData';
-import VideoDetailEdit from '@/components/business/videos/videoDetailEdit';
+import LoadingData from '@/components/common/loading-data';
+import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
 
 interface PlaylistVideosPageProps {}
 

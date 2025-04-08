@@ -1,5 +1,5 @@
 import React from 'react';
-import LoadingSVG from '../loadingSVG';
+import LoadingSVG from '../loading-svg';
 
 interface LoadingDataProps {
     className?: string;

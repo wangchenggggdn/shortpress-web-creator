@@ -4,7 +4,7 @@ import Search from '@/components/common/search';
 import { Pagination } from '@mantine/core';
 import WebsitePlaylistItem from './playlistItem';
 import { useRouter } from 'next/navigation';
-import LoadingData from '@/components/common/loadingData';
+import LoadingData from '@/components/common/loading-data';
 
 /**
  * Props interface for WebsitePlaylist component

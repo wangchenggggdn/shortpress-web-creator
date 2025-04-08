@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mantine/core';
-import AdUnitList from '@/components/business/monetizeView/advertisement/adUnitList';
-import AdUnitEdit from '@/components/business/monetizeView/advertisement/adUnitEdit';
+import AdUnitList from '@/components/business/monetize-view/advertisement/ad-unit-list';
+import AdUnitEdit from '@/components/business/monetize-view/advertisement/ad-unit-edit';
 import AdsApi from '@/api/ads';
 import { AdUnit } from '@/types/ads';
 import { toast } from 'sonner';
@@ -89,7 +89,7 @@ const Advertisement: React.FC<AdvertisementProps> = ({ initialAdUnits }) => {
     };
 
     return (
-        <div className="h-full p-4 flex flex-col bg-layout rounded-lg">
+        <div className="h-full px-6 py-4 flex flex-col bg-layout rounded-lg">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-medium text-gray-900">Ad Units</h2>
                 <Button onClick={() => setModalOpened(true)} className="bg-primary hover:bg-primary/90">
@@ -97,14 +97,16 @@ const Advertisement: React.FC<AdvertisementProps> = ({ initialAdUnits }) => {
                 </Button>
             </div>
 
-            <AdUnitList
-                adUnits={adUnits}
-                onEdit={adUnit => {
-                    setEditingAdUnit(adUnit);
-                    setModalOpened(true);
-                }}
-                onStatusChange={handleStatusChange}
-            />
+            <div className="flex-1 h-full overflow-scroll">
+                <AdUnitList
+                    adUnits={adUnits}
+                    onEdit={adUnit => {
+                        setEditingAdUnit(adUnit);
+                        setModalOpened(true);
+                    }}
+                    onStatusChange={handleStatusChange}
+                />
+            </div>
 
             {modalOpened && (
                 <AdUnitEdit adUnitOld={editingAdUnit} onClose={handleCloseModal} onSave={editingAdUnit ? handleEditAdUnit : handleCreateAdUnit} isLoading={isLoading} />

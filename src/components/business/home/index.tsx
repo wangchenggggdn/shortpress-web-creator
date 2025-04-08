@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, Text, Button } from '@mantine/core';
 import Header from '@/components/system/header';
 import { IUserStats } from '@/types/user';
-import GuideCard from '@/components/business/guideCard';
+import GuideCard from '@/components/business/guide-card';
 import { useRouter } from 'next/navigation';
 
 interface IProps {

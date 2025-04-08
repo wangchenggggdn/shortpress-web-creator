@@ -2,11 +2,11 @@
 
 import React, { useState, useCallback } from 'react';
 import Header from '@/components/system/header';
-import UploadButton from '@/components/common/uploadButton';
+import UploadButton from '@/components/common/upload-button';
 import VideoApi from '@/api/video';
 import { IVideo } from '@/types/video';
 import { VideoArgs } from '@/api/args';
-import VideosPageView from '@/components/business/videos/videoPageView';
+import VideosPageView from '@/components/business/videos/video-page-view';
 import { toast } from 'sonner';
 import fileUploadStore from '@/store/useFileUploadStore';
 

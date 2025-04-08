@@ -7,7 +7,7 @@ import userStore from '@/store/useUserStore';
 import { WebsiteArgs } from '@/api/args';
 import { Website } from '@/types/website';
 import { toast } from 'sonner';
-import LogoUploader from '@/components/common/logoUploader';
+import LogoUploader from '@/components/common/logo-uploader';
 
 /**
  * Props interface for CreateSiteModal component

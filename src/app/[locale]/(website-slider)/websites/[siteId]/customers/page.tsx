@@ -1,5 +1,5 @@
 import React from 'react';
-import CustomerList from '../../../../../../components/business/customerList';
+import CustomerList from '../../../../../../components/business/customer-list';
 
 interface CustomersPageProps {}
 

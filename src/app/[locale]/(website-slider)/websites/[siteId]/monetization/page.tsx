@@ -1,10 +1,9 @@
 import React from 'react';
-import MonetizeView from '@/components/business/monetizeView';
+import MonetizeView from '@/components/business/monetize-view';
 import { retryRequest } from '@/api';
 import AdsApi from '@/api/ads';
 import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
-import { redirect } from 'next/navigation';
 
 interface MonetizePageProps {}
 

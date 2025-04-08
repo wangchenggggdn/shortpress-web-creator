@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 import userStore from '@/store/useUserStore';
 import Header from '@/components/system/header';
 import Search from '@/components/common/search';
-import LoadingData from '@/components/common/loadingData';
+import LoadingData from '@/components/common/loading-data';
 import { useRouter } from '@/libs/navigation';
 import { usePathname } from 'next/navigation';
 
@@ -140,7 +140,7 @@ const CustomerList: React.FC<CustomerListProps> = () => {
                             </div>
                         ) : customers.length > 0 ? (
                             <>
-                                <div className="flex-1 overflow-auto">
+                                <div className="flex-1 overflow-auto px-4">
                                     <Table>
                                         <Table.Thead>
                                             <Table.Tr>

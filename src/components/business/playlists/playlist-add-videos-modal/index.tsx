@@ -4,7 +4,7 @@ import Search from '@/components/common/search';
 import { IconX } from '@tabler/icons-react';
 import { IVideo } from '@/types/video';
 import VideoApi from '@/api/video';
-import LoadingData from '@/components/common/loadingData';
+import LoadingData from '@/components/common/loading-data';
 
 /**
  * Props interface for AddContentModal component

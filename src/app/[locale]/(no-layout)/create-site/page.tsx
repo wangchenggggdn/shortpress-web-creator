@@ -6,7 +6,7 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import Header from '@/components/system/header';
-import LogoUploader from '@/components/common/logoUploader';
+import LogoUploader from '@/components/common/logo-uploader';
 import { WebsiteArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
 import userStore from '@/store/useUserStore';

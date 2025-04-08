@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TextInput, Textarea, Button, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IVideo, VideoStatus } from '@/types/video';
-import VideoPreview from '../videoPreview';
+import VideoPreview from '../video-preview';
 import { VideoArgs } from '@/api/args';
 
 /**

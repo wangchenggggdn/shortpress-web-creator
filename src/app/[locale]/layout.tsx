@@ -9,7 +9,7 @@ import UserApi from '@/api/creator';
 import appConfig from '@/appConfig';
 import { initLangTags } from '@/libs/seo';
 import WebsiteApi from '@/api/website';
-import ClientLayout from '@/components/system/clientLayout';
+import ClientLayout from '@/components/system/client-layout';
 
 /**
  * Props interface for the LocaleLayout component

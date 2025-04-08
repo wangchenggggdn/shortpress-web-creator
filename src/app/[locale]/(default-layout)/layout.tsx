@@ -1,6 +1,6 @@
 import React from 'react';
-import MainLayout from '@/components/system/mainLayout';
-import UploadProgressModal from '@/components/business/uploadProgressModal';
+import MainLayout from '@/components/system/main-layout';
+import UploadProgressModal from '@/components/business/upload-progress-modal';
 
 /**
  * Props interface for the DefaultLayout component

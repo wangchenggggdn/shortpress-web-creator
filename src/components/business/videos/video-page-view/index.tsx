@@ -2,20 +2,20 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Select, Menu, Image, Pagination } from '@mantine/core';
-import VideoCard from '@/components/business/videos/videoCard';
+import VideoCard from '@/components/business/videos/video-card';
 import Search from '@/components/common/search';
-import UploadButton from '@/components/common/uploadButton';
+import UploadButton from '@/components/common/upload-button';
 import VideoApi from '@/api/video';
 import { IVideo } from '@/types/video';
-import VideoDetailEdit from '@/components/business/videos/videoDetailEdit';
-import UploadVideoModal from '@/components/business/uploadVideoModal';
+import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
+import UploadVideoModal from '@/components/business/upload-video-modal';
 import orderImage from '@/assets/images/public/order.webp';
 
 import { toast } from 'sonner';
 import { VideoArgs } from '@/api/args';
 import { IPaginationResponse, IResponse } from '@/types/public';
-import ConfirmDialog from '@/components/common/confirmDialog';
-import LoadingData from '@/components/common/loadingData';
+import ConfirmDialog from '@/components/common/confirm-dialog';
+import LoadingData from '@/components/common/loading-data';
 import CreatorApi from '@/api/creator';
 import { IconCheck } from '@tabler/icons-react';
 

@@ -1,6 +1,6 @@
 'use client';
 import { Website } from '@/types/website';
-import CreateSiteModal from '../websiteCreateModal';
+import CreateSiteModal from '../website-create-modal';
 import Header from '@/components/system/header';
 import { useState } from 'react';
 import classNames from 'classnames';

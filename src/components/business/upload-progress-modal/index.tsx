@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { IconChevronDown, IconChevronUp, IconLoader, IconX } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
 import { VideoUploadStatus } from '@/types/video';
-import ConfirmDialog from '@/components/common/confirmDialog';
+import ConfirmDialog from '@/components/common/confirm-dialog';
 import UploadProgressItem from './components';
 
 /**
