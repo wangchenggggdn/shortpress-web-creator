@@ -255,7 +255,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 text-gray-600">
                             <div
-                                className="text-primary cursor-pointer"
+                                className="text-primary cursor-pointer max-w-72 line-clamp-1"
                                 onClick={() => {
                                     window.open(`${website?.domain}/${website?.path}/content`, '_blank');
                                 }}

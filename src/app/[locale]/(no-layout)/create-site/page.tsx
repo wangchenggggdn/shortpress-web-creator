@@ -44,7 +44,7 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
                     siteData.logo = uploadRes.data;
                 }
             }
-            siteData.path = siteData.name;
+            siteData.path = disposeSiteName();
             const res = await WebsiteApi.create(siteData);
             if (res.code === 0) {
                 toast.success('Site created successfully');
@@ -75,15 +75,19 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
         <div className="flex flex-col h-screen">
             <div className="flex-1 flex items-center justify-center p-6">
                 <div className="w-full max-w-2xl bg-white rounded-[32px] p-8 shadow-lg">
-                    <div className="text-center text-3xl text-black-purple font-bold mb-6">Create Your Own Site</div>
+                    <div className="text-center text-3xl font-bold mb-6">Create Your Own Site</div>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Site Name</h3>
+                            <h3 className="text-lg font-medium mb-4">Site Name</h3>
                             <TextInput
                                 value={siteData.name}
                                 onChange={e => {
+                                    if (e.target.value.length > 40 || e.target.value.length < 6) {
+                                        setNameError('Site name must be between 6 and 40 characters');
+                                    } else {
+                                        setNameError('');
+                                    }
                                     setSiteData({ ...siteData, name: e.target.value });
-                                    setNameError('');
                                 }}
                                 placeholder="Enter site name"
                                 variant="filled"

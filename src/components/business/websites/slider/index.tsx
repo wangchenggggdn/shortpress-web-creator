@@ -7,6 +7,7 @@ import { IconBrowser, IconChartBar, IconChevronLeft, IconArrowBack, IconUsers, I
 import { Avatar, Text, Menu } from '@mantine/core';
 import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
+import { text } from 'stream/consumers';
 
 /**
  * Interface for menu item configuration
@@ -110,7 +111,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                                 <div className="flex">
                                     <Avatar src={currentWebsite?.logo ?? ''} radius="xl" size={32} />
                                     {!collapsed && (
-                                        <div className="ml-3 overflow-hidden">
+                                        <div className="ml-3 w-40 line-clamp-1">
                                             <Text size="xl" fw={500} truncate>
                                                 {currentWebsite?.name ?? ''}
                                             </Text>
