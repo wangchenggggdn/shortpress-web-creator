@@ -258,7 +258,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                             <div
                                 className="text-primary cursor-pointer max-w-72 line-clamp-1"
                                 onClick={() => {
-                                    window.open(`${website?.domain}/${website?.path}/content`, '_blank');
+                                    window.open(`${website?.domain}/${website?.path}`, '_blank');
                                 }}
                             >{`${website?.domain}/${website?.path}`}</div>
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">

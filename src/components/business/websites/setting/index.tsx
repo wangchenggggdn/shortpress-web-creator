@@ -2,6 +2,7 @@
 import { Website } from '@/types/website';
 import CreateSiteModal from '../website-create-modal';
 import Header from '@/components/system/header';
+import PaymentSetting from '../payment-setting';
 import { useState } from 'react';
 import classNames from 'classnames';
 import { WebsiteArgs } from '@/api/args';
@@ -73,6 +74,7 @@ const WebsiteSetting: React.FC<WebsiteSettingProps> = ({ website }) => {
                             <CreateSiteModal loading={loading} isEdit={true} opened={true} onSubmit={handleSubmit} type="setting" websiteOld={website} />
                         </div>
                     )}
+                    {activeTab === 'payments' && <PaymentSetting website={website} />}
                 </div>
             </div>
         </div>
