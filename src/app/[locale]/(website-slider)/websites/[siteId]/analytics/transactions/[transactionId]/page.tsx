@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import TransactionDetail from '@/components/business/analytics-view/transaction-detail';
+import TransactionDetail from '@/components/business/websites/analytics-view/transaction-detail';
 import Header from '@/components/system/header';
 
 interface TransactionPageProps {

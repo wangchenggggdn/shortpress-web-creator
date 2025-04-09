@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Advertisement from '@/components/business/monetize-view/advertisement';
-import PayPerView from '@/components/business/monetize-view/pay-per-view';
+import Advertisement from '@/components/business/websites/monetize-view/advertisement';
+import PayPerView from '@/components/business/websites/monetize-view/pay-per-view';
 import { AdUnit } from '@/types/ads';
 import classNames from 'classnames';
 import Header from '@/components/system/header';

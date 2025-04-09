@@ -1,5 +1,5 @@
 import React from 'react';
-import AnalyticsView from '@/components/business/analytics-view';
+import AnalyticsView from '@/components/business/websites/analytics-view';
 import { retryRequest } from '@/api';
 import WebsiteApi from '@/api/website';
 import { Website } from '@/types/website';

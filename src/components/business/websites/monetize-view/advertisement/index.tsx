@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mantine/core';
-import AdUnitList from '@/components/business/monetize-view/advertisement/ad-unit-list';
-import AdUnitEdit from '@/components/business/monetize-view/advertisement/ad-unit-edit';
+import AdUnitList from '@/components/business/websites/monetize-view/advertisement/ad-unit-list';
+import AdUnitEdit from '@/components/business/websites/monetize-view/advertisement/ad-unit-edit';
 import AdsApi from '@/api/ads';
 import { AdUnit } from '@/types/ads';
 import { toast } from 'sonner';

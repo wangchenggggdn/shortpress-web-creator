@@ -1,5 +1,5 @@
 import React from 'react';
-import MonetizeView from '@/components/business/monetize-view';
+import MonetizeView from '@/components/business/websites/monetize-view';
 import { retryRequest } from '@/api';
 import AdsApi from '@/api/ads';
 import { Website } from '@/types/website';

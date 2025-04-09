@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import TransactionList from '@/components/business/analytics-view/transaction-list';
+import TransactionList from '@/components/business/websites/analytics-view/transaction-list';
 import Header from '@/components/system/header';
 
 const mockTransactions = [
