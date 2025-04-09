@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Advertisement from '@/components/business/monetize-view/advertisement';
+import PayPerView from '@/components/business/monetize-view/pay-per-view';
 import { AdUnit } from '@/types/ads';
 import classNames from 'classnames';
 import Header from '@/components/system/header';
@@ -46,7 +47,7 @@ const MonetizeView: React.FC<MonetizeViewProps> = ({ initialAdUnits }) => {
                 <div className="flex-1 min-h-0 mb-6">
                     {activeTab === 'advertisement' && <Advertisement initialAdUnits={initialAdUnits} />}
 
-                    {activeTab === 'payPerView' && <div className="text-center py-12 text-gray-500">Pay per View feature coming soon</div>}
+                    {activeTab === 'payPerView' && <PayPerView />}
 
                     {activeTab === 'bundles' && <div className="text-center py-12 text-gray-500">Bundles feature coming soon</div>}
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { TextInput, Textarea, Button, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { IVideo, VideoStatus } from '@/types/video';
@@ -188,7 +188,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                             </div>
 
                             {/* SEO Settings */}
-                            <div className="space-y-4">
+                            {/* <div className="space-y-4">
                                 <h3 className="text-base font-medium">SEO</h3>
                                 <div>
                                     <label className="block text-sm font-medium mb-2">Title</label>
@@ -242,7 +242,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
                                         variant="filled"
                                     />
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

@@ -23,6 +23,7 @@ import UploadVideoModal from '@/components/business/upload-video-modal';
 import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loading-data';
 import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
+import ConfirmDialog from '@/components/common/confirm-dialog';
 
 interface PlaylistVideosPageProps {}
 
@@ -43,6 +44,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [replaceLoading, setReplaceLoading] = useState(false);
+    const [confirmSaveOrderOpen, setConfirmSaveOrderOpen] = useState(false);
 
     useEffect(() => {
         playlistFetch();
@@ -187,6 +189,10 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
 
     const handleSaveOrder = async () => {
         if (orderParamCurrentRef.current === null) return;
+        setConfirmSaveOrderOpen(true);
+    };
+
+    const confirmSaveOrder = async () => {
         await reloadEditVersion();
         const videoIds = videosRef.current.map(video => video.vid);
         orderParamCurrentRef.current!.sortData.vids = videoIds;
@@ -199,6 +205,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 toast.error('Failed to update video order');
             }
         });
+        setConfirmSaveOrderOpen(false);
     };
 
     const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => {
@@ -280,7 +287,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     {!isEditingOrder && addButton()}
                 </div>
             </Header>
-
             <div className="px-6 pt-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
                     <span className="text-gray-600">{videos.length} videos</span>
@@ -311,7 +317,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 )}
             </div>
-
             <div className="flex-1">
                 <div className="max-w-full mx-auto p-6">
                     <div className="bg-white rounded-lg shadow-sm h-[calc(100vh-180px)] overflow-y-auto">
@@ -338,9 +343,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 </div>
             </div>
-
             <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} />
-
             <UploadVideoModal
                 opened={isUploadModalOpen}
                 onClose={() => setIsUploadModalOpen(false)}
@@ -349,7 +352,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     setIsUploadModalOpen(false);
                 }}
             />
-
             {isEditing && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setIsEditing(false)} />
@@ -358,7 +360,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 </>
             )}
-
             {editingVideo && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
@@ -380,6 +381,15 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 </>
             )}
+            <ConfirmDialog
+                opened={confirmSaveOrderOpen}
+                onClose={() => setConfirmSaveOrderOpen(false)}
+                onConfirm={confirmSaveOrder}
+                confirmText="Save"
+                confirmColor="primary"
+                title="Save Order"
+                message="Are you sure you want to save the new order?"
+            />
         </div>
     );
 };
