@@ -20,6 +20,7 @@ const UnlockHistory: React.FC<UnlockHistoryProps> = ({ email }) => {
             const response = await CustomerApi.getVideoUnlockTransactions({
                 page: 1,
                 pageSize: 20,
+                email,
             });
             setUnlockHistory(response.data.items);
         } catch (error) {
