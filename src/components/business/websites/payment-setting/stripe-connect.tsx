@@ -5,42 +5,41 @@ import { TextInput, Button, LoadingOverlay } from '@mantine/core';
 import { IconX, IconCopy } from '@tabler/icons-react';
 import { toast } from 'sonner';
 
-interface PaypalConnectProps {
+interface StripeConnectProps {
     opened: boolean;
     onClose: () => void;
-    onSubmit: (clientId: string, clientSecret: string) => Promise<void>;
+    onSubmit: (publicKey: string, secretKey: string) => Promise<void>;
 }
 
-const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit }) => {
-    const [clientId, setClientId] = useState('');
-    const [clientSecret, setClientSecret] = useState('');
+const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit }) => {
+    const [publicKey, setPublicKey] = useState('');
+    const [secretKey, setSecretKey] = useState('');
     const [loading, setLoading] = useState(false);
-    const webhookUrl = 'https://shortpress.com/addons/dramas/pay/notify_paypal/payment/paypal/sign/edum';
 
     const handleSubmit = async () => {
-        if (!clientId) {
-            toast.error('Please enter Client ID');
+        if (!publicKey) {
+            toast.error('Please enter Publishable key');
             return;
         }
-        if (!clientSecret) {
-            toast.error('Please enter Client Secret');
+        if (!secretKey) {
+            toast.error('Please enter Secret key');
             return;
         }
 
         try {
-            await onSubmit(clientId, clientSecret);
+            await onSubmit(publicKey, secretKey);
             onClose();
         } catch (error) {
-            console.error('PayPal configuration error:', error);
+            console.error('Stripe configuration error:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const copyWebhookUrl = () => {
-        navigator.clipboard.writeText(webhookUrl);
-        toast.success('Webhook URL copied');
-    };
+    // const copyWebhookUrl = () => {
+    //     navigator.clipboard.writeText(webhookUrl);
+    //     toast.success('Webhook URL copied');
+    // };
 
     if (!opened) return null;
 
@@ -50,7 +49,7 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
                 <div className="w-[480px] bg-white h-full flex flex-col">
                     <div className="overflow-y-scroll">
                         <div className="flex items-center justify-between px-6 h-16">
-                            <h2 className="text-2xl font-medium">Connect PayPal</h2>
+                            <h2 className="text-2xl font-medium">Connect to Stripe</h2>
                             <Button variant="subtle" color="gray" onClick={onClose} className="hover:bg-gray-100">
                                 <IconX size={20} />
                             </Button>
@@ -59,20 +58,20 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
                         <div className="flex-1 px-6 space-y-6">
                             <div>
                                 <TextInput
-                                    label="Client ID*"
-                                    value={clientId}
-                                    onChange={e => setClientId(e.target.value)}
-                                    placeholder="Enter your PayPal Client ID"
+                                    label="Publishable key*"
+                                    value={publicKey}
+                                    onChange={e => setPublicKey(e.target.value)}
+                                    placeholder="Enter your Stripe Publishable key"
                                     variant="filled"
                                 />
                             </div>
 
                             <div>
                                 <TextInput
-                                    label="Client Secret*"
-                                    value={clientSecret}
-                                    onChange={e => setClientSecret(e.target.value)}
-                                    placeholder="Enter your PayPal client secret"
+                                    label="Secret key*"
+                                    value={secretKey}
+                                    onChange={e => setSecretKey(e.target.value)}
+                                    placeholder="Enter your Stripe Secret key"
                                     variant="filled"
                                     type="password"
                                 />
@@ -89,13 +88,8 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
                             </div> */}
 
                             <div className="text-center">
-                                <a
-                                    href="https://developer.paypal.com/docs/api/overview/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-primary hover:underline text-sm"
-                                >
-                                    How to set PayPal?
+                                <a href="https://stripe.com/docs/api" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">
+                                    How to set up Stripe?
                                 </a>
                             </div>
                         </div>
@@ -112,4 +106,4 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
     );
 };
 
-export default PaypalConnect;
+export default StripeConnect;

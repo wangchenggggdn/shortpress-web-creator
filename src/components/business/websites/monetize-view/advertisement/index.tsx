@@ -1,32 +1,28 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button } from '@mantine/core';
 import AdUnitList from '@/components/business/websites/monetize-view/advertisement/ad-unit-list';
 import AdUnitEdit from '@/components/business/websites/monetize-view/advertisement/ad-unit-edit';
 import AdsApi from '@/api/ads';
 import { AdUnit } from '@/types/ads';
 import { toast } from 'sonner';
-import userStore from '@/store/useUserStore';
+import { SiteContext } from '../../useContext/monetize-context';
 
-interface AdvertisementProps {
-    initialAdUnits: AdUnit[];
-}
-
-const Advertisement: React.FC<AdvertisementProps> = ({ initialAdUnits }) => {
-    const [adUnits, setAdUnits] = useState<AdUnit[]>(initialAdUnits);
+const Advertisement: React.FC = () => {
+    const [adUnits, setAdUnits] = useState<AdUnit[]>([]);
     const [modalOpened, setModalOpened] = useState(false);
     const [editingAdUnit, setEditingAdUnit] = useState<AdUnit | undefined>();
     const [isLoading, setIsLoading] = useState(false);
-    const { userInfo } = userStore();
+    const { params } = useContext(SiteContext);
 
     useEffect(() => {
-        console.log('userInfo', userInfo);
-    }, [userInfo]);
+        loadAdUnits();
+    }, []);
 
     const loadAdUnits = async () => {
         try {
-            const response = await AdsApi.list({ siteId: userInfo?.website?.siteId ?? '' });
+            const response = await AdsApi.list({ siteId: params.siteId });
             if (response.code === 0) {
                 setAdUnits(response.data.items);
             } else {
@@ -43,7 +39,7 @@ const Advertisement: React.FC<AdvertisementProps> = ({ initialAdUnits }) => {
             setIsLoading(true);
             const response = await AdsApi.create({
                 ...adUnit,
-                siteId: userInfo?.website?.siteId ?? '',
+                siteId: params.siteId ?? '',
             });
             if (response.code === 0) {
                 toast.success('Ad unit created successfully');

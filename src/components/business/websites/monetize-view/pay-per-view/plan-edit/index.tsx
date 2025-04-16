@@ -1,56 +1,45 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { TextInput, NumberInput, Select, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconX } from '@tabler/icons-react';
-
-enum PlanStatus {
-    ACTIVE = 0,
-    PAUSED = 1,
-    ARCHIVED = 2,
-}
-
-interface Plan {
-    planId: string;
-    name: string;
-    coins: number;
-    price: number;
-    discountPrice?: number;
-    discountPercent?: number;
-    tips: string;
-    status: PlanStatus;
-}
+import { CoinPackage, PackageStatus } from '@/types/payment';
 
 interface PlanEditProps {
-    planOld?: Plan;
+    planOld?: CoinPackage;
     onClose: () => void;
-    onSave: (plan: Plan) => void;
+    onSave: (plan: CoinPackage) => void;
     isLoading?: boolean;
 }
 
 const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading = false }) => {
+    const [status, setStatus] = useState<PackageStatus>(planOld?.status || PackageStatus.Enabled);
     const form = useForm({
         initialValues: {
             name: planOld?.name || '',
-            coins: planOld?.coins || 0,
-            price: planOld?.price || 0,
-            discountPrice: planOld?.discountPrice || 0,
-            discountPercent: planOld?.discountPercent || 0,
-            tips: planOld?.tips || '',
-            status: planOld?.status || PlanStatus.ACTIVE,
+            coinAmount: planOld?.coinAmount || 0,
+            price: planOld?.originalPrice || 0,
+            originalPrice: planOld?.price || 0,
+            discountPercentage: planOld?.discountPercentage || 0,
+            description: planOld?.description || '',
+            status: status,
         },
         validate: {
             name: value => (value.length < 1 ? 'Plan name is required' : null),
-            coins: value => (value <= 0 ? 'Coins must be greater than 0' : null),
+            coinAmount: value => (value <= 0 ? 'Coins must be greater than 0' : null),
             price: value => (value < 0 ? 'Price cannot be negative' : null),
-            discountPrice: (value, values) => {
-                if (value > values.price) return 'Discount price cannot be higher than original price';
-                if (value < 0) return 'Discount price cannot be negative';
+            originalPrice: (value, values) => {
+                if (value <= 0) return 'Original price must be greater than 0';
+                if (value < values.price) return 'Original price must be greater than current price';
                 return null;
             },
-            discountPercent: value => {
-                if (value < 0 || value > 100) return 'Discount percent must be between 0 and 100';
+            discountPercentage: (value, values) => {
+                if (values.originalPrice <= 0) return 'Please set original price first';
+                const calculatedDiscount = ((values.originalPrice - values.price) / values.originalPrice) * 100;
+                if (Math.abs(calculatedDiscount - value) > 0.01) {
+                    return 'Discount percentage does not match price difference';
+                }
                 return null;
             },
         },
@@ -58,12 +47,26 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
 
     const handleSubmit = (values: typeof form.values) => {
         onSave({
-            planId: planOld?.planId || '',
             ...values,
+            packageId: planOld?.packageId || '',
+            siteId: planOld?.siteId || '',
+            status: status,
         });
     };
 
     const isEdit = planOld !== undefined;
+
+    // Calculate discount percentage when price or original price changes
+    const handlePriceChange = (field: 'price' | 'originalPrice', value: number) => {
+        form.setFieldValue(field, value);
+        if (field === 'price' && form.values.originalPrice > 0) {
+            const discount = ((form.values.originalPrice - value) / form.values.originalPrice) * 100;
+            form.setFieldValue('discountPercentage', Math.round(discount * 100) / 100);
+        } else if (field === 'originalPrice' && value > 0) {
+            const discount = ((value - form.values.price) / value) * 100;
+            form.setFieldValue('discountPercentage', Math.round(discount * 100) / 100);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-black/20 z-50 flex justify-end">
@@ -78,43 +81,73 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                     </div>
                 </div>
 
-                {/* Scrollable Form Content */}
-                <div className="flex-1 overflow-y-auto">
-                    <form onSubmit={form.onSubmit(handleSubmit)} className="p-6">
+                {/* Form with both content and submit button */}
+                <form onSubmit={form.onSubmit(handleSubmit)} className="flex flex-col flex-1">
+                    {/* Scrollable Form Content */}
+                    <div className="flex-1 overflow-y-auto p-6">
                         <div className="flex flex-col gap-6">
                             <TextInput label="Plan Name" placeholder="Enter plan name" required {...form.getInputProps('name')} />
-                            <NumberInput label="Coins" placeholder="Enter coins amount" required min={0} {...form.getInputProps('coins')} />
+                            <NumberInput label="Coins" placeholder="Enter coins amount" required min={0} {...form.getInputProps('coinAmount')} />
                             <div className="flex items-center gap-2">
-                                <NumberInput className="flex-1" label="Price" placeholder="Enter price" required min={0} {...form.getInputProps('price')} />
+                                <NumberInput
+                                    className="flex-1"
+                                    label="Price"
+                                    placeholder="Enter price"
+                                    required
+                                    min={0}
+                                    disabled={isEdit}
+                                    onChange={value => {
+                                        form.getInputProps('originalPrice').onChange(value);
+                                        handlePriceChange('originalPrice', Number(value));
+                                    }}
+                                />
                                 <span className="pt-5  text-gray-500">USD</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <NumberInput className="flex-1" label="Discount Price" placeholder="Enter discount price" min={0} {...form.getInputProps('discountPrice')} />
+                                <NumberInput
+                                    className="flex-1"
+                                    label="Original Price"
+                                    placeholder="Enter original price"
+                                    min={0}
+                                    disabled={isEdit}
+                                    onChange={value => {
+                                        form.getInputProps('price').onChange(value);
+                                        handlePriceChange('price', Number(value));
+                                    }}
+                                />
                                 <span className="pt-5  text-gray-500">USD</span>
                             </div>
-                            <NumberInput label="Discount Percent" placeholder="Enter discount percent" min={0} max={100} {...form.getInputProps('discountPercent')} />
-                            <TextInput label="Tips" placeholder="Enter promotional message" {...form.getInputProps('tips')} />
+                            <NumberInput
+                                label="Discount Percentage"
+                                placeholder="Enter discount percentage"
+                                min={0}
+                                max={100}
+                                disabled={true}
+                                {...form.getInputProps('discountPercentage')}
+                            />
+                            <TextInput label="Description" placeholder="Enter description" {...form.getInputProps('description')} />
                             <Select
                                 label="Status"
+                                value={status.toString()}
                                 data={[
-                                    { value: PlanStatus.ACTIVE.toString(), label: 'Active' },
-                                    { value: PlanStatus.PAUSED.toString(), label: 'Paused' },
-                                    { value: PlanStatus.ARCHIVED.toString(), label: 'Archived' },
+                                    { value: PackageStatus.Enabled.toString(), label: 'Enabled' },
+                                    { value: PackageStatus.Disabled.toString(), label: 'Disabled' },
+                                    { value: PackageStatus.Deleted.toString(), label: 'Deleted' },
                                 ]}
-                                {...form.getInputProps('status')}
+                                onChange={value => setStatus(Number(value))}
                             />
                         </div>
-                    </form>
-                </div>
-
-                {/* Fixed Footer */}
-                <div className="flex-none bg-white">
-                    <div className="px-6 py-4">
-                        <Button loading={isLoading} type="submit" fullWidth className="bg-primary hover:bg-primary/90">
-                            {isEdit ? 'Save Changes' : 'Create Plan'}
-                        </Button>
                     </div>
-                </div>
+
+                    {/* Fixed Footer with Submit Button */}
+                    <div className="flex-none bg-white border-t">
+                        <div className="px-6 py-4">
+                            <Button loading={isLoading} type="submit" fullWidth className="bg-primary hover:bg-primary/90">
+                                {isEdit ? 'Save Changes' : 'Create Plan'}
+                            </Button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     );

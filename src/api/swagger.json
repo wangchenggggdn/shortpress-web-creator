@@ -98,7 +98,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -115,7 +115,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回创建的广告单元信息",
+                        "description": "Returns the created ad unit information",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.Response"
                         }
@@ -144,7 +144,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -160,7 +160,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回广告单元列表",
+                        "description": "Returns a list of ad units",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.AdUnitListResponseData"
                         }
@@ -426,7 +426,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "完成指引",
+                "description": "Complete guides",
                 "consumes": [
                     "application/json"
                 ],
@@ -436,17 +436,17 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "完成指引",
+                "summary": "Complete guides",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "创作者登录参数",
+                        "description": "Creator login parameters",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -457,7 +457,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "完成指引成功返回结果",
+                        "description": "Returns successful result of completing guides",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.Response"
                         }
@@ -467,7 +467,7 @@
         },
         "/api/creator/login": {
             "post": {
-                "description": "创作者登录接口",
+                "description": "Creator login interface",
                 "consumes": [
                     "application/json"
                 ],
@@ -477,10 +477,10 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "创作者登录",
+                "summary": "Creator login",
                 "parameters": [
                     {
-                        "description": "创作者登录参数",
+                        "description": "Creator login parameters",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -491,7 +491,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回包含 accessToken 的登录响应",
+                        "description": "Returns login response containing accessToken",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.CreatorLoginResponse"
                         }
@@ -506,7 +506,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "根据创作者ID获取详细的创作者个人信息，包括昵称、头像地址、创建时间等",
+                "description": "Get detailed creator profile information based on creator ID, including nickname, avatar URL, creation time, etc.",
                 "consumes": [
                     "application/json"
                 ],
@@ -516,11 +516,11 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "获取创作者个人信息",
+                "summary": "Get creator's profile information",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -528,7 +528,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回创作者个人信息",
+                        "description": "Returns creator profile information",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.CreatorProfileResponse"
                         }
@@ -548,7 +548,7 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "注册创作者",
+                "summary": "Register a creator",
                 "parameters": [
                     {
                         "description": "params",
@@ -572,7 +572,7 @@
         },
         "/api/creator/resetpwd": {
             "post": {
-                "description": "根据邮箱重置创作者密码。",
+                "description": "Reset creator password via email.",
                 "consumes": [
                     "application/json"
                 ],
@@ -582,10 +582,10 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "重置创作者密码",
+                "summary": "Reset creator password",
                 "parameters": [
                     {
-                        "description": "重置密码参数",
+                        "description": "Reset password parameters",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -611,7 +611,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "获取创作者视频总数，播放列表总数，站点总数",
+                "description": "Get creator's total videos, playlists, and sites count",
                 "consumes": [
                     "application/json"
                 ],
@@ -621,11 +621,11 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "获取创作者视频总数，播放列表总数，站点总数",
+                "summary": "Get creator's total videos, playlists, and sites count",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -633,7 +633,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回创作者视频统计信息",
+                        "description": "Returns creator video statistics",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.CreatorStatsResponseData"
                         }
@@ -648,7 +648,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "创作者上传图片接口，支持jpg、png、gif等常见图片格式",
+                "description": "Creator image upload interface, supports jpg, png, gif and other common image formats",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -658,18 +658,18 @@
                 "tags": [
                     "creator"
                 ],
-                "summary": "上传图片",
+                "summary": "Upload image",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
                         "type": "file",
-                        "description": "要上传的图片文件",
+                        "description": "Image file to upload",
                         "name": "file",
                         "in": "formData",
                         "required": true
@@ -677,7 +677,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回上传成功的图片路径",
+                        "description": "Returns the path of the successfully uploaded image",
                         "schema": {
                             "allOf": [
                                 {
@@ -692,6 +692,245 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/account/info": {
+            "get": {
+                "description": "获取当前配置的支付服务商账户信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "获取支付账户信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "支付服务商(stripe)",
+                        "name": "provider",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回账户信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PaymentAccountInfo"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/coins/package/client/list": {
+            "get": {
+                "description": "获取指定站点的所有可用金币套餐，供客户端展示使用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "获取客户端金币套餐列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回可用的金币套餐列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/coins/package/create": {
+            "post": {
+                "description": "创建新的金币套餐供用户购买",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "创建金币套餐",
+                "parameters": [
+                    {
+                        "description": "金币套餐创建请求",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回创建成功的套餐ID",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageCreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/coins/package/list": {
+            "get": {
+                "description": "获取指定站点的所有金币套餐",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "获取金币套餐列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回可用的金币套餐列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/conf/save": {
+            "post": {
+                "description": "保存用户的支付服务商配置信息，包括密钥等",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "保存支付配置",
+                "parameters": [
+                    {
+                        "description": "支付配置信息",
+                        "name": "config",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PaymentProviderConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回成功信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/conf/test": {
+            "post": {
+                "description": "验证支付服务商的密钥配置是否有效",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "测试支付配置",
+                "parameters": [
+                    {
+                        "description": "支付配置信息",
+                        "name": "config",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PaymentProviderConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回成功信息",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/order/create": {
+            "post": {
+                "description": "创建一个支付订单，用于购买金币套餐或订阅，返回支付URLs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "创建支付订单",
+                "parameters": [
+                    {
+                        "description": "订单创建请求",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.OrderCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回订单信息及支付URLs",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.OrderCreateResponse"
                         }
                     }
                 }
@@ -782,6 +1021,40 @@
                         "description": "返回播放列表详细信息",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.PlaylistList"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/playlist/change/access/type": {
+            "post": {
+                "description": "修改播放列表的访问类型（免费、付费、会员专享）和价格设置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "playlist"
+                ],
+                "summary": "修改播放列表访问类型和付费设置",
+                "parameters": [
+                    {
+                        "description": "访问类型和付费设置",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PlaylistAccessChangeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "操作成功",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
                         }
                     }
                 }
@@ -1904,6 +2177,172 @@
                 }
             }
         },
+        "/api/user/coins/balance": {
+            "get": {
+                "description": "获取当前登录用户在指定站点的金币账户余额",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "获取用户金币余额",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回用户金币账户信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.UserCoinsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/coins/transactions": {
+            "get": {
+                "description": "获取当前登录用户的金币交易历史记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "获取用户金币交易记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回交易记录列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.TransactionHistoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/coins/videos/transactions": {
+            "get": {
+                "description": "获取当前登录用户的视频和播放列表解锁历史记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "获取用户视频解锁记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回解锁记录列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.VideoUnlockHistoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/login": {
             "post": {
                 "description": "User login with email and password",
@@ -2037,7 +2476,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "根据视频ID批量查询视频简要信息(注意数量控制...)",
+                "description": "Query brief video information by batch video IDs (note quantity control...)",
                 "consumes": [
                     "application/json"
                 ],
@@ -2047,18 +2486,18 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "批量获取视频简要信息",
+                "summary": "Batch get brief video information",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header"
                     },
                     {
                         "type": "string",
                         "example": "\"vid-123456,vid-123457\"",
-                        "description": "视频ID列表，逗号分隔",
+                        "description": "Video ID list, comma separated",
                         "name": "vids",
                         "in": "query",
                         "required": true
@@ -2066,7 +2505,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回视频简要信息列表",
+                        "description": "Returns brief video information list",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.VideoListResponseData"
                         }
@@ -2081,7 +2520,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "批量删除指定的视频",
+                "description": "Batch delete specified videos",
                 "consumes": [
                     "application/json"
                 ],
@@ -2091,17 +2530,17 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "删除视频",
+                "summary": "Delete videos",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "视频删除参数",
+                        "description": "Video deletion parameters",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2112,7 +2551,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "删除成功",
+                        "description": "Deletion successful",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.Response"
                         }
@@ -2127,7 +2566,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "根据视频ID查询视频详细信息",
+                "description": "Query video details by video ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -2137,11 +2576,11 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "获取视频详情",
+                "summary": "Get video details",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -2149,7 +2588,7 @@
                     {
                         "type": "string",
                         "example": "\"vid-123456\"",
-                        "description": "视频ID",
+                        "description": "Video ID",
                         "name": "vid",
                         "in": "query",
                         "required": true
@@ -2157,14 +2596,14 @@
                     {
                         "type": "boolean",
                         "default": false,
-                        "description": "是否需要SEO信息",
+                        "description": "Whether SEO information is needed",
                         "name": "need_seo",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回视频详细信息",
+                        "description": "Returns detailed video information",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.VideoInfo"
                         }
@@ -2179,7 +2618,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "根据关键字搜索视频，支持分页",
+                "description": "Search videos by keyword, supports pagination",
                 "consumes": [
                     "application/json"
                 ],
@@ -2189,11 +2628,11 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "展示当前创作者的所有视频",
+                "summary": "Display all videos of current creator",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -2201,20 +2640,20 @@
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "排序方式 (0:创建时间倒序 1:名称排序)",
+                        "description": "Sort type (0:created time desc 1:name sort)",
                         "name": "sortType",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "视频状态",
+                        "description": "Video status",
                         "name": "status",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "视频上传的状态,逗号分隔，支持多状态组合",
+                        "description": "Video upload status, comma separated, supports multiple status combinations",
                         "name": "uploadStatus",
                         "in": "query"
                     },
@@ -2222,7 +2661,7 @@
                         "minimum": 1,
                         "type": "integer",
                         "example": 1,
-                        "description": "页码，默认1",
+                        "description": "Page number, default 1",
                         "name": "page",
                         "in": "query"
                     },
@@ -2231,14 +2670,14 @@
                         "minimum": 1,
                         "type": "integer",
                         "example": 20,
-                        "description": "每页数量，默认10",
+                        "description": "Page size, default 10",
                         "name": "pageSize",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回播放列表中的视频列表",
+                        "description": "Returns video list in playlist",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
                         }
@@ -2253,7 +2692,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "修改指定视频的基本信息",
+                "description": "Modify basic information of a specified video",
                 "consumes": [
                     "application/json"
                 ],
@@ -2263,17 +2702,17 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "修改视频信息",
+                "summary": "Modify video information",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "视频修改参数",
+                        "description": "Video modification parameters",
                         "name": "request",
                         "in": "body",
                         "required": true,
@@ -2284,7 +2723,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "修改成功",
+                        "description": "Modification successful",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.Response"
                         }
@@ -2299,7 +2738,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "同步替换视频",
+                "description": "Synchronously replace a video",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -2309,11 +2748,11 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "替换视频， 视频ID不变",
+                "summary": "Replace video, keeping the same video ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -2321,7 +2760,7 @@
                     {
                         "type": "string",
                         "example": "\"vid-123456\"",
-                        "description": "要替换的视频ID",
+                        "description": "Video ID to replace",
                         "name": "vid",
                         "in": "query",
                         "required": true
@@ -2329,7 +2768,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "替换成功",
+                        "description": "Replacement successful",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.VideoReplaceResonse"
                         }
@@ -2344,7 +2783,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "根据关键字搜索视频，支持分页",
+                "description": "Search videos by keyword, supports pagination",
                 "consumes": [
                     "application/json"
                 ],
@@ -2354,11 +2793,11 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "搜索视频",
+                "summary": "Search videos",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -2366,27 +2805,27 @@
                     {
                         "type": "string",
                         "example": "playlistid",
-                        "description": "播放列表ID，不传默认搜索全部",
+                        "description": "Playlist ID, if not provided, search all videos",
                         "name": "playlistId",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "排序方式 (0:创建时间倒序 1:名称排序)",
+                        "description": "Sort type (0:created time desc 1:name sort)",
                         "name": "orderType",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "视频状态",
+                        "description": "Video status",
                         "name": "status",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "视频上传的状态,逗号分隔，支持多状态组合",
+                        "description": "Video upload status, comma separated, supports multiple status combinations",
                         "name": "uploadStatus",
                         "in": "query"
                     },
@@ -2394,7 +2833,7 @@
                         "minimum": 1,
                         "type": "integer",
                         "example": 1,
-                        "description": "页码，默认1",
+                        "description": "Page number, default 1",
                         "name": "page",
                         "in": "query"
                     },
@@ -2403,14 +2842,14 @@
                         "minimum": 1,
                         "type": "integer",
                         "example": 20,
-                        "description": "每页数量，默认10",
+                        "description": "Page size, default 10",
                         "name": "pageSize",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "example": "教程",
-                        "description": "查询关键字",
+                        "example": "tutorial",
+                        "description": "Search keyword",
                         "name": "keyword",
                         "in": "query",
                         "required": true
@@ -2418,7 +2857,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回搜索结果",
+                        "description": "Returns search results",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
                         }
@@ -2433,7 +2872,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "批量上传视频文件，返回创建的视频VID列表",
+                "description": "Batch upload video files, returns a list of created video VIDs",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -2443,11 +2882,11 @@
                 "tags": [
                     "video"
                 ],
-                "summary": "批量上传视频",
+                "summary": "Batch upload videos",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Bearer 用户令牌",
+                        "description": "Bearer user token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -2455,14 +2894,14 @@
                     {
                         "type": "string",
                         "example": "playlistid",
-                        "description": "播放列表ID，不传默认不加入播放列表",
+                        "description": "Playlist ID, if not provided, videos won't be added to any playlist",
                         "name": "playlistId",
                         "in": "formData"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回上传的视频VID列表",
+                        "description": "Returns a list of uploaded video VIDs",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.VideoUploadResponse"
                         }
@@ -2552,7 +2991,7 @@
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "广告单元列表",
+                    "description": "Ad unit list",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/shortpress-server_internal_api.AdUnit"
@@ -2567,9 +3006,117 @@
             ],
             "properties": {
                 "sitePath": {
-                    "description": "站点路径",
+                    "description": "Site path",
                     "type": "string",
                     "example": "abc"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CoinPackageCreateRequest": {
+            "type": "object",
+            "required": [
+                "coinAmount",
+                "name",
+                "price",
+                "siteId"
+            ],
+            "properties": {
+                "coinAmount": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discountPercentage": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "originalPrice": {
+                    "type": "number"
+                },
+                "price": {
+                    "type": "number",
+                    "minimum": 0.01
+                },
+                "siteId": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CoinPackageCreateResponse": {
+            "type": "object",
+            "properties": {
+                "packageId": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CoinPackageResponseData": {
+            "type": "object",
+            "properties": {
+                "coinAmount": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discountPercentage": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "originalPrice": {
+                    "type": "number"
+                },
+                "packageId": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CoinTransactionResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "balance": {
+                    "type": "integer"
+                },
+                "beforeBalance": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "Snapshot       map[string]interface{} `json:\"snapshot,omitempty\"`",
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "relatedType": {
+                    "description": "RelatedID      string                 `json:\"relatedId,omitempty\"`",
+                    "type": "integer"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "transactionId": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
                 }
             }
         },
@@ -2598,7 +3145,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "description": "1 完成 非1 未完成",
+                    "description": "1 Completed, other values Incomplete",
                     "type": "integer"
                 }
             }
@@ -2607,7 +3154,7 @@
             "type": "object",
             "properties": {
                 "accessToken": {
-                    "description": "AccessToken 为登录成功后返回的 token，类型 VARCHAR(255)",
+                    "description": "AccessToken is the token returned after successful login, type VARCHAR(255)",
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6xxxxxc"
                 }
@@ -2621,12 +3168,12 @@
             ],
             "properties": {
                 "email": {
-                    "description": "Email 对应 MySQL 表中 email 字段，类型 VARCHAR(255)，不能为空",
+                    "description": "Email corresponds to the email field in MySQL table, type VARCHAR(255), cannot be null",
                     "type": "string",
                     "example": "user@example.com"
                 },
                 "password": {
-                    "description": "Password 对应 MySQL 表中密码校验使用的明文密码，类型 VARCHAR(255)，不能为空",
+                    "description": "Password corresponds to the plaintext password used for password verification in MySQL table, type VARCHAR(255), cannot be null",
                     "type": "string",
                     "example": "secret"
                 }
@@ -2655,7 +3202,7 @@
                     "example": "http://example.com/avatar.jpg"
                 },
                 "createdAt": {
-                    "description": "CreatedAt 创建时间，Unix时间戳",
+                    "description": "CreatedAt Creation time, Unix timestamp",
                     "type": "string",
                     "example": "1609459200"
                 },
@@ -2670,7 +3217,7 @@
                     "example": "user@example.com"
                 },
                 "guides": {
-                    "description": "新任务引导",
+                    "description": "New task guides",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/shortpress-server_internal_api.CreatorGuides"
@@ -2682,7 +3229,7 @@
                     "example": "JohnDoe"
                 },
                 "updatedAt": {
-                    "description": "UpdatedAt 更新时间，Unix时间戳",
+                    "description": "UpdatedAt Update time, Unix timestamp",
                     "type": "string",
                     "example": "1609545600"
                 }
@@ -2723,31 +3270,180 @@
             "type": "object",
             "properties": {
                 "hasMore": {
-                    "description": "是否还有更多",
+                    "description": "Whether there are more items",
                     "type": "boolean",
                     "example": true
                 },
                 "items": {
-                    "description": "ID 信息列表",
+                    "description": "ID information list",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "page": {
-                    "description": "当前页码",
+                    "description": "Current page number",
                     "type": "integer",
                     "example": 1
                 },
                 "pageSize": {
-                    "description": "每页数量",
+                    "description": "Items per page",
                     "type": "integer",
                     "example": 20
                 },
                 "total": {
-                    "description": "视频总数",
+                    "description": "Total number of videos",
                     "type": "integer",
                     "example": 100
+                }
+            }
+        },
+        "shortpress-server_internal_api.OrderCreateRequest": {
+            "type": "object",
+            "required": [
+                "orderType",
+                "packageId",
+                "siteId"
+            ],
+            "properties": {
+                "cancelUrl": {
+                    "description": "URL to redirect if canceled",
+                    "type": "string"
+                },
+                "currency": {
+                    "description": "Optional override for currency",
+                    "type": "string"
+                },
+                "orderType": {
+                    "enum": [
+                        "coin",
+                        "sub"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/shortpress-server_internal_api.OrderType"
+                        }
+                    ]
+                },
+                "packageId": {
+                    "description": "ID of the coin package or subscription package",
+                    "type": "string"
+                },
+                "returnUrl": {
+                    "description": "URL to redirect after payment",
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.OrderCreateResponse": {
+            "type": "object",
+            "properties": {
+                "cancelUrl": {
+                    "description": "URL to redirect if payment is canceled",
+                    "type": "string"
+                },
+                "checkoutUrl": {
+                    "description": "URL for hosted checkout pages",
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "description": "For Stripe payment intents",
+                    "type": "string"
+                },
+                "orderId": {
+                    "type": "string"
+                },
+                "paymentStatus": {
+                    "type": "string"
+                },
+                "successUrl": {
+                    "description": "URL to redirect after successful payment",
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.OrderType": {
+            "type": "string",
+            "enum": [
+                "coin",
+                "sub"
+            ],
+            "x-enum-varnames": [
+                "OrderTypeCoinPackage",
+                "OrderTypeSubscription"
+            ]
+        },
+        "shortpress-server_internal_api.PaymentAccountInfo": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "description": "账户ID",
+                    "type": "string",
+                    "example": "1234567890"
+                },
+                "country": {
+                    "description": "国家/地区",
+                    "type": "string",
+                    "example": "US"
+                },
+                "email": {
+                    "description": "账号邮箱",
+                    "type": "string",
+                    "example": "johndoe@example.com"
+                }
+            }
+        },
+        "shortpress-server_internal_api.PaymentProviderConfig": {
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "description": "Payment provider name",
+                    "type": "string",
+                    "example": "stripe"
+                },
+                "siteId": {
+                    "description": "Site ID (internal use)",
+                    "type": "string",
+                    "example": "site-123"
+                },
+                "stripeConf": {
+                    "description": "Stripe configuration",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/shortpress-server_internal_api.StripeConfig"
+                        }
+                    ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.PlaylistAccessChangeRequest": {
+            "type": "object",
+            "required": [
+                "accessType",
+                "playlistId"
+            ],
+            "properties": {
+                "accessType": {
+                    "description": "1:free 2:paid 3:member-only",
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 1
+                },
+                "freeVideos": {
+                    "description": "Number of free videos before requiring payment",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "playlistId": {
+                    "type": "string"
+                },
+                "singleVideoPrice": {
+                    "description": "Cost in coins to unlock a single video",
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         },
@@ -2759,12 +3455,12 @@
             ],
             "properties": {
                 "playlistId": {
-                    "description": "播放列表ID",
+                    "description": "Playlist ID",
                     "type": "string",
                     "example": "playlist-123"
                 },
                 "vids": {
-                    "description": "要添加的视频ID列表",
+                    "description": "List of video IDs to add",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2783,12 +3479,12 @@
             ],
             "properties": {
                 "playlistId": {
-                    "description": "播放列表ID",
+                    "description": "Playlist ID",
                     "type": "string",
                     "example": "playlist-123"
                 },
                 "vids": {
-                    "description": "要移除的视频ID列表",
+                    "description": "List of video IDs to remove",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2806,7 +3502,7 @@
             ],
             "properties": {
                 "playlistIds": {
-                    "description": "SiteID\t string   `json:\"siteId\" binding:\"required\" example:\"site-123\"` // 站点ID",
+                    "description": "SiteID\t string   `json:\"siteId\" binding:\"required\" example:\"site-123\"` // Site ID",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2821,22 +3517,34 @@
         "shortpress-server_internal_api.PlaylistInfo": {
             "type": "object",
             "properties": {
+                "accessType": {
+                    "description": "Access type 1:free 2:paid",
+                    "type": "integer"
+                },
                 "cover": {
                     "type": "string"
                 },
                 "createdAt": {
-                    "description": "创建时间",
+                    "description": "Creation time",
                     "type": "integer",
                     "example": 1609459200
                 },
                 "description": {
                     "type": "string"
                 },
+                "freeVideos": {
+                    "description": "Number of free videos before requiring payment",
+                    "type": "integer"
+                },
                 "playlistId": {
                     "type": "string"
                 },
                 "seo": {
                     "$ref": "#/definitions/shortpress-server_internal_api.PlaylistSeo"
+                },
+                "singleVideoPrice": {
+                    "description": "Cost in coins to unlock a single video",
+                    "type": "integer"
                 },
                 "status": {
                     "type": "integer"
@@ -2848,20 +3556,20 @@
                     "type": "string"
                 },
                 "updatedAt": {
-                    "description": "更新时间",
+                    "description": "Update time",
                     "type": "integer",
                     "example": 1609459200
                 },
                 "version": {
-                    "description": "版本号",
+                    "description": "Version number",
                     "type": "integer"
                 },
                 "videoCount": {
-                    "description": "视频数量",
+                    "description": "Number of videos",
                     "type": "integer"
                 },
                 "videos": {
-                    "description": "视频列表",
+                    "description": "Video list",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/shortpress-server_internal_api.PlaylistVideData"
@@ -2873,7 +3581,7 @@
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "播放列表列表",
+                    "description": "Playlist list",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/shortpress-server_internal_api.PlaylistInfo"
@@ -2913,11 +3621,11 @@
             "type": "object",
             "properties": {
                 "status": {
-                    "description": "视频状态",
+                    "description": "Video status",
                     "type": "integer"
                 },
                 "vid": {
-                    "description": "视频ID",
+                    "description": "Video ID",
                     "type": "string"
                 }
             }
@@ -2931,12 +3639,12 @@
             ],
             "properties": {
                 "playlistId": {
-                    "description": "播放列表ID",
+                    "description": "Playlist ID",
                     "type": "string",
                     "example": "playlist-123"
                 },
                 "sortData": {
-                    "description": "视频排序数据",
+                    "description": "Video sorting data",
                     "allOf": [
                         {
                             "$ref": "#/definitions/shortpress-server_internal_api.VideoSortData"
@@ -2944,7 +3652,7 @@
                     ]
                 },
                 "version": {
-                    "description": "版本号",
+                    "description": "Version number",
                     "type": "integer"
                 }
             }
@@ -2973,10 +3681,10 @@
         "shortpress-server_internal_api.RegisterResponseData": {
             "type": "object",
             "properties": {
-                "siteId": {
+                "accessToken": {
                     "type": "string"
                 },
-                "token": {
+                "siteId": {
                     "type": "string"
                 }
             }
@@ -2989,12 +3697,12 @@
             ],
             "properties": {
                 "email": {
-                    "description": "email 对应 MySQL 表中 email 字段",
+                    "description": "email corresponds to the email field in MySQL table",
                     "type": "string",
                     "example": "user@example.com"
                 },
                 "newPassword": {
-                    "description": "newPassword 为新密码，",
+                    "description": "newPassword is the new password",
                     "type": "string",
                     "example": "newSecret"
                 }
@@ -3020,7 +3728,7 @@
             ],
             "properties": {
                 "playlistIds": {
-                    "description": "播放列表ID数组",
+                    "description": "Playlist ID array",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -3031,7 +3739,7 @@
                     ]
                 },
                 "siteId": {
-                    "description": "站点ID，CHAR(36)",
+                    "description": "Site ID, CHAR(36)",
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 }
@@ -3128,19 +3836,54 @@
             "type": "object",
             "properties": {
                 "description": {
-                    "description": "SEO描述，TEXT，可选",
+                    "description": "SEO description, TEXT, optional",
                     "type": "string",
                     "example": "This is my updated website"
                 },
                 "keywords": {
-                    "description": "SEO关键词，VARCHAR(1024)，可选",
+                    "description": "SEO keywords, VARCHAR(1024), optional",
                     "type": "string",
                     "example": "site,example,updated"
                 },
                 "title": {
-                    "description": "SEO标题，VARCHAR(1024)，可选",
+                    "description": "SEO title, VARCHAR(1024), optional",
                     "type": "string",
                     "example": "Welcome to MySite Updated"
+                }
+            }
+        },
+        "shortpress-server_internal_api.StripeConfig": {
+            "type": "object",
+            "properties": {
+                "pk": {
+                    "description": "Stripe public key",
+                    "type": "string",
+                    "example": "pk_test_..."
+                },
+                "sk": {
+                    "description": "Stripe secret key",
+                    "type": "string",
+                    "example": "sk_test_..."
+                }
+            }
+        },
+        "shortpress-server_internal_api.TransactionHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.CoinTransactionResponse"
+                    }
                 }
             }
         },
@@ -3153,13 +3896,29 @@
             ],
             "properties": {
                 "email": {
+                    "description": "Email is the user's email address\nRequired: true\nFormat: email",
                     "type": "string"
                 },
                 "siteId": {
+                    "description": "SiteID is the unique identifier of the site\nRequired: true",
                     "type": "string"
                 },
                 "status": {
-                    "description": "Allowed: 2=activate, 3=forbidden, 127=delete",
+                    "description": "Status is the new status to assign to the user\nRequired: true\nEnum: 2 3 127\n2: activate - User is active\n3: forbidden - User is forbidden\n127: delete - User is deleted",
+                    "type": "integer"
+                }
+            }
+        },
+        "shortpress-server_internal_api.UserCoinsResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "integer"
+                },
+                "totalEarned": {
+                    "type": "integer"
+                },
+                "totalSpent": {
                     "type": "integer"
                 }
             }
@@ -3316,7 +4075,7 @@
             ],
             "properties": {
                 "vids": {
-                    "description": "要删除的视频ID列表",
+                    "description": "List of video IDs to delete",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -3332,32 +4091,32 @@
             "type": "object",
             "properties": {
                 "cover": {
-                    "description": "视频封面",
+                    "description": "Video cover",
                     "type": "string",
                     "example": "http://example.com/cover.jpg"
                 },
                 "createdAt": {
-                    "description": "创建时间",
+                    "description": "Creation time",
                     "type": "integer",
                     "example": 1609459200
                 },
                 "description": {
-                    "description": "视频描述",
+                    "description": "Video description",
                     "type": "string",
-                    "example": "这是一个示例视频"
+                    "example": "This is an example video"
                 },
                 "duration": {
-                    "description": "视频时长(秒)",
+                    "description": "Video duration (seconds)",
                     "type": "integer",
                     "example": 180
                 },
                 "fileSize": {
-                    "description": "文件大小(字节)",
+                    "description": "File size (bytes)",
                     "type": "integer",
                     "example": 1024000
                 },
                 "seo": {
-                    "description": "视频SEO信息",
+                    "description": "Video SEO information",
                     "allOf": [
                         {
                             "$ref": "#/definitions/shortpress-server_internal_api.VideoSeo"
@@ -3365,42 +4124,42 @@
                     ]
                 },
                 "status": {
-                    "description": "视频状态：1-未发布，2-已发布，3-下架，127-删除",
+                    "description": "Video status: 1-Unpublished, 2-Published, 3-Offline, 127-Deleted",
                     "type": "integer",
                     "example": 1
                 },
                 "tags": {
-                    "description": "视频标签",
+                    "description": "Video tags",
                     "type": "string",
-                    "example": "示例,教程"
+                    "example": "example,tutorial"
                 },
                 "title": {
-                    "description": "视频标题",
+                    "description": "Video title",
                     "type": "string",
-                    "example": "示例视频"
+                    "example": "Example video"
                 },
                 "updatedAt": {
-                    "description": "更新时间",
+                    "description": "Update time",
                     "type": "integer",
                     "example": 1609459200
                 },
                 "uploadStatus": {
-                    "description": "上传状态：1-未上传，2-上传中，3-上传失败，4-上传取消，5-上传成功",
+                    "description": "Upload status: 1-Not uploaded, 2-Uploading, 3-Upload failed, 4-Upload canceled, 5-Upload successful",
                     "type": "integer",
                     "example": 4
                 },
                 "vid": {
-                    "description": "视频唯一标识",
+                    "description": "Unique video identifier",
                     "type": "string",
                     "example": "vid-123456"
                 },
                 "videoPath": {
-                    "description": "视频文件路径",
+                    "description": "Video file path",
                     "type": "string",
                     "example": "user/abc/v.mp4"
                 },
                 "videoSourceUrl": {
-                    "description": "视频源播放地址",
+                    "description": "Video source play URL",
                     "type": "string",
                     "example": "http://example.com/user/abc/v.mp4"
                 }
@@ -3410,24 +4169,24 @@
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "视频列表",
+                    "description": "Video list",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/shortpress-server_internal_api.VideoInfo"
                     }
                 },
                 "page": {
-                    "description": "当前页码",
+                    "description": "Current page number",
                     "type": "integer",
                     "example": 1
                 },
                 "pageSize": {
-                    "description": "每页数量",
+                    "description": "Items per page",
                     "type": "integer",
                     "example": 20
                 },
                 "total": {
-                    "description": "总数",
+                    "description": "Total count",
                     "type": "integer",
                     "example": 100
                 }
@@ -3437,12 +4196,15 @@
             "type": "object",
             "properties": {
                 "cover": {
+                    "description": "Video cover",
                     "type": "string"
                 },
                 "vid": {
+                    "description": "Unique video identifier",
                     "type": "string"
                 },
                 "videoSourceUrl": {
+                    "description": "Video source play URL",
                     "type": "string"
                 }
             }
@@ -3467,17 +4229,17 @@
                 "Keywords": {
                     "description": "Keywords",
                     "type": "string",
-                    "example": "示例,教程"
+                    "example": "example,tutorial"
                 },
                 "description": {
-                    "description": "视频描述",
+                    "description": "Video description",
                     "type": "string",
-                    "example": "这是一个示例视频"
+                    "example": "This is an example video"
                 },
                 "title": {
-                    "description": "视频标题",
+                    "description": "Video title",
                     "type": "string",
-                    "example": "示例视频"
+                    "example": "Example video"
                 }
             }
         },
@@ -3488,7 +4250,7 @@
             ],
             "properties": {
                 "vids": {
-                    "description": "视频ID列表",
+                    "description": "List of video IDs",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -3497,6 +4259,63 @@
                         "[\"vid-1\"",
                         "\"vid-2\"]"
                     ]
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoUnlockHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页大小",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "unlocks": {
+                    "description": "解锁记录列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.VideoUnlockResponse"
+                    }
+                }
+            }
+        },
+        "shortpress-server_internal_api.VideoUnlockResponse": {
+            "type": "object",
+            "properties": {
+                "coinCost": {
+                    "description": "消费的金币数量",
+                    "type": "integer"
+                },
+                "contentId": {
+                    "description": "内容ID (视频或播放列表ID)",
+                    "type": "string"
+                },
+                "contentType": {
+                    "description": "内容类型 \"video\" or \"playlist\"",
+                    "type": "string"
+                },
+                "expiredAt": {
+                    "description": "过期时间（如果有）",
+                    "type": "integer"
+                },
+                "playlistId": {
+                    "description": "播放列表ID (当contentType为视频时)",
+                    "type": "string"
+                },
+                "transactionId": {
+                    "description": "对应的交易ID",
+                    "type": "string"
+                },
+                "unlockedAt": {
+                    "description": "解锁时间",
+                    "type": "integer"
                 }
             }
         },
@@ -3518,7 +4337,7 @@
             "type": "object",
             "properties": {
                 "vids": {
-                    "description": "上传成功的视频ID列表",
+                    "description": "List of successfully uploaded video IDs",
                     "type": "array",
                     "items": {
                         "type": "string"

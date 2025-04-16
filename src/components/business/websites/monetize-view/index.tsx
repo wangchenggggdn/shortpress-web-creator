@@ -3,13 +3,8 @@
 import React, { useState } from 'react';
 import Advertisement from '@/components/business/websites/monetize-view/advertisement';
 import PayPerView from '@/components/business/websites/monetize-view/pay-per-view';
-import { AdUnit } from '@/types/ads';
 import classNames from 'classnames';
 import Header from '@/components/system/header';
-
-interface MonetizeViewProps {
-    initialAdUnits: AdUnit[];
-}
 
 const TABS = [
     { id: 'advertisement', label: 'Advertisement' },
@@ -20,7 +15,7 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id'];
 
-const MonetizeView: React.FC<MonetizeViewProps> = ({ initialAdUnits }) => {
+const MonetizeView: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabId>('advertisement');
 
     return (
@@ -45,7 +40,7 @@ const MonetizeView: React.FC<MonetizeViewProps> = ({ initialAdUnits }) => {
 
                 {/* Tab Content */}
                 <div className="flex-1 min-h-0 mb-6">
-                    {activeTab === 'advertisement' && <Advertisement initialAdUnits={initialAdUnits} />}
+                    {activeTab === 'advertisement' && <Advertisement />}
 
                     {activeTab === 'payPerView' && <PayPerView />}
 

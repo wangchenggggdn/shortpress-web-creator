@@ -2,7 +2,7 @@ import fetch from '@/libs/fetch/fetch';
 import { Customer } from '@/types/customer';
 import { IPaginationResponse } from '@/types/public';
 import { CustomerArgs } from './args';
-
+import { UserResponse } from './respone';
 export default class CustomerApi {
     /**
      * Get customer list with pagination
@@ -23,5 +23,26 @@ export default class CustomerApi {
      */
     static changeStatus(args: CustomerArgs.ChangeStatus) {
         return fetch.post('/api/site/user/change/status', args);
+    }
+
+    /**
+     * Get user's coin balance
+     */
+    static getCoinBalance() {
+        return fetch.get<UserResponse.UserCoinsResponse>('/api/user/coins/balance');
+    }
+
+    /**
+     * Get user's coin transaction history
+     */
+    static getCoinTransactions(args: CustomerArgs.GetCoinTransactions) {
+        return fetch.get<UserResponse.TransactionHistoryResponse>('/api/user/coins/transactions', args);
+    }
+
+    /**
+     * Get user's video unlock transaction history
+     */
+    static getVideoUnlockTransactions(args: CustomerArgs.GetVideoUnlockTransactions) {
+        return fetch.get<IPaginationResponse<UserResponse.VideoUnlockTransaction>>('/api/user/coins/videos/transactions', args);
     }
 } 

@@ -1,63 +1,75 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { toast } from 'sonner';
-import userStore from '@/store/useUserStore';
 import PlanList from './plan-list';
 import PlanEdit from './plan-edit';
+import { PaymentAPI } from '@/api/payment';
+import { CoinPackage, PackageStatus } from '@/types/payment';
+import { SiteContext } from '../../useContext/monetize-context';
 
-interface Plan {
-    planId: string;
-    name: string;
-    coins: number;
-    price: number;
-    tips: string;
-    status: PlanStatus;
-}
-
-enum PlanStatus {
-    ACTIVE = 0,
-    PAUSED = 1,
-    ARCHIVED = 2,
-}
-
-interface PayPerViewProps {
-    initialPlans?: Plan[];
-}
-
-const PayPerView: React.FC<PayPerViewProps> = ({ initialPlans = [] }) => {
-    const [plans, setPlans] = useState<Plan[]>(initialPlans);
+const PayPerView: React.FC = () => {
+    const [plans, setPlans] = useState<CoinPackage[]>([]);
     const [modalOpened, setModalOpened] = useState(false);
-    const [editingPlan, setEditingPlan] = useState<Plan | undefined>();
+    const [editingPlan, setEditingPlan] = useState<CoinPackage | undefined>();
     const [isLoading, setIsLoading] = useState(false);
-    const { userInfo } = userStore();
+    const { params } = useContext(SiteContext);
 
-    const handleEditPlan = (plan: Plan) => {
+    useEffect(() => {
+        loadPlans();
+    }, []);
+
+    const loadPlans = async () => {
+        const response = await PaymentAPI.getCoinPackageList({ siteId: params.siteId });
+        if (response.code === 0 && response.data) {
+            setPlans(response.data);
+        } else {
+            toast.error('Failed to load plans');
+        }
+    };
+
+    const handleEditPlan = (plan: CoinPackage) => {
         setEditingPlan(plan);
         setModalOpened(true);
     };
 
-    const handleStatusChange = (plan: Plan, status: PlanStatus) => {
+    const handleStatusChange = (plan: CoinPackage, status: PackageStatus) => {
         // TODO: Implement API call
         const updatedPlan = { ...plan, status };
-        const updatedPlans = plans.map(p => (p.planId === plan.planId ? updatedPlan : p));
+        const updatedPlans = plans.map(p => (p.packageId === plan.packageId ? updatedPlan : p));
         setPlans(updatedPlans);
-        toast.success(`Plan status updated to ${PlanStatus[status]}`);
+        toast.success(`Plan status updated to ${PackageStatus[status]}`);
     };
 
-    const handleSavePlan = (plan: Plan) => {
+    const handleSavePlan = async (plan: CoinPackage) => {
         setIsLoading(true);
         try {
-            // TODO: Implement API call
-            if (editingPlan) {
-                const updatedPlans = plans.map(p => (p.planId === plan.planId ? plan : p));
+            if (plan.packageId) {
+                const updatedPlans = plans.map(p => (p.packageId === plan.packageId ? plan : p));
                 setPlans(updatedPlans);
                 toast.success('Plan updated successfully');
             } else {
-                const newPlan = { ...plan, planId: Date.now().toString() };
-                setPlans([...plans, newPlan]);
-                toast.success('Plan created successfully');
+                const response = await PaymentAPI.createCoinPackage({
+                    siteId: params.siteId,
+                    name: plan.name,
+                    coinAmount: plan.coinAmount,
+                    price: plan.price,
+                    originalPrice: plan.originalPrice,
+                    discountPercentage: plan.discountPercentage,
+                    description: plan.description,
+                });
+
+                if (response.data?.packageId) {
+                    const newPlan = {
+                        ...plan,
+                        packageId: response.data.packageId,
+                        siteId: params.siteId,
+                        status: PackageStatus.Enabled,
+                    };
+                    setPlans([...plans, newPlan]);
+                    toast.success('Plan created successfully');
+                }
             }
         } catch (error) {
             console.error('Save plan error:', error);

@@ -3,39 +3,38 @@
 import React from 'react';
 import { Table, Badge, Menu } from '@mantine/core';
 import { IconDots, IconPencil, IconPlayerPause, IconPlayerPlay } from '@tabler/icons-react';
-
-interface Plan {
-    planId: string;
-    name: string;
-    coins: number;
-    price: number;
-    tips: string;
-    status: PlanStatus;
-}
-
-enum PlanStatus {
-    ACTIVE = 0,
-    PAUSED = 1,
-    ARCHIVED = 2,
-}
+import { CoinPackage, PackageStatus } from '@/types/payment';
 
 interface PlanListProps {
-    plans: Plan[];
-    onEdit: (plan: Plan) => void;
-    onStatusChange: (plan: Plan, status: PlanStatus) => void;
+    plans: CoinPackage[];
+    onEdit: (plan: CoinPackage) => void;
+    onStatusChange: (plan: CoinPackage, status: PackageStatus) => void;
 }
 
 const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) => {
-    const getStatusColor = (status: PlanStatus) => {
+    const getStatusColor = (status: PackageStatus) => {
         switch (status) {
-            case PlanStatus.ACTIVE:
+            case PackageStatus.Enabled:
                 return 'green';
-            case PlanStatus.PAUSED:
+            case PackageStatus.Disabled:
                 return 'yellow';
-            case PlanStatus.ARCHIVED:
+            case PackageStatus.Deleted:
                 return 'gray';
             default:
                 return 'gray';
+        }
+    };
+
+    const getStatusLabel = (status: PackageStatus) => {
+        switch (status) {
+            case PackageStatus.Enabled:
+                return 'Enabled';
+            case PackageStatus.Disabled:
+                return 'Disabled';
+            case PackageStatus.Deleted:
+                return 'Deleted';
+            default:
+                return 'Unknown';
         }
     };
 
@@ -55,13 +54,13 @@ const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) =>
                     </Table.Thead>
                     <Table.Tbody>
                         {plans.map((plan, index) => (
-                            <Table.Tr key={plan.planId + 'plan' + index}>
+                            <Table.Tr key={plan.packageId + 'plan' + index}>
                                 <Table.Td className="text-black-purple/90">{plan.name}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{plan.coins}</Table.Td>
+                                <Table.Td className="text-black-purple/70">{plan.coinAmount}</Table.Td>
                                 <Table.Td className="text-black-purple/70">${plan.price}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{plan.tips}</Table.Td>
+                                <Table.Td className="text-black-purple/70">{plan.discountPercentage}%</Table.Td>
                                 <Table.Td>
-                                    <Badge color={getStatusColor(plan.status)}>{PlanStatus[plan.status]}</Badge>
+                                    <Badge color={getStatusColor(plan.status)}>{getStatusLabel(plan.status)}</Badge>
                                 </Table.Td>
                                 <Table.Td>
                                     <Menu position="bottom-end" withArrow>
@@ -75,24 +74,24 @@ const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) =>
                                             <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => onEdit(plan)} className="text-black-purple/70">
                                                 Edit
                                             </Menu.Item>
-                                            {plan.status === PlanStatus.ACTIVE && (
+                                            {plan.status === PackageStatus.Enabled && (
                                                 <Menu.Item
                                                     leftSection={<IconPlayerPause size={14} />}
-                                                    onClick={() => onStatusChange(plan, PlanStatus.PAUSED)}
+                                                    onClick={() => onStatusChange(plan, PackageStatus.Disabled)}
                                                     color="yellow"
                                                     className="text-black-purple"
                                                 >
-                                                    Pause
+                                                    Disable
                                                 </Menu.Item>
                                             )}
-                                            {plan.status === PlanStatus.PAUSED && (
+                                            {plan.status === PackageStatus.Disabled && (
                                                 <Menu.Item
                                                     leftSection={<IconPlayerPlay size={14} />}
-                                                    onClick={() => onStatusChange(plan, PlanStatus.ACTIVE)}
+                                                    onClick={() => onStatusChange(plan, PackageStatus.Enabled)}
                                                     color="green"
                                                     className="text-black-purple"
                                                 >
-                                                    Active
+                                                    Enable
                                                 </Menu.Item>
                                             )}
                                         </Menu.Dropdown>

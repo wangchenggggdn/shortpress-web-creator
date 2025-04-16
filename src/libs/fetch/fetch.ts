@@ -48,6 +48,27 @@ class Fetch {
         }
     }
 
+    private async getSiteId() {
+        let siteId = '';
+
+        const userState = await getCookie(CookieMap.UserState);
+
+        try {
+            if (userState) {
+                siteId = JSON.parse(decodeURIComponent(userState)).siteId;
+            }
+        } catch (error) {
+            console.warn(String(error));
+        }
+        if (siteId) {
+            return {
+                'X-Site-Id': siteId,
+            };
+        } else {
+            return '';
+        }
+    }
+
     /**
      * Send GET request
      * @param url API endpoint URL
@@ -56,13 +77,14 @@ class Fetch {
      */
     public async get<T>(url: string, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
-
+        const siteId = await this.getSiteId();
         const config: any = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 ...this.publicHeaders,
                 ...token,
+                ...siteId,
             },
         };
 
@@ -106,6 +128,7 @@ class Fetch {
      */
     public async post<T>(url: string, data: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
+        const siteId = await this.getSiteId();
 
         const config: any = {
             method: 'POST',
@@ -113,6 +136,7 @@ class Fetch {
                 'Content-Type': 'application/json',
                 ...this.publicHeaders,
                 ...token,
+                ...siteId,
             },
             body: JSON.stringify(data),
         };

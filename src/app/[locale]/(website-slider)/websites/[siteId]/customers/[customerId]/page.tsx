@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { IconDotsVertical } from '@tabler/icons-react';
 import Header from '@/components/system/header';
 import { Customer, CustomerStatus } from '@/types/customer';
@@ -10,6 +10,8 @@ import userStore from '@/store/useUserStore';
 import LoadingData from '@/components/common/loading-data';
 import { Menu, Table } from '@mantine/core';
 import dayjs from 'dayjs';
+import TransactionList from '@/components/business/websites/customer-view/transaction-list';
+import { SiteContext } from '@/components/business/websites/useContext/monetize-context';
 
 interface CustomerDetailPageProps {
     params: {
@@ -21,6 +23,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [loading, setLoading] = useState(true);
     const { userInfo } = userStore();
+    const { params: siteParams } = useContext(SiteContext);
 
     useEffect(() => {
         loadCustomerInfo();
@@ -31,12 +34,13 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
         const decodedEmail = atob(base64Email);
         return decodedEmail;
     };
+
     const loadCustomerInfo = async () => {
         try {
             setLoading(true);
             const response = await CustomerApi.getInfo({
                 email: getEmail(),
-                siteId: userInfo?.website?.siteId ?? '',
+                siteId: siteParams.siteId,
             });
             setCustomer(response.data);
         } catch (error) {
@@ -97,7 +101,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
         return await CustomerApi.changeStatus({
             email: customer?.email ?? '',
             siteId: userInfo?.website?.siteId ?? '',
-            status: status, // Active status
+            status: status,
         });
     };
 
@@ -113,8 +117,8 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                 }
             />
 
-            <div className="flex-1 min-h-0 p-6">
-                <div className=" bg-layout rounded-lg border border-gray-200">
+            <div className="flex-1 flex flex-col min-h-0 p-6">
+                <div className="bg-layout rounded-lg border border-gray-200">
                     {loading ? (
                         <div className="h-full flex items-center justify-center">
                             <LoadingData />
@@ -132,7 +136,9 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                         <div>
                                             <div className="text-sm text-gray-500">Status</div>
                                             <div
-                                                className={`text-base font-medium ${customer.status === 2 ? 'text-green-500' : customer.status === 3 ? 'text-red-500' : 'text-gray-500'}`}
+                                                className={`text-base font-medium ${
+                                                    customer.status === 2 ? 'text-green-500' : customer.status === 3 ? 'text-red-500' : 'text-gray-500'
+                                                }`}
                                             >
                                                 {getStatusLabel(customer.status)}
                                             </div>
@@ -183,6 +189,8 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                         </div>
                     )}
                 </div>
+                {/* Transaction List Component */}
+                {customer && <TransactionList email={customer.email} />}
             </div>
         </div>
     );

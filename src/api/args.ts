@@ -1,3 +1,5 @@
+import { IPaginationParams } from "@/types/public";
+
 /**
  * Request parameters for Creator related operations
  */
@@ -263,4 +265,87 @@ export namespace CustomerArgs {
         email: string;
         siteId: string;
     }
+
+    /**
+     * Get coin transactions request parameters
+     */
+    export interface GetCoinTransactions extends IPaginationParams {
+        email: string;
+    }
+
+    /**
+     * Get video unlock transactions request parameters
+     */
+    export interface GetVideoUnlockTransactions extends IPaginationParams {
+        email: string;
+    }
 }
+
+/**
+ * Request parameters for Payment related operations
+ */
+export namespace PaymentArgs {
+    /**
+     * Get payment account information parameters
+     */
+    export interface GetAccountInfo {
+        provider: string;  // Payment service provider (e.g., stripe)
+        siteId: string;   // Site ID
+    }
+
+    /**
+     * Create coin package parameters
+     */
+    export interface CreateCoinPackage {
+        siteId: string;           // Required: Site ID
+        name: string;             // Required: Package name
+        coinAmount: number;       // Required: Amount of coins, minimum: 1
+        price: number;            // Required: Price, minimum: 0.01
+        description?: string;     // Optional: Package description
+        discountPercentage?: number; // Optional: Discount percentage
+        originalPrice?: number;   // Optional: Original price before discount
+    }
+
+    /**
+     * Get coin package list parameters
+     */
+    export interface GetCoinPackageList {
+        siteId: string;
+    }
+
+    /**
+     * Save payment configuration parameters
+     */
+    export interface SaveConfig {
+        provider: string;         // Required: Payment provider name
+        siteId: string;          // Required: Site ID
+        stripeConf?: {           // Optional: Stripe configuration
+            pk: string;          // Publishable key
+            sk: string;          // Secret key
+        };
+        paypalConf?: {           // Optional: PayPal configuration
+            clientId: string;
+            clientSecret: string;
+        };
+    }
+
+    /**
+     * Test payment configuration parameters
+     */
+    export interface TestConfig extends SaveConfig {
+        webhook?: string;
+    }
+
+    /**
+     * Create order parameters
+     */
+    export interface CreateOrder {
+        siteId: string;          // Required: Site ID
+        packageId: string;       // Required: ID of the coin package or subscription package
+        orderType: 'coin' | 'sub'; // Required: Order type
+        currency?: string;       // Optional: Override for currency
+        returnUrl?: string;      // Optional: URL to redirect after payment
+        cancelUrl?: string;      // Optional: URL to redirect if canceled
+    }
+}
+
