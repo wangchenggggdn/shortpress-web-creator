@@ -11,7 +11,7 @@ import LoadingData from '@/components/common/loading-data';
 import { Menu, Table } from '@mantine/core';
 import dayjs from 'dayjs';
 import TransactionList from '@/components/business/websites/customer-view/transaction-list';
-import { SiteContext } from '@/components/business/websites/useContext/monetize-context';
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 
 interface CustomerDetailPageProps {
     params: {

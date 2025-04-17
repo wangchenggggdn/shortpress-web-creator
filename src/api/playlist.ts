@@ -1,7 +1,7 @@
 import fetch from '@/libs/fetch/fetch';
 import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import { IVideo } from '@/types/video';
-import { IPaginationResponse } from '@/types/public';
+import { IPaginationResponse, IResponse } from '@/types/public';
 import { PlaylistArgs } from './args';
 
 /**
@@ -91,7 +91,6 @@ export default class PlaylistApi {
         return fetch.get<IPaginationResponse<string>>('/api/playlist/search', args);
     }
 
-
     static batchGet(playlistIds: string) {
         return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/batch-get', { playlistIds });
     }
@@ -102,5 +101,14 @@ export default class PlaylistApi {
 
     static updateVideosOrder(args: PlaylistVideoOrder) {
         return fetch.post('/api/playlist/videos/update-order', args);
+    }
+
+    /**
+     * Change playlist access type (free, paid, member-only) and price settings
+     * @param args Access change parameters
+     * @returns API response
+     */
+    static changeAccessType(args: PlaylistArgs.AccessChange) {
+        return fetch.post('/api/playlist/change/access/type', args);
     }
 }

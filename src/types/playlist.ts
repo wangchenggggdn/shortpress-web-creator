@@ -33,6 +33,12 @@ export interface Playlist {
     createdAt: number;
     /** Last update timestamp */
     updatedAt: number;
+    /** Access type */
+    accessType: number;
+    /** Single video price */
+    singleVideoPrice: number;
+    /** Free videos */
+    freeVideos: number;
 }
 
 /**

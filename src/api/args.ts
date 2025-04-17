@@ -150,6 +150,20 @@ export namespace PlaylistArgs {
         pageSize?: number;  // Items per page, default 10
         keyword: string;    // Search keyword
     }
+
+    /**
+     * Change playlist access type request parameters
+     */
+    export interface AccessChange {
+        /** Playlist ID */
+        playlistId: string;
+        /** Access type (1:free 2:paid 3:member-only) */
+        accessType: 1 | 2 | 3;
+        /** Number of free videos before requiring payment */
+        freeVideos?: number;
+        /** Cost in coins to unlock a single video */
+        singleVideoPrice?: number;
+    }
 }
 
 /**

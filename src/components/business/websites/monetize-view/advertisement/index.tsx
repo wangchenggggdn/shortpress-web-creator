@@ -7,7 +7,7 @@ import AdUnitEdit from '@/components/business/websites/monetize-view/advertiseme
 import AdsApi from '@/api/ads';
 import { AdUnit } from '@/types/ads';
 import { toast } from 'sonner';
-import { SiteContext } from '../../useContext/monetize-context';
+import { SiteContext } from '../../useContext/site-context';
 
 const Advertisement: React.FC = () => {
     const [adUnits, setAdUnits] = useState<AdUnit[]>([]);

@@ -340,7 +340,7 @@
                     "200": {
                         "description": "返回播放列表下的视频列表",
                         "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-string"
+                            "$ref": "#/definitions/shortpress-server_internal_api.IDListResponseData-shortpress-server_internal_api_VideoItem"
                         }
                     }
                 }
@@ -829,6 +829,59 @@
                         "description": "返回可用的金币套餐列表",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/coins/videos/buy": {
+            "post": {
+                "description": "使用用户金币账户余额购买视频或播放列表观看权限",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "使用金币购买视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "购买视频请求",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.BuyContentWithCoinsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回购买结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.BuyContentWithCoinsResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -3012,6 +3065,52 @@
                 }
             }
         },
+        "shortpress-server_internal_api.BuyContentWithCoinsRequest": {
+            "type": "object",
+            "required": [
+                "contentId",
+                "contentType"
+            ],
+            "properties": {
+                "contentId": {
+                    "description": "ID of content to purchase (video or playlist)",
+                    "type": "string"
+                },
+                "contentType": {
+                    "description": "Type of content (video or playlist)",
+                    "type": "string",
+                    "enum": [
+                        "video",
+                        "playlist"
+                    ]
+                },
+                "playlistId": {
+                    "description": "If content is a video in a playlist",
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.BuyContentWithCoinsResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "description": "New balance after purchase",
+                    "type": "integer"
+                },
+                "coinCost": {
+                    "description": "Amount of coins spent",
+                    "type": "integer"
+                },
+                "transactionId": {
+                    "description": "ID of the coin transaction",
+                    "type": "string"
+                },
+                "unlockId": {
+                    "description": "ID of the content unlock record",
+                    "type": "string"
+                }
+            }
+        },
         "shortpress-server_internal_api.CoinPackageCreateRequest": {
             "type": "object",
             "required": [
@@ -3261,6 +3360,38 @@
                     "example": 1
                 },
                 "videoCount": {
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "shortpress-server_internal_api.IDListResponseData-shortpress-server_internal_api_VideoItem": {
+            "type": "object",
+            "properties": {
+                "hasMore": {
+                    "description": "Whether there are more items",
+                    "type": "boolean",
+                    "example": true
+                },
+                "items": {
+                    "description": "ID information list",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.VideoItem"
+                    }
+                },
+                "page": {
+                    "description": "Current page number",
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "description": "Items per page",
+                    "type": "integer",
+                    "example": 20
+                },
+                "total": {
+                    "description": "Total number of videos",
                     "type": "integer",
                     "example": 100
                 }
@@ -3870,6 +4001,12 @@
         "shortpress-server_internal_api.TransactionHistoryResponse": {
             "type": "object",
             "properties": {
+                "itmes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.CoinTransactionResponse"
+                    }
+                },
                 "page": {
                     "type": "integer"
                 },
@@ -3878,12 +4015,6 @@
                 },
                 "total": {
                     "type": "integer"
-                },
-                "transactions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/shortpress-server_internal_api.CoinTransactionResponse"
-                    }
                 }
             }
         },
@@ -4165,6 +4296,19 @@
                 }
             }
         },
+        "shortpress-server_internal_api.VideoItem": {
+            "type": "object",
+            "properties": {
+                "unlockStatus": {
+                    "description": "Unlock status 1 - unlocked, 2 - locked  0 - not applicable",
+                    "type": "integer"
+                },
+                "vid": {
+                    "description": "Video ID",
+                    "type": "string"
+                }
+            }
+        },
         "shortpress-server_internal_api.VideoListResponseData": {
             "type": "object",
             "properties": {
@@ -4265,6 +4409,13 @@
         "shortpress-server_internal_api.VideoUnlockHistoryResponse": {
             "type": "object",
             "properties": {
+                "items": {
+                    "description": "解锁记录列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/shortpress-server_internal_api.VideoUnlockResponse"
+                    }
+                },
                 "page": {
                     "description": "当前页码",
                     "type": "integer"
@@ -4276,13 +4427,6 @@
                 "total": {
                     "description": "总记录数",
                     "type": "integer"
-                },
-                "unlocks": {
-                    "description": "解锁记录列表",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/shortpress-server_internal_api.VideoUnlockResponse"
-                    }
                 }
             }
         },

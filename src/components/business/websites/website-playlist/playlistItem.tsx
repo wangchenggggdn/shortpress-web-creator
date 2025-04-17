@@ -1,6 +1,6 @@
 import React from 'react';
 import NextImage from 'next/image';
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Button } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import type { Playlist } from '@/types/playlist';
 
@@ -18,6 +18,8 @@ interface WebsitePlaylistItemProps {
     onDelete: () => void;
     /** Callback function when item is clicked */
     onClick: () => void;
+    /** Callback function when price is changed */
+    onPriceChange: () => void;
 }
 
 /**
@@ -25,7 +27,7 @@ interface WebsitePlaylistItemProps {
  * Displays a single playlist item with cover image, title, video count and delete button
  * @returns React component for displaying a playlist item
  */
-const WebsitePlaylistItem: React.FC<WebsitePlaylistItemProps> = ({ playlist, checked, onCheck, onDelete, onClick }) => {
+const WebsitePlaylistItem: React.FC<WebsitePlaylistItemProps> = ({ playlist, checked, onCheck, onDelete, onClick, onPriceChange }) => {
     return (
         <div className="flex items-center bg-white hover:bg-gray-50 rounded-lg p-3 transition-colors cursor-pointer" onClick={onClick}>
             <div className="flex items-center flex-1">
@@ -38,6 +40,16 @@ const WebsitePlaylistItem: React.FC<WebsitePlaylistItemProps> = ({ playlist, che
                     <div className="text-xs text-gray-500">{playlist.videoCount} videos</div>
                 </div>
             </div>
+            <Button
+                variant="subtle"
+                color="primary"
+                onClick={e => {
+                    e.stopPropagation();
+                    onPriceChange();
+                }}
+            >
+                Set Price
+            </Button>
             <ActionIcon
                 variant="subtle"
                 color="red"

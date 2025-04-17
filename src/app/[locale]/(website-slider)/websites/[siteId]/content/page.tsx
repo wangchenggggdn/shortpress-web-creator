@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useContext } from 'react';
 import { Button } from '@mantine/core';
 import { IconPlus, IconCopy, IconSettings } from '@tabler/icons-react';
-import { useParams } from 'next/navigation';
 import AddContentModal from '@/components/business/websites/website-add-playlist-modal';
 import WebsitePlaylist from '@/components/business/websites/website-playlist';
-import WebsitePreview from '@/components/business/websites/website-preview';
 import CreateSiteModal from '@/components/business/websites/website-create-modal';
 import { toast } from 'sonner';
 import { Playlist } from '@/types/playlist';
@@ -17,6 +15,7 @@ import CreatorApi from '@/api/creator';
 import WebsiteApi from '@/api/website';
 import VideoApi from '@/api/video';
 import PlaylistApi from '@/api/playlist';
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 
 interface WebsiteDetailPageProps {}
 
@@ -26,7 +25,6 @@ interface WebsiteDetailPageProps {}
  * @returns React component with website detail view
  */
 const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
-    const params = useParams();
     const [website, setWebsite] = useState<Website>();
     const [videos, setVideos] = useState<IVideo[]>([]);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -41,6 +39,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
     const [currentPlaylistsIndex, setCurrentPlaylistsIndex] = useState(0);
     const [videoPage, setVideoPage] = useState(1);
     const currentPlaylist = useRef<Playlist[]>([]);
+    const { params } = useContext(SiteContext);
     console.log('params:', params);
 
     // Fetch website and playlist data when ID changes
@@ -76,7 +75,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
         const res = await PlaylistApi.list({
             page,
             pageSize,
-            siteId: params.id as string,
+            siteId: params.siteId as string,
             orderType: 1,
             status: 2,
         });
@@ -128,7 +127,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
         const res = await PlaylistApi.search({
             page,
             pageSize,
-            siteId: params.id as string,
+            siteId: params.siteId as string,
             orderType: 1,
             status: 2,
             keyword: searchQuery,
@@ -169,7 +168,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
      * @param selectedItems Array of playlist IDs to add
      */
     const handleAddContent = (selectedItems: string[]) => {
-        WebsiteApi.addPlaylists(params.id as string, selectedItems).then(res => {
+        WebsiteApi.addPlaylists(params.siteId as string, selectedItems).then(res => {
             if (res.code === 0) {
                 toast.success('Add content success');
                 fetchPlaylists();
@@ -244,7 +243,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
             const newPlaylists = playlists.filter(item => item.playlistId !== playlistId);
             setPlaylists(newPlaylists);
         }
-        WebsiteApi.removePlaylists(params.id as string, [playlistId]);
+        WebsiteApi.removePlaylists(params.siteId as string, [playlistId]);
     };
 
     return (
@@ -327,7 +326,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                 </div> */}
             </div>
 
-            <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} siteId={params.id as string} />
+            <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} siteId={params.siteId as string} />
             {/* Settings Modal */}
             {createModalOpened && (
                 <>

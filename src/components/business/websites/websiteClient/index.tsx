@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { SiteContext } from '../useContext/monetize-context';
+import { SiteContext } from '../useContext/site-context';
 import WebsiteSidebar from '../slider';
 import { getCookie } from '@/libs/fetch/fetchCookie/getCookie';
 import cookieMap from '@/config/cookie-map';
