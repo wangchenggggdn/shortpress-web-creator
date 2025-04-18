@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from '@mantine/core';
-import CustomerApi from '@/api/customer';
-import { CoinTransaction } from '@/types/payment';
+import { IncomeTransaction } from '@/types/payment';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
+import AnalyticsApi from '@/api/analytics';
 interface TransactionRecordsProps {
     email: string;
 }
 
 const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
     const [loading, setLoading] = useState(false);
-    const [transactions, setTransactions] = useState<CoinTransaction[]>([]);
+    const [transactions, setTransactions] = useState<IncomeTransaction[]>([]);
     const { params } = React.useContext(SiteContext);
     const loadTransactions = async () => {
         try {
             setLoading(true);
-            const response = await CustomerApi.getCoinTransactions({
+            const response = await AnalyticsApi.getIncomeTransactions({
                 page: 1,
                 pageSize: 20,
-                email,
                 siteId: params.siteId,
+                userEmail: email,
             });
             setTransactions(response.data.items);
         } catch (error) {
@@ -62,8 +62,8 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
                             {transaction.amount > 0 ? '+' : ''}
                             {transaction.amount} coins
                         </Table.Td>
-                        <Table.Td>{transaction.source}</Table.Td>
-                        <Table.Td>{transaction.type === 1 ? 'Manual' : 'Stripe'}</Table.Td>
+                        <Table.Td>{transaction.provider}</Table.Td>
+                        <Table.Td>{transaction.name}</Table.Td>
                         <Table.Td>{dayjs(transaction.createdAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
                         <Table.Td>{transaction.description}</Table.Td>
                     </Table.Tr>

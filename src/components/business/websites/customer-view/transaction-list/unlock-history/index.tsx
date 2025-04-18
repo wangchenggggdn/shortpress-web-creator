@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from '@mantine/core';
-import CustomerApi from '@/api/customer';
 import { VideoUnlockTransaction } from '@/types/payment';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
+import { PaymentAPI } from '@/api/payment';
 interface UnlockHistoryProps {
     email: string;
 }
@@ -18,7 +18,7 @@ const UnlockHistory: React.FC<UnlockHistoryProps> = ({ email }) => {
     const loadUnlockHistory = async () => {
         try {
             setLoading(true);
-            const response = await CustomerApi.getVideoUnlockTransactions({
+            const response = await PaymentAPI.getVideoUnlockTransactions({
                 page: 1,
                 pageSize: 20,
                 email,

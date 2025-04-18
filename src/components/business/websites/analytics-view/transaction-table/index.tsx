@@ -5,7 +5,7 @@ import { Table } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { AnalyticsResponse } from '@/api/respones';
 import LoadingData from '@/components/common/loading-data';
-
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 interface TransactionTableProps {
     transactions: AnalyticsResponse.IncomeTransaction[];
     isLoading?: boolean;
@@ -13,9 +13,11 @@ interface TransactionTableProps {
 
 const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoading }) => {
     const router = useRouter();
+    const { params } = React.useContext(SiteContext);
+    const siteId = params.siteId;
 
     const handleRowClick = (transactionId: string) => {
-        router.push(`./transactions/${transactionId}`);
+        router.push(`/websites/${siteId}/analytics/transactions/${transactionId}`);
     };
 
     if (isLoading) {

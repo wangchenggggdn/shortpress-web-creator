@@ -3,16 +3,10 @@
 import React from 'react';
 import { Button, Table } from '@mantine/core';
 import { useRouter } from 'next/navigation';
-
+import { AnalyticsResponse } from '@/api/respones';
+import dayjs from 'dayjs';
 interface TransactionDetailProps {
-    transaction: {
-        amount: number;
-        paymentMethod: string;
-        plan: string;
-        customer: string;
-        date: string;
-        email: string;
-    };
+    transaction: AnalyticsResponse.IncomeTransactionInfo;
 }
 
 const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) => {
@@ -30,7 +24,18 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
             <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-medium text-gray-900">Details</h2>
-                    <Button onClick={() => router.push('./customers')} variant="outline" className="text-sm font-medium">
+
+                    <Button
+                        onClick={() => {
+                            // First encode to base64
+                            const encodedEmail = btoa(transaction.email);
+                            // Then make it URL safe
+                            const urlSafeEmail = encodeURIComponent(encodedEmail);
+                            router.push(`../customers/${urlSafeEmail}`);
+                        }}
+                        variant="outline"
+                        className="text-sm font-medium"
+                    >
                         View Customer
                     </Button>
                 </div>
@@ -46,9 +51,9 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
                     <Table.Tbody>
                         <Table.Tr>
                             <Table.Td className="text-black-purple/70">{transaction.email}</Table.Td>
-                            <Table.Td className="text-black-purple/70">{transaction.paymentMethod}</Table.Td>
-                            <Table.Td className="text-black-purple/70">{transaction.plan}</Table.Td>
-                            <Table.Td className="text-black-purple/70">{transaction.date}</Table.Td>
+                            <Table.Td className="text-black-purple/70">{transaction.provider}</Table.Td>
+                            <Table.Td className="text-black-purple/70">{transaction.name}</Table.Td>
+                            <Table.Td className="text-black-purple/70">{dayjs(transaction.createdAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
                         </Table.Tr>
                     </Table.Tbody>
                 </Table>

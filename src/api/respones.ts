@@ -92,4 +92,19 @@ export namespace AnalyticsResponse {
         total: number;          // Total number of items
         transactions: IncomeTransaction[];  // Transaction list
     }
+
+    export interface IncomeTransactionInfo {
+        transactionId: string;
+        amount: number;
+        currency: string;
+        status: number;
+        provider: string;
+        createdAt: number;
+        email: string;
+        name: string;
+        paymentType: number;
+        relatedId: string;
+        relatedType: number;
+        userId: string;
+    }
 }

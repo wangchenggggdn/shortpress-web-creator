@@ -1,8 +1,8 @@
-'use client';
-
 import React from 'react';
 import TransactionDetail from '@/components/business/websites/analytics-view/transaction-detail';
 import Header from '@/components/system/header';
+import AnalyticsApi from '@/api/analytics';
+import { AnalyticsResponse } from '@/api/respones';
 
 interface TransactionPageProps {
     params: {
@@ -10,17 +10,16 @@ interface TransactionPageProps {
     };
 }
 
-const TransactionPage: React.FC<TransactionPageProps> = ({ params }) => {
-    // 这里可以根据transactionId获取交易详情数据
-    // 目前使用模拟数据
-    const mockTransaction = {
-        amount: 299.99,
-        paymentMethod: 'Credit Card',
-        plan: 'Premium Plan',
-        customer: 'John Doe',
-        date: '2024-03-15',
-        email: 'john.doe@example.com',
-    };
+const TransactionPage: React.FC<TransactionPageProps> = async ({ params }) => {
+    const response = await AnalyticsApi.getIncomeTransactionInfo({
+        transactionId: params.transactionId,
+    });
+
+    if (response.code !== 0 || !response.data) {
+        return null;
+    }
+
+    const transaction = response.data;
 
     return (
         <div className="flex-1 min-h-0 flex flex-col">
@@ -31,7 +30,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ params }) => {
                     </h1>
                 }
             />
-            <TransactionDetail transaction={mockTransaction} />
+            <TransactionDetail transaction={transaction} />
         </div>
     );
 };

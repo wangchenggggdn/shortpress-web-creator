@@ -23,4 +23,13 @@ export default class AnalyticsApi {
     static getIncomeTransactions(args: AnalyticsArgs.IncomeTransactions) {
         return fetch.post<IPaginationResponse<AnalyticsResponse.IncomeTransaction>>('/api/analytics/income/transactions', args);
     }
+
+    /**
+     * Get detailed information about a specific income transaction
+     * @param args Transaction info parameters
+     * @returns Promise with transaction information
+     */
+    static getIncomeTransactionInfo(args: AnalyticsArgs.IncomeTransactionInfo) {
+        return fetch.get<AnalyticsResponse.IncomeTransactionInfo>('/api/analytics/income/transactions/info', args);
+    }
 } 

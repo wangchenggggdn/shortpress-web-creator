@@ -306,6 +306,51 @@
                 }
             }
         },
+        "/api/analytics/income/transactions/info": {
+            "get": {
+                "description": "获取指定交易ID的详细信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "analytics"
+                ],
+                "summary": "获取交易记录详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"trans-123456\"",
+                        "description": "交易ID",
+                        "name": "transactionId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回交易详情",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.IncomeTransactionDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/client/anonymous/register": {
             "post": {
                 "description": "匿名注册",
@@ -1042,6 +1087,52 @@
                         "description": "返回成功信息",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/customers/coins/grant": {
+            "post": {
+                "description": "允许创作者手动为特定用户增加金币数量作为奖励或补偿",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "创作者手动增加用户金币",
+                "parameters": [
+                    {
+                        "description": "赠予金币请求",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.GrantCoinsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回操作结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.GrantCoinsResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -3492,9 +3583,6 @@
                 },
                 "transactionId": {
                     "type": "string"
-                },
-                "type": {
-                    "type": "integer"
                 }
             }
         },
@@ -3661,6 +3749,47 @@
                 }
             }
         },
+        "shortpress-server_internal_api.GrantCoinsRequest": {
+            "type": "object",
+            "required": [
+                "coinAmount",
+                "siteId",
+                "userEmail"
+            ],
+            "properties": {
+                "coinAmount": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "reason": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "userEmail": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.GrantCoinsResponse": {
+            "type": "object",
+            "properties": {
+                "amountAdded": {
+                    "type": "integer"
+                },
+                "currentBalance": {
+                    "type": "integer"
+                },
+                "transactionId": {
+                    "type": "string"
+                },
+                "userEmail": {
+                    "type": "string"
+                }
+            }
+        },
         "shortpress-server_internal_api.IDListResponseData-shortpress-server_internal_api_VideoItem": {
             "type": "object",
             "properties": {
@@ -3756,6 +3885,47 @@
                 }
             }
         },
+        "shortpress-server_internal_api.IncomeTransactionDetailResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "integer"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paymentType": {
+                    "type": "integer"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "relatedId": {
+                    "type": "string"
+                },
+                "relatedType": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "transactionId": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
         "shortpress-server_internal_api.IncomeTransactionHistoryResponse": {
             "type": "object",
             "properties": {
@@ -3826,6 +3996,10 @@
                 "startTime": {
                     "description": "Optional start timestamp",
                     "type": "integer"
+                },
+                "userEmail": {
+                    "description": "Optional user email for filtering",
+                    "type": "string"
                 }
             }
         },

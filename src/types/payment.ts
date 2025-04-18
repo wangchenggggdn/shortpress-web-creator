@@ -46,6 +46,18 @@ export interface CoinTransaction {
     snapshot?: Record<string, any>;
 }
 
+
+export interface IncomeTransaction {
+    transactionId: string;     // Transaction ID
+    amount: number;           // Transaction amount
+    createdAt: number;        // Transaction creation timestamp
+    description: string;      // Transaction description
+    email: string;           // Customer email
+    name: string;            // Customer name
+    provider: string;        // Payment provider
+}
+
+
 export interface VideoUnlockTransaction {
     transactionId: string;
     contentId: string;

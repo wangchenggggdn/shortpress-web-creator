@@ -397,10 +397,15 @@ export namespace AnalyticsArgs {
      */
     export interface IncomeTransactions {
         siteId: string;
-        startTime: number;  // Unix timestamp in milliseconds
-        endTime: number;    // Unix timestamp in milliseconds
+        startTime?: number;  // Unix timestamp in milliseconds
+        endTime?: number;    // Unix timestamp in milliseconds
         page?: number;      // Page number, default 1
         pageSize?: number;  // Items per page, default 10
+        userEmail?: string;
+    }
+
+    export interface IncomeTransactionInfo {
+        transactionId: string;
     }
 }
 
