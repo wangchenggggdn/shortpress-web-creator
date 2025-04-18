@@ -1,19 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import TransactionTable from '../transaction-table';
-
-interface Transaction {
-    amount: number;
-    paymentMethod: string;
-    plan: string;
-    customer: string;
-    date: string;
-}
-
-interface TransactionListProps {
-    transactions: Transaction[];
-}
+import { useTransactionList, RangeType } from '../hooks/useTransactionList';
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 
 const RANGE_TABS = [
     { id: 'last7days', label: 'Last 7 Days' },
@@ -21,10 +11,15 @@ const RANGE_TABS = [
     { id: 'custom', label: 'Custom Range' },
 ] as const;
 
-type RangeId = (typeof RANGE_TABS)[number]['id'];
+const TransactionList: React.FC = () => {
+    const { params } = React.useContext(SiteContext);
+    const siteId = params.siteId;
 
-const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
-    const [activeRange, setActiveRange] = useState<RangeId>('last14days');
+    const { transactions, isLoading, rangeType, setRangeType, startDate, setStartDate, endDate, setEndDate, fetchData } = useTransactionList({ siteId });
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -33,19 +28,37 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
                     {RANGE_TABS.map(tab => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveRange(tab.id)}
-                            className={`px-4 py-2 text-base font-medium rounded-full transition-colors ${activeRange === tab.id ? 'text-primary border border-primary bg-primary/5' : 'hover:text-gray-900'}`}
+                            onClick={() => setRangeType(tab.id as RangeType)}
+                            className={`px-4 py-2 text-base font-medium rounded-full transition-colors ${
+                                rangeType === tab.id ? 'text-primary border border-primary bg-primary/5' : 'hover:text-gray-900'
+                            }`}
                         >
                             {tab.label}
                         </button>
                     ))}
                 </div>
+                {rangeType === 'custom' && (
+                    <div className="flex gap-2">
+                        <input
+                            type="date"
+                            value={startDate ? startDate.toISOString().split('T')[0] : ''}
+                            onChange={e => setStartDate(e.target.value ? new Date(e.target.value) : null)}
+                            className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
+                        <input
+                            type="date"
+                            value={endDate ? endDate.toISOString().split('T')[0] : ''}
+                            onChange={e => setEndDate(e.target.value ? new Date(e.target.value) : null)}
+                            className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="flex-1 mb-6 overflow-scroll bg-white rounded-lg shadow-sm px-6 pb-6 pt-4">
-                <TransactionTable transactions={transactions} />
+                <TransactionTable transactions={transactions} isLoading={isLoading} />
             </div>
-            {transactions.length === 0 && <div className="w-full h-full flex items-center justify-center">No Transactions Yet</div>}
+            {!isLoading && transactions.length === 0 && <div className="w-full h-full flex items-center justify-center">No Transactions Yet</div>}
         </div>
     );
 };

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from '@mantine/core';
 import CustomerApi from '@/api/customer';
-import { UserResponse } from '@/api/respone';
+import { CoinTransaction } from '@/types/payment';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
-
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 interface TransactionRecordsProps {
     email: string;
 }
 
 const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
     const [loading, setLoading] = useState(false);
-    const [transactions, setTransactions] = useState<UserResponse.CoinTransaction[]>([]);
-
+    const [transactions, setTransactions] = useState<CoinTransaction[]>([]);
+    const { params } = React.useContext(SiteContext);
     const loadTransactions = async () => {
         try {
             setLoading(true);
@@ -21,8 +21,9 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
                 page: 1,
                 pageSize: 20,
                 email,
+                siteId: params.siteId,
             });
-            setTransactions(response.data.transactions);
+            setTransactions(response.data.items);
         } catch (error) {
             console.error('Failed to load transactions:', error);
             toast.error('Failed to load transaction history');

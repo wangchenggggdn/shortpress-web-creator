@@ -285,6 +285,7 @@ export namespace CustomerArgs {
      */
     export interface GetCoinTransactions extends IPaginationParams {
         email: string;
+        siteId: string;
     }
 
     /**
@@ -292,6 +293,7 @@ export namespace CustomerArgs {
      */
     export interface GetVideoUnlockTransactions extends IPaginationParams {
         email: string;
+        siteId: string;
     }
 }
 
@@ -360,6 +362,45 @@ export namespace PaymentArgs {
         currency?: string;       // Optional: Override for currency
         returnUrl?: string;      // Optional: URL to redirect after payment
         cancelUrl?: string;      // Optional: URL to redirect if canceled
+    }
+
+    export interface CoinTransactions {
+        siteId: string;
+        email: string;
+        page?: number;
+        pageSize?: number;
+    }
+
+    export interface VideoUnlockTransactions {
+        siteId: string;
+        email: string;
+        page?: number;
+        pageSize?: number;
+    }
+}
+
+/**
+ * Request parameters for Analytics related operations
+ */
+export namespace AnalyticsArgs {
+    /**
+     * Income statistics request parameters
+     */
+    export interface IncomeStatistics {
+        siteId: string;
+        startTime: number;  // Unix timestamp in milliseconds
+        endTime: number;    // Unix timestamp in milliseconds
+    }
+
+    /**
+     * Income transactions request parameters
+     */
+    export interface IncomeTransactions {
+        siteId: string;
+        startTime: number;  // Unix timestamp in milliseconds
+        endTime: number;    // Unix timestamp in milliseconds
+        page?: number;      // Page number, default 1
+        pageSize?: number;  // Items per page, default 10
     }
 }
 

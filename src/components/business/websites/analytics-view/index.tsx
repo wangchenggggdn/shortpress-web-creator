@@ -1,45 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import LineChart from './line-chat';
 import Header from '@/components/system/header';
 import { useRouter } from 'next/navigation';
 import TransactionTable from './transaction-table';
-
-interface Transaction {
-    amount: number;
-    paymentMethod: string;
-    plan: string;
-    customer: string;
-    date: string;
-}
-
-interface AnalyticsViewProps {
-    initialTransactions: Transaction[];
-}
+import { useAnalytics, TimeRange } from './hooks/useAnalytics';
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 
 const TABS = [{ id: 'income', label: 'Income' }] as const;
+const TIME_RANGES: { label: string; value: TimeRange }[] = [
+    { label: '1D', value: 'day' },
+    { label: '3D', value: '3days' },
+    { label: '7D', value: 'week' },
+    { label: '1M', value: 'month' },
+];
 
 type TabId = (typeof TABS)[number]['id'];
 
-const AnalyticsView: React.FC<AnalyticsViewProps> = ({ initialTransactions }) => {
+const AnalyticsView: React.FC = () => {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<TabId>('income');
-    const [transactions] = useState<Transaction[]>(initialTransactions);
+    const { params } = useContext(SiteContext);
+    const siteId = params.siteId;
 
-    // 模拟收入数据
-    const incomeData = [
-        { date: 'Mar 4', revenue: 0 },
-        { date: 'Mar 7', revenue: 100 },
-        { date: 'Mar 10', revenue: 200 },
-        { date: 'Mar 13', revenue: 150 },
-        { date: 'Mar 16', revenue: 300 },
-        { date: 'Mar 19', revenue: 280 },
-        { date: 'Mar 22', revenue: 400 },
-        { date: 'Mar 25', revenue: 380 },
-        { date: 'Mar 28', revenue: 500 },
-        { date: 'Mar 31', revenue: 600 },
-    ];
+    const { incomeData, transactions, isLoading, isTransactionsLoading, timeRange, setTimeRange, fetchData, fetchTransactions, totalAmount } = useAnalytics({ siteId });
+
+    useEffect(() => {
+        fetchData();
+        fetchTransactions();
+    }, [fetchData, fetchTransactions]);
+
+    const chartData =
+        incomeData?.map(item => ({
+            date: item.date,
+            revenue: item.totalAmount,
+        })) || [];
 
     return (
         <div className="flex flex-col h-screen">
@@ -60,19 +56,40 @@ const AnalyticsView: React.FC<AnalyticsViewProps> = ({ initialTransactions }) =>
 
                 {/* Income Statistics */}
                 <div className="mb-6 p-6 bg-white rounded-lg shadow-sm">
-                    <h2 className="text-xl font-medium text-gray-900 mb-2">Total Revenue</h2>
-                    <div className="text-3xl font-bold text-primary mb-6">${incomeData[incomeData.length - 1].revenue.toFixed(2)}</div>
-                    <LineChart data={incomeData} />
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-medium text-gray-900">Total Revenue</h2>
+                        <div className="flex gap-2">
+                            {TIME_RANGES.map(range => (
+                                <button
+                                    key={range.value}
+                                    onClick={() => setTimeRange(range.value)}
+                                    className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                                        timeRange === range.value ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
+                                    }`}
+                                >
+                                    {range.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="text-3xl font-bold text-primary mb-6">${totalAmount.toFixed(2) || '0.00'}</div>
+                    {isLoading ? (
+                        <div className="h-[250px] flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        </div>
+                    ) : (
+                        <LineChart data={chartData} />
+                    )}
                 </div>
 
                 {/* Latest Transactions */}
                 <div className="flex-1 h-full px-6 py-4 mb-6 flex flex-col bg-white rounded-lg shadow-sm">
                     <h2 className="text-xl font-medium text-gray-900 mb-6">Latest Transactions</h2>
                     <div className="overflow-scroll">
-                        <TransactionTable transactions={transactions} />
+                        <TransactionTable transactions={transactions} isLoading={isTransactionsLoading} />
                     </div>
-                    {transactions.length === 0 && <div className="w-full h-full flex items-center justify-center">No Transactions Yet</div>}
-                    {transactions.length > 0 && (
+                    {!isTransactionsLoading && transactions.length === 0 && <div className="w-full h-full flex items-center justify-center">No Transactions Yet</div>}
+                    {!isTransactionsLoading && transactions.length > 0 && (
                         <div
                             onClick={() => router.push('./analytics/transactions')}
                             className="mt-4 text-primary hover:text-primary/90 cursor-pointer"

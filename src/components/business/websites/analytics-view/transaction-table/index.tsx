@@ -3,25 +3,24 @@
 import React from 'react';
 import { Table } from '@mantine/core';
 import { useRouter } from 'next/navigation';
-
-interface Transaction {
-    amount: number;
-    paymentMethod: string;
-    plan: string;
-    customer: string;
-    date: string;
-}
+import { AnalyticsResponse } from '@/api/respones';
+import LoadingData from '@/components/common/loading-data';
 
 interface TransactionTableProps {
-    transactions: Transaction[];
+    transactions: AnalyticsResponse.IncomeTransaction[];
+    isLoading?: boolean;
 }
 
-const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => {
+const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoading }) => {
     const router = useRouter();
 
-    const handleRowClick = (index: number) => {
-        router.push(`./transactions/${index}`);
+    const handleRowClick = (transactionId: string) => {
+        router.push(`./transactions/${transactionId}`);
     };
+
+    if (isLoading) {
+        return <LoadingData />;
+    }
 
     return (
         <Table>
@@ -35,13 +34,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions }) => 
                 </Table.Tr>
             </Table.Thead>
             <Table.Tbody>
-                {transactions.map((transaction, index) => (
-                    <Table.Tr key={`transaction-${index}`} onClick={() => handleRowClick(index)} className="cursor-pointer hover:bg-gray-50">
+                {transactions.map(transaction => (
+                    <Table.Tr key={transaction.transactionId} onClick={() => handleRowClick(transaction.transactionId)} className="cursor-pointer hover:bg-gray-50">
                         <Table.Td className="text-green-500 font-bold">${transaction.amount.toFixed(2)}</Table.Td>
-                        <Table.Td className="text-black-purple/70">{transaction.paymentMethod}</Table.Td>
-                        <Table.Td className="text-black-purple/70">{transaction.plan}</Table.Td>
-                        <Table.Td className="text-black-purple/70">{transaction.customer}</Table.Td>
-                        <Table.Td className="text-black-purple/70">{transaction.date}</Table.Td>
+                        <Table.Td className="text-black-purple/70">{transaction.provider}</Table.Td>
+                        <Table.Td className="text-black-purple/70">{transaction.name + ' coins'}</Table.Td>
+                        <Table.Td className="text-black-purple/70">{transaction.email}</Table.Td>
+                        <Table.Td className="text-black-purple/70">{new Date(transaction.createdAt * 1000).toLocaleString()}</Table.Td>
                     </Table.Tr>
                 ))}
             </Table.Tbody>

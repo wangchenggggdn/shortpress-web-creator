@@ -1,8 +1,9 @@
 import { IPaginationResponse, IResponse } from "@/types/public";
 import { PaymentArgs } from "./args";
-import { PaymentResponse } from "./respone";
+import { PaymentResponse } from "./respones";
 import fetch from '@/libs/fetch/fetch';
-import { CoinPackage } from "@/types/payment";
+import { CoinPackage, CoinTransaction, VideoUnlockTransaction } from "@/types/payment";
+
 
 
 /**
@@ -61,5 +62,23 @@ export class PaymentAPI {
      */
     static createOrder(args: PaymentArgs.CreateOrder) {
         return fetch.post<PaymentResponse.OrderCreateResponse>('/api/payment/order/create', args);
+    }
+
+    /**
+     * Get coin transaction history
+     * @param args Coin transactions parameters
+     * @returns Promise with transaction history data
+     */
+    static getCoinTransactions(args: PaymentArgs.CoinTransactions) {
+        return fetch.get<IPaginationResponse<CoinTransaction>>('/api/payment/customers/coins/transactions', args);
+    }
+
+    /**
+     * Get video unlock transaction history
+     * @param args Video unlock transactions parameters
+     * @returns Promise with transaction history data
+     */
+    static getVideoUnlockTransactions(args: PaymentArgs.VideoUnlockTransactions) {
+        return fetch.get<IPaginationResponse<VideoUnlockTransaction>>('/api/payment/customers/coins/videos/transactions', args);
     }
 }

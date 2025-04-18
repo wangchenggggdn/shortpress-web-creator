@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from '@mantine/core';
 import CustomerApi from '@/api/customer';
-import { UserResponse } from '@/api/respone';
+import { VideoUnlockTransaction } from '@/types/payment';
 import dayjs from 'dayjs';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
-
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 interface UnlockHistoryProps {
     email: string;
 }
 
 const UnlockHistory: React.FC<UnlockHistoryProps> = ({ email }) => {
     const [loading, setLoading] = useState(false);
-    const [unlockHistory, setUnlockHistory] = useState<UserResponse.VideoUnlockTransaction[]>([]);
+    const [unlockHistory, setUnlockHistory] = useState<VideoUnlockTransaction[]>([]);
+    const { params } = React.useContext(SiteContext);
 
     const loadUnlockHistory = async () => {
         try {
@@ -21,6 +22,7 @@ const UnlockHistory: React.FC<UnlockHistoryProps> = ({ email }) => {
                 page: 1,
                 pageSize: 20,
                 email,
+                siteId: params.siteId,
             });
             setUnlockHistory(response.data.items);
         } catch (error) {

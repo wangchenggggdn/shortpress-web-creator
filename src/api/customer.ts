@@ -2,7 +2,8 @@ import fetch from '@/libs/fetch/fetch';
 import { Customer } from '@/types/customer';
 import { IPaginationResponse } from '@/types/public';
 import { CustomerArgs } from './args';
-import { UserResponse } from './respone';
+import { UserResponse } from './respones';
+import { CoinTransaction, VideoUnlockTransaction } from '@/types/payment';
 export default class CustomerApi {
     /**
      * Get customer list with pagination
@@ -36,13 +37,13 @@ export default class CustomerApi {
      * Get user's coin transaction history
      */
     static getCoinTransactions(args: CustomerArgs.GetCoinTransactions) {
-        return fetch.get<UserResponse.TransactionHistoryResponse>('/api/user/coins/transactions', args);
+        return fetch.get<IPaginationResponse<CoinTransaction>>('/api/user/coins/transactions', args);
     }
 
     /**
      * Get user's video unlock transaction history
      */
     static getVideoUnlockTransactions(args: CustomerArgs.GetVideoUnlockTransactions) {
-        return fetch.get<IPaginationResponse<UserResponse.VideoUnlockTransaction>>('/api/user/coins/videos/transactions', args);
+        return fetch.get<IPaginationResponse<VideoUnlockTransaction>>('/api/user/coins/videos/transactions', args);
     }
 } 

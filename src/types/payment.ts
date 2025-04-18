@@ -28,3 +28,32 @@ export interface CoinPackage {
     createdAt?: string;    // Creation time
     updatedAt?: string;    // Update time
 }
+
+
+/**
+ * Transaction history response
+ */
+export interface CoinTransaction {
+    transactionId: string;
+    type: number;
+    amount: number;
+    beforeBalance: number;
+    balance: number;
+    description: string;
+    source: string;
+    relatedType: number;
+    createdAt: number;
+    snapshot?: Record<string, any>;
+}
+
+export interface VideoUnlockTransaction {
+    transactionId: string;
+    contentId: string;
+    contentType: 'video' | 'playlist';
+    coinCost: number;
+    unlockedAt: number;
+    expiredAt?: number;
+    playlistId?: string;
+}
+
+
