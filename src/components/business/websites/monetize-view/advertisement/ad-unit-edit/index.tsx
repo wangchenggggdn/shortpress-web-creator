@@ -35,6 +35,27 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
         }
     );
 
+    const [errors, setErrors] = useState<{
+        name?: string;
+        clientId?: string;
+        unitId?: string;
+    }>({});
+
+    const validateForm = () => {
+        const newErrors: typeof errors = {};
+        if (!adUnit.name) newErrors.name = 'Name is required';
+        if (!adUnit.clientId) newErrors.clientId = 'Client ID is required';
+        if (!adUnit.unitId) newErrors.unitId = 'Ad Unit ID is required';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSave = () => {
+        if (validateForm()) {
+            onSave(adUnit);
+        }
+    };
+
     // Get format label for current page
     const getCurrentFormatLabel = (page: string) => {
         const pageFormat = PAGE_FORMAT_MAP.find(item => item.page === page);
@@ -72,7 +93,16 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                 <div className="flex-1 overflow-y-auto">
                     <div className="p-6">
                         <div className="flex flex-col gap-6">
-                            <TextInput label="Name" value={adUnit.name} onChange={e => setAdUnit({ ...adUnit, name: e.target.value })} required />
+                            <TextInput
+                                label="Name"
+                                value={adUnit.name}
+                                onChange={e => {
+                                    setAdUnit({ ...adUnit, name: e.target.value });
+                                    if (e.target.value) setErrors({ ...errors, name: undefined });
+                                }}
+                                required
+                                error={errors.name}
+                            />
 
                             <Select
                                 label="Ad Network"
@@ -109,9 +139,27 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 </div>
                             </div>
 
-                            <TextInput label="Client ID" value={adUnit.clientId} onChange={e => setAdUnit({ ...adUnit, clientId: e.target.value })} required />
+                            <TextInput
+                                label="Client ID"
+                                value={adUnit.clientId}
+                                onChange={e => {
+                                    setAdUnit({ ...adUnit, clientId: e.target.value });
+                                    if (e.target.value) setErrors({ ...errors, clientId: undefined });
+                                }}
+                                required
+                                error={errors.clientId}
+                            />
 
-                            <TextInput label="Ad Unit ID" value={adUnit.unitId} onChange={e => setAdUnit({ ...adUnit, unitId: e.target.value })} required />
+                            <TextInput
+                                label="Ad Unit ID"
+                                value={adUnit.unitId}
+                                onChange={e => {
+                                    setAdUnit({ ...adUnit, unitId: e.target.value });
+                                    if (e.target.value) setErrors({ ...errors, unitId: undefined });
+                                }}
+                                required
+                                error={errors.unitId}
+                            />
 
                             <Select
                                 label="Status"
@@ -130,7 +178,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                 {/* Fixed Footer */}
                 <div className="flex-none bg-white">
                     <div className="px-6 py-4">
-                        <Button loading={isLoading} fullWidth onClick={() => onSave(adUnit)} className="bg-primary hover:bg-primary/90">
+                        <Button loading={isLoading} fullWidth onClick={handleSave} className="bg-primary hover:bg-primary/90">
                             {isEdit ? 'Save Changes' : 'Create Ad Unit'}
                         </Button>
                     </div>
