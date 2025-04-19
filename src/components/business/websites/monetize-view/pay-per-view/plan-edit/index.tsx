@@ -19,8 +19,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
         initialValues: {
             name: planOld?.name || '',
             coinAmount: planOld?.coinAmount || 0,
-            price: planOld?.originalPrice || 0,
-            originalPrice: planOld?.price || 0,
+            discountPrice: planOld?.price || 0,
+            originalPrice: planOld?.originalPrice || 0,
             discountPercentage: planOld?.discountPercentage || 0,
             description: planOld?.description || '',
             status: status,
@@ -28,26 +28,19 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
         validate: {
             name: value => (value.length < 1 ? 'Plan name is required' : null),
             coinAmount: value => (value <= 0 ? 'Coins must be greater than 0' : null),
-            price: value => (value < 0 ? 'Price cannot be negative' : null),
-            originalPrice: (value, values) => {
-                if (value <= 0) return 'Original price must be greater than 0';
-                if (value < values.price) return 'Original price must be greater than current price';
-                return null;
-            },
-            discountPercentage: (value, values) => {
-                if (values.originalPrice <= 0) return 'Please set original price first';
-                const calculatedDiscount = ((values.originalPrice - values.price) / values.originalPrice) * 100;
-                if (Math.abs(calculatedDiscount - value) > 0.01) {
-                    return 'Discount percentage does not match price difference';
-                }
-                return null;
-            },
+            originalPrice: value => (value < 0 ? 'Price cannot be negative' : null),
+            discountPrice: value => (value < 0 ? 'Discount price cannot be negative' : null),
         },
     });
 
     const handleSubmit = (values: typeof form.values) => {
         onSave({
-            ...values,
+            name: values.name,
+            coinAmount: values.coinAmount,
+            price: values.discountPrice == 0 ? values.originalPrice : values.discountPrice,
+            originalPrice: values.originalPrice,
+            discountPercentage: values.discountPercentage,
+            description: values.description,
             packageId: planOld?.packageId || '',
             siteId: planOld?.siteId || '',
             status: status,
@@ -57,23 +50,27 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
     const isEdit = planOld !== undefined;
 
     // Calculate discount percentage when price or original price changes
-    const handlePriceChange = (field: 'price' | 'originalPrice', value: number) => {
+    const handlePriceChange = (field: 'originalPrice' | 'discountPrice', value: number) => {
         form.setFieldValue(field, value);
-        if (field === 'price' && form.values.originalPrice > 0) {
-            const discount = ((form.values.originalPrice - value) / form.values.originalPrice) * 100;
-            form.setFieldValue('discountPercentage', Math.round(discount * 100) / 100);
-        } else if (field === 'originalPrice' && value > 0) {
-            const discount = ((value - form.values.price) / value) * 100;
-            form.setFieldValue('discountPercentage', Math.round(discount * 100) / 100);
+
+        const originalPrice = field === 'originalPrice' ? value : form.values.originalPrice;
+        const discountPrice = field === 'discountPrice' ? value : form.values.discountPrice;
+
+        if (originalPrice <= 0 || discountPrice >= originalPrice) {
+            form.setFieldValue('discountPercentage', 0);
+            return;
         }
+
+        const discount = ((originalPrice - discountPrice) / originalPrice) * 100;
+        form.setFieldValue('discountPercentage', Math.round(discount * 100) / 100);
     };
 
     return (
         <div className="fixed inset-0 bg-black/20 z-50 flex justify-end">
-            <div className="bg-white w-full max-w-md flex flex-col h-screen">
+            <div className="bg-white w-full max-w-md h-screen flex flex-col">
                 {/* Fixed Header */}
-                <div className="flex-none border-b">
-                    <div className="flex items-center justify-between px-6 py-4">
+                <div className="flex-none">
+                    <div className="flex items-center justify-between px-6 py-4 border-b">
                         <h2 className="text-xl font-medium text-black-purple/90">{isEdit ? 'Edit Plan' : 'Create Plan'}</h2>
                         <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full text-gray-500 hover:text-gray-700">
                             <IconX size={20} />
@@ -81,8 +78,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                     </div>
                 </div>
 
-                {/* Form with both content and submit button */}
-                <form onSubmit={form.onSubmit(handleSubmit)} className="flex flex-col flex-1">
+                {/* Form */}
+                <form onSubmit={form.onSubmit(handleSubmit)} className="flex flex-col flex-1 h-full overflow-hidden">
                     {/* Scrollable Form Content */}
                     <div className="flex-1 overflow-y-auto p-6">
                         <div className="flex flex-col gap-6">
@@ -96,29 +93,29 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     required
                                     min={0}
                                     disabled={isEdit}
+                                    {...form.getInputProps('originalPrice')}
                                     onChange={value => {
-                                        form.getInputProps('originalPrice').onChange(value);
                                         handlePriceChange('originalPrice', Number(value));
                                     }}
                                 />
-                                <span className="pt-5  text-gray-500">USD</span>
+                                <span className="pt-5 text-gray-500">USD</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <NumberInput
                                     className="flex-1"
-                                    label="Original Price"
-                                    placeholder="Enter original price"
+                                    label="Discount Price"
+                                    placeholder="Enter discount price"
                                     min={0}
                                     disabled={isEdit}
+                                    {...form.getInputProps('discountPrice')}
                                     onChange={value => {
-                                        form.getInputProps('price').onChange(value);
-                                        handlePriceChange('price', Number(value));
+                                        handlePriceChange('discountPrice', Number(value));
                                     }}
                                 />
-                                <span className="pt-5  text-gray-500">USD</span>
+                                <span className="pt-5 text-gray-500">USD</span>
                             </div>
                             <NumberInput
-                                label="Discount Percentage"
+                                label="Discount Percentage (%)"
                                 placeholder="Enter discount percentage"
                                 min={0}
                                 max={100}
@@ -139,8 +136,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                         </div>
                     </div>
 
-                    {/* Fixed Footer with Submit Button */}
-                    <div className="flex-none bg-white border-t">
+                    {/* Fixed Footer */}
+                    <div className="flex-none border-t">
                         <div className="px-6 py-4">
                             <Button loading={isLoading} type="submit" fullWidth className="bg-primary hover:bg-primary/90">
                                 {isEdit ? 'Save Changes' : 'Create Plan'}

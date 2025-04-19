@@ -20,6 +20,7 @@ const UploadProgressModal: React.FC = () => {
 
     // 监听页面刷新事件
     useEffect(() => {
+        // Listen for page refresh event
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             const hasUnfinishedUploads = uploadFileList?.some(
                 item =>
@@ -30,7 +31,7 @@ const UploadProgressModal: React.FC = () => {
 
             if (hasUnfinishedUploads) {
                 e.preventDefault();
-                // setShowConfirmDialog(true);
+                e.returnValue = '';
             }
         };
 

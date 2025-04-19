@@ -94,7 +94,7 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
                         ))}
                     </Table.Tbody>
                 </Table>
-                {/* 加载更多的观察目标 */}
+                {/* Intersection observer target for loading more */}
                 <div ref={loadMoreRef} style={{ height: '20px' }}>
                     {loading && (
                         <div className="py-4 flex justify-center">

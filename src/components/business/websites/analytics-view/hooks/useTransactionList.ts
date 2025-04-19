@@ -18,7 +18,7 @@ interface UseTransactionListReturn {
     setStartDate: (date: Date | null) => void;
     endDate: Date | null;
     setEndDate: (date: Date | null) => void;
-    fetchData: (currentPage?: number) => Promise<void>;
+    fetchData: (currentPage?: number, customStartTime?: number, customEndTime?: number) => Promise<void>;
     total: number;
     page: number;
     pageSize: number;
@@ -34,9 +34,33 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
-    const getTimeRange = useCallback((): [number, number] => {
-        const now = Date.now();
-        const endTime = Math.floor(now / 1000);
+
+    // Calculate custom time range with day start (00:00:00) and end (23:59:59)
+    const calculateCustomTimeRange = useCallback((start: Date, end: Date): [number, number] => {
+        const startDateTime = new Date(start);
+        startDateTime.setHours(0, 0, 0, 0);
+        const startTime = Math.floor(startDateTime.getTime() / 1000);
+
+        const endDateTime = new Date(end);
+        endDateTime.setHours(23, 59, 59, 999);
+        const endTime = Math.floor(endDateTime.getTime() / 1000);
+
+        return [startTime, endTime];
+    }, []);
+
+    const getTimeRange = useCallback((customStartTime?: number, customEndTime?: number): [number, number] => {
+        if (rangeType === 'custom') {
+            if (customStartTime && customEndTime) {
+                return [customStartTime, customEndTime];
+            }
+            if (!startDate || !endDate) {
+                return [0, 0];
+            }
+            return calculateCustomTimeRange(startDate, endDate);
+        }
+
+        // For non-custom ranges, use current time as end time
+        const endTime = Math.floor(Date.now() / 1000);
         let startTime: number;
 
         switch (rangeType) {
@@ -46,29 +70,29 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
             case 'last14days':
                 startTime = endTime - (14 * 24 * 60 * 60);
                 break;
-            case 'custom':
-                if (!startDate || !endDate) {
-                    return [endTime - (7 * 24 * 60 * 60), endTime];
-                }
-                startTime = Math.floor(startDate.getTime() / 1000);
-                const customEndTime = Math.floor(endDate.getTime() / 1000);
-                return [startTime, customEndTime];
             default:
                 startTime = endTime - (7 * 24 * 60 * 60);
         }
 
         return [startTime, endTime];
-    }, [rangeType, startDate, endDate]);
+    }, [rangeType, startDate, endDate, calculateCustomTimeRange]);
 
-    const fetchData = useCallback(async (currentPage?: number) => {
+    const fetchData = useCallback(async (currentPage?: number, customStartTime?: number, customEndTime?: number) => {
         try {
             setIsLoading(true);
-            const [startTime, endTime] = getTimeRange();
+            const [startTime, endTime] = getTimeRange(customStartTime, customEndTime);
+
+            console.log('Time Range:', {
+                startTime: new Date(startTime * 1000).toLocaleString(),
+                endTime: new Date(endTime * 1000).toLocaleString(),
+                page: currentPage || 1
+            });
+
             const response = await AnalyticsApi.getIncomeTransactions({
                 siteId,
                 startTime,
                 endTime,
-                page: currentPage || page,
+                page: currentPage || 1,
                 pageSize: pageSize
             });
 
@@ -79,7 +103,7 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
                     setTransactions(response.data.items);
                 }
                 setTotal(response.data.total);
-                setPage(currentPage || page);
+                setPage(currentPage || 1);
                 setPageSize(response.data.pageSize);
             } else {
                 toast.error('Failed to fetch transactions');
@@ -92,15 +116,44 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         }
     }, [siteId, getTimeRange, pageSize]);
 
+    const handleDateChange = useCallback((date: Date | null, isStartDate: boolean) => {
+        if (isStartDate) {
+            setStartDate(date);
+            // Fetch data only when both dates are selected in custom mode
+            if (date && endDate && rangeType === 'custom') {
+                const [startTime, endTime] = calculateCustomTimeRange(date, endDate);
+                fetchData(1, startTime, endTime);
+            }
+        } else {
+            setEndDate(date);
+            // Fetch data only when both dates are selected in custom mode
+            if (startDate && date && rangeType === 'custom') {
+                const [startTime, endTime] = calculateCustomTimeRange(startDate, date);
+                fetchData(1, startTime, endTime);
+            }
+        }
+    }, [endDate, startDate, rangeType, calculateCustomTimeRange, fetchData]);
+
     const handleRangeTypeChange = (type: RangeType) => {
         setRangeType(type);
-        setPage(1);
-        fetchData();
+        if (type === 'custom') {
+            // Reset all data when switching to custom mode
+            setStartDate(null);
+            setEndDate(null);
+            setTransactions([]);
+            setTotal(0);
+        } else {
+            fetchData(1);
+        }
     };
 
     const onPageChange = (newPage: number) => {
         fetchData(newPage);
     };
+
+    useEffect(() => {
+        fetchData(1);
+    }, []);
 
     return {
         transactions,
@@ -108,9 +161,9 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         rangeType,
         setRangeType: handleRangeTypeChange,
         startDate,
-        setStartDate,
+        setStartDate: (date: Date | null) => handleDateChange(date, true),
         endDate,
-        setEndDate,
+        setEndDate: (date: Date | null) => handleDateChange(date, false),
         fetchData,
         total,
         page,

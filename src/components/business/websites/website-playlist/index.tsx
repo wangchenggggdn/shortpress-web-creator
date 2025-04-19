@@ -104,6 +104,15 @@ const WebsitePlaylist: React.FC<WebsitePlaylistProps> = ({ playlists, isLoading,
     };
 
     /**
+     * Handle access type change for a playlist
+     * @param value Access type string
+     */
+    const handleAccessTypeChange = (value: string) => {
+        // Convert frontend type to backend accessType
+        const accessType = value === 'free' ? 0 : 1;
+    };
+
+    /**
      * Handle save price settings
      */
     const handleSavePriceSettings = async (data: { type: 'free' | 'paid'; price: number; freeNum: number }) => {

@@ -56,7 +56,7 @@ const formatDateByRange = (date: Date, range: TimeRange): string => {
             const week = Math.ceil(day / 7);
             return `${month}/W${week}`;
         case 'month':
-            return `${month}月`;
+            return `${month}/M`;
         default:
             return `${month}/${day}`;
     }
@@ -88,7 +88,7 @@ const mergeDataByRange = (data: AnalyticsResponse.DailyIncome[], range: TimeRang
 const transformData = (data: AnalyticsResponse.DailyIncome[], range: TimeRange): { transformedData: AnalyticsResponse.DailyIncome[]; totalAmount: number; totalCount: number } => {
     if (!data) return { transformedData: [], totalAmount: 0, totalCount: 0 };
 
-    // 首先按日期升序排序
+    // Sort data by date in ascending order
     const sortedData = [...data].sort((a, b) => {
         const dateA = new Date(a.date).getTime();
         const dateB = new Date(b.date).getTime();
@@ -162,7 +162,7 @@ export const useAnalytics = ({ siteId }: UseAnalyticsProps): UseAnalyticsReturn 
                 startTime,
                 endTime,
                 page: 1,
-                pageSize: 6 // 只获取前6条记录
+                pageSize: 6 // Get only first 6 records
             });
 
             if (transactionsResponse.code === 0 && transactionsResponse.data) {

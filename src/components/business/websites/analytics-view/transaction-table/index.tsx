@@ -64,7 +64,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoa
                         ))}
                     </Table.Tbody>
                 </Table>
-                {/* 加载更多的观察目标 */}
+                {/* Intersection observer target for loading more */}
                 <div ref={loadMoreRef} style={{ height: '20px' }}>
                     {isLoading && transactions.length > 0 && (
                         <div className="py-4 flex justify-center">

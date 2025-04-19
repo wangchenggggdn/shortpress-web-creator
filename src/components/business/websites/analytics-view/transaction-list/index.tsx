@@ -18,10 +18,6 @@ const TransactionList: React.FC = () => {
         siteId,
     });
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
     const handleLoadMore = () => {
         onPageChange(page + 1);
     };
