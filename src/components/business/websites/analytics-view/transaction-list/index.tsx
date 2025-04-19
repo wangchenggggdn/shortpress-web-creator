@@ -33,7 +33,9 @@ const TransactionList: React.FC = () => {
                     {RANGE_TABS.map(tab => (
                         <button
                             key={tab.id}
-                            onClick={() => setRangeType(tab.id as RangeType)}
+                            onClick={() => {
+                                setRangeType(tab.id as RangeType);
+                            }}
                             className={`px-4 py-2 text-base font-medium rounded-full transition-colors ${
                                 rangeType === tab.id ? 'text-primary border border-primary bg-primary/5' : 'hover:text-gray-900'
                             }`}

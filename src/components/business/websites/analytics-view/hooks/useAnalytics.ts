@@ -88,7 +88,14 @@ const mergeDataByRange = (data: AnalyticsResponse.DailyIncome[], range: TimeRang
 const transformData = (data: AnalyticsResponse.DailyIncome[], range: TimeRange): { transformedData: AnalyticsResponse.DailyIncome[]; totalAmount: number; totalCount: number } => {
     if (!data) return { transformedData: [], totalAmount: 0, totalCount: 0 };
 
-    const dailyData = data.map(item => ({
+    // 首先按日期升序排序
+    const sortedData = [...data].sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return dateA - dateB;
+    });
+
+    const dailyData = sortedData.map(item => ({
         date: item.date,
         totalAmount: item.totalAmount,
         totalCount: item.totalCount

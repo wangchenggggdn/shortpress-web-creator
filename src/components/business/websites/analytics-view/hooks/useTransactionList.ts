@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import AnalyticsApi from '@/api/analytics';
 import { AnalyticsResponse } from '@/api/respones';
 import { toast } from 'sonner';
@@ -92,6 +92,12 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         }
     }, [siteId, getTimeRange, pageSize]);
 
+    const handleRangeTypeChange = (type: RangeType) => {
+        setRangeType(type);
+        setPage(1);
+        fetchData();
+    };
+
     const onPageChange = (newPage: number) => {
         fetchData(newPage);
     };
@@ -100,7 +106,7 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         transactions,
         isLoading,
         rangeType,
-        setRangeType,
+        setRangeType: handleRangeTypeChange,
         startDate,
         setStartDate,
         endDate,

@@ -174,7 +174,9 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                         </div>
                                         <div>
                                             <div className="text-sm text-gray-500">Last Login</div>
-                                            <div className="text-base font-medium">{dayjs(customer.lastLoginAt * 1000).format('YYYY-MM-DD HH:mm')}</div>
+                                            <div className="text-base font-medium">
+                                                {customer.lastLoginAt ? dayjs(customer.lastLoginAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}
+                                            </div>
                                         </div>
                                     </div>
                                 </Table.Tr>

@@ -110,11 +110,11 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
 
                 {/* Stripe Integration */}
                 <div className="flex items-center justify-between mb-6 p-4 border rounded-lg">
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-4 mb-2">
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center">
                             <img src={payment_strpe.src} alt="Stripe" className="h-8" />
                         </div>
-                        <div className="text-sm text-gray-500">Stripe account: {stripeStatus}</div>
+                        {stripeStatus !== 'Not connected' && <div className="text-sm text-gray-500">Stripe account: {stripeStatus}</div>}
                     </div>
                     <Button variant="filled" color="primary" onClick={() => setStripeModalOpened(true)}>
                         {stripeStatus === 'Not connected' ? 'Connect' : 'Manage'}
@@ -125,11 +125,11 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
 
                 {/* PayPal Integration */}
                 <div className="flex items-center justify-between mb-6 p-4 border rounded-lg">
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-4 mb-2">
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-4">
                             <img src={payment_paypal.src} alt="PayPal" className="h-6" />
                         </div>
-                        <div className="text-sm text-gray-500">PayPal account: {paypalStatus}</div>
+                        {paypalStatus !== 'Not connected' && <div className="text-sm text-gray-500">PayPal account: {paypalStatus}</div>}
                     </div>
                     <Button variant="filled" color="primary" onClick={() => setPaypalModalOpened(true)}>
                         {paypalStatus === 'Not connected' ? 'Connect' : 'Manage'}

@@ -160,7 +160,9 @@ const CustomerList: React.FC<CustomerListProps> = () => {
                                                 >
                                                     <Table.Td className="text-black-purple/90">{customer.email}</Table.Td>
                                                     <Table.Td className="text-black-purple/70">{dayjs(customer.createdAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
-                                                    <Table.Td className="text-black-purple/70">{dayjs(customer.lastLoginAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
+                                                    <Table.Td className="text-black-purple/70">
+                                                        {customer.lastLoginAt ? dayjs(customer.lastLoginAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}
+                                                    </Table.Td>
                                                     <Table.Td>
                                                         <Badge color={getStatusColor(customer.status)}>{getStatusLabel(customer.status)}</Badge>
                                                     </Table.Td>
