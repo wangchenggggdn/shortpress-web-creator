@@ -94,7 +94,7 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, l
                 </div>
 
                 {/* Status Label */}
-                <div className={`absolute top-1 left-1 rounded-full border-[1px] border-white h-3 w-3 text-xs ${published ? 'bg-green-500' : 'bg-red-500'} capitalize`}></div>
+                <div className={`absolute top-1 left-1 rounded-full border-[1px] border-white h-3 w-3 text-xs ${published == 2 ? 'bg-green-500' : 'bg-red-500'} capitalize`}></div>
             </div>
 
             {/* Info Section */}
