@@ -24,7 +24,10 @@ const AnalyticsView: React.FC = () => {
     const { params } = useContext(SiteContext);
     const siteId = params.siteId;
 
-    const { incomeData, transactions, isLoading, isTransactionsLoading, timeRange, setTimeRange, fetchData, fetchTransactions, totalAmount } = useAnalytics({ siteId });
+    const { incomeData, transactions, isLoading, isTransactionsLoading, timeRange, setTimeRange, fetchData, fetchTransactions, totalAmount, total, page, pageSize, onPageChange } =
+        useAnalytics({
+            siteId,
+        });
 
     useEffect(() => {
         fetchData();
@@ -86,7 +89,13 @@ const AnalyticsView: React.FC = () => {
                 <div className="flex-1 h-full px-6 py-4 mb-6 flex flex-col bg-white rounded-lg shadow-sm">
                     <h2 className="text-xl font-medium text-gray-900 mb-6">Latest Transactions</h2>
                     <div className="overflow-scroll">
-                        <TransactionTable transactions={transactions} isLoading={isTransactionsLoading} />
+                        <TransactionTable
+                            variant="analytics"
+                            transactions={transactions}
+                            isLoading={isTransactionsLoading}
+                            hasMore={page * pageSize < total}
+                            onLoadMore={() => onPageChange(page + 1)}
+                        />
                     </div>
                     {!isTransactionsLoading && transactions.length === 0 && <div className="w-full h-full flex items-center justify-center">No Transactions Yet</div>}
                     {!isTransactionsLoading && transactions.length > 0 && (

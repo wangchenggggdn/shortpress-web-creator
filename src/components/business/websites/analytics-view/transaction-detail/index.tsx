@@ -31,7 +31,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
                             const encodedEmail = btoa(transaction.email);
                             // Then make it URL safe
                             const urlSafeEmail = encodeURIComponent(encodedEmail);
-                            router.push(`../customers/${urlSafeEmail}`);
+                            router.push(`../../customers/${urlSafeEmail}`);
                         }}
                         variant="outline"
                         className="text-sm font-medium"

@@ -21,6 +21,10 @@ interface UseAnalyticsReturn {
     setTimeRange: (range: TimeRange) => void;
     fetchData: () => Promise<void>;
     fetchTransactions: () => Promise<void>;
+    total: number;
+    page: number;
+    pageSize: number;
+    onPageChange: (page: number) => void;
 }
 
 const getTimeRangeInSeconds = (range: TimeRange): number => {
@@ -105,6 +109,9 @@ export const useAnalytics = ({ siteId }: UseAnalyticsProps): UseAnalyticsReturn 
     const [isLoading, setIsLoading] = useState(false);
     const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
     const [timeRange, setTimeRange] = useState<TimeRange>('month');
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
 
     const fetchData = useCallback(async () => {
         try {
@@ -123,6 +130,9 @@ export const useAnalytics = ({ siteId }: UseAnalyticsProps): UseAnalyticsReturn 
                 setIncomeData(transformedData);
                 setTotalAmount(totalAmount);
                 setTotalCount(totalCount);
+                setTotal(incomeResponse.data.total);
+                setPage(incomeResponse.data.page);
+                setPageSize(incomeResponse.data.pageSize);
             } else {
                 toast.error('Failed to fetch income statistics');
             }
@@ -161,6 +171,11 @@ export const useAnalytics = ({ siteId }: UseAnalyticsProps): UseAnalyticsReturn 
         }
     }, [siteId]);
 
+    const onPageChange = (newPage: number) => {
+        setPage(newPage);
+        fetchData();
+    };
+
     return {
         incomeData,
         transactions,
@@ -171,6 +186,10 @@ export const useAnalytics = ({ siteId }: UseAnalyticsProps): UseAnalyticsReturn 
         timeRange,
         setTimeRange,
         fetchData,
-        fetchTransactions
+        fetchTransactions,
+        total,
+        page,
+        pageSize,
+        onPageChange
     };
 }; 

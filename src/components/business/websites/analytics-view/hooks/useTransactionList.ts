@@ -18,7 +18,11 @@ interface UseTransactionListReturn {
     setStartDate: (date: Date | null) => void;
     endDate: Date | null;
     setEndDate: (date: Date | null) => void;
-    fetchData: () => Promise<void>;
+    fetchData: (currentPage?: number) => Promise<void>;
+    total: number;
+    page: number;
+    pageSize: number;
+    onPageChange: (page: number) => void;
 }
 
 export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTransactionListReturn => {
@@ -27,7 +31,9 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
     const [rangeType, setRangeType] = useState<RangeType>('last7days');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
     const getTimeRange = useCallback((): [number, number] => {
         const now = Date.now();
         const endTime = Math.floor(now / 1000);
@@ -54,22 +60,27 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         return [startTime, endTime];
     }, [rangeType, startDate, endDate]);
 
-    const fetchData = useCallback(async () => {
+    const fetchData = useCallback(async (currentPage?: number) => {
         try {
             setIsLoading(true);
             const [startTime, endTime] = getTimeRange();
-            console.log('startTime:', new Date(startTime * 1000).toLocaleString());
-            console.log('endTime:', new Date(endTime * 1000).toLocaleString());
             const response = await AnalyticsApi.getIncomeTransactions({
                 siteId,
                 startTime,
                 endTime,
-                page: 1,
-                pageSize: 10
+                page: currentPage || page,
+                pageSize: pageSize
             });
 
             if (response.code === 0 && response.data) {
-                setTransactions(response.data.items);
+                if (currentPage && currentPage > 1) {
+                    setTransactions(prev => [...prev, ...response.data.items]);
+                } else {
+                    setTransactions(response.data.items);
+                }
+                setTotal(response.data.total);
+                setPage(currentPage || page);
+                setPageSize(response.data.pageSize);
             } else {
                 toast.error('Failed to fetch transactions');
             }
@@ -79,7 +90,11 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         } finally {
             setIsLoading(false);
         }
-    }, [siteId, getTimeRange]);
+    }, [siteId, getTimeRange, pageSize]);
+
+    const onPageChange = (newPage: number) => {
+        fetchData(newPage);
+    };
 
     return {
         transactions,
@@ -90,6 +105,10 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         setStartDate,
         endDate,
         setEndDate,
-        fetchData
+        fetchData,
+        total,
+        page,
+        pageSize,
+        onPageChange,
     };
 }; 

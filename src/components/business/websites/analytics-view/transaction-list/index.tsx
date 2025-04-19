@@ -14,12 +14,17 @@ const RANGE_TABS = [
 const TransactionList: React.FC = () => {
     const { params } = React.useContext(SiteContext);
     const siteId = params.siteId;
-
-    const { transactions, isLoading, rangeType, setRangeType, startDate, setStartDate, endDate, setEndDate, fetchData } = useTransactionList({ siteId });
+    const { transactions, isLoading, rangeType, setRangeType, startDate, setStartDate, endDate, setEndDate, fetchData, total, page, pageSize, onPageChange } = useTransactionList({
+        siteId,
+    });
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    const handleLoadMore = () => {
+        onPageChange(page + 1);
+    };
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -55,8 +60,8 @@ const TransactionList: React.FC = () => {
                 )}
             </div>
 
-            <div className="flex-1 mb-6 overflow-scroll bg-white rounded-lg shadow-sm px-6 pb-6 pt-4">
-                <TransactionTable transactions={transactions} isLoading={isLoading} />
+            <div className="flex-1 mb-6 bg-white rounded-lg shadow-sm px-6 pb-6 pt-4">
+                <TransactionTable variant="transaction-list" transactions={transactions} isLoading={isLoading} hasMore={page * pageSize < total} onLoadMore={handleLoadMore} />
             </div>
             {!isLoading && transactions.length === 0 && <div className="w-full h-full flex items-center justify-center">No Transactions Yet</div>}
         </div>
