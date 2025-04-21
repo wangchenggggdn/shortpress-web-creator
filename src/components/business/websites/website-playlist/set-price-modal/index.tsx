@@ -72,11 +72,8 @@ const SetPrice: React.FC<SetPriceProps> = ({ onClose, onSave, defaultValues = { 
                                 {type === 'paid' && (
                                     <>
                                         <div>
-                                            <label className="block text-sm font-medium mb-2">Price</label>
-                                            <div className="flex items-center gap-2">
-                                                <NumberInput value={price} onChange={value => setPrice(Number(value))} min={0} placeholder="Enter coins amount" variant="filled" />
-                                                <div className="pr-3 text-gray-500 text-sm">Coins/Episode</div>
-                                            </div>
+                                            <label className="block text-sm font-medium mb-2">Coins per Episode</label>
+                                            <NumberInput value={price} onChange={value => setPrice(Number(value))} min={0} placeholder="Enter coins amount" variant="filled" />
                                         </div>
 
                                         <div>

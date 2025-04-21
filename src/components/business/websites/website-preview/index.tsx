@@ -77,92 +77,92 @@ const WebsitePreview: React.FC<WebsitePreviewProps> = ({ playlist = [], onLoadMo
 
     return (
         <div className="w-full h-full bg-black rounded-[32px] shadow-lg overflow-hidden relative">
-        {showPlaylist ? (
-            <WebsitePlaylistApp
-                title={currentVideo?.title || ''}
-                cover={currentVideo?.cover || ''}
-                totalEpisodes={playlist.length}
-                synopsis={currentVideo?.description || ''}
-                episodes={playlist.map((video, index) => ({
-                    id: video.vid,
-                    title: video.title,
-                    episode: index + 1,
-                    isPlaying: index === currentIndex,
-                    isWatched: false, // Add watch status logic here
-                }))}
-                currentEpisode={currentIndex + 1}
-                onBack={handleBack}
-                onEpisodeClick={handleEpisodeClick}
-                onContinueWatching={() => {
-                    setShowPlaylist(false);
-                    setIsPlaying(true);
-                }}
-            />
-        ) : (
-            <>
-                {/* Status Bar */}
-                <div className="w-full h-[5%] min-h-[32px] bg-black/80 flex items-center justify-between px-4 absolute top-0 z-10">
-                    <div className="text-white text-xs">9:30</div>
-                    <div className="flex items-center gap-1">
-                        <div className="w-3 h-3 bg-white rounded-full" />
-                        <div className="w-3 h-3 bg-white rounded-full" />
-                    </div>
-                </div>
-
-                {/* Video Swiper */}
-                <Swiper
-                    style={{ height: '100%' }}
-                    direction="vertical"
-                    loop={false}
-                    slideSize={100}
-                    trackOffset={0}
-                    defaultIndex={0}
-                    onIndexChange={handleChange}
-                    indicatorProps={{
-                        style: {
-                            display: 'none',
-                        },
-                    }}
-                >
-                    {playlist.map((video, index) => (
-                        <Swiper.Item key={video.vid + 'swiper' + index}>
-                            <WebsiteVideoPlayer
-                                src={video.videoSourceUrl ?? ''}
-                                poster={video.cover ?? ''}
-                                isPlaying={isPlaying && currentIndex === index}
-                                onEnded={() => setIsPlaying(false)}
-                                title={video.title}
-                                description={video.description}
-                                onPlayPause={setIsPlaying}
-                                // onTitleClick={handleTitleClick}
-                                // onWatchFull={handleWatchFull}
-                            />
-                        </Swiper.Item>
-                    ))}
-                </Swiper>
-
-                {/* Episode Sheet */}
-                <EpisodeSheet
-                    visible={showEpisodeSheet}
-                    onClose={() => setShowEpisodeSheet(false)}
+            {showPlaylist ? (
+                <WebsitePlaylistApp
                     title={currentVideo?.title || ''}
+                    cover={currentVideo?.cover || ''}
                     totalEpisodes={playlist.length}
+                    synopsis={currentVideo?.description || ''}
                     episodes={playlist.map((video, index) => ({
                         id: video.vid,
                         title: video.title,
                         episode: index + 1,
                         isPlaying: index === currentIndex,
-                        isWatched: false,
+                        isWatched: false, // Add watch status logic here
                     }))}
                     currentEpisode={currentIndex + 1}
-                    onEpisodeClick={episode => {
-                        setCurrentIndex(episode - 1);
+                    onBack={handleBack}
+                    onEpisodeClick={handleEpisodeClick}
+                    onContinueWatching={() => {
+                        setShowPlaylist(false);
                         setIsPlaying(true);
                     }}
                 />
-            </>
-        )}
-    </div>
+            ) : (
+                <>
+                    {/* Status Bar */}
+                    <div className="w-full h-[5%] min-h-[32px] bg-black/80 flex items-center justify-between px-4 absolute top-0 z-10">
+                        <div className="text-white text-xs">9:30</div>
+                        <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 bg-white rounded-full" />
+                            <div className="w-3 h-3 bg-white rounded-full" />
+                        </div>
+                    </div>
+
+                    {/* Video Swiper */}
+                    <Swiper
+                        style={{ height: '100%' }}
+                        direction="vertical"
+                        loop={false}
+                        slideSize={100}
+                        trackOffset={0}
+                        defaultIndex={0}
+                        onIndexChange={handleChange}
+                        indicatorProps={{
+                            style: {
+                                display: 'none',
+                            },
+                        }}
+                    >
+                        {playlist.map((video, index) => (
+                            <Swiper.Item key={video.vid + 'swiper' + index}>
+                                <WebsiteVideoPlayer
+                                    src={video.videoSourceUrl ?? ''}
+                                    poster={video.cover ?? ''}
+                                    isPlaying={isPlaying && currentIndex === index}
+                                    onEnded={() => setIsPlaying(false)}
+                                    title={video.title}
+                                    description={video.description}
+                                    onPlayPause={setIsPlaying}
+                                    // onTitleClick={handleTitleClick}
+                                    // onWatchFull={handleWatchFull}
+                                />
+                            </Swiper.Item>
+                        ))}
+                    </Swiper>
+
+                    {/* Episode Sheet */}
+                    <EpisodeSheet
+                        visible={showEpisodeSheet}
+                        onClose={() => setShowEpisodeSheet(false)}
+                        title={currentVideo?.title || ''}
+                        totalEpisodes={playlist.length}
+                        episodes={playlist.map((video, index) => ({
+                            id: video.vid,
+                            title: video.title,
+                            episode: index + 1,
+                            isPlaying: index === currentIndex,
+                            isWatched: false,
+                        }))}
+                        currentEpisode={currentIndex + 1}
+                        onEpisodeClick={episode => {
+                            setCurrentIndex(episode - 1);
+                            setIsPlaying(true);
+                        }}
+                    />
+                </>
+            )}
+        </div>
     );
 };
 
