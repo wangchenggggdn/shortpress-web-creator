@@ -84,7 +84,7 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
                             <Table.Tr key={transaction.transactionId}>
                                 <Table.Td>
                                     {transaction.amount > 0 ? '+' : ''}
-                                    {transaction.amount} coins
+                                    {transaction.amount} USD
                                 </Table.Td>
                                 <Table.Td>{transaction.provider}</Table.Td>
                                 <Table.Td>{transaction.name}</Table.Td>

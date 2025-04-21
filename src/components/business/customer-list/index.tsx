@@ -127,7 +127,8 @@ const CustomerList: React.FC<CustomerListProps> = () => {
             <Header />
             <div className="flex-1 min-h-0 flex flex-col">
                 {/* Search Header */}
-                <div className="flex justify-center items-center py-4">
+                <div className="relative flex justify-center items-center py-4">
+                    <h2 className="absolute left-10 text-lg font-medium text-black-purple">{customers.length + ' customers'}</h2>
                     <Search className="w-96" value={searchKeyword} onChange={setSearchKeyword} placeholder="Search customers" />
                 </div>
 

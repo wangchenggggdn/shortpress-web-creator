@@ -57,7 +57,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoa
                             <Table.Tr key={transaction.transactionId} onClick={() => handleRowClick(transaction.transactionId)} className="cursor-pointer hover:bg-gray-50">
                                 <Table.Td className="text-green-500 font-bold">${transaction.amount.toFixed(2)}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.provider}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{transaction.name + ' coins'}</Table.Td>
+                                <Table.Td className="text-black-purple/70">{transaction.name}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.email}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{new Date(transaction.createdAt * 1000).toLocaleString()}</Table.Td>
                             </Table.Tr>

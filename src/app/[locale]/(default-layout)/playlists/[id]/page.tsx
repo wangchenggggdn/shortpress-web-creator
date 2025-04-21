@@ -24,6 +24,7 @@ import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loading-data';
 import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
 import ConfirmDialog from '@/components/common/confirm-dialog';
+import { useRouter } from 'next/navigation';
 
 interface PlaylistVideosPageProps {}
 
@@ -45,6 +46,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [replaceLoading, setReplaceLoading] = useState(false);
     const [confirmSaveOrderOpen, setConfirmSaveOrderOpen] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         playlistFetch();
@@ -271,9 +273,14 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
             <Header
                 customTitle={
                     <div className="flex items-center gap-4">
-                        <Link href="/playlists" className="text-gray-600 hover:text-gray-900">
+                        <div
+                            onClick={() => {
+                                router.back();
+                            }}
+                            className="text-gray-600 hover:text-gray-900"
+                        >
                             <IconArrowLeft size={20} />
-                        </Link>
+                        </div>
                         <h1 className="font-medium">
                             <span className="text-gray-500">Playlists</span> {' / ' + playlist?.title}
                         </h1>

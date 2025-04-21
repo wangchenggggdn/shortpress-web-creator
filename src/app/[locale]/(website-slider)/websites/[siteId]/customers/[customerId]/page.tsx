@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useContext, useEffect, useState } from 'react';
-import { IconDotsVertical } from '@tabler/icons-react';
+import { IconDotsVertical, IconArrowLeft } from '@tabler/icons-react';
 import Header from '@/components/system/header';
 import { Customer, CustomerStatus } from '@/types/customer';
 import CustomerApi from '@/api/customer';
@@ -12,6 +12,7 @@ import { Menu, Table } from '@mantine/core';
 import dayjs from 'dayjs';
 import TransactionList from '@/components/business/websites/customer-view/transaction-list';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
+import { useRouter } from 'next/navigation';
 
 interface CustomerDetailPageProps {
     params: {
@@ -24,7 +25,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const [loading, setLoading] = useState(true);
     const { userInfo } = userStore();
     const { params: siteParams } = useContext(SiteContext);
-
+    const router = useRouter();
     useEffect(() => {
         loadCustomerInfo();
     }, [params.customerId]);
@@ -110,6 +111,14 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
             <Header
                 customTitle={
                     <div className="flex items-center gap-4">
+                        <div
+                            onClick={() => {
+                                router.back();
+                            }}
+                            className="text-gray-600 hover:text-gray-900"
+                        >
+                            <IconArrowLeft size={20} />
+                        </div>
                         <h1 className="font-medium">
                             <span className="text-gray-500">Customers</span> {' / ' + getEmail()}
                         </h1>

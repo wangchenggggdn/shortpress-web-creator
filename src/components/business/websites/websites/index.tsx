@@ -74,7 +74,7 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
             <div className="flex-1 px-6 pb-6">
                 <div className="bg-layout rounded-lg h-full p-6 flex flex-col">
                     {websites.length > 0 ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
                             {websites.map(website => (
                                 <WebsiteCard
                                     key={website.siteId}

@@ -24,8 +24,6 @@ const PayPerView: React.FC = () => {
         const response = await PaymentAPI.getCoinPackageList({ siteId: params.siteId });
         if (response.code === 0 && response.data) {
             setPlans(response.data);
-        } else {
-            toast.error('Failed to load plans');
         }
     };
 

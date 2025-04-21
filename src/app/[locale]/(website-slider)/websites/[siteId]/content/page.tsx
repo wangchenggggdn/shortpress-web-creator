@@ -251,20 +251,22 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
             {/* Top Navigation */}
             <div className="border-b w-full">
                 <div className="h-16 px-6 flex items-center justify-between">
-                    <h2 className="text-xl font-medium text-black-purple ">Websites</h2>
+                    <h2 className="text-xl font-medium text-black-purple ">Content</h2>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 text-gray-600">
-                            <div
-                                className="text-primary cursor-pointer max-w-72 line-clamp-1"
-                                onClick={() => {
-                                    window.open(`${website?.domain}/${website?.path}`, '_blank');
-                                }}
-                            >{`${website?.domain}/${website?.path}`}</div>
+                            {website && (
+                                <div
+                                    className="text-primary cursor-pointer max-w-72 line-clamp-1"
+                                    onClick={() => {
+                                        window.open(`${website?.domain}/${website?.path}`, '_blank');
+                                    }}
+                                >{`${website?.domain}/${website?.path}`}</div>
+                            )}
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">
                                 Copy
                             </Button>
                         </div>
-                        <Button
+                        {/* <Button
                             onClick={() => setCreateModalOpened(true)}
                             variant="subtle"
                             color="primary"
@@ -272,7 +274,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                             className="border border-primary"
                         >
                             Settings
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
             </div>
@@ -283,7 +285,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                     {/* Title Area */}
 
                     <div className="py-4 px-11 flex items-center justify-between">
-                        <h2 className="text-lg font-medium text-black-purple">Contents</h2>
+                        <h2 className="text-lg font-medium text-black-purple">{playlists.length + ' playlist'}</h2>
                         <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)} className="border border-primary">
                             Add Content
                         </Button>
