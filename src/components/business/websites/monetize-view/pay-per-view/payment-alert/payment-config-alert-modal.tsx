@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Modal, Button, Text } from '@mantine/core';
 import { useRouter } from 'next/navigation';
-
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 interface PaymentConfigAlertModalProps {
     opened: boolean;
     onClose: () => void;
-    siteId: string;
 }
 
-const PaymentConfigAlertModal: React.FC<PaymentConfigAlertModalProps> = ({ opened, onClose, siteId }) => {
+const PaymentConfigAlertModal: React.FC<PaymentConfigAlertModalProps> = ({ opened, onClose }) => {
     const router = useRouter();
+    const { params } = useContext(SiteContext);
+    const siteId = params?.siteId ?? '';
 
     const handleNavigateToPayment = () => {
         onClose();
-        router.push(`/websites/${siteId}/payment-setting`);
+        router.push(`/websites/${siteId}/settings`);
     };
 
     return (

@@ -131,7 +131,7 @@ const PayPerView: React.FC<PayPerViewProps> = ({ siteId }) => {
                 />
             )}
 
-            <PaymentConfigAlertModal opened={paymentConfigAlertOpened} onClose={() => setPaymentConfigAlertOpened(false)} siteId={siteId} />
+            <PaymentConfigAlertModal opened={paymentConfigAlertOpened} onClose={() => setPaymentConfigAlertOpened(false)} />
         </div>
     );
 };
