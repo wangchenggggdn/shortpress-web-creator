@@ -1371,6 +1371,57 @@
                 }
             }
         },
+        "/api/payment/customers/coins/balance": {
+            "get": {
+                "description": "获取某一个email邮箱用户的金币账号信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "获取某一个email邮箱用户的金币信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户邮箱",
+                        "name": "userEmail",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "siteId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回用户金币账户信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.UserCoinsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/payment/customers/coins/grant": {
             "post": {
                 "description": "允许创作者手动为特定用户增加金币数量作为奖励或补偿",
@@ -2670,30 +2721,6 @@
                         "description": "Returns user information",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.UserInfo"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.Response"
                         }
                     }
                 }
@@ -4698,6 +4725,9 @@
                     "type": "integer"
                 },
                 "totalEarned": {
+                    "type": "integer"
+                },
+                "totalRealMoneySpent": {
                     "type": "integer"
                 },
                 "totalSpent": {

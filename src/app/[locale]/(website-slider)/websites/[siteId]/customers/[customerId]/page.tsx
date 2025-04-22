@@ -15,6 +15,8 @@ import { SiteContext } from '@/components/business/websites/useContext/site-cont
 import { useRouter } from 'next/navigation';
 import { PaymentAPI } from '@/api/payment';
 import RefillCoinsModal from '@/components/business/websites/customer-view/refill-coins-modal';
+import { UserResponse } from '@/api/respones';
+import { IResponse } from '@/types/public';
 
 interface CustomerDetailPageProps {
     params: {
@@ -24,6 +26,7 @@ interface CustomerDetailPageProps {
 
 const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const [customer, setCustomer] = useState<Customer | null>(null);
+    const [coinInfo, setCoinInfo] = useState<UserResponse.UserCoinsResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [refillModalOpen, setRefillModalOpen] = useState(false);
     const { userInfo } = userStore();
@@ -42,11 +45,18 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const loadCustomerInfo = async () => {
         try {
             setLoading(true);
-            const response = await CustomerApi.getInfo({
-                email: getEmail(),
-                siteId: siteParams.siteId,
-            });
-            setCustomer(response.data);
+            const [customerResponse, coinResponse] = await Promise.all([
+                CustomerApi.getInfo({
+                    email: getEmail(),
+                    siteId: siteParams.siteId,
+                }),
+                PaymentAPI.getCoinBalance({
+                    userEmail: getEmail(),
+                    siteId: siteParams.siteId,
+                }),
+            ]);
+            setCustomer(customerResponse.data);
+            setCoinInfo(coinResponse.data);
         } catch (error) {
             console.error('Failed to load customer info:', error);
             toast.error('Failed to load customer information');
@@ -216,21 +226,17 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                     <div className="flex gap-8 p-4">
                                         <div>
                                             <div className="text-sm text-gray-500">Total Spent</div>
-                                            <div className="text-base font-medium">${customer.totalSpent || '0.00'}</div>
+                                            <div className="text-base font-medium">${coinInfo?.totalSpent || '0.00'}</div>
                                         </div>
                                         <div>
                                             <div className="text-sm text-gray-500">Coin Balance</div>
                                             <div className="flex items-center gap-2">
-                                                <div className="text-base font-medium">{customer.coinBalance || 0}</div>
+                                                <div className="text-base font-medium">{coinInfo?.balance || 0}</div>
                                                 <div className="text-primary cursor-pointer" onClick={() => setRefillModalOpen(true)}>
                                                     Refill
                                                 </div>
                                             </div>
                                         </div>
-                                        {/* <div>
-                                            <div className="text-sm text-gray-500">VIP</div>
-                                            <div className="text-base font-medium">{customer.vipExpireAt ? dayjs(customer.vipExpireAt * 1000).format('YYYY-MM-DD') : '-'}</div>
-                                        </div> */}
                                     </div>
                                 </Table.Tr>
                             </Table.Tbody>

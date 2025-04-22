@@ -1,6 +1,6 @@
 import { IPaginationResponse, IResponse } from "@/types/public";
 import { PaymentArgs } from "./args";
-import { PaymentResponse } from "./respones";
+import { PaymentResponse, UserResponse } from "./respones";
 import fetch from '@/libs/fetch/fetch';
 import { CoinPackage, CoinTransaction, VideoUnlockTransaction } from "@/types/payment";
 
@@ -99,6 +99,15 @@ export class PaymentAPI {
      * @returns Promise with grant coins response
      */
     static grantCoins(args: PaymentArgs.GrantCoins) {
-        return fetch.post<IResponse<PaymentResponse.GrantCoins>>('/api/payment/customers/coins/grant', args);
+        return fetch.post<PaymentResponse.GrantCoins>('/api/payment/customers/coins/grant', args);
+    }
+
+    /**
+     * Get user's coin balance
+     * @param args User coins balance parameters
+     * @returns Promise with user's coin balance information
+     */
+    static getCoinBalance(args: PaymentArgs.GetUserCoinsBalance) {
+        return fetch.get<UserResponse.UserCoinsResponse>('/api/payment/customers/coins/balance', args);
     }
 }

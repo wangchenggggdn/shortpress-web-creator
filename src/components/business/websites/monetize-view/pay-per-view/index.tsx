@@ -8,22 +8,41 @@ import PlanEdit from './plan-edit';
 import { PaymentAPI } from '@/api/payment';
 import { CoinPackage, PackageStatus } from '@/types/payment';
 import { SiteContext } from '../../useContext/site-context';
+import PaymentConfigAlertModal from './payment-alert/payment-config-alert-modal';
 
-const PayPerView: React.FC = () => {
+interface PayPerViewProps {
+    siteId: string;
+}
+
+const PayPerView: React.FC<PayPerViewProps> = ({ siteId }) => {
     const [plans, setPlans] = useState<CoinPackage[]>([]);
     const [modalOpened, setModalOpened] = useState(false);
     const [editingPlan, setEditingPlan] = useState<CoinPackage | undefined>();
     const [isLoading, setIsLoading] = useState(false);
+    const [paymentConfigAlertOpened, setPaymentConfigAlertOpened] = useState(false);
+    const [hasPaymentConfig, setHasPaymentConfig] = useState(false);
     const { params } = useContext(SiteContext);
 
     useEffect(() => {
         loadPlans();
-    }, []);
+        checkPaymentConfig();
+    }, [siteId]);
 
     const loadPlans = async () => {
         const response = await PaymentAPI.getCoinPackageList({ siteId: params.siteId });
         if (response.code === 0 && response.data) {
             setPlans(response.data);
+        }
+    };
+
+    const checkPaymentConfig = async () => {
+        try {
+            const response = await PaymentAPI.getConfig({ siteId });
+            const hasConfig = !!(response.data?.stripe?.pk || response.data?.paypal?.clientId);
+            setHasPaymentConfig(hasConfig);
+        } catch (error) {
+            console.error('Failed to check payment config:', error);
+            toast.error('Failed to check payment configuration');
         }
     };
 
@@ -79,11 +98,19 @@ const PayPerView: React.FC = () => {
         }
     };
 
+    const handleNewPlanClick = () => {
+        if (!hasPaymentConfig) {
+            setPaymentConfigAlertOpened(true);
+            return;
+        }
+        setModalOpened(true);
+    };
+
     return (
         <div className="h-full px-6 py-4 flex flex-col bg-layout rounded-lg">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-medium text-gray-900">Plans</h2>
-                <Button onClick={() => setModalOpened(true)} className="bg-primary hover:bg-primary/90">
+                <Button onClick={handleNewPlanClick} className="bg-primary hover:bg-primary/90">
                     New Plan
                 </Button>
             </div>
@@ -103,6 +130,8 @@ const PayPerView: React.FC = () => {
                     isLoading={isLoading}
                 />
             )}
+
+            <PaymentConfigAlertModal opened={paymentConfigAlertOpened} onClose={() => setPaymentConfigAlertOpened(false)} siteId={siteId} />
         </div>
     );
 };

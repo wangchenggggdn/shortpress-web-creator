@@ -391,6 +391,14 @@ export namespace PaymentArgs {
         coinAmount: number;
         reason?: string;
     }
+
+    /**
+     * Get user's coin balance request parameters
+     */
+    export interface GetUserCoinsBalance {
+        userEmail: string;  // User's email address
+        siteId: string;     // Site ID
+    }
 }
 
 /**
