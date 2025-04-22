@@ -67,7 +67,7 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-420px)] overflow-hidden">
+        <div className="flex flex-col h-[calc(100vh-500px)] overflow-hidden">
             <div className="flex-1 min-h-0 overflow-y-auto">
                 <Table>
                     <Table.Thead className="sticky top-0 bg-white z-10">

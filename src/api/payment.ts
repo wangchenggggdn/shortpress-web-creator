@@ -56,6 +56,17 @@ export class PaymentAPI {
     }
 
     /**
+     * Get payment configuration information
+     * @param args Payment configuration parameters
+     * @returns Promise with payment configuration
+     */
+    static getConfig(args: PaymentArgs.GetConfig) {
+        return fetch.get<PaymentResponse.PaymentConfig>('/api/payment/conf/info', args);
+    }
+
+
+
+    /**
      * Create a payment order
      * @param args Order creation parameters
      * @returns Promise with order information and payment URLs
@@ -80,5 +91,14 @@ export class PaymentAPI {
      */
     static getVideoUnlockTransactions(args: PaymentArgs.VideoUnlockTransactions) {
         return fetch.get<IPaginationResponse<VideoUnlockTransaction>>('/api/payment/customers/coins/videos/transactions', args);
+    }
+
+    /**
+     * Grant coins to a specific user
+     * @param args Grant coins request parameters
+     * @returns Promise with grant coins response
+     */
+    static grantCoins(args: PaymentArgs.GrantCoins) {
+        return fetch.post<IResponse<PaymentResponse.GrantCoins>>('/api/payment/customers/coins/grant', args);
     }
 }

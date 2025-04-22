@@ -134,7 +134,7 @@ const CustomerList: React.FC<CustomerListProps> = () => {
 
                 {/* Table Container */}
                 <div className="px-6 pb-6 h-full">
-                    <div className="h-full p-4 flex flex-col bg-layout rounded-lg">
+                    <div className="h-[calc(100vh-160px)] overflow-hidden p-4 flex flex-col bg-layout rounded-lg">
                         {loading ? (
                             <div className="flex-1 flex items-center justify-center">
                                 <LoadingData />
@@ -143,7 +143,7 @@ const CustomerList: React.FC<CustomerListProps> = () => {
                             <>
                                 <div className="flex-1 overflow-auto px-4">
                                     <Table>
-                                        <Table.Thead>
+                                        <Table.Thead className="sticky top-0 bg-white z-10">
                                             <Table.Tr>
                                                 <Table.Th className="text-black-purple/60">Email</Table.Th>
                                                 <Table.Th className="text-black-purple/60">Since</Table.Th>

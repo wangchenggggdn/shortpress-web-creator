@@ -450,6 +450,326 @@
                 }
             }
         },
+        "/api/client/payment/coins/package/list": {
+            "get": {
+                "description": "获取指定站点的所有可用金币套餐，供客户端展示使用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "获取客户端金币套餐列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回可用的金币套餐列表",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/payment/coins/videos/buy": {
+            "post": {
+                "description": "使用用户金币账户余额购买视频或播放列表观看权限",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "使用金币购买视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "购买视频请求",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.BuyContentWithCoinsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回购买结果",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.BuyContentWithCoinsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/payment/order/create": {
+            "post": {
+                "description": "创建一个支付订单，用于购买金币套餐或订阅，返回支付URLs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "创建支付订单",
+                "parameters": [
+                    {
+                        "description": "订单创建请求",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.OrderCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回订单信息及支付URLs",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.OrderCreateResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/payment/provider/list": {
+            "get": {
+                "description": "获取当前站点支持的支付服务商列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "获取支付方式列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回支付服务商列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/shortpress-server_internal_api.PaymentProviderInfo"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/payment/user/coins/balance": {
+            "get": {
+                "description": "获取当前登录用户在指定站点的金币账户余额",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "获取用户金币余额",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回用户金币账户信息",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.UserCoinsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/payment/user/coins/transactions": {
+            "get": {
+                "description": "获取当前登录用户的金币交易历史记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "获取用户金币交易记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回交易记录列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.CoinTransactionHistoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/client/payment/user/coins/videos/transactions": {
+            "get": {
+                "description": "获取当前登录用户的视频和播放列表解锁历史记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client-payment"
+                ],
+                "summary": "获取用户视频解锁记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "站点ID",
+                        "name": "X-Site-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "页码，默认1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 20,
+                        "description": "每页数量，默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回解锁记录列表",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/shortpress-server_internal_api.VideoUnlockHistoryResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/client/player/playlist/videos": {
             "get": {
                 "description": "有序获取播放列表下的视频列表",
@@ -873,38 +1193,6 @@
                 }
             }
         },
-        "/api/payment/coins/package/client/list": {
-            "get": {
-                "description": "获取指定站点的所有可用金币套餐，供客户端展示使用",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
-                "summary": "获取客户端金币套餐列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "站点ID",
-                        "name": "X-Site-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回可用的金币套餐列表",
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageResponseData"
-                        }
-                    }
-                }
-            }
-        },
         "/api/payment/coins/package/create": {
             "post": {
                 "description": "创建新的金币套餐供用户购买",
@@ -971,9 +1259,9 @@
                 }
             }
         },
-        "/api/payment/coins/videos/buy": {
-            "post": {
-                "description": "使用用户金币账户余额购买视频或播放列表观看权限",
+        "/api/payment/conf/info": {
+            "get": {
+                "description": "获取站点的支付配置信息，包括已配置的支付提供商和它们的公钥",
                 "consumes": [
                     "application/json"
                 ],
@@ -983,28 +1271,19 @@
                 "tags": [
                     "payment"
                 ],
-                "summary": "使用金币购买视频",
+                "summary": "获取支付配置信息",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "站点ID",
-                        "name": "X-Site-Id",
-                        "in": "header",
+                        "name": "siteId",
+                        "in": "query",
                         "required": true
-                    },
-                    {
-                        "description": "购买视频请求",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.BuyContentWithCoinsRequest"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回购买结果",
+                        "description": "返回配置信息",
                         "schema": {
                             "allOf": [
                                 {
@@ -1014,7 +1293,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/shortpress-server_internal_api.BuyContentWithCoinsResponse"
+                                            "$ref": "#/definitions/shortpress-server_internal_api.PaymentConfigInfoResponse"
                                         }
                                     }
                                 }
@@ -1269,75 +1548,6 @@
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/payment/order/create": {
-            "post": {
-                "description": "创建一个支付订单，用于购买金币套餐或订阅，返回支付URLs",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
-                "summary": "创建支付订单",
-                "parameters": [
-                    {
-                        "description": "订单创建请求",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.OrderCreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回订单信息及支付URLs",
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.OrderCreateResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/payment/provider/list": {
-            "get": {
-                "description": "获取当前站点支持的支付服务商列表",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
-                "summary": "获取支付方式列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "站点ID",
-                        "name": "X-Site-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回支付服务商列表",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/shortpress-server_internal_api.PaymentProviderInfo"
-                            }
                         }
                     }
                 }
@@ -2584,172 +2794,6 @@
                 }
             }
         },
-        "/api/user/coins/balance": {
-            "get": {
-                "description": "获取当前登录用户在指定站点的金币账户余额",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "获取用户金币余额",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "站点ID",
-                        "name": "X-Site-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回用户金币账户信息",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/shortpress-server_internal_api.UserCoinsResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/user/coins/transactions": {
-            "get": {
-                "description": "获取当前登录用户的金币交易历史记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "获取用户金币交易记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "站点ID",
-                        "name": "X-Site-Id",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "example": 1,
-                        "description": "页码，默认1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 100,
-                        "minimum": 1,
-                        "type": "integer",
-                        "example": 20,
-                        "description": "每页数量，默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回交易记录列表",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/shortpress-server_internal_api.CoinTransactionHistoryResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/user/coins/videos/transactions": {
-            "get": {
-                "description": "获取当前登录用户的视频和播放列表解锁历史记录",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "获取用户视频解锁记录",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "站点ID",
-                        "name": "X-Site-Id",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "example": 1,
-                        "description": "页码，默认1",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 100,
-                        "minimum": 1,
-                        "type": "integer",
-                        "example": 20,
-                        "description": "每页数量，默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "返回解锁记录列表",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/shortpress-server_internal_api.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/shortpress-server_internal_api.VideoUnlockHistoryResponse"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/api/user/login": {
             "post": {
                 "description": "User login with email and password",
@@ -3377,6 +3421,9 @@
                     "description": "Show strategy values",
                     "type": "object",
                     "additionalProperties": true
+                },
+                "status": {
+                    "type": "integer"
                 }
             }
         },
@@ -3538,7 +3585,7 @@
         "shortpress-server_internal_api.CoinTransactionHistoryResponse": {
             "type": "object",
             "properties": {
-                "itmes": {
+                "items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/shortpress-server_internal_api.CoinTransactionResponse"
@@ -3950,7 +3997,7 @@
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "createdAt": {
                     "type": "integer"
@@ -4081,6 +4128,15 @@
                 "OrderTypeSubscription"
             ]
         },
+        "shortpress-server_internal_api.PayPalConfigInfo": {
+            "type": "object",
+            "properties": {
+                "clientId": {
+                    "description": "PayPal client ID",
+                    "type": "string"
+                }
+            }
+        },
         "shortpress-server_internal_api.PaymentAccountInfo": {
             "type": "object",
             "properties": {
@@ -4098,6 +4154,27 @@
                     "description": "账号邮箱",
                     "type": "string",
                     "example": "johndoe@example.com"
+                }
+            }
+        },
+        "shortpress-server_internal_api.PaymentConfigInfoResponse": {
+            "type": "object",
+            "properties": {
+                "paypal": {
+                    "description": "PayPal configuration",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/shortpress-server_internal_api.PayPalConfigInfo"
+                        }
+                    ]
+                },
+                "stripe": {
+                    "description": "Stripe configuration",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/shortpress-server_internal_api.StripeConfigInfo"
+                        }
+                    ]
                 }
             }
         },
@@ -4156,8 +4233,7 @@
                 },
                 "freeVideos": {
                     "description": "Number of free videos before requiring payment",
-                    "type": "integer",
-                    "minimum": 0
+                    "type": "integer"
                 },
                 "playlistId": {
                     "type": "string"
@@ -4573,6 +4649,23 @@
                     "description": "Stripe secret key",
                     "type": "string",
                     "example": "sk_test_..."
+                }
+            }
+        },
+        "shortpress-server_internal_api.StripeConfigInfo": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Account email",
+                    "type": "string"
+                },
+                "pk": {
+                    "description": "Stripe public key",
+                    "type": "string"
+                },
+                "sk": {
+                    "description": "Stripe secret key",
+                    "type": "string"
                 }
             }
         },
@@ -5003,9 +5096,17 @@
                     "description": "内容ID (视频或播放列表ID)",
                     "type": "string"
                 },
+                "contentTitle": {
+                    "description": "内容标题",
+                    "type": "string"
+                },
                 "contentType": {
                     "description": "内容类型 \"video\" or \"playlist\"",
                     "type": "string"
+                },
+                "episodeNumber": {
+                    "description": "集数（如果是视频）",
+                    "type": "integer"
                 },
                 "expiredAt": {
                     "description": "过期时间（如果有）",
@@ -5013,6 +5114,10 @@
                 },
                 "playlistId": {
                     "description": "播放列表ID (当contentType为视频时)",
+                    "type": "string"
+                },
+                "playlistTitle": {
+                    "description": "播放列表标题",
                     "type": "string"
                 },
                 "transactionId": {

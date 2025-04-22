@@ -40,6 +40,27 @@ export namespace PaymentResponse {
         expiresAt: string;
         successUrl: string;
     }
+
+    /**
+     * Payment configuration response
+     */
+    export interface PaymentConfig {
+        paypal?: {
+            clientId: string;     // PayPal client ID
+        };
+        stripe?: {
+            email: string;        // Stripe account email
+            pk: string;          // Stripe publishable key
+            sk: string;          // Stripe secret key
+        };
+    }
+
+    export interface GrantCoins {
+        amountAdded: number;
+        currentBalance: number;
+        transactionId: string;
+        userEmail: string;
+    }
 }
 
 /**

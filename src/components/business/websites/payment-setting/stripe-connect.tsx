@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { TextInput, Button, LoadingOverlay } from '@mantine/core';
 import { IconX, IconCopy } from '@tabler/icons-react';
 import { toast } from 'sonner';
+import { PaymentAPI } from '@/api/payment';
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 
 interface StripeConnectProps {
     opened: boolean;
@@ -15,6 +17,28 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
     const [publicKey, setPublicKey] = useState('');
     const [secretKey, setSecretKey] = useState('');
     const [loading, setLoading] = useState(false);
+    const { params } = useContext(SiteContext);
+    const siteId = params?.siteId ?? '';
+
+    useEffect(() => {
+        if (opened && siteId) {
+            setLoading(true);
+            PaymentAPI.getConfig({ siteId })
+                .then(response => {
+                    if (response.data?.stripe) {
+                        setPublicKey(response.data.stripe.pk || '');
+                        setSecretKey(response.data.stripe.sk || '');
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to load Stripe config:', error);
+                    toast.error('Failed to load Stripe configuration');
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [opened, siteId]);
 
     const handleSubmit = async () => {
         if (!publicKey) {
@@ -26,6 +50,7 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
             return;
         }
 
+        setLoading(true);
         try {
             await onSubmit(publicKey, secretKey);
             onClose();

@@ -377,6 +377,20 @@ export namespace PaymentArgs {
         page?: number;
         pageSize?: number;
     }
+
+    /**
+     * Get payment configuration parameters
+     */
+    export interface GetConfig {
+        siteId: string;           // Required: Site ID
+    }
+
+    export interface GrantCoins {
+        siteId: string;
+        userEmail: string;
+        coinAmount: number;
+        reason?: string;
+    }
 }
 
 /**

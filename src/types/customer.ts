@@ -5,6 +5,9 @@ export interface Customer {
     createdAt: number;  // timestamp
     lastLoginAt: number; // timestamp
     updatedAt: number;  // timestamp
+    totalSpent?: number;  // Total amount spent
+    coinBalance?: number;  // Current coin balance
+    vipExpireAt?: number;  // VIP expiration timestamp
 }
 
 export enum CustomerStatus {

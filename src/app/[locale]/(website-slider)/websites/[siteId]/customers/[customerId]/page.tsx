@@ -8,11 +8,13 @@ import CustomerApi from '@/api/customer';
 import { toast } from 'sonner';
 import userStore from '@/store/useUserStore';
 import LoadingData from '@/components/common/loading-data';
-import { Menu, Table } from '@mantine/core';
+import { Menu, Table, Button } from '@mantine/core';
 import dayjs from 'dayjs';
 import TransactionList from '@/components/business/websites/customer-view/transaction-list';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
 import { useRouter } from 'next/navigation';
+import { PaymentAPI } from '@/api/payment';
+import RefillCoinsModal from '@/components/business/websites/customer-view/refill-coins-modal';
 
 interface CustomerDetailPageProps {
     params: {
@@ -23,6 +25,7 @@ interface CustomerDetailPageProps {
 const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const [customer, setCustomer] = useState<Customer | null>(null);
     const [loading, setLoading] = useState(true);
+    const [refillModalOpen, setRefillModalOpen] = useState(false);
     const { userInfo } = userStore();
     const { params: siteParams } = useContext(SiteContext);
     const router = useRouter();
@@ -106,8 +109,28 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
         });
     };
 
+    const handleRefillCoins = async (amount: number) => {
+        try {
+            if (!customer || amount <= 0) return;
+            await PaymentAPI.grantCoins({
+                siteId: siteParams.siteId,
+                userEmail: customer.email,
+                coinAmount: amount,
+                reason: 'Manual refill by admin',
+            });
+            toast.success('Coins added successfully');
+            setRefillModalOpen(false);
+            loadCustomerInfo(); // Reload customer info
+        } catch (error) {
+            console.error('Failed to refill coins:', error);
+            toast.error('Failed to add coins');
+        }
+    };
+
     return (
         <div className="h-full flex flex-col">
+            <RefillCoinsModal opened={refillModalOpen} onClose={() => setRefillModalOpen(false)} onConfirm={handleRefillCoins} />
+
             <Header
                 customTitle={
                     <div className="flex items-center gap-4">
@@ -187,6 +210,27 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                                 {customer.lastLoginAt ? dayjs(customer.lastLoginAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}
                                             </div>
                                         </div>
+                                    </div>
+                                </Table.Tr>
+                                <Table.Tr>
+                                    <div className="flex gap-8 p-4">
+                                        <div>
+                                            <div className="text-sm text-gray-500">Total Spent</div>
+                                            <div className="text-base font-medium">${customer.totalSpent || '0.00'}</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-sm text-gray-500">Coin Balance</div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-base font-medium">{customer.coinBalance || 0}</div>
+                                                <div className="text-primary cursor-pointer" onClick={() => setRefillModalOpen(true)}>
+                                                    Refill
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {/* <div>
+                                            <div className="text-sm text-gray-500">VIP</div>
+                                            <div className="text-base font-medium">{customer.vipExpireAt ? dayjs(customer.vipExpireAt * 1000).format('YYYY-MM-DD') : '-'}</div>
+                                        </div> */}
                                     </div>
                                 </Table.Tr>
                             </Table.Tbody>

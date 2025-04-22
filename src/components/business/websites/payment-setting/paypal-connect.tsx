@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { TextInput, Button, LoadingOverlay } from '@mantine/core';
 import { IconX, IconCopy } from '@tabler/icons-react';
 import { toast } from 'sonner';
+import { PaymentAPI } from '@/api/payment';
+import { SiteContext } from '@/components/business/websites/useContext/site-context';
 
 interface PaypalConnectProps {
     opened: boolean;
@@ -15,7 +17,28 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
     const [clientId, setClientId] = useState('');
     const [clientSecret, setClientSecret] = useState('');
     const [loading, setLoading] = useState(false);
+    const { params } = useContext(SiteContext);
+    const siteId = params?.siteId ?? '';
     const webhookUrl = 'https://shortpress.com/addons/dramas/pay/notify_paypal/payment/paypal/sign/edum';
+
+    useEffect(() => {
+        if (opened && siteId) {
+            setLoading(true);
+            PaymentAPI.getConfig({ siteId })
+                .then(response => {
+                    if (response.data?.paypal) {
+                        setClientId(response.data.paypal.clientId || '');
+                    }
+                })
+                .catch(error => {
+                    console.error('Failed to load PayPal config:', error);
+                    toast.error('Failed to load PayPal configuration');
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [opened, siteId]);
 
     const handleSubmit = async () => {
         if (!clientId) {
@@ -27,6 +50,7 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
             return;
         }
 
+        setLoading(true);
         try {
             await onSubmit(clientId, clientSecret);
             onClose();
