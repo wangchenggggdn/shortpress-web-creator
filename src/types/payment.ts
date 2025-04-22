@@ -66,6 +66,8 @@ export interface VideoUnlockTransaction {
     unlockedAt: number;
     expiredAt?: number;
     playlistId?: string;
+    contentTitle: string;
+    playlistTitle?: string;
 }
 
 

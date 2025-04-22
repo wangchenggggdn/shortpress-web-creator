@@ -43,7 +43,7 @@ const AnalyticsView: React.FC = () => {
     return (
         <div className="flex flex-col h-screen">
             <Header />
-            <div className="flex-1 min-h-0 px-6 flex flex-col overflow-scroll">
+            <div className="flex-1 min-h-0 px-6 flex flex-col overflow-auto">
                 {/* Custom Navigation */}
                 <div className="flex gap-4 my-4">
                     {TABS.map(tab => (
@@ -61,7 +61,7 @@ const AnalyticsView: React.FC = () => {
                 <div className="mb-6 p-6 bg-white rounded-lg shadow-sm">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-medium text-gray-900">Total Revenue</h2>
-                        <div className="flex gap-2">
+                        {/* <div className="flex gap-2">
                             {TIME_RANGES.map(range => (
                                 <button
                                     key={range.value}
@@ -73,7 +73,7 @@ const AnalyticsView: React.FC = () => {
                                     {range.label}
                                 </button>
                             ))}
-                        </div>
+                        </div> */}
                     </div>
                     <div className="text-3xl font-bold text-primary mb-6">${totalAmount.toFixed(2) || '0.00'}</div>
                     {isLoading ? (
@@ -88,7 +88,7 @@ const AnalyticsView: React.FC = () => {
                 {/* Latest Transactions */}
                 <div className="flex-1 h-full px-6 py-4 mb-6 flex flex-col bg-white rounded-lg shadow-sm">
                     <h2 className="text-xl font-medium text-gray-900 mb-6">Latest Transactions</h2>
-                    <div className="overflow-scroll">
+                    <div className="overflow-auto">
                         <TransactionTable
                             variant="analytics"
                             transactions={transactions}

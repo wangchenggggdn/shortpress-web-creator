@@ -42,8 +42,8 @@ const AdUnitList: React.FC<AdUnitListProps> = ({ adUnits, onEdit, onStatusChange
 
     return (
         <div className="h-full w-full">
-            <div className="overflow-scroll">
-                <Table>
+            <div className="overflow-auto">
+                <Table stickyHeader>
                     <Table.Thead>
                         <Table.Tr>
                             <Table.Th className="w-[200px] xl:w-[500px] text-black-purple/60">Name</Table.Th>

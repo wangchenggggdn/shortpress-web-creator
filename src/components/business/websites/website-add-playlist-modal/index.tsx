@@ -6,7 +6,7 @@ import { IconX } from '@tabler/icons-react';
 import { Playlist } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
 import LoadingData from '@/components/common/loading-data';
-
+import { useRouter } from 'next/navigation';
 /**
  * Props interface for AddContentModal component
  */
@@ -34,6 +34,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     const [orderType, setOrderType] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
     const [total, setTotal] = React.useState(0);
+    const router = useRouter();
 
     // Fetch playlists when search parameters change
     useEffect(() => {
@@ -115,8 +116,15 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                         {loading ? (
                             <LoadingData className="w-10 h-10" />
                         ) : playlists.length === 0 ? (
-                            <div className="flex justify-center items-center h-full">
+                            <div className="flex flex-col justify-center items-center h-full gap-4">
                                 <div className="text-sm font-medium text-gray-500">No content found</div>
+                                <Button
+                                    onClick={() => {
+                                        router.push('/playlists');
+                                    }}
+                                >
+                                    Add Playlist
+                                </Button>
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4">

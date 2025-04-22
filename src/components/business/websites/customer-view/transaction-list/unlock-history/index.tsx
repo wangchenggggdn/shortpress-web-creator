@@ -73,7 +73,8 @@ const UnlockHistory: React.FC<UnlockHistoryProps> = ({ email }) => {
                     <Table.Thead className="sticky top-0 bg-white z-10">
                         <Table.Tr>
                             <Table.Th>Content Type</Table.Th>
-                            <Table.Th>Content ID</Table.Th>
+                            <Table.Th>Content Title</Table.Th>
+                            <Table.Th>Playlist Title</Table.Th>
                             <Table.Th>Cost</Table.Th>
                             <Table.Th>Unlock Time</Table.Th>
                             <Table.Th>Expiry Time</Table.Th>
@@ -83,7 +84,8 @@ const UnlockHistory: React.FC<UnlockHistoryProps> = ({ email }) => {
                         {unlockHistory.map(record => (
                             <Table.Tr key={record.transactionId}>
                                 <Table.Td>{record.contentType}</Table.Td>
-                                <Table.Td>{record.contentId}</Table.Td>
+                                <Table.Td>{record.contentTitle ?? '-'}</Table.Td>
+                                <Table.Td>{record.playlistTitle ?? '-'}</Table.Td>
                                 <Table.Td>{record.coinCost} coins</Table.Td>
                                 <Table.Td>{dayjs(record.unlockedAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
                                 <Table.Td>{record.expiredAt ? dayjs(record.expiredAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}</Table.Td>

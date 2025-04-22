@@ -39,9 +39,9 @@ const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) =>
     };
 
     return (
-        <div className="h-full w-full">
-            <div className="overflow-scroll">
-                <Table>
+        <div className="h-full w-full flex flex-col">
+            <div className="flex-1 overflow-auto">
+                <Table stickyHeader>
                     <Table.Thead>
                         <Table.Tr>
                             <Table.Th className="w-[200px] xl:w-[500px] text-black-purple/60">Plan</Table.Th>
@@ -69,7 +69,6 @@ const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) =>
                                                 <IconDots size={16} />
                                             </button>
                                         </Menu.Target>
-
                                         <Menu.Dropdown>
                                             <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => onEdit(plan)} className="text-black-purple/70">
                                                 Edit
