@@ -102,6 +102,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 }}
                                 required
                                 error={errors.name}
+                                variant="filled"
                             />
 
                             <Select
@@ -113,6 +114,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 ]}
                                 value={adUnit.adNetwork}
                                 onChange={value => setAdUnit({ ...adUnit, adNetwork: value || AdNetwork.GOOGLE })}
+                                variant="filled"
                             />
 
                             <Select
@@ -123,6 +125,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 }))}
                                 value={adUnit.page}
                                 onChange={value => handlePageChange(value || PAGE_FORMAT_MAP[0].page)}
+                                variant="filled"
                             />
 
                             <div>
@@ -148,6 +151,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 }}
                                 required
                                 error={errors.clientId}
+                                variant="filled"
                             />
 
                             <TextInput
@@ -159,6 +163,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 }}
                                 required
                                 error={errors.unitId}
+                                variant="filled"
                             />
 
                             <Select
@@ -170,6 +175,7 @@ const AdUnitEdit: React.FC<AdUnitEditProps> = ({ adUnitOld, onClose, onSave, isL
                                 ]}
                                 value={adUnit.status.toString()}
                                 onChange={value => setAdUnit({ ...adUnit, status: Number(value) })}
+                                variant="filled"
                             />
                         </div>
                     </div>

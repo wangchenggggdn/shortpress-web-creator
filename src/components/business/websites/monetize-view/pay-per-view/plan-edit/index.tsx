@@ -83,8 +83,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                     {/* Scrollable Form Content */}
                     <div className="flex-1 overflow-y-auto p-6">
                         <div className="flex flex-col gap-6">
-                            <TextInput label="Plan Name" placeholder="Enter plan name" required {...form.getInputProps('name')} />
-                            <NumberInput label="Coins" placeholder="Enter coins amount" required min={0} {...form.getInputProps('coinAmount')} />
+                            <TextInput label="Plan Name" placeholder="Enter plan name" required {...form.getInputProps('name')} variant="filled" />
+                            <NumberInput label="Coins" placeholder="Enter coins amount" required min={0} {...form.getInputProps('coinAmount')} variant="filled" />
                             <div className="flex items-center gap-2">
                                 <NumberInput
                                     className="flex-1"
@@ -97,6 +97,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     onChange={value => {
                                         handlePriceChange('originalPrice', Number(value));
                                     }}
+                                    variant="filled"
                                 />
                                 <span className="pt-5 text-gray-500">USD</span>
                             </div>
@@ -111,6 +112,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     onChange={value => {
                                         handlePriceChange('discountPrice', Number(value));
                                     }}
+                                    variant="filled"
                                 />
                                 <span className="pt-5 text-gray-500">USD</span>
                             </div>
@@ -121,8 +123,9 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                 max={100}
                                 disabled={true}
                                 {...form.getInputProps('discountPercentage')}
+                                variant="filled"
                             />
-                            <TextInput label="Description" placeholder="Enter description" {...form.getInputProps('description')} />
+                            <TextInput label="Description" placeholder="Enter description" {...form.getInputProps('description')} variant="filled" />
                             <Select
                                 label="Status"
                                 value={status.toString()}
@@ -132,6 +135,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     { value: PackageStatus.Deleted.toString(), label: 'Deleted' },
                                 ]}
                                 onChange={value => setStatus(Number(value))}
+                                variant="filled"
                             />
                         </div>
                     </div>
