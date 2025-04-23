@@ -38,7 +38,15 @@ const RefillCoinsModal: React.FC<RefillCoinsModalProps> = ({ opened, onClose, on
             }}
         >
             <div className="flex flex-col gap-4">
-                <NumberInput label="Amount of coins to add" value={amount} onChange={val => setAmount(Number(val))} min={1} step={100} placeholder="Enter amount" />
+                <NumberInput
+                    label="Amount of coins to add"
+                    value={amount}
+                    onChange={val => setAmount(Number(val))}
+                    min={1}
+                    allowDecimal={false}
+                    allowNegative={false}
+                    placeholder="Enter amount"
+                />
                 <div className="flex justify-end gap-2">
                     <Button variant="subtle" onClick={handleClose}>
                         Cancel

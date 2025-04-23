@@ -98,14 +98,23 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                     <div className="flex-1 overflow-y-auto p-6">
                         <div className="flex flex-col gap-6">
                             <TextInput label="Plan Name" placeholder="Enter plan name" required {...form.getInputProps('name')} variant="filled" />
-                            <NumberInput label="Coins" placeholder="Enter coins amount" required min={0} {...form.getInputProps('coinAmount')} variant="filled" />
+                            <NumberInput
+                                label="Coins"
+                                placeholder="Enter coins amount"
+                                required
+                                allowDecimal={false}
+                                allowNegative={false}
+                                {...form.getInputProps('coinAmount')}
+                                variant="filled"
+                            />
                             <div className="flex items-center gap-2">
                                 <NumberInput
                                     className="flex-1"
                                     label="Price"
                                     placeholder="Enter price"
                                     required
-                                    min={0}
+                                    allowNegative={false}
+                                    decimalScale={2}
                                     disabled={isEdit}
                                     {...form.getInputProps('originalPrice')}
                                     onChange={value => {
@@ -120,7 +129,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     className="flex-1"
                                     label="Discount Price"
                                     placeholder="Enter discount price"
-                                    min={0}
+                                    allowNegative={false}
+                                    decimalScale={2}
                                     disabled={isEdit}
                                     {...form.getInputProps('discountPrice')}
                                     onChange={value => {
