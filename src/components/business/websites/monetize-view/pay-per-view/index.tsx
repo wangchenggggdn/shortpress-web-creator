@@ -10,11 +10,7 @@ import { CoinPackage, PackageStatus } from '@/types/payment';
 import { SiteContext } from '../../useContext/site-context';
 import PaymentConfigAlertModal from './payment-alert/payment-config-alert-modal';
 
-interface PayPerViewProps {
-    siteId: string;
-}
-
-const PayPerView: React.FC<PayPerViewProps> = ({ siteId }) => {
+const PayPerView: React.FC = () => {
     const [plans, setPlans] = useState<CoinPackage[]>([]);
     const [modalOpened, setModalOpened] = useState(false);
     const [editingPlan, setEditingPlan] = useState<CoinPackage | undefined>();
@@ -22,6 +18,7 @@ const PayPerView: React.FC<PayPerViewProps> = ({ siteId }) => {
     const [paymentConfigAlertOpened, setPaymentConfigAlertOpened] = useState(false);
     const [hasPaymentConfig, setHasPaymentConfig] = useState(false);
     const { params } = useContext(SiteContext);
+    const siteId = params.siteId;
 
     useEffect(() => {
         loadPlans();
