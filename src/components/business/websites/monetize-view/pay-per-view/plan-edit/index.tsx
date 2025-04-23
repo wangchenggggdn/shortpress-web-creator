@@ -76,7 +76,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
         }
 
         const discount = ((originalPrice - discountPrice) / originalPrice) * 100;
-        form.setFieldValue('discountPercentage', Math.round(discount * 100) / 100);
+        form.setFieldValue('discountPercentage', Math.round(discount));
     };
 
     return (
