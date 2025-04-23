@@ -13,27 +13,41 @@ interface PlanEditProps {
     isLoading?: boolean;
 }
 
+interface FormValues {
+    name: string;
+    coinAmount: number;
+    originalPrice: number;
+    discountPrice: number;
+    discountPercentage: number;
+    description: string;
+    status: PackageStatus;
+}
+
 const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading = false }) => {
     const [status, setStatus] = useState<PackageStatus>(planOld?.status || PackageStatus.Enabled);
-    const form = useForm({
+    const form = useForm<FormValues>({
         initialValues: {
             name: planOld?.name || '',
             coinAmount: planOld?.coinAmount || 0,
+            originalPrice: planOld?.price || 0,
             discountPrice: planOld?.price || 0,
-            originalPrice: planOld?.originalPrice || 0,
             discountPercentage: planOld?.discountPercentage || 0,
             description: planOld?.description || '',
             status: status,
         },
         validate: {
-            name: value => (value.length < 1 ? 'Plan name is required' : null),
-            coinAmount: value => (value <= 0 ? 'Coins must be greater than 0' : null),
-            originalPrice: value => (value < 0 ? 'Price cannot be negative' : null),
-            discountPrice: value => (value < 0 ? 'Discount price cannot be negative' : null),
+            name: (value: string) => (value.length < 1 ? 'Plan name is required' : null),
+            coinAmount: (value: number) => (value <= 0 ? 'Coins must be greater than 0' : null),
+            originalPrice: (value: number) => (value < 0 ? 'Price cannot be negative' : null),
+            discountPrice: (value: number, values: FormValues) => {
+                if (value < 0) return 'Discount price cannot be negative';
+                if (value >= values.originalPrice) return 'Discount price must be less than original price';
+                return null;
+            },
         },
     });
 
-    const handleSubmit = (values: typeof form.values) => {
+    const handleSubmit = (values: FormValues) => {
         onSave({
             name: values.name,
             coinAmount: values.coinAmount,
