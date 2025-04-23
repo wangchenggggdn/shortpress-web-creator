@@ -39,8 +39,8 @@ const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) =>
     };
 
     return (
-        <div className="h-full w-full flex flex-col">
-            <div className="flex-1 overflow-auto">
+        <div className="h-full w-full">
+            <div className="overflow-auto">
                 <Table stickyHeader>
                     <Table.Thead>
                         <Table.Tr>
