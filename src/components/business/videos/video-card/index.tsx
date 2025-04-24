@@ -39,9 +39,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ vid, title, cover, status, durati
     };
 
     return (
-        <div className="bg-layout rounded-lg overflow-hidden shadow-md group" onClick={() => onClick?.(vid)}>
+        <div className="bg-layout rounded-lg overflow-hidden shadow-md group w-full" onClick={() => onClick?.(vid)}>
             {/* Cover Image Container - Fixed 9:16 aspect ratio */}
-            <div className="relative aspect-[9/16] bg-gray-100">
+            <div className="relative aspect-[9/16] bg-gray-100 w-full">
                 {cover ? (
                     <div className="absolute inset-0">
                         <img src={cover} alt={title} className="w-full h-full object-cover" loading="lazy" />

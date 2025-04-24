@@ -18,6 +18,7 @@ import ConfirmDialog from '@/components/common/confirm-dialog';
 import LoadingData from '@/components/common/loading-data';
 import CreatorApi from '@/api/creator';
 import { IconCheck } from '@tabler/icons-react';
+import { useInView } from 'react-intersection-observer';
 
 interface VideosPageViewProps {
     searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
@@ -37,65 +38,65 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [replaceLoading, setReplaceLoading] = useState(false);
-    const [activePage, setActivePage] = useState(1);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
     const [total, setTotal] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const videoToDeleteRef = useRef<string | null>(null);
 
-    useEffect(() => {
-        fetchVideos();
-    }, []);
+    const { ref: loadMoreRef, inView } = useInView({
+        threshold: 0,
+    });
 
     useEffect(() => {
-        searchVideos();
-    }, [status, sortType, searchQuery, activePage]);
+        if (inView && hasMore && !loading) {
+            loadMoreVideos();
+        }
+    }, [inView]);
 
-    const fetchVideos = async () => {
+    useEffect(() => {
+        resetAndFetchVideos();
+    }, [status, sortType, searchQuery]);
+
+    const resetAndFetchVideos = async () => {
+        setPage(1);
+        setVideos([]);
+        setHasMore(true);
+        await fetchVideos(1);
+    };
+
+    const fetchVideos = async (currentPage: number) => {
         setLoading(true);
         const params: VideoArgs.Search = {
             keyword: searchQuery,
-            page: activePage,
-            pageSize: getItemsPerPage(),
+            page: currentPage,
+            pageSize: 5,
             status: Number(status),
             orderType: sortType,
         };
         playlistId && (params.playlistId = playlistId);
         const res = await searchFetch(params);
         if (res?.code === 0) {
+            const newVideos = res?.data?.items ?? [];
+            if (currentPage === 1) {
+                setVideos(newVideos);
+            } else {
+                setVideos(prev => [...prev, ...newVideos]);
+            }
+            setHasMore(res.data.hasMore);
             setTotal(res?.data?.total ?? 0);
-            setVideos(res?.data?.items ?? []);
         }
         setLoading(false);
     };
 
-    const searchVideos = async () => {
-        setLoading(true);
-        const params: VideoArgs.Search = { keyword: searchQuery, status: Number(status), orderType: sortType, page: activePage, pageSize: getItemsPerPage() };
-        const res = await searchFetch(params);
-        setTotal(res?.data?.total ?? 0);
-        setVideos(res?.data?.items ?? []);
-        setLoading(false);
-    };
-
-    const getItemsPerPage = () => {
-        let itemsPerPage = 20;
-        if (window.innerWidth >= 1536) {
-            itemsPerPage = 16;
-        } else if (window.innerWidth >= 1280) {
-            itemsPerPage = 12;
-        } else if (window.innerWidth >= 768) {
-            itemsPerPage = 8;
-        } else if (window.innerWidth >= 640) {
-            itemsPerPage = 6;
-        } else {
-            itemsPerPage = 4;
-        }
-        return itemsPerPage;
+    const loadMoreVideos = async () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        await fetchVideos(nextPage);
     };
 
     const handleSearch = useCallback((value: string) => {
         setSearchQuery(value);
-        setActivePage(1);
     }, []);
 
     const handleOpenUploadModal = () => {
@@ -185,7 +186,7 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
             setVideos(videos.filter(v => v.vid !== id));
             deleteVideo(id);
             setEditingVideo(null);
-            setTotal(total - 1);
+            setTotal(prev => prev - 1);
         }
         setDeleteModalOpen(false);
         videoToDeleteRef.current = null;
@@ -242,15 +243,15 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
             </div>
 
             <div className="flex-1 px-6 pb-6 min-h-0">
-                <div className="h-full p-2 flex flex-col bg-layout rounded-lg">
-                    <div className="flex-1 min-h-0 ">
-                        {loading ? (
+                <div className="h-full p-4 flex flex-col bg-white rounded-lg">
+                    <div className="flex-1 min-h-0">
+                        {loading && videos.length === 0 ? (
                             <div className="h-full flex items-center justify-center">
                                 <LoadingData />
                             </div>
                         ) : videos.length > 0 ? (
                             <div className="h-full overflow-y-auto">
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4 p-4">
+                                <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4">
                                     {videos.map(video => (
                                         <VideoCard
                                             deleteString={playlistId ? 'Remove' : 'Delete'}
@@ -262,6 +263,9 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                                             onClick={handleEdit}
                                         />
                                     ))}
+                                </div>
+                                <div ref={loadMoreRef} className="h-10 flex items-center justify-center">
+                                    {loading && <LoadingData />}
                                 </div>
                             </div>
                         ) : searchQuery.length > 0 ? (
@@ -276,19 +280,6 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                             </div>
                         )}
                     </div>
-
-                    {videos.length > 0 && (
-                        <div className="pb-3 flex-shrink-0">
-                            <Pagination
-                                value={activePage}
-                                onChange={setActivePage}
-                                total={Math.ceil(total / getItemsPerPage())}
-                                color="primary"
-                                radius="xl"
-                                className="flex justify-center"
-                            />
-                        </div>
-                    )}
                 </div>
             </div>
 
@@ -313,7 +304,7 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 </>
             )}
 
-            <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUploadSuccess={fetchVideos} />
+            <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUploadSuccess={() => resetAndFetchVideos()} />
 
             <ConfirmDialog
                 opened={deleteModalOpen}
