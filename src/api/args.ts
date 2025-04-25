@@ -54,6 +54,8 @@ export namespace WebsiteArgs {
             description?: string;
             keywords?: string;
         };
+        googleAnalyticsId?: string;
+
     }
 
     /**

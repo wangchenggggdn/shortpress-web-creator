@@ -2,13 +2,16 @@
 import { Website } from '@/types/website';
 import CreateSiteModal from '../website-create-modal';
 import Header from '@/components/system/header';
-import PaymentSetting from '../payment-setting';
+import PaymentSetting from './payment-setting';
+import DomainSetting from './domain-setting';
+import AnalyticsSetting from './analytics-setting';
 import { useState } from 'react';
 import classNames from 'classnames';
 import { WebsiteArgs } from '@/api/args';
 import WebsiteApi from '@/api/website';
 import { toast } from 'sonner';
 import CreatorApi from '@/api/creator';
+
 interface WebsiteSettingProps {
     website: Website;
 }
@@ -16,6 +19,8 @@ interface WebsiteSettingProps {
 const TABS = [
     { id: 'general', label: 'General' },
     { id: 'payments', label: 'Payments' },
+    { id: 'domain', label: 'Domain' },
+    { id: 'analytics', label: 'Analytics' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -23,6 +28,9 @@ type TabId = (typeof TABS)[number]['id'];
 const WebsiteSetting: React.FC<WebsiteSettingProps> = ({ website }) => {
     const [activeTab, setActiveTab] = useState<TabId>('general');
     const [loading, setLoading] = useState(false);
+
+    const handleRefresh = () => {};
+
     /**
      * Handle website settings submission
      * @param args Website modification data
@@ -75,6 +83,8 @@ const WebsiteSetting: React.FC<WebsiteSettingProps> = ({ website }) => {
                         </div>
                     )}
                     {activeTab === 'payments' && <PaymentSetting website={website} />}
+                    {activeTab === 'domain' && <DomainSetting website={website} onSuccess={handleRefresh} />}
+                    {activeTab === 'analytics' && <AnalyticsSetting website={website} onSuccess={handleRefresh} />}
                 </div>
             </div>
         </div>

@@ -14,6 +14,8 @@ export interface Website {
     logo?: string;
     /** Website status */
     status: number;
+    /** Google Analytics ID */
+    googleAnalyticsId?: string;
     /** SEO information */
     seo?: {
         /** SEO title */
