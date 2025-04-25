@@ -93,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                 {/* Logo Section */}
                 <div className="h-16 flex items-center px-4">
                     <Link href="/" className="text-primary text-2xl font-bold">
-                        {collapsed ? 'S' : 'Shortify'}
+                        {collapsed ? 'S' : 'ShortPress'}
                     </Link>
                 </div>
 

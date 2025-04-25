@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { Modal, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
@@ -23,9 +23,11 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
     const uploadFileListRef = useRef<IVideo[] | null>();
     const isCheckingRef = useRef(false);
     const { userInfo } = userStore();
+    const currentList = useMemo(() => uploadFileListRef.current, [uploadFileListRef.current]);
 
     useEffect(() => {
         uploadFileListRef.current = uploadFileList;
+        console.log('uploadFileList:', uploadFileListRef.current?.length, uploadFileListRef.current);
     }, [uploadFileList]);
 
     useEffect(() => {
@@ -34,13 +36,14 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
 
     const checkUploadStatusR = async (vids: string[]) => {
         if (vids.length === 0) return;
+
         const res = await VideoApi.batchGet(vids.join(','));
         if (res.code === 0) {
             if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
                 CreatorApi.completeGuides({ guides: [GuideName.UploadVideo] });
             }
 
-            const newItems = (uploadFileListRef.current ?? []).map(item => {
+            const newItems = (currentList ?? []).map(item => {
                 const newItem = (res.data.items ?? []).find(oldItem => oldItem.vid === item.vid);
                 if (newItem) {
                     return { ...item, uploadStatus: newItem?.uploadStatus ?? VideoUploadStatus.NOT_UPLOADED };
@@ -48,7 +51,9 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
                     return item;
                 }
             });
-            setUploadFileList(newItems);
+
+            if (newItems.length > 0) setUploadFileList(newItems);
+
             if (
                 !(newItems ?? []).some(
                     item =>

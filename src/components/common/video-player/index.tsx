@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { IconPlayerPlay } from '@tabler/icons-react';
+import { IconPlayerPlay, IconVolume, IconVolumeOff } from '@tabler/icons-react';
 
 /**
  * Props interface for VideoPlayer component
@@ -26,6 +26,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, isPlaying, onEnded, onPl
     const videoRef = useRef<HTMLVideoElement>(null);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [isMuted, setIsMuted] = useState(true);
 
     // Control video play/pause
     useEffect(() => {
@@ -85,6 +86,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, isPlaying, onEnded, onPl
         console.error('Video loading error:', e);
     };
 
+    const toggleMute = () => {
+        if (videoRef.current) {
+            videoRef.current.muted = !isMuted;
+            setIsMuted(!isMuted);
+        }
+    };
+
     return (
         <div className="relative w-full h-full">
             {src.length > 0 && (
@@ -92,7 +100,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, isPlaying, onEnded, onPl
                     ref={videoRef}
                     className={`absolute inset-0 w-full h-full object-cover ${videoClassName}`}
                     playsInline
-                    muted
+                    muted={isMuted}
                     loop={false}
                     controls={false}
                     onEnded={onEnded}
@@ -113,6 +121,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, isPlaying, onEnded, onPl
                     </div>
                 )}
             </div>
+
+            {/* Audio Control Button */}
+            <button
+                className="absolute bottom-4 right-4 bg-black/30 rounded-full p-2 text-white hover:bg-black/50 transition-colors"
+                onClick={e => {
+                    e.stopPropagation();
+                    toggleMute();
+                }}
+            >
+                {isMuted ? <IconVolumeOff size={24} /> : <IconVolume size={24} />}
+            </button>
         </div>
     );
 };

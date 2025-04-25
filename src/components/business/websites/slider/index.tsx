@@ -107,7 +107,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
             <div className="h-full w-full overflow-hidden rounded-r-[32px] cursor-pointer">
                 <div
                     onClick={() => {
-                        window.location.href = `/`;
+                        window.location.href = `/websites`;
                     }}
                     className="px-4 pt-4 pb-2 bg-white"
                 >

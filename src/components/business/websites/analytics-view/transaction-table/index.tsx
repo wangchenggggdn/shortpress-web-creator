@@ -45,21 +45,21 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoa
                 <Table>
                     <Table.Thead className="sticky top-0 bg-white z-10">
                         <Table.Tr>
-                            <Table.Th className="text-black-purple/60">Amount</Table.Th>
-                            <Table.Th className="text-black-purple/60">Payment Method</Table.Th>
-                            <Table.Th className="text-black-purple/60">Plan</Table.Th>
-                            <Table.Th className="text-black-purple/60">Customer</Table.Th>
-                            <Table.Th className="text-black-purple/60">Date</Table.Th>
+                            <Table.Th>Amount</Table.Th>
+                            <Table.Th>Payment Method</Table.Th>
+                            <Table.Th>Plan</Table.Th>
+                            <Table.Th>Customer</Table.Th>
+                            <Table.Th>Date</Table.Th>
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
                         {transactions.map(transaction => (
                             <Table.Tr key={transaction.transactionId} onClick={() => handleRowClick(transaction.transactionId)} className="cursor-pointer hover:bg-gray-50">
                                 <Table.Td className="text-green-500 font-bold">${transaction.amount.toFixed(2)}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{transaction.provider}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{transaction.name}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{transaction.email}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{new Date(transaction.createdAt * 1000).toLocaleString()}</Table.Td>
+                                <Table.Td>{transaction.provider}</Table.Td>
+                                <Table.Td>{transaction.name}</Table.Td>
+                                <Table.Td>{transaction.email}</Table.Td>
+                                <Table.Td>{new Date(transaction.createdAt * 1000).toLocaleString()}</Table.Td>
                             </Table.Tr>
                         ))}
                     </Table.Tbody>

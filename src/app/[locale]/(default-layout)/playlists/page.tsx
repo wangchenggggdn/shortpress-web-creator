@@ -77,6 +77,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
 
             const resD = await PlaylistApi.batchGet(res.data.items.join(','));
             if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
             const items = res.data.items.map((item: string) => {
                 const playlist = resD.data.items.find((playlist: Playlist) => playlist.playlistId === item);
                 if (playlist) return playlist;
@@ -112,6 +113,13 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
             if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
             const resD = await PlaylistApi.batchGet(res.data.items.join(','));
             if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
+            const items = res.data.items.map((item: string) => {
+                const playlist = resD.data.items.find((playlist: Playlist) => playlist.playlistId === item);
+                if (playlist) return playlist;
+            });
+            resD.data.items = items as Playlist[];
+
             resD.data.total = res.data.total;
             resD.data.page = res.data.page;
             resD.data.pageSize = res.data.pageSize;

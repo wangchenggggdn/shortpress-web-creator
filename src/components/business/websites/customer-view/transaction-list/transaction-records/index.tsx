@@ -82,10 +82,7 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
                     <Table.Tbody>
                         {transactions.map(transaction => (
                             <Table.Tr key={transaction.transactionId}>
-                                <Table.Td>
-                                    {transaction.amount > 0 ? '+' : ''}
-                                    {transaction.amount} USD
-                                </Table.Td>
+                                <Table.Td className="text-green-500 font-bold">{'$' + transaction.amount}</Table.Td>
                                 <Table.Td>{transaction.provider}</Table.Td>
                                 <Table.Td>{transaction.name}</Table.Td>
                                 <Table.Td>{dayjs(transaction.createdAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>

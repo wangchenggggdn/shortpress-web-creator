@@ -226,7 +226,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                     <div className="flex gap-8 p-4">
                                         <div>
                                             <div className="text-sm text-gray-500">Total Spent</div>
-                                            <div className="text-base font-medium">${coinInfo?.totalSpent || '0.00'}</div>
+                                            <div className="text-base font-medium">${coinInfo?.totalRealMoneySpent || '0.00'}</div>
                                         </div>
                                         <div>
                                             <div className="text-sm text-gray-500">Coin Balance</div>

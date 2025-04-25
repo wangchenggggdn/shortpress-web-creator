@@ -67,7 +67,8 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
         if (!siteData.name) return '';
         const newSiteName = siteData.name
             .replace(/[`~!@#$%^&*()_\-+=<>?:"{}|｜,.\/;'\\[\]·~!！@#￥%……&*（）——\-+={}|《》〈〉？："""【】「」、；''，。、]/g, '')
-            .replace(/\s/g, '-');
+            .replace(/\s/g, '-')
+            .toLowerCase();
         return newSiteName;
     };
 

@@ -74,6 +74,7 @@ export namespace UserResponse {
         balance: number;        // Current coin balance
         totalEarned: number;    // Total coins earned
         totalSpent: number;     // Total coins spent
+        totalRealMoneySpent: number; // Total real money spent
         totalTransactions: number; // Total transactions
     }
 }

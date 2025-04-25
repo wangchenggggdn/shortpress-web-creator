@@ -57,7 +57,7 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-black-purple">Create an Account</h2>
                 <Text size="sm" c="dimmed">
-                    Join Shortify to start monetizing your content
+                    Join ShortPress to start monetizing your content
                 </Text>
             </div>
 

@@ -109,7 +109,7 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
                 <p className="text-gray-500 mb-6">Add one or more payment methods to collecting payments in your website.</p>
 
                 {/* Stripe Integration */}
-                <div className="flex items-center justify-between mb-6 p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-6 p-4 border rounded-lg max-w-lg">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center">
                             <img src={payment_strpe.src} alt="Stripe" className="h-8" />
@@ -124,7 +124,7 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
                 </div>
 
                 {/* PayPal Integration */}
-                <div className="flex items-center justify-between mb-6 p-4 border rounded-lg">
+                <div className="flex items-center justify-between mb-6 p-4 border rounded-lg max-w-lg">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-4">
                             <img src={payment_paypal.src} alt="PayPal" className="h-6" />

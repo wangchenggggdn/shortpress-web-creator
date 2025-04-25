@@ -34,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
     return (
         <div className="bg-white rounded-[32px] p-8 shadow-lg">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-black-purple">Welcome to Shortify</h2>
+                <h2 className="text-2xl font-bold text-black-purple">Welcome to ShortPress</h2>
                 <Text size="sm" c="dimmed">
                     All-in-One Platform to Monetize your short videos
                 </Text>
