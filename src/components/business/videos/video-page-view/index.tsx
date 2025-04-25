@@ -45,14 +45,15 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
     const videoToDeleteRef = useRef<string | null>(null);
 
     const { ref: loadMoreRef, inView } = useInView({
-        threshold: 0,
+        threshold: 0.5,
+        rootMargin: '100px 0px',
     });
 
     useEffect(() => {
         if (inView && hasMore && !loading) {
             loadMoreVideos();
         }
-    }, [inView]);
+    }, [inView, hasMore, loading]);
 
     useEffect(() => {
         resetAndFetchVideos();
@@ -70,7 +71,7 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
         const params: VideoArgs.Search = {
             keyword: searchQuery,
             page: currentPage,
-            pageSize: 5,
+            pageSize: 10,
             status: Number(status),
             orderType: sortType,
         };
@@ -90,6 +91,7 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
     };
 
     const loadMoreVideos = async () => {
+        if (!hasMore || loading) return;
         const nextPage = page + 1;
         setPage(nextPage);
         await fetchVideos(nextPage);
@@ -251,11 +253,11 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                             </div>
                         ) : videos.length > 0 ? (
                             <div className="h-full overflow-y-auto">
-                                <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4">
-                                    {videos.map(video => (
+                                <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-4 mb-8">
+                                    {videos.map((video, index) => (
                                         <VideoCard
                                             deleteString={playlistId ? 'Remove' : 'Delete'}
-                                            key={video.vid}
+                                            key={video.vid + index}
                                             {...video}
                                             onEdit={handleEdit}
                                             onDelete={handleDeleteClick}
@@ -264,14 +266,25 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                                         />
                                     ))}
                                 </div>
-                                <div ref={loadMoreRef} className="h-10 flex items-center justify-center">
-                                    {loading && <LoadingData />}
+                                <div ref={loadMoreRef} className="flex flex-row items-center justify-center py-4">
+                                    {loading && (
+                                        <div className="flex flex-row items-center text-sm text-gray-500 gap-2">
+                                            <div className="w-4 h-4">
+                                                <LoadingData className="w-full h-full" />
+                                            </div>
+
+                                            <div className=" flex items-start justify-start">
+                                                <div>Loading more...</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!loading && !hasMore && videos.length > 0 && <div className="text-sm text-gray-500">No more videos</div>}
                                 </div>
                             </div>
                         ) : searchQuery.length > 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center">
                                 <p className="text-black-purple text-lg mb-2">No video found</p>
-                                <p className="text-gray-500 text-sm">No video with filtered condition</p>
+                                <p className="text-gray-500 text   -sm">No video with filtered condition</p>
                             </div>
                         ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center">

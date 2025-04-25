@@ -164,9 +164,11 @@ const PlaylistVideoItem: React.FC<PlaylistVideoItemProps> = ({ video, index, isE
                 <p className="text-sm text-gray-500">{dateFormatSecond(video.createdAt)}</p>
             </div>
             <div className="flex gap-2">
-                <ActionIcon variant="subtle" color="bg-black-purple" onClick={() => onEdit(video)}>
-                    <IconPencil size={20} />
-                </ActionIcon>
+                {video.status !== VideoStatus.DELETED && (
+                    <ActionIcon variant="subtle" color="bg-black-purple" onClick={() => onEdit(video)}>
+                        <IconPencil size={20} />
+                    </ActionIcon>
+                )}
                 <ActionIcon variant="subtle" color="red" onClick={() => onDelete(video.vid)}>
                     <IconTrash size={20} />
                 </ActionIcon>
