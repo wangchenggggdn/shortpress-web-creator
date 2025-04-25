@@ -93,15 +93,6 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
 
             {/* Content Area */}
             <div className="flex-1 px-6 space-y-6 ">
-                {/* Domain Section */}
-                <div>
-                    <h3 className="text-lg font-medium mb-4">Domain</h3>
-                    <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
-                        <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
-                        <span className="line-clamp-1">{website?.path ?? userInfo?.creatorName ?? ''}</span>
-                    </div>
-                </div>
-
                 {/* Site Name Section */}
                 <div>
                     <h3 className="text-lg font-medium mb-4">Site name</h3>
@@ -113,6 +104,15 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
                         placeholder="Site name"
                         variant="filled"
                     />
+                </div>
+
+                {/* Domain Section */}
+                <div>
+                    <h3 className="text-lg font-medium mb-4">Site URL</h3>
+                    <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
+                        <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
+                        <span className="line-clamp-1">{website?.path ?? userInfo?.creatorName ?? ''}</span>
+                    </div>
                 </div>
 
                 {/* Logo Upload Section */}
