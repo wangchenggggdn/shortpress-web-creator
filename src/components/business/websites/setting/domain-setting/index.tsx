@@ -33,11 +33,11 @@ const DomainSetting: React.FC<DomainSettingProps> = ({ website, onSuccess }) => 
         // Remove leading and trailing whitespace
         const trimmedValue = value.trim();
 
-        // Domain validation regex
-        const domainRegex = /^@?https?:\/\/[a-zA-Z0-9][a-zA-Z0-9-]*(\.[a-zA-Z0-9][a-zA-Z0-9-]*)*\.[a-zA-Z]{2,}$/;
+        // Domain validation regex - only allows pure domain names
+        const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]*(\.[a-zA-Z0-9][a-zA-Z0-9-]*)*\.[a-zA-Z]{2,}$/;
 
         if (!domainRegex.test(trimmedValue)) {
-            setError('Please enter a valid domain (e.g., https://example.com or @https://example.com)');
+            setError('Please enter a valid domain (e.g., example.com or sub.example.com)');
             return false;
         }
 
