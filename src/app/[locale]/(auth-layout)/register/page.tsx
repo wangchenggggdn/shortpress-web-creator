@@ -16,6 +16,7 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -25,16 +26,21 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
             toast.error('Invalid email');
             return;
         }
-        const res = await CreatorApi.register({
-            // creatorName,
-            // nickname,
-            email,
-            password,
-        });
-        if (res.code === 0) {
-            router.push('/login');
-        } else {
-            toast.error(res.info);
+        setLoading(true);
+        try {
+            const res = await CreatorApi.register({
+                // creatorName,
+                // nickname,
+                email,
+                password,
+            });
+            if (res.code === 0) {
+                router.push('/login');
+            } else {
+                toast.error(res.info);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -107,7 +113,7 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
                         </Link>
                     </Text>
                 </div>
-                <Button type="submit" fullWidth color="primary">
+                <Button type="submit" fullWidth color="primary" loading={loading}>
                     Register
                 </Button>
             </form>

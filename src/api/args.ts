@@ -207,6 +207,7 @@ export namespace VideoArgs {
     export interface Search extends List {
         playlistId?: string;
         keyword?: string;
+        excludePlaylistId?: string;
     }
 
     /**

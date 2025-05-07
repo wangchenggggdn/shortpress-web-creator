@@ -16,6 +16,8 @@ interface AddContentModalProps {
     onClose: () => void;
     /** Callback function when videos are added to playlist */
     onAdd: (selectedItems: string[]) => void;
+    /** Playlist ID */
+    playlistId: string;
 }
 
 /**
@@ -23,7 +25,7 @@ interface AddContentModalProps {
  * Provides search, selection, and pagination functionality
  * @returns React component with video selection interface
  */
-const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAdd }) => {
+const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAdd, playlistId }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [videoList, setVideoList] = useState<IVideo[]>([]);
@@ -46,6 +48,7 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
             page: activePage,
             pageSize: pageSize,
             orderType: orderType,
+            excludePlaylistId: playlistId,
         });
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);

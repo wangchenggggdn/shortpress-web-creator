@@ -14,20 +14,26 @@ interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
 
-        const res = await CreatorApi.login({
-            email,
-            password,
-        });
+        try {
+            const res = await CreatorApi.login({
+                email,
+                password,
+            });
 
-        if (res.code === 0 && res.data) {
-            Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
-            window.location.href = '/';
-        } else {
-            toast.error('Login failed: email or password is incorrect');
+            if (res.code === 0 && res.data) {
+                Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
+                window.location.href = '/';
+            } else {
+                toast.error('Login failed: email or password is incorrect');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -58,7 +64,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
                     </Link>
                 </div> */}
 
-                <Button type="submit" fullWidth color="primary">
+                <Button type="submit" fullWidth color="primary" loading={loading}>
                     Sign in
                 </Button>
             </form>

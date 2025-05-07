@@ -32,7 +32,7 @@ const config: Config = {
         },
         extend: {
             colors: {
-                primary: '#70F8A6',
+                primary: '#6355FF',
                 secondary: '#F7EA76',
                 back: '#171717',
                 backdrop: '#2e2e2e',

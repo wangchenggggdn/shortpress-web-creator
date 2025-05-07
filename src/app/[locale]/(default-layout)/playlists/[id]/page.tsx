@@ -350,7 +350,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 </div>
             </div>
-            <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} />
+            <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} playlistId={playlist?.playlistId ?? ''} />
             <UploadVideoModal
                 opened={isUploadModalOpen}
                 onClose={() => setIsUploadModalOpen(false)}
