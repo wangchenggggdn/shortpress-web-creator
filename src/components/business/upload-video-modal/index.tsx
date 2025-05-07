@@ -27,7 +27,6 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
 
     useEffect(() => {
         uploadFileListRef.current = uploadFileList;
-        console.log('uploadFileList:', uploadFileListRef.current?.length, uploadFileListRef.current);
     }, [uploadFileList]);
 
     useEffect(() => {

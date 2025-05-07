@@ -41,11 +41,9 @@ const UploadProgressModal: React.FC = () => {
         };
     }, [uploadFileList]);
 
-    // 检查是否所有文件都上传成功
     useEffect(() => {
-        if (uploadFileList?.map(item => item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS).every(item => item)) {
-            setShowClose(true);
-        }
+        const allSuccess = uploadFileList?.map(item => item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS).every(item => item);
+        setShowClose(allSuccess ?? false);
     }, [openUploadProgressModal, uploadFileList]);
 
     /**

@@ -34,7 +34,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                 return await VideoApi.upload(formData, playlistId, (progress: number) => {
                     item.progress = Math.floor(progress);
                     item.uploadStatus = VideoUploadStatus.UPLOADING;
-                    setUploadFileList(uploadFileListRef.current ?? []);
+                    setUploadFileList([...uploadFileListRef.current ?? []]);
                 });
             });
 
@@ -45,12 +45,12 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                 item.uploadStatus = VideoUploadStatus.UPLOAD_SUCCESS;
             }
 
-            setUploadFileList(uploadFileListRef.current ?? []);
+            setUploadFileList([...uploadFileListRef.current ?? []]);
         }
     };
 
     const handleDelectUploadFile = () => {
-        setUploadFileList((uploadFileListRef.current ?? []).filter(file => file.vid !== item.vid));
+        setUploadFileList(([...uploadFileListRef.current ?? []]).filter(file => file.vid !== item.vid));
     };
 
     return (
