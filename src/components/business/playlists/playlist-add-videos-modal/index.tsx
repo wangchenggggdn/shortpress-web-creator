@@ -37,8 +37,10 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
     const currentPage = useRef(1);
 
     useEffect(() => {
-        searchRequest();
-    }, [searchQuery, activePage, orderType]);
+        console.log('open:', isOpen);
+       playlistId.length>0&& searchRequest();
+    }, [searchQuery, activePage, orderType,playlistId,isOpen]);
+
 
     const searchRequest = async () => {
         setVideoList([]);
@@ -50,12 +52,14 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
             orderType: orderType,
             excludePlaylistId: playlistId,
         });
+        setLoading(false);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);
+        setLoading(true);
         const resD = await VideoApi.batchGet(res.data.items.join(','));
+        setLoading(false);
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
         setVideoList(resD.data.items);
-        setLoading(false);
     };
 
     useEffect(() => {

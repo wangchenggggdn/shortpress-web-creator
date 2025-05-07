@@ -66,7 +66,10 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const fetchVideos = async () => {
         const res = await PlaylistApi.videoOrder(paramsP.id as string);
         orderParamCurrentRef.current = res.data;
-        if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) return;
+        if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) {
+            setVideos([]);
+            return;
+        };
         const videoIds = res.data.sortData.vids;
         const batchSize = 20;
         const batches = [];
@@ -298,7 +301,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 <div className="flex items-center gap-4">
                     <span className="text-gray-600">{videos.length} videos</span>
                 </div>
-                {videos.length !== 0 && (
                     <div className="flex">
                         <Button
                             variant="subtle"
@@ -322,7 +324,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                             </Button>
                         )}
                     </div>
-                )}
+            
             </div>
             <div className="flex-1">
                 <div className="max-w-full mx-auto p-6">
@@ -340,7 +342,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                             />
                         ))}
 
-                        {!loading && videos.length === 0 && (
+                        {!loading && videos.length === 0 && !isEditingOrder && (
                             <div className="h-full text-center text-gray-500 flex flex-col items-center justify-center gap-2">
                                 <div>No videos found</div>
                                 {addButton()}
