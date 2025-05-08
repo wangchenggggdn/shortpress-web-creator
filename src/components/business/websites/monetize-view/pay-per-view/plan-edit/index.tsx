@@ -141,7 +141,6 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     disabled={isEdit}
                                     {...form.getInputProps('discountPrice')}
                                     onChange={value => {
-                                        console.log('discountPrice:',value);
                                         handlePriceChange('discountPrice', value === '' ? null : Number(value));
                                     }}
                                     variant="filled"
@@ -166,7 +165,10 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     { value: PackageStatus.Disabled.toString(), label: 'Disabled' },
                                     { value: PackageStatus.Deleted.toString(), label: 'Deleted' },
                                 ]}
-                                onChange={value => setStatus(Number(value))}
+                                onChange={value => {
+                                    setStatus(Number(value));
+                                    form.setFieldValue('status', Number(value));
+                                }}
                                 variant="filled"
                             />
                         </div>

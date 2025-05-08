@@ -6,9 +6,9 @@
  * Package status enum
  */
 export enum PackageStatus {
-    Disabled = 0,   // Disabled
+    Disabled = 2,   // Disabled
     Enabled = 1,    // Enabled
-    Deleted = 2     // Deleted
+    Deleted = 3     // Deleted
 }
 
 /**
