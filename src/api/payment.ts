@@ -38,6 +38,15 @@ export class PaymentAPI {
     }
 
     /**
+     * Modify an existing coin package
+     * @param args Coin package modification parameters
+     * @returns Promise with modified package information
+     */
+    static modifyCoinPackage(args: PaymentArgs.ModifyCoinPackage) {
+        return fetch.post<PaymentResponse.CoinPackageCreateResponse>('/api/payment/coins/package/modify', args);
+    }
+
+    /**
      * Save payment configuration
      * @param args Payment configuration parameters
      * @returns Promise
@@ -110,4 +119,6 @@ export class PaymentAPI {
     static getCoinBalance(args: PaymentArgs.GetUserCoinsBalance) {
         return fetch.get<UserResponse.UserCoinsResponse>('/api/payment/customers/coins/balance', args);
     }
+
+
 }

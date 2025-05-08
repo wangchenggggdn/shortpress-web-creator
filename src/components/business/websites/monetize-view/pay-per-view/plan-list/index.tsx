@@ -58,7 +58,7 @@ const PlanList: React.FC<PlanListProps> = ({ plans, onEdit, onStatusChange }) =>
                                 <Table.Td className="text-black-purple/90">{plan.name}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{plan.coinAmount}</Table.Td>
                                 <Table.Td className="text-black-purple/70">${plan.price}</Table.Td>
-                                <Table.Td className="text-black-purple/70">{plan.discountPercentage}%</Table.Td>
+                                <Table.Td className="text-black-purple/70">{plan.discountPercentage??0}%</Table.Td>
                                 <Table.Td>
                                     <Badge color={getStatusColor(plan.status)}>{getStatusLabel(plan.status)}</Badge>
                                 </Table.Td>

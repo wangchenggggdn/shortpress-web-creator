@@ -326,6 +326,21 @@ export namespace PaymentArgs {
     }
 
     /**
+     * Modify coin package parameters
+     */
+    export interface ModifyCoinPackage {
+        packageId: string;        // Required: Package ID
+        siteId: string;          // Required: Site ID
+        name?: string;           // Optional: Package name
+        coinAmount?: number;     // Optional: Amount of coins
+        price?: number;          // Optional: Price
+        description?: string;    // Optional: Package description
+        discountPercentage?: number; // Optional: Discount percentage
+        originalPrice?: number;  // Optional: Original price before discount
+        status?: number;         // Optional: Package status
+    }
+
+    /**
      * Get coin package list parameters
      */
     export interface GetCoinPackageList {

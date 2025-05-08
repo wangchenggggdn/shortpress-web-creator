@@ -54,6 +54,11 @@ const PayPerView: React.FC = () => {
         const updatedPlans = plans.map(p => (p.packageId === plan.packageId ? updatedPlan : p));
         setPlans(updatedPlans);
         toast.success(`Plan status updated to ${PackageStatus[status]}`);
+        PaymentAPI.modifyCoinPackage({
+            siteId: params.siteId,
+            packageId: plan.packageId??'',
+            status,
+        });
     };
 
     const handleSavePlan = async (plan: CoinPackage) => {
@@ -63,6 +68,17 @@ const PayPerView: React.FC = () => {
                 const updatedPlans = plans.map(p => (p.packageId === plan.packageId ? plan : p));
                 setPlans(updatedPlans);
                 toast.success('Plan updated successfully');
+                PaymentAPI.modifyCoinPackage({
+                    siteId: params.siteId,
+                    packageId: plan.packageId??'',
+                    status: plan.status,
+                    name: plan.name,
+                    coinAmount: plan.coinAmount,
+                    price: plan.price,
+                    originalPrice: plan.originalPrice,
+                    discountPercentage: plan.discountPercentage,
+                    description: plan.description,
+                });
             } else {
                 const response = await PaymentAPI.createCoinPackage({
                     siteId: params.siteId,

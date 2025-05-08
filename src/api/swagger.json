@@ -364,17 +364,6 @@
                     "client-player"
                 ],
                 "summary": "匿名注册",
-                "parameters": [
-                    {
-                        "description": "匿名注册请求参数",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/shortpress-server_internal_api.AnonRegisterRequest"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "返回成功",
@@ -864,6 +853,13 @@
                         "name": "sitePath",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "https://example.com",
+                        "description": "站点域名",
+                        "name": "host",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1254,6 +1250,40 @@
                         "description": "返回可用的金币套餐列表",
                         "schema": {
                             "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payment/coins/package/modify": {
+            "post": {
+                "description": "修改已有的金币套餐信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "payment"
+                ],
+                "summary": "修改金币套餐",
+                "parameters": [
+                    {
+                        "description": "金币套餐修改请求",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageModifyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "返回修改成功的套餐ID",
+                        "schema": {
+                            "$ref": "#/definitions/shortpress-server_internal_api.CoinPackageModifyResponse"
                         }
                     }
                 }
@@ -3288,6 +3318,13 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "example": "playlistid",
+                        "description": "Exclude playlist id, if not provided, search all videos",
+                        "name": "excludePlaylistId",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "example": 1,
                         "description": "Sort type (0:created time desc 1:name sort)",
@@ -3480,19 +3517,6 @@
                 }
             }
         },
-        "shortpress-server_internal_api.AnonRegisterRequest": {
-            "type": "object",
-            "required": [
-                "sitePath"
-            ],
-            "properties": {
-                "sitePath": {
-                    "description": "Site path",
-                    "type": "string",
-                    "example": "abc"
-                }
-            }
-        },
         "shortpress-server_internal_api.BuyContentWithCoinsRequest": {
             "type": "object",
             "required": [
@@ -3570,6 +3594,38 @@
             }
         },
         "shortpress-server_internal_api.CoinPackageCreateResponse": {
+            "type": "object",
+            "properties": {
+                "packageId": {
+                    "type": "string"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CoinPackageModifyRequest": {
+            "type": "object",
+            "required": [
+                "packageId",
+                "siteId"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "packageId": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "shortpress-server_internal_api.CoinPackageModifyResponse": {
             "type": "object",
             "properties": {
                 "packageId": {
@@ -4446,8 +4502,7 @@
             "type": "object",
             "required": [
                 "playlistId",
-                "sortData",
-                "version"
+                "sortData"
             ],
             "properties": {
                 "playlistId": {
@@ -4614,6 +4669,11 @@
                 "domain": {
                     "type": "string",
                     "example": "example.com"
+                },
+                "googleAnalyticsId": {
+                    "description": "Google Analytics ID, optional",
+                    "type": "string",
+                    "example": "UA-123456789-1"
                 },
                 "logo": {
                     "type": "string",

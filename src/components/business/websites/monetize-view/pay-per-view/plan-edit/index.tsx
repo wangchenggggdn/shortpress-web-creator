@@ -5,6 +5,7 @@ import { TextInput, NumberInput, Select, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconX } from '@tabler/icons-react';
 import { CoinPackage, PackageStatus } from '@/types/payment';
+import { toast } from 'sonner';
 
 interface PlanEditProps {
     planOld?: CoinPackage;
@@ -17,7 +18,7 @@ interface FormValues {
     name: string;
     coinAmount: number;
     originalPrice: number;
-    discountPrice: number;
+    discountPrice: number | null;
     discountPercentage: number;
     description: string;
     status: PackageStatus;
@@ -29,8 +30,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
         initialValues: {
             name: planOld?.name || '',
             coinAmount: planOld?.coinAmount || 0,
-            originalPrice: planOld?.price || 0,
-            discountPrice: planOld?.price || 0,
+            originalPrice: planOld?.originalPrice || 0,
+            discountPrice: planOld?.price || null,
             discountPercentage: planOld?.discountPercentage || 0,
             description: planOld?.description || '',
             status: status,
@@ -39,19 +40,25 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
             name: (value: string) => (value.length < 1 ? 'Plan name is required' : null),
             coinAmount: (value: number) => (value <= 0 ? 'Coins must be greater than 0' : null),
             originalPrice: (value: number) => (value < 0 ? 'Price cannot be negative' : null),
-            discountPrice: (value: number, values: FormValues) => {
+            discountPrice: (value: number | null, values: FormValues) => {
+                if (value === null) return null;
                 if (value < 0) return 'Discount price cannot be negative';
-                if (value >= values.originalPrice) return 'Discount price must be less than original price';
+                if (value > values.originalPrice) return 'Discount price must be less than original price';
                 return null;
             },
         },
     });
 
     const handleSubmit = (values: FormValues) => {
+        console.log(values);
+        if(values.discountPrice === 0){
+            toast.error('Discount price cannot be 0');
+            return;
+        }
         onSave({
             name: values.name,
             coinAmount: values.coinAmount,
-            price: values.discountPrice == 0 ? values.originalPrice : values.discountPrice,
+            price: values.discountPrice ?? values.originalPrice,
             originalPrice: values.originalPrice,
             discountPercentage: values.discountPercentage,
             description: values.description,
@@ -64,18 +71,18 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
     const isEdit = planOld !== undefined;
 
     // Calculate discount percentage when price or original price changes
-    const handlePriceChange = (field: 'originalPrice' | 'discountPrice', value: number) => {
+    const handlePriceChange = (field: 'originalPrice' | 'discountPrice', value: number | null) => {
         form.setFieldValue(field, value);
 
         const originalPrice = field === 'originalPrice' ? value : form.values.originalPrice;
         const discountPrice = field === 'discountPrice' ? value : form.values.discountPrice;
 
-        if (originalPrice <= 0 || discountPrice >= originalPrice) {
+        if (discountPrice === null) {
             form.setFieldValue('discountPercentage', 0);
             return;
         }
 
-        const discount = ((originalPrice - discountPrice) / originalPrice) * 100;
+        const discount = ((originalPrice! - discountPrice) / originalPrice!) * 100;
         form.setFieldValue('discountPercentage', Math.round(discount));
     };
 
@@ -134,7 +141,8 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                     disabled={isEdit}
                                     {...form.getInputProps('discountPrice')}
                                     onChange={value => {
-                                        handlePriceChange('discountPrice', Number(value));
+                                        console.log('discountPrice:',value);
+                                        handlePriceChange('discountPrice', value === '' ? null : Number(value));
                                     }}
                                     variant="filled"
                                 />
