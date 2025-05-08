@@ -91,8 +91,8 @@ const DomainSetting: React.FC<DomainSettingProps> = ({ website, onSuccess }) => 
             <div className="space-y-4">
                 <TextInput
                     label="Enter Domain"
-                    placeholder="yourdomain.com or sub.yourdomain.com"
-                    value={domain}
+                    placeholder={`${process.env.NEXT_PUBLIC_DOMAIN_C}`}
+                    value={domain.includes(process.env.NEXT_PUBLIC_DOMAIN_C ?? '') ? '' :domain}
                     onChange={handleDomainChange}
                     error={error}
                     description="Enter your domain without http:// or https://, subdomain is allowed"

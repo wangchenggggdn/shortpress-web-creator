@@ -57,7 +57,7 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
     return (
         <div className="space-y-4">
             <div>
-                <h2 className="text-xl font-medium mb-2">Google Analytics</h2>
+                <h2 className="text-xl font-medium mb-2">Analytics</h2>
                 <p className="text-gray-500 text-sm mb-4">Add third-party analytics tools to track your website data</p>
             </div>
 
