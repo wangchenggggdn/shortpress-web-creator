@@ -10,16 +10,24 @@ export default class VideoApi {
     /**
      * Upload a video
      * @param formData FormData containing video file and metadata
+     * @param playlistId Optional playlist ID to add video to
+     * @param onProgress Optional progress callback
+     * @param xhrRef Optional reference to store XMLHttpRequest instance
      * @returns Promise with array of video IDs
      */
-    static upload(formData: FormData, playlistId: string | null, onProgress?: (progress: number) => void) {
+    static upload(
+        formData: FormData,
+        playlistId: string | null,
+        onProgress?: (progress: number) => void,
+        xhrRef?: React.MutableRefObject<XMLHttpRequest | null>
+    ) {
         let params = {};
         if (playlistId) {
             params = {
                 playlistId
             }
         }
-        return fetch.upload<{ vids: string[] }>('/api/video/upload', formData, params, onProgress);
+        return fetch.upload<{ vids: string[] }>('/api/video/upload', formData, params, onProgress, xhrRef);
     }
 
     /**

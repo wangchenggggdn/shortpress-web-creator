@@ -15,6 +15,7 @@ interface IProps {
 const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
     const { uploadFileList, setUploadFileList, playlistId } = fileUploadStore();
     const uploadFileListRef = useRef<IVideo[] | null>();
+    const xhrRef = useRef<XMLHttpRequest | null>(null);
 
     useEffect(() => {
         uploadFileListRef.current = uploadFileList;
@@ -35,7 +36,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                     item.progress = Math.floor(progress);
                     item.uploadStatus = VideoUploadStatus.UPLOADING;
                     setUploadFileList([...uploadFileListRef.current ?? []]);
-                });
+                }, xhrRef);
             });
 
             if (!res) {
@@ -50,6 +51,9 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
     };
 
     const handleDelectUploadFile = () => {
+        if (xhrRef.current) {
+            xhrRef.current.abort();
+        }
         setUploadFileList(([...uploadFileListRef.current ?? []]).filter(file => file.vid !== item.vid));
     };
 

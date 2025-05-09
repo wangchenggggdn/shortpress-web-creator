@@ -27,6 +27,14 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
 
     useEffect(() => {
         uploadFileListRef.current = uploadFileList;
+        if (
+            (uploadFileListRef.current ?? []).some(
+                item =>
+                    item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
+            )
+        ){
+            isCheckingRef.current = true;
+        }
     }, [uploadFileList]);
 
     useEffect(() => {
@@ -35,7 +43,14 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
 
     const checkUploadStatusR = async (vids: string[]) => {
         if (vids.length === 0) return;
-
+        if (( uploadFileListRef.current ?? []).some(
+                item =>
+                    item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
+            )
+        ){
+            return;
+        }
+        console.log('checkUploadStatusR:',uploadFileListRef.current);
         const res = await VideoApi.batchGet(vids.join(','));
         if (res.code === 0) {
             if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
