@@ -104,4 +104,17 @@ export default class WebsiteApi {
     static search(args: WebsiteArgs.Search) {
         return fetch.get<IPaginationResponse<Website>>('/api/site/search', args);
     }
+
+
+
+    /**
+     * Fetch websites from API and update local storage
+     */
+    static fetchWebsites = async (): Promise<Website[]> => {
+        const res = await WebsiteApi.list();
+        if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
+        const resD = await WebsiteApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 && (resD.data?.items ?? []).length === 0) return [];
+        return resD.data.items;
+    };
 }

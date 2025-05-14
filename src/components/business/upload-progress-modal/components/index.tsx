@@ -25,14 +25,14 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
         handleUpload(item);
     }, [item.file]);
 
-    const handleUpload = async (itemToUpload: IVideo) => { 
+    const handleUpload = async (itemToUpload: IVideo, isRefresh: boolean = false) => { 
         const itemId = itemToUpload.vid;
 
-        if (itemToUpload.file && itemToUpload.uploadStatus === VideoUploadStatus.NULL) {
+        if (itemToUpload.file && (itemToUpload.uploadStatus === VideoUploadStatus.NULL || isRefresh)) {
             setUploadFileList((currentList: IVideo[] | null) => 
                 (currentList ?? []).map(video => 
                     video.vid === itemId
-                        ? { ...video, uploadStatus: VideoUploadStatus.NOT_UPLOADED }
+                        ? { ...video, uploadStatus: VideoUploadStatus.NOT_UPLOADED, progress: 0 }
                         : video
                 )
             );
@@ -137,8 +137,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                         {item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED && (
                             <IconRefresh
                                 onClick={() => {
-                                    item.uploadStatus = VideoUploadStatus.NULL;
-                                    handleUpload(item);
+                                    handleUpload(item,true);
                                 }}
                                 className="text-primary cursor-pointer"
                                 size={18}

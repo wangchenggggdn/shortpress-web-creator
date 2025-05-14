@@ -16,25 +16,21 @@ const LoginPage: React.FC<LoginPageProps> = () => {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        try {
-            const res = await CreatorApi.login({
-                email,
-                password,
-            });
-
-            if (res.code === 0 && res.data) {
-                Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
-                window.location.href = '/';
-            } else {
-                toast.error('Login failed: email or password is incorrect');
-            }
-        } finally {
-            setLoading(false);
+        const res = await CreatorApi.login({email,password});
+        if (res.code === 0 && res.data) {
+            // Set user state in cookie
+            Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
+            window.location.href = '/';
+        } else {
+            toast.error('Login failed: email or password is incorrect');
         }
+        setLoading(false);
+      
     };
 
     return (
@@ -47,8 +43,10 @@ const LoginPage: React.FC<LoginPageProps> = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Email input */}
                 <TextInput value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" leftSection={<IconUser size={16} />} required />
 
+                {/* Password input */}
                 <PasswordInput
                     visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
                     value={password}
@@ -64,11 +62,13 @@ const LoginPage: React.FC<LoginPageProps> = () => {
                     </Link>
                 </div> */}
 
+                {/* Sign in button */}
                 <Button type="submit" fullWidth color="primary" loading={loading}>
                     Sign in
                 </Button>
             </form>
 
+            {/* Register link */}
             <div className="mt-6 text-center">
                 <Text size="sm">
                     Don't have an account?{' '}

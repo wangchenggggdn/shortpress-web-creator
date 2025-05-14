@@ -59,6 +59,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
             ...websiteOld,
             ...websiteData,
         };
+
         onSubmit(
             {
                 siteId: website?.siteId ?? '',

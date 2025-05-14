@@ -9,6 +9,7 @@ import { VideoArgs } from '@/api/args';
 import VideosPageView from '@/components/business/videos/video-page-view';
 import { toast } from 'sonner';
 import fileUploadStore from '@/store/useFileUploadStore';
+import PlaylistApi from '@/api/playlist';
 
 interface VideosPageProps {}
 
@@ -28,21 +29,7 @@ const VideosPage: React.FC<VideosPageProps> = () => {
      * @returns Promise with search results
      */
     const searchFetch = async (params: VideoArgs.Search) => {
-        const res = await VideoApi.search(params);
-        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
-        const resD = await VideoApi.batchGet(res.data.items.join(','));
-
-        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
-        const items = res.data.items.map((item: string) => {
-            const video = resD.data.items.find((video: IVideo) => video.vid === item);
-            if (video) return video;
-        });
-        resD.data.items = items as IVideo[];
-        resD.data.total = res.data.total;
-        resD.data.page = res.data.page;
-        resD.data.pageSize = res.data.pageSize;
-        resD.data.hasMore = res.data.hasMore;
-        return resD;
+        return await PlaylistApi.searchVideosFetch(params);
     };
 
     /**
@@ -65,10 +52,12 @@ const VideosPage: React.FC<VideosPageProps> = () => {
 
     return (
         <div className="flex flex-col h-screen">
+            {/* Header with upload button */}
             <Header>
                 <UploadButton onClick={handleOpenUploadModal} />
             </Header>
 
+            {/* Videos page view */}
             <VideosPageView
                 uploadModalOpened={uploadModalOpened}
                 editingVideo={editingVideo}

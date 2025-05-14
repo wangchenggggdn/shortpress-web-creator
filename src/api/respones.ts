@@ -18,27 +18,27 @@ export namespace PaymentResponse {
      * Coin package creation response
      */
     export interface CoinPackageCreateResponse {
-        packageId: string;
+        packageId: string;        // Package ID
     }
 
     /**
      * Coin package list response
      */
     export interface CoinPackageResponseData {
-        packages: CoinPackage[];
+        packages: CoinPackage[];  // Array of coin packages
     }
 
     /**
      * Payment order creation response
      */
     export interface OrderCreateResponse {
-        orderId: string;
-        checkoutUrl: string;
-        cancelUrl: string;
-        clientSecret: string;
-        status: string;
-        expiresAt: string;
-        successUrl: string;
+        orderId: string;          // Order ID
+        checkoutUrl: string;      // Checkout URL
+        cancelUrl: string;        // Cancel URL
+        clientSecret: string;     // Client secret
+        status: string;           // Order status
+        expiresAt: string;        // Expiration date
+        successUrl: string;       // Success URL
     }
 
     /**
@@ -56,10 +56,10 @@ export namespace PaymentResponse {
     }
 
     export interface GrantCoins {
-        amountAdded: number;
-        currentBalance: number;
-        transactionId: string;
-        userEmail: string;
+        amountAdded: number;      // Amount added to user's balance
+        currentBalance: number;  // Current balance after addition
+        transactionId: string;    // Transaction ID
+        userEmail: string;        // User's email
     }
 }
 
@@ -117,17 +117,17 @@ export namespace AnalyticsResponse {
     }
 
     export interface IncomeTransactionInfo {
-        transactionId: string;
-        amount: number;
-        currency: string;
-        status: number;
-        provider: string;
-        createdAt: number;
-        email: string;
-        name: string;
-        paymentType: number;
-        relatedId: string;
-        relatedType: number;
-        userId: string;
+        transactionId: string;  // Transaction ID
+        amount: number;         // Transaction amount
+        currency: string;       // Transaction currency
+        status: number;         // Transaction status
+        provider: string;       // Payment provider
+        createdAt: number;      // Transaction creation timestamp
+        email: string;          // Customer email
+        name: string;           // Customer name
+        paymentType: number;    // Payment type
+        relatedId: string;      // Related ID
+        relatedType: number;    // Related type
+        userId: string;         // User ID
     }
 }

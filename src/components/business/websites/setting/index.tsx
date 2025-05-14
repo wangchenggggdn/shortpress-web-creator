@@ -46,7 +46,6 @@ const WebsiteSetting: React.FC<WebsiteSettingProps> = ({ website }) => {
                 args.logo = res.data ?? '';
             }
         }
-
         WebsiteApi.modify(args).then(res => {
             if (res.code === 0) {
                 toast.success('save success');

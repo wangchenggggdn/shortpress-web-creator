@@ -85,6 +85,7 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
                 </div> */}
                 {/* nickname */}
                 {/* <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required /> */}
+                {/* Email input */}
                 <TextInput
                     value={email}
                     onChange={e => {
@@ -97,6 +98,7 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
                     error={emailError}
                     onBlur={() => validateEmail(email)}
                 />
+                {/* Password input */}
                 <PasswordInput
                     value={password}
                     onChange={e => setPassword(e.target.value)}
@@ -105,6 +107,8 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
                     visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
                     required
                 />
+                
+                {/* Login link */}
                 <div className="flex flex-row w-full items-center justify-center">
                     <Text size="sm">
                         Already have an account?{' '}
@@ -113,11 +117,14 @@ const RegisterPage: React.FC<RegisterPageProps> = () => {
                         </Link>
                     </Text>
                 </div>
+
+                {/* Register button */}
                 <Button type="submit" fullWidth color="primary" loading={loading}>
                     Register
                 </Button>
             </form>
 
+            {/* Terms and Privacy */}
             <div className="mt-6 text-center">
                 <Text size="xs" c="dimmed" ta="center">
                     By signing up, you agree to our{' '}

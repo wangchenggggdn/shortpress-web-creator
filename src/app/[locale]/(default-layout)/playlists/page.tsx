@@ -363,6 +363,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                 </>
             )}
 
+            {/* Delete Confirmation Dialog */}
             <ConfirmDialog
                 opened={deleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
