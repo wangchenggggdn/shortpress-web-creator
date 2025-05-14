@@ -273,7 +273,8 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
 
     const handleTitleOrder = () => {
         const newVideos = [...videos];
-        newVideos.sort((a, b) => a.title.localeCompare(b.title));
+        const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+        newVideos.sort((a, b) => collator.compare(a.title || '', b.title || ''));
         setVideos(newVideos);
     };
 
@@ -306,9 +307,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
             <div className="px-6 pt-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
                     <span className="text-gray-600">{videos.length} videos</span>
-                </div>
-                    <div className="flex">
-                        {isEditingOrder && (
+                    {isEditingOrder && (
                             <Button
                                 variant="subtle"
                                 color="primary"
@@ -317,9 +316,12 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                                 }}
                                 px={'sm'}
                             >
-                                Title Order
+                                Order By Title
                             </Button>
                         )}
+                </div>
+                    <div className="flex">
+                       
                         <Button
                             variant="subtle"
                             color={isEditingOrder ? 'red' : 'primary'}
