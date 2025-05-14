@@ -22,39 +22,100 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
     }, [uploadFileList]);
 
     useEffect(() => {
-        handleUpload();
+        handleUpload(item);
     }, [item.file]);
 
-    const handleUpload = async () => {
-        if (item.file && item.uploadStatus === VideoUploadStatus.NULL) {
-            item.uploadStatus = VideoUploadStatus.NOT_UPLOADED;
+    const handleUpload = async (itemToUpload: IVideo) => { 
+        const itemId = itemToUpload.vid;
+
+        if (itemToUpload.file && itemToUpload.uploadStatus === VideoUploadStatus.NULL) {
+
+            setUploadFileList((currentList: IVideo[] | null) => 
+                (currentList ?? []).map(video => 
+                    video.vid === itemId
+                        ? { ...video, uploadStatus: VideoUploadStatus.NOT_UPLOADED }
+                        : video
+                )
+            );
+
             const formData = new FormData();
-            formData.append('files', item.file);
+            formData.append('files', itemToUpload.file); 
 
-            const res = await retryRequest(async () => {
-                return await VideoApi.upload(formData, playlistId, (progress: number) => {
-                    item.progress = Math.floor(progress);
-                    item.uploadStatus = VideoUploadStatus.UPLOADING;
-                    setUploadFileList([...uploadFileListRef.current ?? []]);
-                }, xhrRef);
-            });
+            try {
+                const res = await retryRequest(async () => {
+                    return await VideoApi.upload(
+                        formData,
+                        playlistId,
+                        (progress: number) => {
+                            // 步骤 B: 进度更新
+                            setUploadFileList((currentList: IVideo[]|null) => // <--- 修改类型为 IVideo[]
+                                (currentList ?? []).map(video =>
+                                    video.title === item.title
+                                        ? {
+                                            ...video,
+                                            progress: Math.floor(progress),
+                                            uploadStatus: VideoUploadStatus.UPLOADING,
+                                        }
+                                        : video
+                                )
+                            );
+                        },
+                        xhrRef
+                    );
+                });
 
-            if (!res) {
-                item.uploadStatus = VideoUploadStatus.UPLOAD_FAILED;
-            } else {
-                item.vid = res.data.vids[0];
-                item.uploadStatus = VideoUploadStatus.UPLOAD_SUCCESS;
+          
+                if (!res || !res.data || !res.data.vids || res.data.vids.length === 0) {
+     
+                    setUploadFileList((currentList: IVideo[]|null) =>
+                        (currentList ?? []).map(video =>
+                            video.vid === itemId
+                                ? {
+                                    ...video,
+                                    uploadStatus: VideoUploadStatus.UPLOAD_FAILED,
+                                    progress: video.uploadStatus === VideoUploadStatus.UPLOADING ? video.progress : 0,
+                                }
+                                : video
+                        )
+                    );
+                } else {
+         
+                    const vidFromServer = res.data.vids[0]; 
+                    setUploadFileList((currentList: IVideo[]|null) => 
+                        (currentList ?? []).map(video =>
+                            video.vid === itemId
+                                ? {
+                                    ...video,
+                                    vid: vidFromServer,
+                                    uploadStatus: VideoUploadStatus.UPLOAD_SUCCESS,
+                                    progress: 100,
+                                }
+                                : video
+                        )
+                    );
+                }
+            } catch (error) {
+                setUploadFileList((currentList: IVideo[]|null) => 
+                    (currentList ?? []).map(video =>
+                        video.vid === itemId
+                            ? {
+                                ...video,
+                                uploadStatus: VideoUploadStatus.UPLOAD_FAILED,
+                                progress: video.uploadStatus === VideoUploadStatus.UPLOADING ? video.progress : 0,
+                            }
+                            : video
+                    )
+                );
             }
-
-            setUploadFileList([...uploadFileListRef.current ?? []]);
         }
     };
+
 
     const handleDelectUploadFile = () => {
         if (xhrRef.current) {
             xhrRef.current.abort();
         }
-        setUploadFileList(([...uploadFileListRef.current ?? []]).filter(file => file.vid !== item.vid));
+        setUploadFileList((currentList: IVideo[] | null) => currentList?.filter(file => file.vid !== item.vid) ?? []);
     };
 
     return (
@@ -78,7 +139,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                             <IconRefresh
                                 onClick={() => {
                                     item.uploadStatus = VideoUploadStatus.NULL;
-                                    handleUpload();
+                                    handleUpload(item);
                                 }}
                                 className="text-primary cursor-pointer"
                                 size={18}

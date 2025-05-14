@@ -10,7 +10,7 @@ import CreatorApi from '@/api/creator';
 import { GuideName } from '@/types/guide';
 import userStore from '@/store/useUserStore';
 import { toast } from 'sonner';
-
+import { createUniqueUUID } from '@/utils/public';
 interface UploadVideoModalProps {
     opened: boolean;
     onClose: () => void;
@@ -84,15 +84,19 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
         while (true) {
             await new Promise(resolve => setTimeout(resolve, 2000));
             if (!isCheckingRef.current) continue;
-            const vids = uploadFileListRef.current?.map(item => item.vid) ?? [];
-            const isHaveVids = vids.some(item => item !== '');
-            isHaveVids && (await checkUploadStatusR(vids));
+            const vids = uploadFileListRef.current?.map(item => {
+                if(item.vid.startsWith('video_')){
+                    return item.vid.replace('video_', '');
+                }
+                return item.vid;
+            }) ?? [];
+            await checkUploadStatusR(vids);
         }
     };
 
     const initUploadFileList = (files: File[]): IVideo[] => {
         const items: IVideo[] = files.map(file => ({
-            vid: '',
+            vid: `video_${createUniqueUUID(uploadFileListRef.current?.map(item => item.vid.replace('video_', '')) ?? [])}`,
             title: file.name,
             uploadStatus: VideoUploadStatus.NULL,
             status: 0,
