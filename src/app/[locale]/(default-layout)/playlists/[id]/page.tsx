@@ -271,6 +271,12 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
         );
     };
 
+    const handleTitleOrder = () => {
+        const newVideos = [...videos];
+        newVideos.sort((a, b) => a.title.localeCompare(b.title));
+        setVideos(newVideos);
+    };
+
     return (
         <div className="flex flex-col h-screen">
             <Header
@@ -302,6 +308,18 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     <span className="text-gray-600">{videos.length} videos</span>
                 </div>
                     <div className="flex">
+                        {isEditingOrder && (
+                            <Button
+                                variant="subtle"
+                                color="primary"
+                                onClick={() => {
+                                   handleTitleOrder();
+                                }}
+                                px={'sm'}
+                            >
+                                Title Order
+                            </Button>
+                        )}
                         <Button
                             variant="subtle"
                             color={isEditingOrder ? 'red' : 'primary'}

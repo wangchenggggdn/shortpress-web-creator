@@ -29,7 +29,6 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
         const itemId = itemToUpload.vid;
 
         if (itemToUpload.file && itemToUpload.uploadStatus === VideoUploadStatus.NULL) {
-
             setUploadFileList((currentList: IVideo[] | null) => 
                 (currentList ?? []).map(video => 
                     video.vid === itemId

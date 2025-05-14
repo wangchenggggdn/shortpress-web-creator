@@ -50,7 +50,6 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
         ){
             return;
         }
-        console.log('checkUploadStatusR:',uploadFileListRef.current);
         const res = await VideoApi.batchGet(vids.join(','));
         if (res.code === 0) {
             if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
@@ -84,6 +83,7 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
         while (true) {
             await new Promise(resolve => setTimeout(resolve, 2000));
             if (!isCheckingRef.current) continue;
+            console.log('checkUploadStatus:',uploadFileListRef.current);
             const vids = uploadFileListRef.current?.map(item => {
                 if(item.vid.startsWith('video_')){
                     return item.vid.replace('video_', '');
