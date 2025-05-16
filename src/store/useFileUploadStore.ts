@@ -9,6 +9,9 @@ interface IUploadFileStore {
     uploadFileList: null | IVideo[];
     /** Function to update upload file list */
     setUploadFileList: (updater: null | IVideo[] | ((prevList: null | IVideo[]) => null | IVideo[])) => void;
+    successedFiles: null | IVideo[];
+    /** Function to update successed files */
+    setSuccessedFiles: (files: null | IVideo[] | ((prevList: null | IVideo[]) => null | IVideo[])) => void;
     /** Whether upload progress modal is open */
     openUploadProgressModal: boolean;
     /** Function to update upload progress modal state */
@@ -33,6 +36,14 @@ const fileUploadStore = create<IUploadFileStore>(set => ({
             set(state => ({ uploadFileList: updater(state.uploadFileList) }));
         } else {
             set({ uploadFileList: updater });
+        }
+    },
+    successedFiles: null,
+    setSuccessedFiles: (files) => {
+        if (typeof files === 'function') {
+            set(state => ({ successedFiles: files(state.successedFiles) }));
+        } else {
+            set({ successedFiles: files });
         }
     },
     openUploadProgressModal: false,

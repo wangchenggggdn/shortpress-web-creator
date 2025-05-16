@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Modal, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
@@ -11,88 +11,80 @@ import { GuideName } from '@/types/guide';
 import userStore from '@/store/useUserStore';
 import { toast } from 'sonner';
 import { createUniqueUUID } from '@/utils/public';
+import { EventName } from '@/types/event';
+import profileEventBus from '@/utils/profileEventBus';
+
 interface UploadVideoModalProps {
     opened: boolean;
     onClose: () => void;
-    onUploadSuccess?: () => void;
 }
 
-const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, onUploadSuccess }) => {
+const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose }) => {
     const [isDragging, setIsDragging] = useState(false);
-    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal, maxLimit } = fileUploadStore();
+    const { uploadFileList, openUploadProgressModal, setUploadFileList, setOpenUploadProgressModal, maxLimit,successedFiles,setSuccessedFiles } = fileUploadStore();
     const uploadFileListRef = useRef<IVideo[] | null>();
-    const isCheckingRef = useRef(false);
-    const { userInfo } = userStore();
-    const currentList = useMemo(() => uploadFileListRef.current, [uploadFileListRef.current]);
+    // const currentList = useMemo(() => uploadFileListRef.current, [uploadFileListRef.current]);
+    // const isCheckRef = useRef(false);
+    // const { userInfo } = userStore();
+    // const successedFilesRef = useRef<IVideo[] | null>(null);
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     isCheckRef.current = (successedFiles ?? []).length !== 0;
+    //     if(isCheckRef.current){
+    //         checkUploadStatus();
+    //     }
+    //     console.log('successedFiles:',successedFiles,'successedFilesRef:',successedFilesRef.current);
+    //     if(successedFiles&&successedFiles.length<(successedFilesRef.current??[]).length){
+    //         profileEventBus.emit(EventName.UploadVideoSuccess);
+    //     }
+    //     successedFilesRef.current = successedFiles;
+    // }, [successedFiles]);
+
+    useEffect(() => {   
         uploadFileListRef.current = uploadFileList;
-        if (
-            (uploadFileListRef.current ?? []).some(
-                item =>
-                    item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
-            )
-        ){
-            isCheckingRef.current = true;
-        }
     }, [uploadFileList]);
 
-    useEffect(() => {
-        openUploadProgressModal && checkUploadStatus();
-    }, [openUploadProgressModal]);
+    // const checkUploadStatusR = async () => {
+    //     const vids = successedFiles?.map(item => {
+    //         if(item.vid.startsWith('video_')){
+    //             return item.vid.replace('video_', '');
+    //         }
+    //         return item.vid;
+    //     }) ?? [];
+    //     console.log('begin checkUploadStatusR----------');
+    //     const res = await VideoApi.batchGet(vids.join(','));
+    //     console.log('res:',res.code);
+    //     if (res.code === 0) {
+    //         if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
+    //             CreatorApi.completeGuides({ guides: [GuideName.UploadVideo] });
+    //         }
+    //         deleteSuccessedFiles(res.data.items ?? []);
+    //     }
+    // };
 
-    const checkUploadStatusR = async (vids: string[]) => {
-        if (vids.length === 0) return;
-        if (( uploadFileListRef.current ?? []).some(
-                item =>
-                    item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
-            )
-        ){
-            return;
-        }
-        const res = await VideoApi.batchGet(vids.join(','));
-        if (res.code === 0) {
-            if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
-                CreatorApi.completeGuides({ guides: [GuideName.UploadVideo] });
-            }
+    // const deleteSuccessedFiles = (videos: IVideo[]) => {
+    //     let successIndexs:number[] = [];
+    //     successedFiles?.forEach((successedFile,index) => {
+    //         const video = videos.find(item => item.vid === successedFile.vid);
+    //         if (video&&video.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS) {
+    //             successIndexs.push(index);
+    //         }
+    //     });
 
-            const newItems = (currentList ?? []).map(item => {
-                const newItem = (res.data.items ?? []).find(oldItem => oldItem.vid === item.vid);
-                if (newItem) {
-                    return { ...item, uploadStatus: newItem?.uploadStatus ?? VideoUploadStatus.NOT_UPLOADED };
-                } else {
-                    return item;
-                }
-            });
+    //     if (successIndexs.length > 0) {
+    //         setSuccessedFiles(prev => prev?.filter((item,index) => !successIndexs.includes(index)) ?? []);
+    //     }
+    // }
 
-            if (newItems.length > 0) setUploadFileList(newItems);
-
-            if (
-                !(newItems ?? []).some(
-                    item =>
-                        item.uploadStatus === VideoUploadStatus.UPLOADING || item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL
-                )
-            ) {
-                onUploadSuccess?.();
-                isCheckingRef.current = false;
-            }
-        }
-    };
-
-    const checkUploadStatus = async () => {
-        while (true) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            if (!isCheckingRef.current) continue;
-            console.log('checkUploadStatus:',uploadFileListRef.current);
-            const vids = uploadFileListRef.current?.map(item => {
-                if(item.vid.startsWith('video_')){
-                    return item.vid.replace('video_', '');
-                }
-                return item.vid;
-            }) ?? [];
-            await checkUploadStatusR(vids);
-        }
-    };
+    // const checkUploadStatus = async () => {
+    //     while (isCheckRef.current) {
+    //         console.log('isCheckRef.current:',isCheckRef.current);
+    //         if(!isCheckRef.current) continue;
+    //         await new Promise(resolve => setTimeout(resolve, 1000));
+    //         console.log('checkUploadStatusR--------------------------------');
+    //         await checkUploadStatusR();
+    //     }
+    // };
 
     const initUploadFileList = (files: File[]): IVideo[] => {
         const items: IVideo[] = files.map(file => ({
@@ -111,9 +103,6 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
     const handleUpload = async (files: File[]) => {
         if (files.length === 0) {
             return;
-        }
-        if (!isCheckingRef.current) {
-            isCheckingRef.current = true;
         }
         let uploadFileListN: IVideo[] = (uploadFileList ?? []).concat(initUploadFileList(files));
         setOpenUploadProgressModal(true);
@@ -162,8 +151,8 @@ const UploadVideoModal: React.FC<UploadVideoModalProps> = ({ opened, onClose, on
         if (files.length === 0) {
             return true;
         }
-        if ((uploadFileList ?? []).length + files.length > 20) {
-            toast.warning('Maximum upload limit of 20 files at once reached. Please remove some files before uploading more.');
+        if ((uploadFileList ?? []).length + files.length > 200) {
+            toast.warning('Maximum upload limit of 200 files at once reached. Please remove some files before uploading more.');
             return true;
         }
 

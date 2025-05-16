@@ -317,7 +317,7 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 </>
             )}
 
-            <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} onUploadSuccess={() => resetAndFetchVideos()} />
+            <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} />
 
             <ConfirmDialog
                 opened={deleteModalOpen}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -25,6 +25,8 @@ import LoadingData from '@/components/common/loading-data';
 import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { useRouter } from 'next/navigation';
+import profileEventBus from '@/utils/profileEventBus';
+import { EventName } from '@/types/event';
 
 interface PlaylistVideosPageProps {}
 
@@ -48,6 +50,25 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const [confirmSaveOrderOpen, setConfirmSaveOrderOpen] = useState(false);
     const router = useRouter();
 
+    const handleUploadSuccess = useCallback((lastUploadFile: IVideo) => {
+        console.log('--------------------------handleUploadSuccess:',lastUploadFile);
+        if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
+            CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
+        }
+        fetchVideos();
+        setIsUploadModalOpen(false);
+    }, []);
+
+    useEffect(() => {
+        profileEventBus.on(EventName.UploadVideoSuccess, (lastUploadFile: IVideo)=>{
+            console.log('--------------------------handleUploadSuccess11111:');
+            handleUploadSuccess(lastUploadFile);
+        });
+        return () => {
+            profileEventBus.off(EventName.UploadVideoSuccess, handleUploadSuccess);
+        };
+    }, [handleUploadSuccess]);
+
     useEffect(() => {
         playlistFetch();
         const loadFetchVideo = async () => {
@@ -64,6 +85,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     }, [videos]);
 
     const fetchVideos = async () => {
+        console.log('--------------------------fetchVideos:',paramsP.id);
         const res = await PlaylistApi.videoOrder(paramsP.id as string);
         orderParamCurrentRef.current = res.data;
         if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) {
@@ -278,6 +300,8 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
         setVideos(newVideos);
     };
 
+
+
     return (
         <div className="flex flex-col h-screen">
             <Header
@@ -376,13 +400,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
             <UploadVideoModal
                 opened={isUploadModalOpen}
                 onClose={() => setIsUploadModalOpen(false)}
-                onUploadSuccess={() => {
-                    if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
-                        CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
-                    }
-                    fetchVideos();
-                    setIsUploadModalOpen(false);
-                }}
             />
             {isEditing && (
                 <>

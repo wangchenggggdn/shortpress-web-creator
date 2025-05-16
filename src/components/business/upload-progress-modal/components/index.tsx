@@ -6,6 +6,8 @@ import { IVideo, VideoUploadStatus } from '@/types/video';
 import VideoApi from '@/api/video';
 import fileUploadStore from '@/store/useFileUploadStore';
 import { retryRequest } from '@/api';
+import { EventName } from '@/types/event';
+import profileEventBus from '@/utils/profileEventBus';
 
 interface IProps {
     item: IVideo;
@@ -13,7 +15,7 @@ interface IProps {
 }
 
 const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
-    const { uploadFileList, setUploadFileList, playlistId } = fileUploadStore();
+    const { uploadFileList, setUploadFileList, playlistId,setSuccessedFiles } = fileUploadStore();
     const uploadFileListRef = useRef<IVideo[] | null>();
     const xhrRef = useRef<XMLHttpRequest | null>(null);
 
@@ -46,8 +48,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                         formData,
                         playlistId,
                         (progress: number) => {
-                            // 步骤 B: 进度更新
-                            setUploadFileList((currentList: IVideo[]|null) => // <--- 修改类型为 IVideo[]
+                            setUploadFileList((currentList: IVideo[]|null) =>
                                 (currentList ?? []).map(video =>
                                     video.title === item.title
                                         ? {
@@ -65,7 +66,6 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
 
           
                 if (!res || !res.data || !res.data.vids || res.data.vids.length === 0) {
-     
                     setUploadFileList((currentList: IVideo[]|null) =>
                         (currentList ?? []).map(video =>
                             video.vid === itemId
@@ -78,8 +78,19 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                         )
                     );
                 } else {
-         
                     const vidFromServer = res.data.vids[0]; 
+                    
+                    // setSuccessedFiles((currentList: IVideo[]|null) =>   
+                    //     (currentList ?? []).concat({
+                    //         ...item,
+                    //         vid: vidFromServer,
+                    //         uploadStatus: VideoUploadStatus.UPLOAD_SUCCESS,
+                    //         progress: 100,
+                    //     })
+                    // );
+
+                    profileEventBus.emit(EventName.UploadVideoSuccess);
+
                     setUploadFileList((currentList: IVideo[]|null) => 
                         (currentList ?? []).map(video =>
                             video.vid === itemId

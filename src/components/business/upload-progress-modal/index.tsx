@@ -86,12 +86,14 @@ const UploadProgressModal: React.FC = () => {
                         </div>
 
                         {/* Upload List */}
+                        <div className="max-h-[30vh] overflow-y-auto">
                         {(uploadFileList ?? [])
                             .slice()
                             .reverse()
                             .map((item, index) => (
                                 <UploadProgressItem key={index} index={index} item={item} />
                             ))}
+                        </div>
                     </div>
                 ) : (
                     <div className="p-4 bg-white" onClick={() => setIsExpand(true)}>
