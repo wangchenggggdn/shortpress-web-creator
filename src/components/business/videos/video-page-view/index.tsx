@@ -19,6 +19,8 @@ import LoadingData from '@/components/common/loading-data';
 import CreatorApi from '@/api/creator';
 import { IconCheck } from '@tabler/icons-react';
 import { useInView } from 'react-intersection-observer';
+import { EventName } from '@/types/event';
+import profileEventBus from '@/utils/profileEventBus';
 
 interface VideosPageViewProps {
     searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
@@ -48,6 +50,17 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
         threshold: 0.5,
         rootMargin: '100px 0px',
     });
+
+    useEffect(() => {
+        const handleUploadVideoSuccess = () => {
+            resetAndFetchVideos();
+        };
+        profileEventBus.on(EventName.UploadVideoSuccess, handleUploadVideoSuccess);
+        return () => {
+            profileEventBus.off(EventName.UploadVideoSuccess, handleUploadVideoSuccess);
+        };
+    }, []);
+    
 
     useEffect(() => {
         if (inView && hasMore && !loading) {

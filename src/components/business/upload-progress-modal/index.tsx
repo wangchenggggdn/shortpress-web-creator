@@ -86,7 +86,7 @@ const UploadProgressModal: React.FC = () => {
                         </div>
 
                         {/* Upload List */}
-                        <div className="max-h-[30vh] overflow-y-auto">
+                        <div className="max-h-[30vh] overflow-y-auto overflow-y-hidden">
                         {(uploadFileList ?? [])
                             .slice()
                             .reverse()

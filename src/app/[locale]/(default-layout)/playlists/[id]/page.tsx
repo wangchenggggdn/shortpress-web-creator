@@ -51,7 +51,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const router = useRouter();
 
     const handleUploadSuccess = useCallback((lastUploadFile: IVideo) => {
-        console.log('--------------------------handleUploadSuccess:',lastUploadFile);
         if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
             CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
         }
@@ -60,10 +59,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     }, []);
 
     useEffect(() => {
-        profileEventBus.on(EventName.UploadVideoSuccess, (lastUploadFile: IVideo)=>{
-            console.log('--------------------------handleUploadSuccess11111:');
-            handleUploadSuccess(lastUploadFile);
-        });
+        profileEventBus.on(EventName.UploadVideoSuccess, handleUploadSuccess);
         return () => {
             profileEventBus.off(EventName.UploadVideoSuccess, handleUploadSuccess);
         };
