@@ -23,3 +23,12 @@ img {
   background-origin: padding-box, border-box;
   background-image: linear-gradient(to right, #242424, #242424), linear-gradient(134deg, #70F8A6, #F7EA76);
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

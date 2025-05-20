@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
-import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Header from '@/components/system/header';
 import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';

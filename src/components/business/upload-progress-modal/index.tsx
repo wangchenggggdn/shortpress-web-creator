@@ -72,7 +72,26 @@ const UploadProgressModal: React.FC = () => {
                     <div className="px-4 py-2">
                         {/* Header */}
                         <div className="flex justify-between items-center gap-8 border-b-[1px] mb-2">
-                            <div className="py-1 ">Uploading</div>
+                            <div className="py-1 flex items-center gap-4">
+                                <div className="flex items-center gap-3 text-sm">
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span>Uploaded: {uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS).length || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-2 h-2 rounded-full bg-primary"></span>
+                                        <span>Uploading: {uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                        <span>Failed: {uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED).length || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                                        <span>Waiting: {uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL).length || 0}</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="flex items-center gap-2 py-1">
                                 <div className="text-sm text-gray-500 cursor-pointer" onClick={() => setIsExpand(!isExpand)}>
                                     <IconChevronUp size={22} />
@@ -86,7 +105,7 @@ const UploadProgressModal: React.FC = () => {
                         </div>
 
                         {/* Upload List */}
-                        <div className="max-h-[30vh] overflow-y-auto overflow-y-hidden">
+                        <div className="max-h-[30vh] overflow-y-auto scrollbar-hide">
                         {(uploadFileList ?? [])
                             .slice()
                             .reverse()

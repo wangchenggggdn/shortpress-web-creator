@@ -156,10 +156,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item }) => {
                         )}
 
                         {/* Upload Status NOT_UPLOADED */}
-                        {item.progress === 0 ||
-                            ((item.uploadStatus === VideoUploadStatus.NOT_UPLOADED || item.uploadStatus === VideoUploadStatus.NULL) && (
-                                <span className="text-gray-400">Waiting...</span>
-                            ))}
+                        {item.progress === 0&&(item.uploadStatus !== VideoUploadStatus.UPLOAD_FAILED && item.uploadStatus !== VideoUploadStatus.UPLOAD_CANCELLED) && <span className="text-gray-400">Waiting...</span>}
                     </span>
                 </div>
                 {/* Progress Bar */}
