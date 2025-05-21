@@ -12,13 +12,14 @@ interface AnalyticsSettingProps {
 const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [googleAnalyticsId, setGoogleAnalyticsId] = useState('');
-
+    const [facebookPixelId, setFacebookPixelId] = useState('');
     useEffect(() => {
         const fetchSiteDetails = async () => {
             try {
                 const res = await WebsiteApi.get(website.siteId);
                 if (res.code === 0 && res.data) {
                     setGoogleAnalyticsId(res.data.googleAnalyticsId || '');
+                    setFacebookPixelId(res.data.facebookPixelId || '');
                 }
             } catch (error) {
                 toast.error('Failed to fetch site details');
@@ -35,11 +36,18 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
             return;
         }
 
+        const trimmedFacebookPixelId = facebookPixelId.trim();
+        if (!trimmedFacebookPixelId) {
+            toast.error('Facebook Pixel ID cannot be empty');
+            return;
+        }
+
         try {
             setLoading(true);
             const res = await WebsiteApi.modify({
                 siteId: website.siteId,
                 googleAnalyticsId: trimmedId,
+                facebookPixelId: trimmedFacebookPixelId,
             });
             if (res.code === 0) {
                 toast.success('Google Analytics ID updated successfully');
@@ -68,6 +76,14 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
                     value={googleAnalyticsId}
                     onChange={e => setGoogleAnalyticsId(e.target.value)}
                     description="Enter your Google Analytics Measurement ID (e.g., G-XXXXXXXXXX)"
+                />
+
+                <TextInput
+                    label="Pixel ID"
+                    placeholder="Enter Facebook Pixel ID"
+                    value={facebookPixelId}
+                    onChange={e => setFacebookPixelId(e.target.value)}
+                    description="Enter your Facebook Pixel ID (e.g., 1234567890)"
                 />
 
                 <div className="flex justify-end">

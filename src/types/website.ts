@@ -16,6 +16,8 @@ export interface Website {
     status: number;
     /** Google Analytics ID */
     googleAnalyticsId?: string;
+    /** Facebook Pixel ID */
+    facebookPixelId?: string;
     /** SEO information */
     seo?: {
         /** SEO title */

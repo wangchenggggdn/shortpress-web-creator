@@ -55,7 +55,7 @@ export namespace WebsiteArgs {
             keywords?: string;
         };
         googleAnalyticsId?: string;
-
+        facebookPixelId?: string;
     }
 
     /**
@@ -446,6 +446,58 @@ export namespace AnalyticsArgs {
 
     export interface IncomeTransactionInfo {
         transactionId: string;
+    }
+}
+
+/**
+ * Request parameters for Subscription related operations
+ */
+export namespace SubscriptionArgs {
+    /**
+     * 创建订阅套餐参数
+     */
+    export interface Create {
+        siteId: string;
+        name: string;
+        description?: string;
+        interval: string; // weekly, monthly, yearly
+        price: number;
+        originalPrice?: number;
+        discountPercentage?: number;
+        currency?: string;
+        status?: number; // 1启用 2禁用
+    }
+
+    /**
+     * 修改订阅套餐参数
+     */
+    export interface Modify {
+        packageId: string;
+        siteId: string;
+        name?: string;
+        description?: string;
+        interval?: string;
+        price?: number;
+        originalPrice?: number;
+        discountPercentage?: number;
+        currency?: string;
+        status?: number;
+    }
+
+    /**
+     * 获取订阅套餐详情参数
+     */
+    export interface Get {
+        siteId: string;
+        packageId: string;
+    }
+
+    /**
+     * 获取订阅套餐列表参数
+     */
+    export interface List {
+        siteId: string;
+        status?: number; // -1全部 1启用 2禁用
     }
 }
 

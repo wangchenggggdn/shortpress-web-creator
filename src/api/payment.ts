@@ -3,6 +3,8 @@ import { PaymentArgs } from "./args";
 import { PaymentResponse, UserResponse } from "./respones";
 import fetch from '@/libs/fetch/fetch';
 import { CoinPackage, CoinTransaction, VideoUnlockTransaction } from "@/types/payment";
+import { SubscriptionArgs } from './args';
+import { SubscriptionData } from '@/types/subscription';
 
 
 
@@ -120,5 +122,32 @@ export class PaymentAPI {
         return fetch.get<UserResponse.UserCoinsResponse>('/api/payment/customers/coins/balance', args);
     }
 
+    /**
+     * 创建订阅套餐
+     */
+    static createSubscription(args: SubscriptionArgs.Create) {
+        return fetch.post<SubscriptionData>('/api/payment/subscription/create', args);
+    }
+
+    /**
+     * 获取订阅套餐详情
+     */
+    static getSubscription(args: SubscriptionArgs.Get) {
+        return fetch.get<SubscriptionData>('/api/payment/subscription/get', args);
+    }
+
+    /**
+     * 获取订阅套餐列表
+     */
+    static getSubscriptionList(args: SubscriptionArgs.List) {
+        return fetch.get<SubscriptionData[]>('/api/payment/subscription/list', args);
+    }
+
+    /**
+     * 修改订阅套餐
+     */
+    static modifySubscription(args: SubscriptionArgs.Modify) {
+        return fetch.post<{ packageId: string }>('/api/payment/subscription/modify', args);
+    }
 
 }

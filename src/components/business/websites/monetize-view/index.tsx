@@ -5,12 +5,13 @@ import Advertisement from '@/components/business/websites/monetize-view/advertis
 import PayPerView from '@/components/business/websites/monetize-view/pay-per-view';
 import classNames from 'classnames';
 import Header from '@/components/system/header';
+import SubscriptionView from './subscription';
 
 const TABS = [
     { id: 'advertisement', label: 'Advertisement' },
     { id: 'payPerView', label: 'Pay per View' },
     // { id: 'bundles', label: 'Bundles' },
-    // { id: 'subscription', label: 'Subscription' },
+    { id: 'subscription', label: 'Subscription' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -44,9 +45,9 @@ const MonetizeView: React.FC = () => {
 
                     {activeTab === 'payPerView' && <PayPerView />}
 
-                    {/* {activeTab === 'bundles' && <div className="text-center py-12 text-gray-500">Bundles feature coming soon</div>}
+                    {/* {activeTab === 'bundles' && <div className="text-center py-12 text-gray-500">Bundles feature coming soon</div>} */}
 
-                    {activeTab === 'subscription' && <div className="text-center py-12 text-gray-500">Subscription feature coming soon</div>} */}
+                    {activeTab === 'subscription' && <SubscriptionView />}
                 </div>
             </div>
         </div>
