@@ -129,7 +129,7 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     </div>
 
                     {/* Cover Image */}
-                    {isEdit && (
+                    {true && (
                         <div>
                             <h3 className="text-lg font-medium mb-4">Cover</h3>
                             <div className="flex items-center gap-4">
@@ -163,7 +163,7 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     </div>
 
                     {/* SEO Settings */}
-                    {isEdit && (
+                    {true && (
                         <div className="space-y-4">
                             <h3 className="text-base font-medium">SEO</h3>
                             <div>

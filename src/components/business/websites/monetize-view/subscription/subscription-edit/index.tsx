@@ -41,7 +41,10 @@ const SubscriptionEdit: React.FC<SubscriptionEditProps> = ({ subscriptionOld, on
         e.preventDefault();
         if (!form.name) return;
         if (!form.interval) return;
-        if (form.price <= 0) return;
+        if (form.price <= 0) {
+            toast.error('Price must be greater than 0');
+            return;
+        };
         if (!form.originalPrice) {
             form.originalPrice = form.price;
         }
