@@ -6,6 +6,7 @@ import Header from '@/components/system/header';
 import { IUserStats } from '@/types/user';
 import GuideCard from '@/components/business/guide-card';
 import { useRouter } from 'next/navigation';
+import fileUploadStore from '@/store/useFileUploadStore';
 
 interface IProps {
     stats: IUserStats | null;

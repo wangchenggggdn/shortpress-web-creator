@@ -46,16 +46,10 @@ export interface IVideo {
     description?: string;
     /** Video cover image URL */
     cover?: string;
-    /** Current upload status */
-    uploadStatus: VideoUploadStatus;
     /** Current video status */
     status: VideoStatus;
-    /** Video source URL */
-    videoSourceUrl?: string;
     /** Video duration in seconds */
     duration?: number;
-    /** Video file size in bytes */
-    fileSize?: number;
     /** ID of the creator who uploaded the video */
     creatorId: string;
     /** Creation timestamp */
@@ -64,8 +58,6 @@ export interface IVideo {
     updatedAt: number;
     /** Number of views */
     views?: number;
-    /** Upload progress percentage */
-    progress?: number;
     /** SEO information */
     seo?: {
         /** SEO title */
@@ -75,7 +67,23 @@ export interface IVideo {
         /** SEO keywords */
         keywords?: string;
     };
+    /** Video source URL */
+    videoSourceUrl?: string;
+}
+
+export interface IUploadVideo extends IVideo {
+    /** Upload progress percentage */
+    progress?: number;
+    /** Video file size in bytes */
+    fileSize?: number;
+    /** Current upload status */
+    uploadStatus: VideoUploadStatus;
+    /** Current video status */
     file?: File;
+    /** Current playlist id */
+    playlistId?: string;
+    /** Current xhrRef */
+    xhrRef?: XMLHttpRequest | null;
 }
 
 /**

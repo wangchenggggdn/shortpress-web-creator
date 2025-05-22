@@ -3,9 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { IconChevronDown, IconChevronUp, IconLoader, IconX } from '@tabler/icons-react';
 import fileUploadStore from '@/store/useFileUploadStore';
-import { VideoUploadStatus } from '@/types/video';
+import { IUploadVideo, VideoUploadStatus } from '@/types/video';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import UploadProgressItem from './components';
+import VideoApi from '@/api/video';
+import { retryRequest } from '@/api';
+import profileEventBus from '@/utils/profileEventBus';
+import { EventName } from '@/types/event';
+const MAX_UPLOAD_COUNT = 3;
 
 /**
  * Upload progress modal component
@@ -18,7 +23,6 @@ const UploadProgressModal: React.FC = () => {
     const [showClose, setShowClose] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-    // 监听页面刷新事件
     useEffect(() => {
         // Listen for page refresh event
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -42,6 +46,17 @@ const UploadProgressModal: React.FC = () => {
     }, [uploadFileList]);
 
     useEffect(() => {
+        if(uploadFileList){
+            const waitingIndex = uploadFileList?.findIndex(item => (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED||item.uploadStatus === VideoUploadStatus.NULL))??0;
+            const uploadingCount = uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length ?? 0;
+            const uploadingItem = uploadFileList[waitingIndex];
+            if(uploadingCount<MAX_UPLOAD_COUNT&&uploadingItem){
+                handleUpload(uploadingItem);
+            }
+        }
+    }, [uploadFileList]);
+
+    useEffect(() => {
         const allSuccess = uploadFileList?.map(item => item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS).every(item => item);
         setShowClose(allSuccess ?? false);
     }, [openUploadProgressModal, uploadFileList]);
@@ -59,6 +74,110 @@ const UploadProgressModal: React.FC = () => {
         setShowConfirmDialog(false);
         window.location.reload();
     };
+
+    const handleUpload = async (itemToUpload: IUploadVideo, isRefresh: boolean = false) => { 
+        const itemId = itemToUpload.vid;
+        console.log('-----------------itemToUpload:',itemToUpload.title);
+        if (itemToUpload.file && (itemToUpload.uploadStatus === VideoUploadStatus.NULL || isRefresh)) {
+            setUploadFileList((currentList: IUploadVideo[] | null) => 
+                (currentList ?? []).map(video => 
+                    video.vid === itemId
+                        ? { ...video, uploadStatus: VideoUploadStatus.NOT_UPLOADED, progress: 0 }
+                        : video
+                )
+            );
+
+            const formData = new FormData();
+            formData.append('files', itemToUpload.file); 
+
+            try {
+                const res = await retryRequest(async () => {
+                    return await VideoApi.upload(
+                        formData,
+                        itemToUpload.playlistId??'',
+                        (progress: number) => {
+                            setUploadFileList((currentList: IUploadVideo[]|null) =>
+                                (currentList ?? []).map(video =>
+                                    video.vid === itemId
+                                        ? {
+                                            ...video,
+                                            progress: Math.floor(progress),
+                                            uploadStatus: VideoUploadStatus.UPLOADING,
+                                        }
+                                        : video
+                                )
+                            );
+                        },
+                        (xhr: XMLHttpRequest | null) => {
+                            itemToUpload.xhrRef = xhr;
+                        }
+                    );
+                });
+
+          
+                if (!res || !res.data || !res.data.vids || res.data.vids.length === 0) {
+                    setUploadFileList((currentList: IUploadVideo[]|null) =>
+                        (currentList ?? []).map(video =>
+                            video.vid === itemId
+                                ? {
+                                    ...video,
+                                    uploadStatus: VideoUploadStatus.UPLOAD_FAILED,
+                                    progress: video.uploadStatus === VideoUploadStatus.UPLOADING ? video.progress : 0,
+                                }
+                                : video
+                        )
+                    );
+                } else {
+                    const vidFromServer = res.data.vids[0]; 
+                    
+                    // setSuccessedFiles((currentList: IVideo[]|null) =>   
+                    //     (currentList ?? []).concat({
+                    //         ...item,
+                    //         vid: vidFromServer,
+                    //         uploadStatus: VideoUploadStatus.UPLOAD_SUCCESS,
+                    //         progress: 100,
+                    //     })
+                    // );
+
+                    profileEventBus.emit(EventName.UploadVideoSuccess);
+
+                    setUploadFileList((currentList: IUploadVideo[]|null) => 
+                        (currentList ?? []).map(video =>
+                            video.vid === itemId
+                                ? {
+                                    ...video,
+                                    vid: vidFromServer,
+                                    uploadStatus: VideoUploadStatus.UPLOAD_SUCCESS,
+                                    progress: 100,
+                                }
+                                : video
+                        )
+                    );
+                }
+            } catch (error) {
+                setUploadFileList((currentList: IUploadVideo[]|null) => 
+                    (currentList ?? []).map(video =>
+                        video.vid === itemId
+                            ? {
+                                ...video,
+                                uploadStatus: VideoUploadStatus.UPLOAD_FAILED,
+                                progress: video.uploadStatus === VideoUploadStatus.UPLOADING ? video.progress : 0,
+                            }
+                            : video
+                    )
+                );
+            }
+        }
+    };
+
+
+    const handleDelectUploadFile = (item: IUploadVideo) => {
+        if (item.xhrRef) {
+            item.xhrRef.abort();
+        }
+        setUploadFileList((currentList: IUploadVideo[] | null) => currentList?.filter(file => file.vid !== item.vid) ?? []);
+    };
+
 
     return (
         <>
@@ -95,10 +214,8 @@ const UploadProgressModal: React.FC = () => {
                         {/* Upload List */}
                         <div className="max-h-[30vh] overflow-y-auto scrollbar-hide">
                         {(uploadFileList ?? [])
-                            .slice()
-                            .reverse()
                             .map((item, index) => (
-                                <UploadProgressItem key={index} index={index} item={item} />
+                                <UploadProgressItem key={index} index={index} item={item} handleUpload={handleUpload} handleDelectUploadFile={handleDelectUploadFile} />
                             ))}
                         </div>
                     </div>

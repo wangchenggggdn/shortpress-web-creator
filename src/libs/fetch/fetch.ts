@@ -225,7 +225,7 @@ class Fetch {
         data: FormData,
         params: Record<string, any> = {},
         onProgress?: (progress: number) => void,
-        xhrRef?: React.MutableRefObject<XMLHttpRequest | null>
+        xhrRef?: (xhr: XMLHttpRequest | null) => void
     ): Promise<IResponse<T>> {
         const token = await this.getToken();
         let qsUrl = `?${qs.stringify(params)}`;
@@ -239,7 +239,7 @@ class Fetch {
         return new Promise((resolve) => {
             const xhr = new XMLHttpRequest();
             if (xhrRef) {
-                xhrRef.current = xhr;
+                xhrRef(xhr);
             }
             xhr.upload.onprogress = (event) => {
                 if (event.lengthComputable && onProgress) {

@@ -1,17 +1,17 @@
 import { create } from 'zustand';
-import { IVideo } from '@/types/video';
+import { IUploadVideo, IVideo } from '@/types/video';
 
 /**
  * Interface for file upload store state and actions
  */
 interface IUploadFileStore {
     /** List of files being uploaded */
-    uploadFileList: null | IVideo[];
+    uploadFileList: null | IUploadVideo[];
     /** Function to update upload file list */
-    setUploadFileList: (updater: null | IVideo[] | ((prevList: null | IVideo[]) => null | IVideo[])) => void;
-    successedFiles: null | IVideo[];
+    setUploadFileList: (updater: null | IUploadVideo[] | ((prevList: null | IUploadVideo[]) => null | IUploadVideo[])) => void;
+    successedFiles: null | IUploadVideo[];
     /** Function to update successed files */
-    setSuccessedFiles: (files: null | IVideo[] | ((prevList: null | IVideo[]) => null | IVideo[])) => void;
+    setSuccessedFiles: (files: null | IUploadVideo[] | ((prevList: null | IUploadVideo[]) => null | IUploadVideo[])) => void;
     /** Whether upload progress modal is open */
     openUploadProgressModal: boolean;
     /** Function to update upload progress modal state */
@@ -19,7 +19,7 @@ interface IUploadFileStore {
     /** Playlist ID */
     playlistId: string | null;
     /** Function to update playlist ID */
-    setPlaylistId: (id: string | null) => void;
+    setPlaylistId: (id: string | null | ((prevId: string | null) => string | null)) => void;
     /** Maximum file size limit */
     maxLimit: number;
     /** Function to update maximum file size limit */
@@ -49,7 +49,13 @@ const fileUploadStore = create<IUploadFileStore>(set => ({
     openUploadProgressModal: false,
     setOpenUploadProgressModal: result => set({ openUploadProgressModal: result }),
     playlistId: null,
-    setPlaylistId: id => set({ playlistId: id }),
+    setPlaylistId: (id) => {
+        if (typeof id === 'function') {
+            set(state => ({ playlistId: id(state.playlistId) }));
+        } else {
+            set({ playlistId: id });
+        }
+    },
     maxLimit: 100000,
     setMaxLimit: limit => set({ maxLimit: limit }),
 }));

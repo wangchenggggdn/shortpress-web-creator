@@ -281,12 +281,16 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 onChooseExisting={() => setIsAddContentOpen(true)}
                 onUploadNew={() => {
                     setMaxLimit(200 - videos.length);
-                    setPlaylistId(playlist?.playlistId ?? null);
+                    setPlaylistId(playlist?.playlistId ?? '');
                     setIsUploadModalOpen(true);
                 }}
             />
         );
     };
+
+    useEffect(() => {
+        console.log('-----------------playlistId:',playlist?.playlistId);
+    }, [playlist]);
 
     const handleTitleOrder = () => {
         const newVideos = [...videos];

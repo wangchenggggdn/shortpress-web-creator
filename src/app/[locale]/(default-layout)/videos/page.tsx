@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Header from '@/components/system/header';
 import UploadButton from '@/components/common/upload-button';
 import VideoApi from '@/api/video';
@@ -21,7 +21,7 @@ interface VideosPageProps {}
 const VideosPage: React.FC<VideosPageProps> = () => {
     const [editingVideo, setEditingVideo] = useState<IVideo | null>(null);
     const [uploadModalOpened, setUploadModalOpened] = useState(false);
-    const { setPlaylistId, setMaxLimit } = fileUploadStore();
+    const { setPlaylistId, setMaxLimit,playlistId } = fileUploadStore();
 
     /**
      * Search videos based on provided parameters
@@ -46,15 +46,21 @@ const VideosPage: React.FC<VideosPageProps> = () => {
     /**
      * Open the video upload modal
      */
-    const handleOpenUploadModal = useCallback(() => {
-        setUploadModalOpened(true);
-    }, []);
+    const handleOpenUploadModal = (opened: boolean) => {
+        setPlaylistId('');
+        setMaxLimit(100000);
+        setUploadModalOpened(opened);
+    };
+
+    useEffect(() => {
+        console.log('-----------------playlistId11:',playlistId);
+    }, [playlistId]);
 
     return (
         <div className="flex flex-col h-screen">
             {/* Header with upload button */}
             <Header>
-                <UploadButton onClick={handleOpenUploadModal} />
+                <UploadButton onClick={() => handleOpenUploadModal(true)} />
             </Header>
 
             {/* Videos page view */}
@@ -62,9 +68,7 @@ const VideosPage: React.FC<VideosPageProps> = () => {
                 uploadModalOpened={uploadModalOpened}
                 editingVideo={editingVideo}
                 setUploadModalOpened={opened => {
-                    setPlaylistId(null);
-                    setMaxLimit(100000);
-                    setUploadModalOpened(opened);
+                    handleOpenUploadModal(opened);
                 }}
                 setEditingVideo={setEditingVideo}
                 searchFetch={searchFetch}
