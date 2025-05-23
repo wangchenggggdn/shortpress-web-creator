@@ -81,6 +81,7 @@ const SubscriptionEdit: React.FC<SubscriptionEditProps> = ({ subscriptionOld, on
                                 data={billingPeriodOptions}
                                 onChange={value => handleChange('interval', value)}
                                 required
+                                disabled={isEdit}
                                 variant="filled"
                             />
                             <div className="flex items-center gap-2">
