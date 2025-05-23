@@ -237,6 +237,12 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                                 </div>
                                             </div>
                                         </div>
+                                        <div>
+                                            <div className="text-sm text-gray-500">Subscription</div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="text-base font-medium">{customer.premiumExpiresAt ? dayjs(customer.premiumExpiresAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </Table.Tr>
                             </Table.Tbody>
