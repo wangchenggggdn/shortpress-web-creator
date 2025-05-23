@@ -19,7 +19,7 @@ export default class VideoApi {
         formData: FormData,
         playlistId: string | null,
         onProgress?: (progress: number) => void,
-        xhrRef?: React.MutableRefObject<XMLHttpRequest | null>
+        xhrRef?: (xhr: XMLHttpRequest | null) => void
     ) {
         let params = {};
         if (playlistId) {
