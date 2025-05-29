@@ -27,4 +27,6 @@ export interface Website {
         /** SEO keywords */
         keywords?: string;
     };
+    /** Official domain */
+    officialDomain?: string;
 } 

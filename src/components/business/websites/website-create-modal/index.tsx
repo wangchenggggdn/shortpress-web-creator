@@ -45,7 +45,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
     const { userInfo } = userStore();
     const [website, setWebsite] = React.useState<Website>(JSON.parse(JSON.stringify(websiteOld)));
     let coverFile: File | undefined;
-    console.log('siteId:', website?.siteId);
+    console.log('website----------:', website);
     /**
      * Handle form submission
      * @param websiteData Website data to submit
@@ -111,8 +111,8 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
                 <div>
                     <h3 className="text-lg font-medium mb-4">Site URL</h3>
                     <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
-                        <span className="text-gray-400">{`${website?.domain ?? userInfo?.defultSiteDomain}/`}</span>
-                        <span className="line-clamp-1">{website?.path ?? userInfo?.creatorName ?? ''}</span>
+                        <span className="text-gray-400">{`${website?.domain ? website?.domain : website?.officialDomain}`}</span>
+                        {!website?.domain && <span className="line-clamp-1">{'/'+(website?.path ?? userInfo?.creatorName ?? '')}</span>}
                     </div>
                 </div>
 

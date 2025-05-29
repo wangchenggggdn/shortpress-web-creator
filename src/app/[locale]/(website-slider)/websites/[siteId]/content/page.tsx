@@ -258,9 +258,13 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                                 <div
                                     className="text-primary cursor-pointer max-w-72 line-clamp-1"
                                     onClick={() => {
-                                        window.open(`https://${website?.domain}/${website?.path}`, '_blank');
+                                        if (website?.domain) {
+                                            window.open(`https://${website?.domain}`, '_blank');
+                                        } else {
+                                            window.open(`https://${website?.officialDomain}/${website?.path}`, '_blank');
+                                        }
                                     }}
-                                >{`https://${website?.domain}/${website?.path}`}</div>
+                                >{website?.domain ? `https://${website?.domain}` : `https://${website?.officialDomain}/${website?.path}`}</div>
                             )}
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">
                                 Copy
