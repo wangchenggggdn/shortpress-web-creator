@@ -39,6 +39,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const playlistToDeleteRef = useRef<string | null>(null);
     const { userInfo } = userStore();
+    const activePageRef = useRef(1);
 
     /**
      * Calculate number of items to display per page based on screen width
@@ -68,10 +69,10 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
         setPlaylists([]);
         try {
             const res = await PlaylistApi.list({
-                page: activePage,
+                page: 1,
                 pageSize: getItemsPerPage(),
-                orderType: orderType,
-                status: Number(status),
+                orderType: 0,
+                status: Number('-1'),
             });
             if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
 
@@ -99,15 +100,15 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     /**
      * Search playlists based on current filters
      */
-    const searchPlaylists = async () => {
+    const searchPlaylists = async (page: number, keyword: string, status: number, orderType: number) => {
         setPlaylists([]);
         setLoading(true);
         try {
             const res = await PlaylistApi.search({
-                keyword: searchQuery,
-                status: Number(status),
+                keyword: keyword,
+                status: status,
                 orderType: orderType,
-                page: activePage,
+                page: page,
                 pageSize: getItemsPerPage(),
             });
             if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
@@ -135,13 +136,15 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
 
     // Fetch playlists when status or order type changes
     useEffect(() => {
-        searchPlaylists();
-    }, [status, orderType]);
+        setActivePage(1);
+        searchPlaylists(1, searchQuery, Number(status), orderType);
+    }, [status, orderType, searchQuery]);
 
     // Fetch playlists when search query or page changes
     useEffect(() => {
-        searchPlaylists();
-    }, [searchQuery, activePage]);
+        activePageRef.current = activePage;
+        searchPlaylists(activePage, searchQuery, Number(status), orderType);
+    }, [activePage]);
 
     /**
      * Handle search input changes
@@ -217,8 +220,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     const saveSuccess = () => {
         setEditingPlaylist(null);
         setIsCreating(false);
-        toast.success('save success');
-        fetchPlaylists();
+        searchPlaylists(activePageRef.current, searchQuery, Number(status), orderType);
     };
 
     /**

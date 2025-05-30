@@ -15,6 +15,8 @@ interface WebsiteCardProps {
     name: string;
     /** Domain name of the website */
     domain: string;
+    /** Official domain of the website */   
+    officialDomain?: string;
     /** URL path of the website */
     path: string;
     /** Optional logo image URL */
@@ -32,7 +34,7 @@ interface WebsiteCardProps {
  * Displays website information with logo, status, and action menu
  * @returns React component with website card interface
  */
-const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, logo, status, publishChange, onDelete }) => {
+const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, officialDomain, path, logo, status, publishChange, onDelete }) => {
     const router = useRouter();
     const [published, setPublished] = React.useState(status);
 
@@ -99,7 +101,7 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, path, l
 
             {/* Info Section */}
             <div className="mt-2">
-                <div className="mt-1 text-xs text-gray-500 overflow-hidden">{domain + '/' + path}</div>
+                <div className="mt-1 text-xs text-gray-500 overflow-hidden">{domain ? domain :( (officialDomain??'') + '/' + path)}</div>
                 <h2 className="font-medium text-lg line-clamp-2" title={name}>
                     {name}
                 </h2>
