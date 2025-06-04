@@ -8,7 +8,7 @@ services:
       - wenuts-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shortpress-dev-shortpress-web-creator.rule=Host(`ac66u-admin.shortpress.com`)"
+      - "traefik.http.routers.shortpress-dev-shortpress-web-creator.rule=Host(`ac66-admin.shortpress.com`)"
       - "traefik.http.routers.shortpress-dev-shortpress-web-creator.entrypoints=web,websecure"
       - "traefik.http.routers.shortpress-dev-shortpress-web-creator.priority=1"
       - "traefik.http.services.shortpress-dev-shortpress-web-creator.loadbalancer.server.port=3000"
