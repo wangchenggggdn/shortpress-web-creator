@@ -21,6 +21,8 @@ import { IconCheck } from '@tabler/icons-react';
 import { useInView } from 'react-intersection-observer';
 import { EventName } from '@/types/event';
 import profileEventBus from '@/utils/profileEventBus';
+import userStore from '@/store/useUserStore';
+import { GuideName } from '@/types/guide';
 
 interface VideosPageViewProps {
     searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
@@ -45,6 +47,7 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
     const [total, setTotal] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const videoToDeleteRef = useRef<string | null>(null);
+    const { userInfo } = userStore();
 
     const { ref: loadMoreRef, inView } = useInView({
         threshold: 0.5,
@@ -76,6 +79,9 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
         setPage(1);
         setVideos([]);
         setHasMore(true);
+        if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
+            CreatorApi.completeGuides({ guides: [GuideName.UploadVideo] });
+        }
         await fetchVideos(1);
     };
 

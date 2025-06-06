@@ -53,6 +53,9 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
         if (userInfo?.guides.find(item => item.name === GuideName.AddVideoToPlaylist)?.status !== 1) {
             CreatorApi.completeGuides({ guides: [GuideName.AddVideoToPlaylist] });
         }
+        if (userInfo?.guides.find(item => item.name === GuideName.UploadVideo)?.status !== 1) {
+            CreatorApi.completeGuides({ guides: [GuideName.UploadVideo] });
+        }
         fetchVideos();
         setIsUploadModalOpen(false);
     }, []);
