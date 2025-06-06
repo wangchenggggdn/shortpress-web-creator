@@ -137,7 +137,7 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
                     <h3 className="text-lg font-medium mb-4">Site URL</h3>
                     <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
                         <span className="text-gray-400">{`${website?.domain ? website?.domain : website?.officialDomain ?? process.env.NEXT_PUBLIC_DOMAIN_C}`}</span>
-                        {website?.domain ? <span className="line-clamp-1">{'/' + (website?.path ?? userInfo?.creatorName ?? '')}</span> :website?.name && <span className="line-clamp-1">{'/' + (website?.name??"")}</span>}
+                        {website?.domain ? '' :<span className="line-clamp-1">{'/' + (website?.path??website?.name??'')}</span>}
                     </div>
                     {pathError && <p className="text-red-500">{pathError}</p>}
                 </div>
