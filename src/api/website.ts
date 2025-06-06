@@ -105,8 +105,6 @@ export default class WebsiteApi {
         return fetch.get<IPaginationResponse<Website>>('/api/site/search', args);
     }
 
-
-
     /**
      * Fetch websites from API and update local storage
      */
@@ -117,4 +115,13 @@ export default class WebsiteApi {
         if (resD.code !== 0 && (resD.data?.items ?? []).length === 0) return [];
         return resD.data.items;
     };
+
+    /**
+     * Check if a site path already exists
+     * @param path Site path to check
+     * @returns Promise with boolean indicating if path exists
+     */
+    static checkPathExists(path: string) {
+        return fetch.get('/api/site/path/valid', { path });
+    }
 }

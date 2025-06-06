@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TextInput, Button, Text, Select } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ import CreatorApi from '@/api/creator';
 import userStore from '@/store/useUserStore';
 import { useRouter } from '@/libs/navigation';
 import WebsiteApi from '@/api/website';
+import { debounce } from 'lodash';
 
 interface CreateSitePageProps {}
 
@@ -25,12 +26,35 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
         status: 2,
     });
     let coverFile: File | undefined;
-    const [nameError, setNameError] = useState('');
+    const [pathError, setPathError] = useState('');
+
+    const checkPath = async (path: string) => {
+        if (!path) return;
+        try {
+            const res = await WebsiteApi.checkPathExists(path);
+            if (res.code !== 0) {
+                setPathError(res.info ?? '');
+            } else {
+                setPathError("");
+            }
+        } catch (error) {
+            setPathError("Failed to validate path");
+        }
+    };
+
+    const debouncedCheck = useCallback(
+        debounce((path: string) => checkPath(path), 500),
+        []
+    );
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!siteData.name) {
             toast.error('Please enter a site name');
+            return;
+        }
+
+        if (pathError) {
             return;
         }
 
@@ -44,13 +68,13 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
                     siteData.logo = uploadRes.data;
                 }
             }
-            siteData.path = disposeSiteName();
+            siteData.path = disposeSiteName(siteData.name??'');
             const res = await WebsiteApi.create(siteData);
             if (res.code === 0) {
                 toast.success('Site created successfully');
                 router.push('/');
             } else {
-                setNameError(res.info);
+                setPathError(res.info);
             }
         } catch (error) {
             toast.error('Creation failed, please try again');
@@ -63,9 +87,9 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
         coverFile = file;
     };
 
-    const disposeSiteName = () => {
-        if (!siteData.name) return '';
-        const newSiteName = siteData.name
+    const disposeSiteName = (siteName: string) => {
+        if (!siteName) return '';
+        const newSiteName = siteName
             .replace(/[`~!@#$%^&*()_\-+=<>?:"{}|｜,.\/;'\\[\]·~!！@#￥%……&*（）——\-+={}|《》〈〉？："""【】「」、；''，。、]/g, '')
             .replace(/\s/g, '-')
             .toLowerCase();
@@ -83,17 +107,22 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
                             <TextInput
                                 value={siteData.name}
                                 onChange={e => {
-                                    if (e.target.value.length > 40 || e.target.value.length < 6) {
-                                        setNameError('Site name must be between 6 and 40 characters');
+                                    const newName = e.target.value;
+                                    if (newName.length > 40 || newName.length < 6) {
+                                        setPathError('Site name must be between 6 and 40 characters');
                                     } else {
-                                        setNameError('');
+                                        setPathError('');
+                                        const newPath = disposeSiteName(e.target.value);
+                                        if (newPath) {
+                                            debouncedCheck(newPath);
+                                        }
                                     }
-                                    setSiteData({ ...siteData, name: e.target.value });
+                                    setSiteData({ ...siteData, name: newName });
                                 }}
                                 placeholder="Enter site name"
                                 variant="filled"
                                 required
-                                error={nameError}
+                                error={pathError}
                             />
                         </div>
 
@@ -101,13 +130,19 @@ const CreateSitePage: React.FC<CreateSitePageProps> = () => {
                             <h3 className="text-lg font-medium text-[#1a1b1e] mb-4">Domain</h3>
                             <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
                                 <span className="text-gray-400">{`${userInfo?.defultSiteDomain}/`}</span>
-                                <span>{disposeSiteName()}</span>
+                                <span>{disposeSiteName(siteData.name??'')}</span>
                             </div>
                         </div>
 
                         <LogoUploader onFileSelect={onFileSelect} />
 
-                        <Button type="submit" fullWidth color="primary" loading={loading}>
+                        <Button 
+                            type="submit" 
+                            fullWidth 
+                            color="primary" 
+                            loading={loading}
+                            disabled={!!pathError}
+                        >
                             Create Site
                         </Button>
                     </form>

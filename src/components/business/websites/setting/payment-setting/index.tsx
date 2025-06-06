@@ -104,7 +104,7 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
 
     return (
         <div className="w-full">
-            <div className="bg-white rounded-lg px-6">
+            <div className="bg-white rounded-lg px-6 max-w-2xl">
                 <h2 className="text-xl font-medium mb-2">Payment Methods</h2>
                 <p className="text-gray-500 mb-6">Add one or more payment methods to collecting payments in your website.</p>
 

@@ -88,6 +88,7 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
                                     onChange={e => setPublicKey(e.target.value)}
                                     placeholder="Enter your Stripe Publishable key"
                                     variant="filled"
+                                    autoComplete="off"
                                 />
                             </div>
 
@@ -99,6 +100,7 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
                                     placeholder="Enter your Stripe Secret key"
                                     variant="filled"
                                     type="password"
+                                    autoComplete="off"
                                 />
                             </div>
 

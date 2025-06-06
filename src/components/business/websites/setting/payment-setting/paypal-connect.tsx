@@ -88,6 +88,7 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
                                     onChange={e => setClientId(e.target.value)}
                                     placeholder="Enter your PayPal Client ID"
                                     variant="filled"
+                                    autoComplete="off"
                                 />
                             </div>
 
@@ -99,6 +100,7 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
                                     placeholder="Enter your PayPal client secret"
                                     variant="filled"
                                     type="password"
+                                    autoComplete="off"
                                 />
                             </div>
 

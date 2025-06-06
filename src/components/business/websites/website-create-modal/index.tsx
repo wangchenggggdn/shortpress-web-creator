@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { TextInput, Button, Select, Textarea } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import userStore from '@/store/useUserStore';
@@ -8,6 +8,8 @@ import { WebsiteArgs } from '@/api/args';
 import { Website } from '@/types/website';
 import { toast } from 'sonner';
 import LogoUploader from '@/components/common/logo-uploader';
+import WebsiteApi from '@/api/website';
+import { debounce } from 'lodash';
 
 /**
  * Props interface for CreateSiteModal component
@@ -44,21 +46,40 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
 }) => {
     const { userInfo } = userStore();
     const [website, setWebsite] = React.useState<Website>(JSON.parse(JSON.stringify(websiteOld)));
+    const [pathError, setPathError] = React.useState<string>("");
     let coverFile: File | undefined;
-    console.log('website----------:', website);
-    /**
-     * Handle form submission
-     * @param websiteData Website data to submit
-     */
+
+    const checkPath = async (name: string) => {
+        if (!name) return;
+        
+        const path = websiteOld.siteId === null || websiteOld.siteId === undefined ? name : website.path;
+        try {
+            const res = await WebsiteApi.checkPathExists(path ?? '');
+            if (res.code!==0) {
+                setPathError(res.info??'');
+            } else {
+                setPathError("");
+            }
+        } catch (error) {
+            setPathError("Failed to validate path");
+        }
+    };
+
+    // 创建防抖函数，延迟500ms
+    const debouncedCheck = useCallback(
+        debounce((name: string) => checkPath(name), 500),
+        []
+    );
+
     const handleSubmit = (websiteData: Partial<Website>) => {
         if (!websiteData.name) {
             toast.error('Please enter a site name');
             return;
         }
-        websiteOld = {
-            ...websiteOld,
-            ...websiteData,
-        };
+        
+        if(websiteOld.siteId === null || websiteOld.siteId === undefined){
+            websiteData.path = websiteData.name;
+        }
 
         onSubmit(
             {
@@ -99,7 +120,11 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
                     <h3 className="text-lg font-medium mb-4">Site name</h3>
                     <TextInput
                         onChange={e => {
-                            website.name = e.target.value;
+                            const newName = e.target.value;
+                            setWebsite({ ...website, name: newName });
+                            if (!isEdit) {
+                                debouncedCheck(newName);
+                            }
                         }}
                         defaultValue={website?.name ?? ''}
                         placeholder="Site name"
@@ -111,9 +136,10 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
                 <div>
                     <h3 className="text-lg font-medium mb-4">Site URL</h3>
                     <div className="h-11 bg-[#F4F4F7] rounded flex items-center px-4">
-                        <span className="text-gray-400">{`${website?.domain ? website?.domain : website?.officialDomain}`}</span>
-                        {!website?.domain && <span className="line-clamp-1">{'/'+(website?.path ?? userInfo?.creatorName ?? '')}</span>}
+                        <span className="text-gray-400">{`${website?.domain ? website?.domain : website?.officialDomain ?? process.env.NEXT_PUBLIC_DOMAIN_C}`}</span>
+                        {website?.domain ? <span className="line-clamp-1">{'/' + (website?.path ?? userInfo?.creatorName ?? '')}</span> :website?.name && <span className="line-clamp-1">{'/' + (website?.name??"")}</span>}
                     </div>
+                    {pathError && <p className="text-red-500">{pathError}</p>}
                 </div>
 
                 {/* Logo Upload Section */}
@@ -187,7 +213,14 @@ const CreateSiteModal: React.FC<CreateSiteModalProps> = ({
 
             {/* Footer Actions */}
             <div className="p-6">
-                <Button loading={loading} fullWidth size="md" color="primary" onClick={() => handleSubmit(website)}>
+                <Button 
+                    loading={loading} 
+                    fullWidth 
+                    size="md" 
+                    color="primary" 
+                    onClick={() => handleSubmit(website)}
+                    disabled={!!pathError}
+                >
                     {isEdit ? 'Save Changes' : 'Create Site'}
                 </Button>
             </div>
