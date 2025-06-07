@@ -8,9 +8,10 @@ services:
       - wenuts-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shortpress-web-creator.rule=Host(`admin.shortpress.com`)"
-      - "traefik.http.routers.shortpress-web-creator.entrypoints=web"
-      - "traefik.http.services.shortpress-web-creator.loadbalancer.server.port=3000"
+      - "traefik.http.routers.shortpress-shortpress-web-creator.rule=Host(`admin.shortpress.com`)"
+      - "traefik.http.routers.shortpress-shortpress-web-creator.entrypoints=web,websecure"
+      - "traefik.http.routers.shortpress-shortpress-web-creator.priority=1"
+      - "traefik.http.services.shortpress-shortpress-web-creator.loadbalancer.server.port=3000"
     environment:
       - NODE_ENV=production
 
