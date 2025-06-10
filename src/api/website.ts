@@ -3,6 +3,8 @@ import { Website } from '@/types/website';
 import { IPaginationResponse } from '@/types/public';
 import { WebsiteArgs } from './args';
 import { Playlist } from '@/types/playlist';
+import { mockApi } from './mock';
+import { Version, Page } from '@/types/editor';
 
 /**
  * API class for website related operations
@@ -123,5 +125,44 @@ export default class WebsiteApi {
      */
     static checkPathExists(path: string) {
         return fetch.get('/api/site/path/valid', { path });
+    }
+
+    // Editor-specific API methods
+    /**
+     * Get website information for editor
+     * @param siteId Website ID
+     * @returns Promise with Website object including versions
+     */
+    static editGet(siteId: string) {
+        return mockApi.getWebsite(siteId);
+    }
+
+    /**
+     * Create a new version in editor
+     * @param siteId Website ID
+     * @param pages Pages for new version
+     * @returns Promise with Version object
+     */
+    static editCreateVersion(siteId: string, pages: Page[]) {
+        return mockApi.createVersion(siteId, pages);
+    }
+
+    /**
+     * Get version information for editor
+     * @param siteId Website ID
+     * @param versionId Version ID
+     * @returns Promise with Version object
+     */
+    static editGetVersion(siteId: string, versionId: string) {
+        return mockApi.getVersion(siteId, versionId);
+    }
+
+    /**
+     * Update website information in editor
+     * @param website Website update data
+     * @returns Promise
+     */
+    static editModify(website: Partial<Website>) {
+        return mockApi.updateWebsite(website);
     }
 }
