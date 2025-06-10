@@ -5,7 +5,11 @@ import { IconPlus, IconTrash } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
 
-const SectionList = () => {
+interface SectionListProps {
+    onSectionChange?: (sectionId: string | null) => void;
+}
+
+const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const {
         currentVersion,
         currentPage,
@@ -33,19 +37,34 @@ const SectionList = () => {
 
         addSection(currentPage, newSection);
         setCurrentSection(newSection.id);
+        console.log('handleAddSection', newSection.id);
+        if (onSectionChange) {
+            onSectionChange(newSection.id);
+        }
     };
 
     const handleDeleteSection = (sectionId: string) => {
         if (!currentPage) return;
         deleteSection(currentPage, sectionId);
+        if (currentSection === sectionId) {
+            setCurrentSection(null);
+            console.log('handleDeleteSection', null);
+            if (onSectionChange) {
+                onSectionChange(null);
+            }
+        }
+    };
+
+    const handleSectionClick = (sectionId: string) => {
+        setCurrentSection(sectionId);
+        console.log('handleSectionClick', sectionId);
+        if (onSectionChange) {
+            onSectionChange(sectionId);
+        }
     };
 
     if (!currentVersion) {
-        return (
-            <div className="p-4 text-center text-gray-500">
-                Loading...
-            </div>
-        );
+        return <div className="p-4 text-center text-gray-500">Loading...</div>;
     }
 
     if (!currentPage) {
@@ -90,7 +109,7 @@ const SectionList = () => {
                                 ? 'bg-blue-100'
                                 : 'hover:bg-gray-100'
                         }`}
-                        onClick={() => setCurrentSection(section.id)}
+                        onClick={() => handleSectionClick(section.id)}
                     >
                         <span className="flex-1 truncate">
                             {section.params.title || section.type}

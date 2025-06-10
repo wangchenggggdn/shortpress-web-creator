@@ -5,7 +5,11 @@ import { IconPlus, IconTrash } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Page } from '@/types/editor';
 
-const PageList = () => {
+interface PageListProps {
+    onPageChange?: (pageId: string) => void;
+}
+
+const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     const { currentVersion, currentPage, setCurrentPage, addPage, deletePage } = useEditorStore();
 
     const handleAddPage = () => {
@@ -20,10 +24,24 @@ const PageList = () => {
 
         addPage(newPage);
         setCurrentPage(newPage.id);
+        console.log('handleAddPage', newPage.id);
+        if (onPageChange) {
+            onPageChange(newPage.id);
+        }
     };
 
     const handleDeletePage = (pageId: string) => {
         deletePage(pageId);
+    };
+
+    const handlePageClick = (pageId: string) => {
+        setCurrentPage(pageId);
+        console.log('handlePageClick1111', pageId);
+        if (onPageChange) {
+            onPageChange(pageId);
+        }else{
+            console.log('onPageChange is not defined');
+        }
     };
 
     if (!currentVersion) {
@@ -50,7 +68,7 @@ const PageList = () => {
                         className={`flex items-center justify-between p-2 rounded cursor-pointer ${
                             currentPage === page.id ? 'bg-blue-100' : 'hover:bg-gray-100'
                         }`}
-                        onClick={() => setCurrentPage(page.id)}
+                        onClick={() => handlePageClick(page.id)}
                     >
                         <span className="truncate">{page.name}</span>
                         <button
