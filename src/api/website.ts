@@ -143,8 +143,8 @@ export default class WebsiteApi {
      * @param pages Pages for new version
      * @returns Promise with Version object
      */
-    static editCreateVersion(siteId: string, pages: Page[]) {
-        return mockApi.createVersion(siteId, pages);
+    static editCreateVersion(siteId: string, version: Version) {
+        return mockApi.createVersion(siteId, version);
     }
 
     /**

@@ -74,10 +74,11 @@ export interface Page {
     id: string;
     path: string;
     name: string;
+    isHome?: boolean;
     metadata?: {
-        title: string;
-        description: string;
-        keywords: string[];
+        title?: string;
+        description?: string;
+        keywords?: string[];
     };
     sections: Section[];
 }

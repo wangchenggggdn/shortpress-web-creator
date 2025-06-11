@@ -1,24 +1,28 @@
 'use client';
 
-import React from 'react';
-import { IconPlus, IconTrash } from '@tabler/icons-react';
+import React, { useState } from 'react';
+import { IconPlus, IconFile, IconHome, IconDots, IconTrash, IconSettings, IconCopy } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Page } from '@/types/editor';
+import { Page, Section } from '@/types/editor';
+import { DEFAULT_PAGES } from '@/constants/initial-version';
+import { Menu } from '@mantine/core';
+import InputModal from '@/components/common/input-modal';
 
 interface PageListProps {
     onPageChange?: (pageId: string) => void;
 }
 
 const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
-    const { currentVersion, currentPage, setCurrentPage, addPage, deletePage } = useEditorStore();
+    const { currentVersion, currentPage, setCurrentPage, addPage, deletePage, updatePage } = useEditorStore();
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    const handleAddPage = () => {
+    const handleAddPage = (pageName: string) => {
         if (!currentVersion) return;
 
         const newPage: Page = {
             id: `page-${Date.now()}`,
-            name: `New Page ${currentVersion.pages.length + 1}`,
-            path: `page-${currentVersion.pages.length + 1}`,
+            name: pageName,
+            path: pageName.toLowerCase().replace(/\s+/g, '-'),
             sections: []
         };
 
@@ -40,47 +44,185 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         }
     };
 
+    const handleSetAsHome = (page: Page) => {
+        if (!currentVersion) return;
+        
+        // 先清除其他页面的home标记
+        currentVersion.pages.forEach(p => {
+            if (p.id !== page.id && p.isHome) {
+                updatePage(p.id, {
+                    isHome: false
+                });
+            }
+        });
+
+        // 设置当前页面为home
+        updatePage(page.id, {
+            isHome: true
+        });
+    };
+
+    const handleDuplicatePage = (page: Page) => {
+        if (!currentVersion) return;
+
+        const newPage: Page = {
+            ...page,
+            id: `page-${Date.now()}`,
+            name: `${page.name} Copy`,
+            path: `${page.path}-copy`,
+            isHome: false
+        };
+
+        addPage(newPage);
+    };
+
+    const handleRenamePage = (page: Page, newName: string) => {
+        if (!currentVersion) return;
+        updatePage(page.id, {
+            name: newName,
+            path: newName.toLowerCase().replace(/\s+/g, '-')
+        });
+    };
+
     if (!currentVersion) {
         return <div className="p-4 text-center text-gray-500">Loading...</div>;
     }
 
+    const renderPageItem = (id: string, name: string, isCustom: boolean = false, page?: Page) => {
+        const isHome = page?.isHome;
+        
+        return (
+            <div
+                key={id}
+                className={`flex items-center p-2 rounded-lg cursor-pointer group transition-colors ${
+                    isCustom 
+                        ? currentPage === id 
+                            ? 'bg-primary text-white' 
+                            : 'bg-white border border-gray-200 hover:border-primary hover:text-primary'
+                        : 'bg-white border border-gray-200 text-gray-400 cursor-not-allowed'
+                }`}
+                onClick={() => isCustom && handlePageClick(id)}
+            >
+                {id === 'home' ? (
+                    <IconHome size={18} className={`mr-2 ${
+                        isCustom 
+                            ? currentPage === id ? 'text-white' : 'text-gray-400'
+                            : 'text-gray-400'
+                    }`} />
+                ) : (
+                    <IconFile size={18} className={`mr-2 ${
+                        isCustom 
+                            ? currentPage === id ? 'text-white' : 'text-gray-400'
+                            : 'text-gray-400'
+                    }`} />
+                )}
+                <span className="truncate flex-1 font-medium">{name}</span>
+                {isCustom && (
+                    <div className="flex items-center">
+                        {isHome && (
+                            <IconHome 
+                                size={18} 
+                                className={`mr-2 ${currentPage === id ? 'text-white' : 'text-primary'}`}
+                            />
+                        )}
+                        <Menu position="bottom-end" offset={4} withArrow>
+                            <Menu.Target>
+                                <button
+                                    onClick={e => e.stopPropagation()}
+                                    className={`p-1 rounded ${
+                                        currentPage === id ? 'hover:bg-primary-dark' : 'hover:bg-gray-100'
+                                    }`}
+                                >
+                                    <IconDots size={16} className={currentPage === id ? 'text-white' : 'text-gray-500'} />
+                                </button>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                                <Menu.Item
+                                    leftSection={<IconHome size={16} />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSetAsHome(page!);
+                                    }}
+                                >
+                                    Set as Home page
+                                </Menu.Item>
+                                <Menu.Item
+                                    leftSection={<IconSettings size={16} />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        // TODO: Open settings modal
+                                    }}
+                                >
+                                    Settings
+                                </Menu.Item>
+                                <Menu.Item
+                                    leftSection={<IconCopy size={16} />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDuplicatePage(page!);
+                                    }}
+                                >
+                                    Duplicate
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item
+                                    leftSection={<IconTrash size={16} />}
+                                    color="red"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeletePage(id);
+                                    }}
+                                >
+                                    Delete Page
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     return (
-        <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-medium">Pages</h2>
-                <button
-                    onClick={handleAddPage}
-                    className="p-2 hover:bg-gray-200 rounded"
-                    title="Add new page"
-                >
-                    <IconPlus size={20} />
-                </button>
+        <>
+            <div className="flex flex-col h-full bg-gray-50/50 gap-2">
+                <div className="px-4 pt-4 flex items-center justify-between mb-2 sticky top-0">
+                    <h2 className="text-sm font-medium text-gray-500">Custom Pages</h2>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="p-1 hover:bg-gray-100 rounded-lg text-primary"
+                        title="Add new page"
+                    >
+                        <IconPlus size={18} />
+                    </button>
+                </div>
+                <div className="flex-1 overflow-y-auto">
+                    {/* Custom Pages Section */}
+                    <div className="px-4">
+                        <div className="space-y-1">
+                            {currentVersion.pages.map((page: Page) => renderPageItem(page.id, page.name, true, page))}
+                        </div>
+                    </div>
+
+                    {/* Default Pages Section */}
+                    <div className="p-4 pb-8">
+                        <h2 className="text-sm font-medium text-gray-500 mb-2">Default Pages</h2>
+                        <div className="space-y-1">
+                            {DEFAULT_PAGES.map((page) => renderPageItem(page.id, page.name))}
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="space-y-2">
-                {currentVersion.pages.map((page: Page) => (
-                    <div
-                        key={page.id}
-                        className={`flex items-center justify-between p-2 rounded cursor-pointer ${
-                            currentPage === page.id ? 'bg-blue-100' : 'hover:bg-gray-100'
-                        }`}
-                        onClick={() => handlePageClick(page.id)}
-                    >
-                        <span className="truncate">{page.name}</span>
-                        <button
-                            onClick={e => {
-                                e.stopPropagation();
-                                handleDeletePage(page.id);
-                            }}
-                            className="p-1 hover:bg-gray-200 rounded"
-                            title="Delete page"
-                        >
-                            <IconTrash size={16} />
-                        </button>
-                    </div>
-                ))}
-            </div>
-        </div>
+            <InputModal
+                opened={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                onSubmit={handleAddPage}
+                title="Add New Page"
+                placeholder="Enter Page Name"
+                submitText="Add Page"
+            />
+        </>
     );
 };
 

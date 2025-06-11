@@ -35,6 +35,7 @@ interface EditorStore {
     // Page actions
     addPage: (page: Page) => void;
     updatePage: (pageId: string, updates: Partial<Page>) => void;
+    updatePages: (updates: { id: string; updates: Partial<Page> }[]) => void;
     deletePage: (pageId: string) => void;
 
     // Section actions
@@ -167,6 +168,28 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                 )
             };
             get().addToHistory(newVersion, 'update_page', `Updated page: ${updates.name || pageId}`);
+            return { currentVersion: newVersion };
+        }),
+
+    updatePages: (updates) =>
+        set((state) => {
+            if (!state.currentVersion) return state;
+
+            const newVersion = {
+                ...state.currentVersion,
+                pages: state.currentVersion.pages.map((page) => {
+                    const update = updates.find(u => u.id === page.id);
+                    return update ? { ...page, ...update.updates } : page;
+                })
+            };
+
+            // 添加到历史记录
+            get().addToHistory(
+                newVersion,
+                'update_pages',
+                `Updated multiple pages: ${updates.map(u => u.id).join(', ')}`
+            );
+
             return { currentVersion: newVersion };
         }),
 

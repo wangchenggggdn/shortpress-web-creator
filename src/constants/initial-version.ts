@@ -7,6 +7,7 @@ export const INITIAL_VERSION: Version = {
             id: 'home',
             path: '/',
             name: 'Home',
+            isHome: true,
             metadata: {
                 title: 'Home',
                 description: 'Home page',
@@ -53,4 +54,49 @@ export const INITIAL_VERSION: Version = {
             }
         }
     ]
-}; 
+};
+
+export const DEFAULT_PAGES: Page[] = [
+    {
+        id: '404',
+        name: '404',
+        path: '404',
+        sections: []
+    },
+    {
+        id: 'search-result',
+        name: 'Search Result',
+        path: 'search-result',
+        sections: []
+    },
+    {
+        id: 'category',
+        name: 'Category',
+        path: 'category',
+        sections: []
+    },
+    {
+        id: 'playlist',
+        name: 'Playlist',
+        path: 'playlist',
+        sections: []
+    },
+    {
+        id: 'player',
+        name: 'Player',
+        path: 'player',
+        sections: []
+    },
+    {
+        id: 'privacy-policy',
+        name: 'Privacy Policy',
+        path: 'privacy-policy',
+        sections: []
+    },
+    {
+        id: 'terms-of-service',
+        name: 'Terms of Service',
+        path: 'terms-of-service',
+        sections: []
+    }
+];

@@ -1,14 +1,14 @@
-import { Website, Version, Page, Section, SectionType, DataSourceType } from '@/types/editor';
+import { EditWebsite, Version, Page, Section, SectionType, DataSourceType } from '@/types/editor';
 
 // 模拟数据
-const mockWebsite: Website = {
+const mockWebsite: EditWebsite = {
     id: 'website-1',
     name: 'Dramahub',
     domain: 'dramahub.tv',
     versions: [
         {
             id: 'version-1',
-            number: 1,
+            shareSections: [],
             pages: [
                 {
                     id: 'page-1',
@@ -20,11 +20,8 @@ const mockWebsite: Website = {
                             type: SectionType.HEADER,
                             order: 0,
                             params: {
-                                id: 'params-1',
                                 extend: {
                                 },
-                                title: 'Main Header',
-                                order: 0
                             }
                         },
                         {
@@ -32,12 +29,8 @@ const mockWebsite: Website = {
                             type: SectionType.FEATURE,
                             order: 1,
                             params: {
-                                id: 'params-2',
                                 extend: {
-                                    contentType: DataSourceType.NEW_RELEASE,
                                 },
-                                title: 'Featured Content',
-                                order: 0
                             }
                         }
                     ]
@@ -49,11 +42,9 @@ const mockWebsite: Website = {
                     sections: []
                 }
             ],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
         }
     ],
-    currentVersion: 1
+    currentVersion: 'version-1'
 };
 
 // 模拟延迟
@@ -62,7 +53,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 // 模拟API响应
 export const mockApi = {
     // 获取网站信息
-    getWebsite: async (siteId: string): Promise<{ code: number; data: Website | null; info: string }> => {
+    getWebsite: async (siteId: string): Promise<{ code: number; data: EditWebsite | null; info: string }> => {
         await delay(500);
         return {
             code: 0,
@@ -72,7 +63,7 @@ export const mockApi = {
     },
 
     // 更新网站信息
-    updateWebsite: async (website: Partial<Website>): Promise<{ code: number; info: string }> => {
+    updateWebsite: async (website: Partial<EditWebsite>): Promise<{ code: number; info: string }> => {
         await delay(500);
         Object.assign(mockWebsite, website);
         return {
@@ -82,17 +73,15 @@ export const mockApi = {
     },
 
     // 创建新版本
-    createVersion: async (siteId: string, pages: Page[]): Promise<{ code: number; data: Version; info: string }> => {
+    createVersion: async (siteId: string, version: Version): Promise<{ code: number; data: Version; info: string }> => {
         await delay(500);
         const newVersion: Version = {
             id: `version-${mockWebsite.versions.length + 1}`,
-            number: mockWebsite.versions.length + 1,
-            pages,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            pages: version.pages,
+            shareSections: version.shareSections,
         };
         mockWebsite.versions.push(newVersion);
-        mockWebsite.currentVersion = newVersion.number;
+        mockWebsite.currentVersion = newVersion.id;
         return {
             code: 0,
             data: newVersion,
@@ -103,7 +92,7 @@ export const mockApi = {
     // 获取版本信息
     getVersion: async (siteId: string, versionId: string): Promise<{ code: number; data: Version | null; info: string }> => {
         await delay(500);
-        const version = mockWebsite.versions.find(v => v.id === versionId);
+        const version = mockWebsite.versions.find((v: Version) => v.id === versionId);
         return {
             code: 0,
             data: version || null,
