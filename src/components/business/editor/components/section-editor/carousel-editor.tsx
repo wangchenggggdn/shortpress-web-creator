@@ -1,29 +1,56 @@
 import React, { useState } from 'react';
 import { IconX } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, DataSourceType } from '@/types/editor';
+import { Section, DataSourceType, BaseSectionParams, MenuItem } from '@/types/editor';
 
 interface CarouselEditorProps {
     section: Section;
     onBack: () => void;
 }
 
+const MENU_TYPES = {
+    CONTENT: 'content'
+} as const;
+
 const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
     const { currentPage, updateSection } = useEditorStore();
     const [showContentSelector, setShowContentSelector] = useState(false);
+    const params = section.params as BaseSectionParams;
+
+    const getContentItem = (): MenuItem | undefined => {
+        return params.extend.menuItems?.find(item => item.content === MENU_TYPES.CONTENT);
+    };
 
     const handleContentTypeSelect = (type: DataSourceType) => {
         if (!currentPage) return;
         
-        const params = { ...section.params };
-        params.contentType = type;
+        const menuItems = [...(params.extend.menuItems || [])];
+        const contentItem = menuItems.find(item => item.content === MENU_TYPES.CONTENT);
+        
+        if (contentItem) {
+            contentItem.label = type;
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.CONTENT,
+                label: type,
+                content: MENU_TYPES.CONTENT,
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems
+                }
+            }
         });
         
         setShowContentSelector(false);
     };
+
+    const contentItem = getContentItem();
 
     return (
         <div className="p-4">
@@ -41,11 +68,11 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
             {/* Content */}
             <div className="mb-6">
                 <h3 className="font-medium mb-4">Content</h3>
-                {section.params.contentType ? (
+                {contentItem ? (
                     <div>
                         {/* Content type specific UI will go here */}
                         <div className="text-gray-500">
-                            Content editor for {section.params.contentType} is under development
+                            Content editor for {contentItem.label} is under development
                         </div>
                     </div>
                 ) : (

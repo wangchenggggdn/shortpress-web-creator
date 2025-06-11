@@ -16,10 +16,13 @@ interface SectionEditorProps {
 const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
     const { currentVersion, currentPage } = useEditorStore();
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
-    const section = currentPageData?.sections.find(s => s.id === sectionId);
+    let section = currentPageData?.sections.find(s => s.id === sectionId);
 
     if (!section) {
-        return <div className="p-4 text-center text-gray-500">Section not found</div>;
+        section = currentVersion?.shareSections.find(s => s.id === sectionId);
+        if (!section) {
+            return <div className="p-4 text-center text-gray-500">Section not found</div>;
+        }
     }
 
     switch (section.type) {

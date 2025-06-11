@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconUpload, IconX } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, HeaderSectionParams } from '@/types/editor';
+import { BaseSectionParams, Section, MenuItem } from '@/types/editor';
 import NavMenuEditor from './nav-menu-editor';
 
 interface HeaderEditorProps {
@@ -9,42 +9,47 @@ interface HeaderEditorProps {
     onBack: () => void;
 }
 
+const MENU_TYPES = {
+    LOGO: 'logo',
+    LABEL: 'label',
+    SEARCH: 'search',
+    ACCOUNT: 'account',
+    NAV: 'nav'
+} as const;
+
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
     const { currentVersion, currentPage, updateSection } = useEditorStore();
     const [showNavMenu, setShowNavMenu] = useState(false);
-    const headerParams: HeaderSectionParams = section.params as HeaderSectionParams;
+    const headerParams = section.params as BaseSectionParams;
 
-    const handleToggle = (key: keyof HeaderSectionParams['extend']) => {
-        if (!currentPage) return;
-        
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                [key]: !headerParams.extend[key]
-            }
-        };
-        
-        updateSection(currentPage, section.id, {
-            params,
-            order: section.order
-        });
+    const getMenuItem = (type: string): MenuItem | undefined => {
+        return headerParams.extend.menuItems?.find(item => item.content === type);
     };
 
-    const handleLabelChange = (value: string) => {
+    const handleToggle = (type: string) => {
         if (!currentPage) return;
         
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                label: value
-            }
-        };
+        const menuItems = [...(headerParams.extend.menuItems || [])];
+        const existingItem = menuItems.find(item => item.content === type);
+        
+        if (existingItem) {
+            existingItem.visible = !existingItem.visible;
+        } else {
+            menuItems.push({
+                id: type,
+                label: type,
+                content: type,
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...headerParams.extend,
+                    menuItems
+                }
+            }
         });
     };
 
@@ -54,17 +59,55 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
         // TODO: Implement file upload
         console.log('Upload logo:', file);
         
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                logo: URL.createObjectURL(file)
-            }
-        };
+        const menuItems = [...(headerParams.extend.menuItems || [])];
+        const existingItem = menuItems.find(item => item.content === MENU_TYPES.LOGO);
+        
+        if (existingItem) {
+            existingItem.image = URL.createObjectURL(file);
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.LOGO,
+                label: 'Logo',
+                content: MENU_TYPES.LOGO,
+                image: URL.createObjectURL(file),
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...headerParams.extend,
+                    menuItems
+                }
+            }
+        });
+    };
+
+    const handleLabelChange = (value: string) => {
+        if (!currentPage) return;
+        
+        const menuItems = [...(headerParams.extend.menuItems || [])];
+        const existingItem = menuItems.find(item => item.content === MENU_TYPES.LABEL);
+        
+        if (existingItem) {
+            existingItem.label = value;
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.LABEL,
+                label: value,
+                content: MENU_TYPES.LABEL,
+                visible: true
+            });
+        }
+        
+        updateSection(currentPage, section.id, {
+            params: {
+                extend: {
+                    ...headerParams.extend,
+                    menuItems
+                }
+            }
         });
     };
 
@@ -77,7 +120,10 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
         );
     }
 
-    const { extend } = headerParams;
+    const logoItem = getMenuItem(MENU_TYPES.LOGO);
+    const labelItem = getMenuItem(MENU_TYPES.LABEL);
+    const searchItem = getMenuItem(MENU_TYPES.SEARCH);
+    const accountItem = getMenuItem(MENU_TYPES.ACCOUNT);
 
     return (
         <div className="p-4">
@@ -105,34 +151,36 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
                         <input
                             type="checkbox"
                             className="sr-only peer"
-                            checked={extend.showLogo}
-                            onChange={() => handleToggle('showLogo')}
+                            checked={logoItem?.visible ?? false}
+                            onChange={() => handleToggle(MENU_TYPES.LOGO)}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>
                 </div>
-                {extend.showLogo && (
+                {logoItem?.visible && (
                     <div className="mt-4">
-                        {extend.logo ? (
+                        {logoItem.image ? (
                             <div className="relative w-24 h-24">
                                 <img
-                                    src={extend.logo}
+                                    src={logoItem.image}
                                     alt="Logo"
                                     className="w-full h-full object-contain"
                                 />
                                 <button
                                     onClick={() => {
-                                        const params: HeaderSectionParams = {
-                                            ...headerParams,
-                                            extend: {
-                                                ...headerParams.extend,
-                                                logo: undefined
-                                            }
-                                        };
-                                        updateSection(currentPage!, section.id, { 
-                                            params,
-                                            order: section.order
-                                        });
+                                        const menuItems = [...(headerParams.extend.menuItems || [])];
+                                        const item = menuItems.find(item => item.content === MENU_TYPES.LOGO);
+                                        if (item) {
+                                            item.image = undefined;
+                                            updateSection(currentPage!, section.id, { 
+                                                params: {
+                                                    extend: {
+                                                        ...headerParams.extend,
+                                                        menuItems
+                                                    }
+                                                }
+                                            });
+                                        }
                                     }}
                                     className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full"
                                 >
@@ -166,17 +214,17 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
                         <input
                             type="checkbox"
                             className="sr-only peer"
-                            checked={extend.showLabel}
-                            onChange={() => handleToggle('showLabel')}
+                            checked={labelItem?.visible ?? false}
+                            onChange={() => handleToggle(MENU_TYPES.LABEL)}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>
                 </div>
-                {extend.showLabel && (
+                {labelItem?.visible && (
                     <input
                         type="text"
                         className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        value={extend.label || ''}
+                        value={labelItem.label}
                         onChange={(e) => handleLabelChange(e.target.value)}
                         placeholder="Enter label text"
                     />
@@ -191,8 +239,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
                         <input
                             type="checkbox"
                             className="sr-only peer"
-                            checked={extend.showSearchIcon}
-                            onChange={() => handleToggle('showSearchIcon')}
+                            checked={searchItem?.visible ?? false}
+                            onChange={() => handleToggle(MENU_TYPES.SEARCH)}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>
@@ -207,8 +255,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack }) => {
                         <input
                             type="checkbox"
                             className="sr-only peer"
-                            checked={extend.showAccountIcon}
-                            onChange={() => handleToggle('showAccountIcon')}
+                            checked={accountItem?.visible ?? false}
+                            onChange={() => handleToggle(MENU_TYPES.ACCOUNT)}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>

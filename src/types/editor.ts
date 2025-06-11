@@ -27,6 +27,7 @@ export enum DataSourceType {
 export interface BaseSectionParams {
     extend: {
         menuItems?: MenuItem[];
+        notSharePages?: string[];
     };
 }
 

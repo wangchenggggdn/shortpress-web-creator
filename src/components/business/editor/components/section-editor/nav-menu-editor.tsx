@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, HeaderSectionParams, MenuItem, NavMenu } from '@/types/editor';
+import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
 import { v4 as uuidv4 } from 'uuid';
 
 interface NavMenuEditorProps {
@@ -9,10 +9,29 @@ interface NavMenuEditorProps {
     onBack: () => void;
 }
 
+const MENU_TYPES = {
+    NAV: 'nav',
+    NAV_ITEM: 'nav_item'
+} as const;
+
 const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
     const { currentPage, updateSection } = useEditorStore();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
-    const headerParams: HeaderSectionParams = section.params as HeaderSectionParams;
+    const params = section.params as BaseSectionParams;
+
+    const getNavMenu = (): MenuItem | undefined => {
+        return params.extend.menuItems?.find(item => item.content === MENU_TYPES.NAV);
+    };
+
+    const getNavItems = (): MenuItem[] => {
+        const navMenu = getNavMenu();
+        if (!navMenu?.content) return [];
+        try {
+            return JSON.parse(navMenu.content);
+        } catch {
+            return [];
+        }
+    };
 
     const handleIconUpload = async (file: File) => {
         if (!currentPage) return;
@@ -20,134 +39,145 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
         // TODO: Implement file upload
         console.log('Upload nav icon:', file);
         
-        const navMenu: NavMenu = {
-            ...headerParams.extend.navMenu,
-            icon: URL.createObjectURL(file),
-            items: headerParams.extend.navMenu?.items || []
-        };
+        const menuItems = [...(params.extend.menuItems || [])];
+        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
         
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                navMenu
-            }
-        };
+        if (navMenu) {
+            navMenu.image = URL.createObjectURL(file);
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.NAV,
+                label: 'Navigation Menu',
+                content: JSON.stringify([]),
+                image: URL.createObjectURL(file),
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems
+                }
+            }
         });
     };
 
     const handleAddMenuItem = () => {
         if (!currentPage) return;
         
+        const menuItems = [...(params.extend.menuItems || [])];
+        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        
         const newItem: MenuItem = {
             id: uuidv4(),
             label: 'New Menu Item',
-            path: '/new-page',
+            content: MENU_TYPES.NAV_ITEM,
             visible: true
         };
         
-        const navMenu: NavMenu = {
-            ...headerParams.extend.navMenu,
-            items: [...(headerParams.extend.navMenu?.items || []), newItem]
-        };
-        
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                navMenu
-            }
-        };
+        if (navMenu) {
+            const items = getNavItems();
+            navMenu.content = JSON.stringify([...items, newItem]);
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.NAV,
+                label: 'Navigation Menu',
+                content: JSON.stringify([newItem]),
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems
+                }
+            }
         });
     };
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<MenuItem>) => {
-        if (!currentPage || !headerParams.extend.navMenu) return;
+        if (!currentPage) return;
         
-        const navMenu: NavMenu = {
-            ...headerParams.extend.navMenu,
-            items: headerParams.extend.navMenu.items.map(item =>
+        const menuItems = [...(params.extend.menuItems || [])];
+        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        
+        if (navMenu) {
+            const items = getNavItems();
+            const updatedItems = items.map(item =>
                 item.id === itemId ? { ...item, ...updates } : item
-            )
-        };
-        
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                navMenu
-            }
-        };
-        
-        updateSection(currentPage, section.id, {
-            params,
-            order: section.order
-        });
-    };
-
-    const handleMenuItemDelete = (itemId: string) => {
-        if (!currentPage || !headerParams.extend.navMenu) return;
-        
-        const navMenu: NavMenu = {
-            ...headerParams.extend.navMenu,
-            items: headerParams.extend.navMenu.items.filter(item => item.id !== itemId)
-        };
-        
-        const params: HeaderSectionParams = {
-            ...headerParams,
-            extend: {
-                ...headerParams.extend,
-                navMenu
-            }
-        };
-        
-        updateSection(currentPage, section.id, {
-            params,
-            order: section.order
-        });
-    };
-
-    const handleMenuItemDuplicate = (itemId: string) => {
-        if (!currentPage || !headerParams.extend.navMenu) return;
-        
-        const itemToDuplicate = headerParams.extend.navMenu.items.find(item => item.id === itemId);
-        
-        if (itemToDuplicate) {
-            const newItem: MenuItem = {
-                ...itemToDuplicate,
-                id: uuidv4(),
-                label: `${itemToDuplicate.label} (Copy)`
-            };
-            
-            const navMenu: NavMenu = {
-                ...headerParams.extend.navMenu,
-                items: [...headerParams.extend.navMenu.items, newItem]
-            };
-            
-            const params: HeaderSectionParams = {
-                ...headerParams,
-                extend: {
-                    ...headerParams.extend,
-                    navMenu
-                }
-            };
+            );
+            navMenu.content = JSON.stringify(updatedItems);
             
             updateSection(currentPage, section.id, {
-                params,
-                order: section.order
+                params: {
+                    extend: {
+                        ...params.extend,
+                        menuItems
+                    }
+                }
             });
         }
     };
 
-    const { extend } = headerParams;
+    const handleMenuItemDelete = (itemId: string) => {
+        if (!currentPage) return;
+        
+        const menuItems = [...(params.extend.menuItems || [])];
+        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        
+        if (navMenu) {
+            const items = getNavItems();
+            const updatedItems = items.filter(item => item.id !== itemId);
+            navMenu.content = JSON.stringify(updatedItems);
+            
+            updateSection(currentPage, section.id, {
+                params: {
+                    extend: {
+                        ...params.extend,
+                        menuItems
+                    }
+                }
+            });
+        }
+    };
+
+    const handleMenuItemDuplicate = (itemId: string) => {
+        if (!currentPage) return;
+        
+        const menuItems = [...(params.extend.menuItems || [])];
+        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        
+        if (navMenu) {
+            const items = getNavItems();
+            const itemToDuplicate = items.find(item => item.id === itemId);
+            
+            if (itemToDuplicate) {
+                const newItem: MenuItem = {
+                    ...itemToDuplicate,
+                    id: uuidv4(),
+                    label: `${itemToDuplicate.label} (Copy)`
+                };
+                
+                navMenu.content = JSON.stringify([...items, newItem]);
+                
+                updateSection(currentPage, section.id, {
+                    params: {
+                        extend: {
+                            ...params.extend,
+                            menuItems
+                        }
+                    }
+                });
+            }
+        }
+    };
+
+    const navMenu = getNavMenu();
+    const navItems = getNavItems();
 
     return (
         <div className="p-4">
@@ -165,32 +195,28 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
             {/* Nav Icon */}
             <div className="mb-6">
                 <h3 className="font-medium mb-2">Nav icon</h3>
-                {extend.navMenu?.icon ? (
+                {navMenu?.image ? (
                     <div className="relative w-12 h-12">
                         <img
-                            src={extend.navMenu.icon}
+                            src={navMenu.image}
                             alt="Nav Icon"
                             className="w-full h-full object-contain"
                         />
                         <button
                             onClick={() => {
-                                const navMenu: NavMenu = {
-                                    ...headerParams.extend.navMenu!,
-                                    icon: undefined,
-                                    items: headerParams.extend.navMenu!.items
-                                };
-                                
-                                const params: HeaderSectionParams = {
-                                    ...headerParams,
-                                    extend: {
-                                        ...headerParams.extend,
-                                        navMenu
-                                    }
-                                };
-                                updateSection(currentPage!, section.id, { 
-                                    params,
-                                    order: section.order
-                                });
+                                const menuItems = [...(params.extend.menuItems || [])];
+                                const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+                                if (navMenu) {
+                                    navMenu.image = undefined;
+                                    updateSection(currentPage!, section.id, { 
+                                        params: {
+                                            extend: {
+                                                ...params.extend,
+                                                menuItems
+                                            }
+                                        }
+                                    });
+                                }
                             }}
                             className="absolute top-0 right-0 p-1 bg-red-500 text-white rounded-full"
                         >
@@ -226,7 +252,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
                 </div>
 
                 <div className="space-y-2">
-                    {extend.navMenu?.items?.map((item: MenuItem) => (
+                    {navItems.map((item) => (
                         <div
                             key={item.id}
                             className={`bg-white border rounded-lg ${

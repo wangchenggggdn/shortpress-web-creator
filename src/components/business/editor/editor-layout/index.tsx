@@ -53,8 +53,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     // Sync route params with store
     useEffect(() => {
         if (currentVersion) {
-            console.log('Syncing route params:', { pageId, sectionId, currentPage, currentSection });
-            
             // Find page by name
             const page = currentVersion.pages.find(
                 p => p.name.toLowerCase() === pageId.toLowerCase()
@@ -95,16 +93,19 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
     // Handle section change
     const handleSectionChange = (newSectionId: string | null) => {
-        const page = currentVersion?.pages.find(p => p.id === currentPage);
+        let page = currentVersion?.pages.find(p => p.id === currentPage);
+       
         if (!page) {
             console.log('No current page found');
             return;
         }
 
         if (newSectionId) {
-            const section = page.sections.find(s => s.id === newSectionId);
+            let section = page.sections.find(s => s.id === newSectionId);
+            if (!section) {
+                section = shareSections.find(s => s.id === newSectionId);
+            }
             if (section) {
-                console.log('Navigating to section:', section.type);
                 router.push(`/editor/${siteId}/${page.name.toLowerCase()}/${section.type.toLowerCase()}`);
             }
         } else {
@@ -118,7 +119,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
         try {
             // Create a new version with current pages
-            const res = await WebsiteApi.editCreateVersion(editWebsite.id, currentVersion.pages);
+            const res = await WebsiteApi.editCreateVersion(editWebsite.id, currentVersion);
 
             if (res.code === 0 && res.data) {
                 const newVersion = res.data;

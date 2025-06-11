@@ -13,17 +13,7 @@ export const INITIAL_VERSION: Version = {
                 description: 'Home page',
                 keywords: ['home', 'page']
             },
-            sections: [
-                {
-                    id: 'footer',
-                    type: SectionType.FOOTER,
-                    order: 0,
-                    params: {
-                        extend: {},
-                    },
-                    isHidden: true
-                }
-            ]
+            sections: []
         },
         {
             id: 'explore',
@@ -50,7 +40,9 @@ export const INITIAL_VERSION: Version = {
             type: SectionType.FOOTER,
             order: 0,
             params: {
-                extend: {},
+                extend: {
+                    notSharePages: ['/']
+                },
             }
         }
     ]

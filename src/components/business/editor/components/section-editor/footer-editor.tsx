@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, FooterSectionParams, MenuItem } from '@/types/editor';
+import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
 import { v4 as uuidv4 } from 'uuid';
 
 interface FooterEditorProps {
@@ -9,77 +9,91 @@ interface FooterEditorProps {
     onBack: () => void;
 }
 
+const MENU_TYPES = {
+    FOOTER_TEXT: 'footer_text',
+    SHORTPRESS_LOGO: 'shortpress_logo',
+    FOOTER_ITEM: 'footer_item'
+} as const;
+
 const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack }) => {
     const { currentPage, updateSection } = useEditorStore();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
-    const footerParams: FooterSectionParams = section.params as FooterSectionParams;
+    const params = section.params as BaseSectionParams;
+
+    const getMenuItem = (type: string): MenuItem | undefined => {
+        return params.extend.menuItems?.find(item => item.content === type);
+    };
+
+    const getFooterItems = (): MenuItem[] => {
+        const items = params.extend.menuItems || [];
+        return items.filter(item => item.content === MENU_TYPES.FOOTER_ITEM);
+    };
 
     const handleAddMenuItem = () => {
         if (!currentPage) return;
         
-        const menuItems = footerParams.extend.menuItems || [];
+        const menuItems = [...(params.extend.menuItems || [])];
         
         const newItem: MenuItem = {
             id: uuidv4(),
             label: 'New Menu Item',
-            path: '/new-page',
+            content: MENU_TYPES.FOOTER_ITEM,
             visible: true
         };
         
-        const params = {
-            ...footerParams,
-            extend: {
-                ...footerParams.extend,
-                menuItems: [...menuItems, newItem]
-            }
-        };
+        menuItems.push(newItem);
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems
+                }
+            }
         });
     };
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<MenuItem>) => {
-        if (!currentPage || !footerParams.extend.menuItems) return;
+        if (!currentPage) return;
         
-        const params: FooterSectionParams = {
-            ...footerParams,
-            extend: {
-                ...footerParams.extend,
-                menuItems: footerParams.extend.menuItems.map(item =>
-                    item.id === itemId ? { ...item, ...updates } : item
-                )
-            }
-        };
+        const menuItems = [...(params.extend.menuItems || [])];
+        const itemIndex = menuItems.findIndex(item => item.id === itemId);
         
-        updateSection(currentPage, section.id, {
-            params,
-            order: section.order
-        });
+        if (itemIndex !== -1) {
+            menuItems[itemIndex] = { ...menuItems[itemIndex], ...updates };
+            
+            updateSection(currentPage, section.id, {
+                params: {
+                    extend: {
+                        ...params.extend,
+                        menuItems
+                    }
+                }
+            });
+        }
     };
 
     const handleMenuItemDelete = (itemId: string) => {
-        if (!currentPage || !footerParams.extend.menuItems) return;
+        if (!currentPage) return;
         
-        const params: FooterSectionParams = {
-            ...footerParams,
-            extend: {
-                ...footerParams.extend,
-                menuItems: footerParams.extend.menuItems.filter(item => item.id !== itemId)
-            }
-        };
+        const menuItems = [...(params.extend.menuItems || [])];
+        const filteredItems = menuItems.filter(item => item.id !== itemId);
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems: filteredItems
+                }
+            }
         });
     };
 
     const handleMenuItemDuplicate = (itemId: string) => {
-        if (!currentPage || !footerParams.extend.menuItems) return;
+        if (!currentPage) return;
         
-        const itemToDuplicate = footerParams.extend.menuItems.find(item => item.id === itemId);
+        const menuItems = [...(params.extend.menuItems || [])];
+        const itemToDuplicate = menuItems.find(item => item.id === itemId);
         
         if (itemToDuplicate) {
             const newItem: MenuItem = {
@@ -88,17 +102,15 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack }) => {
                 label: `${itemToDuplicate.label} (Copy)`
             };
             
-            const params: FooterSectionParams = {
-                ...footerParams,
-                extend: {
-                    ...footerParams.extend,
-                    menuItems: [...footerParams.extend.menuItems, newItem]
-                }
-            };
+            menuItems.push(newItem);
             
             updateSection(currentPage, section.id, {
-                params,
-                order: section.order
+                params: {
+                    extend: {
+                        ...params.extend,
+                        menuItems
+                    }
+                }
             });
         }
     };
@@ -106,38 +118,60 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack }) => {
     const handleFooterTextChange = (text: string) => {
         if (!currentPage) return;
         
-        const params: FooterSectionParams = {
-            ...footerParams,
-            extend: {
-                ...footerParams.extend,
-                footerText: text
-            }
-        };
+        const menuItems = [...(params.extend.menuItems || [])];
+        const footerText = menuItems.find(item => item.content === MENU_TYPES.FOOTER_TEXT);
+        
+        if (footerText) {
+            footerText.label = text;
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.FOOTER_TEXT,
+                label: text,
+                content: MENU_TYPES.FOOTER_TEXT,
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems
+                }
+            }
         });
     };
 
     const handleToggleShortPressLogo = () => {
         if (!currentPage) return;
         
-        const params: FooterSectionParams = {
-            ...footerParams,
-            extend: {
-                ...footerParams.extend,
-                showShortPressLogo: !footerParams.extend.showShortPressLogo
-            }
-        };
+        const menuItems = [...(params.extend.menuItems || [])];
+        const shortPressLogo = menuItems.find(item => item.content === MENU_TYPES.SHORTPRESS_LOGO);
+        
+        if (shortPressLogo) {
+            shortPressLogo.visible = !shortPressLogo.visible;
+        } else {
+            menuItems.push({
+                id: MENU_TYPES.SHORTPRESS_LOGO,
+                label: 'ShortPress Logo',
+                content: MENU_TYPES.SHORTPRESS_LOGO,
+                visible: true
+            });
+        }
         
         updateSection(currentPage, section.id, {
-            params,
-            order: section.order
+            params: {
+                extend: {
+                    ...params.extend,
+                    menuItems
+                }
+            }
         });
     };
 
-    const { extend } = footerParams;
+    const footerText = getMenuItem(MENU_TYPES.FOOTER_TEXT);
+    const shortPressLogo = getMenuItem(MENU_TYPES.SHORTPRESS_LOGO);
+    const footerItems = getFooterItems();
 
     return (
         <div className="p-4">
@@ -170,7 +204,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack }) => {
                 </div>
 
                 <div className="space-y-2">
-                    {extend.menuItems?.map((item) => (
+                    {footerItems.map((item) => (
                         <div
                             key={item.id}
                             className={`bg-white border rounded-lg ${
@@ -227,7 +261,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack }) => {
                 <textarea
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={3}
-                    value={extend.footerText || ''}
+                    value={footerText?.label || ''}
                     onChange={(e) => handleFooterTextChange(e.target.value)}
                     placeholder="Enter footer text"
                 />
@@ -241,7 +275,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack }) => {
                         <input
                             type="checkbox"
                             className="sr-only peer"
-                            checked={extend.showShortPressLogo}
+                            checked={shortPressLogo?.visible ?? false}
                             onChange={handleToggleShortPressLogo}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
