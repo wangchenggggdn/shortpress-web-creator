@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { IconPlus, IconTrash } from '@tabler/icons-react';
+import React, { useState } from 'react';
+import { IconPlus, IconTrash, IconEye } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
 
@@ -19,28 +19,14 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         setCurrentSection,
     } = useEditorStore();
 
+    const [showTypeSelector, setShowTypeSelector] = useState(false);
+
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
 
     const handleAddSection = (type: SectionType) => {
         if (!currentPage) return;
-
-        const newSection: Section = {
-            id: `section-${Date.now()}`,
-            type,
-            order: currentPageData?.sections.length ?? 0,
-            params: {
-                id: `params-${Date.now()}`,
-                type: DataSourceType.PLAYLIST,
-                title: `New ${type} Section`,
-            }
-        };
-
-        addSection(currentPage, newSection);
-        setCurrentSection(newSection.id);
-        console.log('handleAddSection', newSection.id);
-        if (onSectionChange) {
-            onSectionChange(newSection.id);
-        }
+        addSection(currentPage, type);
+        setShowTypeSelector(false);
     };
 
     const handleDeleteSection = (sectionId: string) => {
@@ -57,7 +43,6 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
     const handleSectionClick = (sectionId: string) => {
         setCurrentSection(sectionId);
-        console.log('handleSectionClick', sectionId);
         if (onSectionChange) {
             onSectionChange(sectionId);
         }
@@ -75,57 +60,100 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         );
     }
 
+    // 获取当前页面的 header 和 footer sections
+    const headerSection = currentPageData?.sections.find(s => s.type === SectionType.HEADER);
+    const footerSection = currentPageData?.sections.find(s => s.type === SectionType.FOOTER);
+
     return (
         <div className="p-4">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium">Sections</h2>
-                <div className="relative group">
-                    <button
-                        className="p-2 hover:bg-gray-200 rounded"
-                        title="Add new section"
-                    >
-                        <IconPlus size={20} />
-                    </button>
-                    <div className="absolute right-0 mt-2 w-48 py-2 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                        {Object.values(SectionType).map(type => (
-                            <button
-                                key={type}
-                                className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                                onClick={() => handleAddSection(type)}
-                            >
-                                {type}
-                            </button>
-                        ))}
-                    </div>
-                </div>
             </div>
 
             <div className="space-y-2">
-                {currentPageData?.sections.map((section: Section) => (
-                    <div
-                        key={section.id}
-                        className={`flex items-center p-2 rounded cursor-pointer ${
-                            currentSection === section.id
-                                ? 'bg-blue-100'
-                                : 'hover:bg-gray-100'
-                        }`}
-                        onClick={() => handleSectionClick(section.id)}
-                    >
-                        <span className="flex-1 truncate">
-                            {section.params.title || section.type}
-                        </span>
-                        <button
-                            onClick={e => {
-                                e.stopPropagation();
-                                handleDeleteSection(section.id);
-                            }}
-                            className="p-1 hover:bg-gray-200 rounded"
-                            title="Delete section"
+                {/* Header Section */}
+                <div
+                    className={`flex items-center p-2 rounded cursor-pointer ${
+                        currentSection === headerSection?.id
+                            ? 'bg-blue-100'
+                            : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => headerSection && handleSectionClick(headerSection.id)}
+                >
+                    <IconEye size={16} className="mr-2" />
+                    <span className="flex-1">Header</span>
+                </div>
+
+                {/* Regular Sections */}
+                {currentPageData?.sections
+                    .filter(section => section.type !== SectionType.HEADER && section.type !== SectionType.FOOTER)
+                    .sort((a, b) => a.order - b.order)
+                    .map((section: Section) => (
+                        <div
+                            key={section.id}
+                            className={`flex items-center p-2 rounded cursor-pointer ${
+                                currentSection === section.id
+                                    ? 'bg-blue-100'
+                                    : 'hover:bg-gray-100'
+                            }`}
+                            onClick={() => handleSectionClick(section.id)}
                         >
-                            <IconTrash size={16} />
-                        </button>
-                    </div>
-                ))}
+                            <span className="flex-1 truncate">
+                                {section.params.title || section.type}
+                            </span>
+                            <button
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    handleDeleteSection(section.id);
+                                }}
+                                className="p-1 hover:bg-gray-200 rounded"
+                                title="Delete section"
+                            >
+                                <IconTrash size={16} />
+                            </button>
+                        </div>
+                    ))}
+
+                {/* Add Section Button */}
+                <div className="relative">
+                    <button
+                        className="w-full p-2 text-left hover:bg-gray-100 rounded flex items-center"
+                        onClick={() => setShowTypeSelector(!showTypeSelector)}
+                    >
+                        <IconPlus size={16} className="mr-2" />
+                        <span>Add Section</span>
+                    </button>
+
+                    {/* Section Type Selector */}
+                    {showTypeSelector && (
+                        <div className="absolute left-0 right-0 mt-1 py-2 bg-white rounded-lg shadow-xl z-10">
+                            {Object.values(SectionType)
+                                .filter(type => type !== SectionType.HEADER && type !== SectionType.FOOTER)
+                                .map(type => (
+                                    <button
+                                        key={type}
+                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
+                                        onClick={() => handleAddSection(type)}
+                                    >
+                                        <span className="capitalize">{type.toLowerCase()}</span>
+                                    </button>
+                                ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer Section */}
+                <div
+                    className={`flex items-center p-2 rounded cursor-pointer ${
+                        currentSection === footerSection?.id
+                            ? 'bg-blue-100'
+                            : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => footerSection && handleSectionClick(footerSection.id)}
+                >
+                    <IconEye size={16} className="mr-2" />
+                    <span className="flex-1">Footer</span>
+                </div>
             </div>
         </div>
     );

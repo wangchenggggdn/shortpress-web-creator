@@ -1,0 +1,94 @@
+import React, { useState } from 'react';
+import { IconX } from '@tabler/icons-react';
+import useEditorStore from '@/store/useEditorStore';
+import { Section, DataSourceType } from '@/types/editor';
+
+interface CarouselEditorProps {
+    section: Section;
+    onBack: () => void;
+}
+
+const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
+    const { currentPage, updateSection } = useEditorStore();
+    const [showContentSelector, setShowContentSelector] = useState(false);
+
+    const handleContentTypeSelect = (type: DataSourceType) => {
+        if (!currentPage) return;
+        
+        const params = { ...section.params };
+        params.contentType = type;
+        
+        updateSection(currentPage, section.id, {
+            params
+        });
+        
+        setShowContentSelector(false);
+    };
+
+    return (
+        <div className="p-4">
+            {/* Header */}
+            <div className="flex items-center gap-2 mb-6">
+                <button
+                    onClick={onBack}
+                    className="p-2 hover:bg-gray-200 rounded"
+                >
+                    <IconX size={20} />
+                </button>
+                <h2 className="text-lg font-medium">Carousel Section</h2>
+            </div>
+
+            {/* Content */}
+            <div className="mb-6">
+                <h3 className="font-medium mb-4">Content</h3>
+                {section.params.contentType ? (
+                    <div>
+                        {/* Content type specific UI will go here */}
+                        <div className="text-gray-500">
+                            Content editor for {section.params.contentType} is under development
+                        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <button
+                            onClick={() => setShowContentSelector(true)}
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            Add Content
+                        </button>
+
+                        {showContentSelector && (
+                            <div className="mt-4 p-4 bg-white rounded-lg shadow-lg">
+                                <div className="space-y-4">
+                                    <button
+                                        className="w-full p-3 text-left hover:bg-gray-50 rounded-lg"
+                                        onClick={() => handleContentTypeSelect(DataSourceType.PLAYLIST)}
+                                    >
+                                        <div className="font-medium">Playlist</div>
+                                        <div className="text-sm text-gray-500">Add existing playlists to section</div>
+                                    </button>
+                                    <button
+                                        className="w-full p-3 text-left hover:bg-gray-50 rounded-lg"
+                                        onClick={() => handleContentTypeSelect(DataSourceType.CONTINUE_WATCHING)}
+                                    >
+                                        <div className="font-medium">Continue Watching</div>
+                                        <div className="text-sm text-gray-500">Display the most recently watched for the user</div>
+                                    </button>
+                                    <button
+                                        className="w-full p-3 text-left hover:bg-gray-50 rounded-lg"
+                                        onClick={() => handleContentTypeSelect(DataSourceType.NEW_RELEASE)}
+                                    >
+                                        <div className="font-medium">New Release</div>
+                                        <div className="text-sm text-gray-500">Display the most recently released playlists</div>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default CarouselEditor; 

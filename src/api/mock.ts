@@ -21,8 +21,10 @@ const mockWebsite: Website = {
                             order: 0,
                             params: {
                                 id: 'params-1',
-                                type: DataSourceType.PLAYLIST,
+                                extend: {
+                                },
                                 title: 'Main Header',
+                                order: 0
                             }
                         },
                         {
@@ -31,8 +33,11 @@ const mockWebsite: Website = {
                             order: 1,
                             params: {
                                 id: 'params-2',
-                                type: DataSourceType.NEW_RELEASE,
+                                extend: {
+                                    contentType: DataSourceType.NEW_RELEASE,
+                                },
                                 title: 'Featured Content',
+                                order: 0
                             }
                         }
                     ]

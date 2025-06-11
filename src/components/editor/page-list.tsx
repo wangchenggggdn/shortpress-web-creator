@@ -24,7 +24,6 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
 
         addPage(newPage);
         setCurrentPage(newPage.id);
-        console.log('handleAddPage', newPage.id);
         if (onPageChange) {
             onPageChange(newPage.id);
         }
@@ -36,11 +35,8 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
 
     const handlePageClick = (pageId: string) => {
         setCurrentPage(pageId);
-        console.log('handlePageClick1111', pageId);
         if (onPageChange) {
             onPageChange(pageId);
-        }else{
-            console.log('onPageChange is not defined');
         }
     };
 

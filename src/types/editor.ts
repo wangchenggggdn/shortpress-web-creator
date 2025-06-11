@@ -22,16 +22,80 @@ export enum DataSourceType {
 }
 
 /**
- * Section parameters interface
+ * Base section parameters interface
  */
-export interface SectionParams {
+export interface BaseSectionParams {
     id: string;
-    type: DataSourceType;
     title?: string;
     description?: string;
     style?: Record<string, any>;
     data?: any;
+    order: number;
+    extend: Record<string, any>;
 }
+
+/**
+ * Menu item interface
+ */
+export interface MenuItem {
+    id: string;
+    label: string;
+    path: string;
+    visible: boolean;
+}
+
+/**
+ * Nav menu interface
+ */
+export interface NavMenu {
+    showIcon?: boolean;
+    icon?: string;
+    items: MenuItem[];
+}
+
+/**
+ * Header section specific parameters
+ */
+export interface HeaderSectionParams extends BaseSectionParams {
+    extend: {
+        showLogo?: boolean;
+        logo?: string;
+        showLabel?: boolean;
+        label?: string;
+        showSearchIcon?: boolean;
+        showAccountIcon?: boolean;
+        navMenu?: NavMenu;
+        isGlobal?: boolean;
+    };
+}
+
+/**
+ * Footer section specific parameters
+ */
+export interface FooterSectionParams extends BaseSectionParams {
+    extend: {
+        menuItems?: MenuItem[];
+        footerText?: string;
+        showShortPressLogo?: boolean;
+        isGlobal?: boolean;
+    };
+}
+
+/**
+ * Carousel section specific parameters
+ */
+export interface CarouselSectionParams extends BaseSectionParams {
+    extend: {
+        contentType?: DataSourceType;
+        items?: Array<any>;
+        headLine?: string;
+    };
+}
+
+/**
+ * Union type for all section parameters
+ */
+export type SectionParams = HeaderSectionParams | FooterSectionParams | CarouselSectionParams;
 
 /**
  * Section interface
@@ -39,8 +103,9 @@ export interface SectionParams {
 export interface Section {
     id: string;
     type: SectionType;
-    params: SectionParams;
+    params: BaseSectionParams;
     order: number;
+    isHidden?: boolean;
 }
 
 /**
@@ -62,6 +127,7 @@ export interface Version {
     pages: Page[];
     createdAt: string;
     updatedAt: string;
+    shareSections?: Array<Section>;
 }
 
 /**
@@ -97,4 +163,4 @@ export interface EditorState {
     isDirty: boolean;
     history: HistoryRecord[];
     currentHistoryIndex: number;
-} 
+}

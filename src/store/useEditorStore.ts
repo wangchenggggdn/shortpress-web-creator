@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { Website, Version, Page, Section, HistoryRecord } from '@/types/editor';
+import { Website, Version, Page, Section, HistoryRecord, SectionType, DataSourceType } from '@/types/editor';
+import { v4 as uuidv4 } from 'uuid';
+
+const generateUniqueId = (prefix: string): string => {
+    return `${prefix}-${Date.now()}-${uuidv4()}`;
+};
 
 interface EditorStore {
     // State
@@ -20,7 +25,7 @@ interface EditorStore {
     setSelectedComponent: (componentId: string | null) => void;
 
     // History actions
-    addToHistory: (action: string, description: string) => void;
+    addToHistory: (newVersion: Version, action: string, description: string) => void;
     undo: () => void;
     redo: () => void;
     clearHistory: () => void;
@@ -31,14 +36,29 @@ interface EditorStore {
     deletePage: (pageId: string) => void;
 
     // Section actions
-    addSection: (pageId: string, section: Section) => void;
+    addSection: (pageId: string, sectionType: SectionType) => void;
     updateSection: (pageId: string, sectionId: string, updates: Partial<Section>) => void;
     deleteSection: (pageId: string, sectionId: string) => void;
     reorderSections: (pageId: string, sectionIds: string[]) => void;
 
     // Save action
     saveVersion: () => void;
+
+    // New actions
+    initializeHistory: (initialVersion: Version) => void;
 }
+
+const createSection = (type: SectionType): Section => ({
+    id: generateUniqueId('section'),
+    type,
+    order: 0,
+    params: {
+        id: generateUniqueId('params'),
+        title: `New ${type} Section`,
+        extend: {},
+        order: 0
+    }
+});
 
 const useEditorStore = create<EditorStore>((set, get) => ({
     // Initial state
@@ -59,16 +79,15 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     setSelectedComponent: (componentId) => set({ selectedComponent: componentId }),
 
     // History actions
-    addToHistory: (action, description) => {
-        const { currentVersion, history, currentHistoryIndex } = get();
-        if (!currentVersion) return;
+    addToHistory: (newVersion: Version, action: string, description: string) => {
+        const { history, currentHistoryIndex } = get();
 
         // Remove any future history if we're not at the latest point
         const newHistory = history.slice(0, currentHistoryIndex + 1);
 
-        // Add new history record
+        // Add new history record with the new version (post-operation state)
         const record: HistoryRecord = {
-            version: JSON.parse(JSON.stringify(currentVersion)), // Deep clone
+            version: JSON.parse(JSON.stringify(newVersion)),
             timestamp: Date.now(),
             action,
             description
@@ -83,23 +102,34 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
     undo: () => {
         const { history, currentHistoryIndex } = get();
-        if (currentHistoryIndex <= 0) return;
+        console.log('undo', history, currentHistoryIndex - 1);
+        // Can only undo if we have at least 2 records (initial state + 1 change)
+        if (currentHistoryIndex < 0) return;
 
-        const previousRecord = history[currentHistoryIndex - 1];
+        const targetState = history[currentHistoryIndex - 1];
+
+        if (!targetState) return;
+
         set({
-            currentVersion: JSON.parse(JSON.stringify(previousRecord.version)), // Deep clone
-            currentHistoryIndex: currentHistoryIndex - 1
+            currentVersion: JSON.parse(JSON.stringify(targetState.version)),
+            currentHistoryIndex: currentHistoryIndex - 1,
+            isDirty: true
         });
     },
 
     redo: () => {
         const { history, currentHistoryIndex } = get();
+        console.log('redo', history, currentHistoryIndex + 1);
+        // Can only redo if we have future history
         if (currentHistoryIndex >= history.length - 1) return;
 
-        const nextRecord = history[currentHistoryIndex + 1];
+        const targetState = history[currentHistoryIndex + 1];
+        if (!targetState) return;
+
         set({
-            currentVersion: JSON.parse(JSON.stringify(nextRecord.version)), // Deep clone
-            currentHistoryIndex: currentHistoryIndex + 1
+            currentVersion: JSON.parse(JSON.stringify(targetState.version)),
+            currentHistoryIndex: currentHistoryIndex + 1,
+            isDirty: true
         });
     },
 
@@ -109,11 +139,19 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     addPage: (page) =>
         set((state) => {
             if (!state.currentVersion) return state;
+
+            // 确保 page.id 是唯一的
+            const pageId = generateUniqueId('page');
+            const newPage = {
+                ...page,
+                id: pageId
+            };
+
             const newVersion = {
                 ...state.currentVersion,
-                pages: [...state.currentVersion.pages, page]
+                pages: [...state.currentVersion.pages, newPage]
             };
-            get().addToHistory('add_page', `Added page: ${page.name}`);
+            get().addToHistory(newVersion, 'add_page', `Added page: ${page.name}`);
             return { currentVersion: newVersion };
         }),
 
@@ -126,7 +164,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                     page.id === pageId ? { ...page, ...updates } : page
                 )
             };
-            get().addToHistory('update_page', `Updated page: ${updates.name || pageId}`);
+            get().addToHistory(newVersion, 'update_page', `Updated page: ${updates.name || pageId}`);
             return { currentVersion: newVersion };
         }),
 
@@ -138,7 +176,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                 ...state.currentVersion,
                 pages: state.currentVersion.pages.filter((page) => page.id !== pageId)
             };
-            get().addToHistory('delete_page', `Deleted page: ${page?.name || pageId}`);
+            get().addToHistory(newVersion, 'delete_page', `Deleted page: ${page?.name || pageId}`);
             return {
                 currentVersion: newVersion,
                 currentPage: state.currentPage === pageId ? null : state.currentPage
@@ -146,20 +184,50 @@ const useEditorStore = create<EditorStore>((set, get) => ({
         }),
 
     // Section actions
-    addSection: (pageId, section) =>
-        set((state) => {
-            if (!state.currentVersion) return state;
-            const newVersion = {
-                ...state.currentVersion,
-                pages: state.currentVersion.pages.map((page) =>
-                    page.id === pageId
-                        ? { ...page, sections: [...page.sections, section] }
-                        : page
-                )
-            };
-            get().addToHistory('add_section', `Added section: ${section.params.title || section.type}`);
-            return { currentVersion: newVersion };
-        }),
+    addSection: (pageId: string, sectionType: SectionType) => {
+        const { currentVersion } = get();
+        if (!currentVersion) return;
+
+        const page = currentVersion.pages.find((p: Page) => p.id === pageId);
+        if (!page) return;
+
+        console.log('Add Section - Before:', {
+            pageId,
+            sectionType,
+            currentSections: page.sections.length
+        });
+
+        // Create new section with correct order
+        const newSection = {
+            ...createSection(sectionType),
+            order: page.sections.length // Set order to current length
+        };
+
+        const newVersion = JSON.parse(JSON.stringify(currentVersion));
+        const targetPage = newVersion.pages.find((p: Page) => p.id === pageId);
+        if (!targetPage) return;
+
+        // Add section and ensure all sections have correct order
+        targetPage.sections.push(newSection);
+        targetPage.sections = targetPage.sections.map((section: Section, index: number) => ({
+            ...section,
+            order: index
+        }));
+
+        console.log('Add Section - After:', {
+            pageId,
+            sectionType,
+            newSections: targetPage.sections.length,
+            sections: targetPage.sections.map((s: Section) => ({
+                id: s.id,
+                type: s.type,
+                order: s.order
+            }))
+        });
+
+        set({ currentVersion: newVersion });
+        get().addToHistory(newVersion, 'add_section', `Added section: ${sectionType}`);
+    },
 
     updateSection: (pageId, sectionId, updates) =>
         set((state) => {
@@ -179,7 +247,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                         : page
                 )
             };
-            get().addToHistory('update_section', `Updated section: ${updates.params?.title || sectionId}`);
+            get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.params?.title || sectionId}`);
             return { currentVersion: newVersion };
         }),
 
@@ -201,7 +269,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                         : page
                 )
             };
-            get().addToHistory('delete_section', `Deleted section: ${section?.params.title || sectionId}`);
+            get().addToHistory(newVersion, 'delete_section', `Deleted section: ${section?.params.title || sectionId}`);
             return {
                 currentVersion: newVersion,
                 currentSection: state.currentSection === sectionId ? null : state.currentSection
@@ -229,7 +297,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                         : page
                 )
             };
-            get().addToHistory('reorder_sections', `Reordered sections in page: ${page?.name || pageId}`);
+            get().addToHistory(newVersion, 'reorder_sections', `Reordered sections in page: ${page?.name || pageId}`);
             return { currentVersion: newVersion };
         }),
 
@@ -237,6 +305,23 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     saveVersion: () => {
         set({ isDirty: false });
         get().clearHistory();
+    },
+
+    // New actions
+    initializeHistory: (initialVersion: Version) => {
+        const initialRecord: HistoryRecord = {
+            version: JSON.parse(JSON.stringify(initialVersion)),
+            timestamp: Date.now(),
+            action: 'initialize',
+            description: 'Initial state'
+        };
+
+        set({
+            history: [initialRecord],
+            currentHistoryIndex: 0,
+            currentVersion: initialVersion,
+            isDirty: false
+        });
     }
 }));
 

@@ -30,13 +30,21 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
         isDirty,
         saveVersion,
         undo,
-        redo
+        redo,
+        initializeHistory
     } = useEditorStore();
 
     // Load website data
     useEffect(() => {
         const loadWebsite = async () => {
             try {
+                // 如果已经有website数据，不需要重新加载
+                if (website && currentVersion) {
+                    console.log('Website data already loaded, skipping initialization');
+                    return;
+                }
+
+                console.log('Loading website data...');
                 const res = await WebsiteApi.editGet(siteId);
                 const websiteData = res.code === 0 && res.data ? res.data : null;
                 
@@ -46,6 +54,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
                     const version = websiteData.versions.find(v => v.number === websiteData.currentVersion);
                     if (version) {
                         setCurrentVersion(version);
+                        initializeHistory(version);
                     }
                 }
             } catch (error) {
@@ -56,7 +65,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
         if (siteId) {
             loadWebsite();
         }
-    }, [siteId, setWebsite, setCurrentVersion]);
+    }, [siteId, website, currentVersion, setWebsite, setCurrentVersion, initializeHistory]);
 
     // Sync route params with store
     useEffect(() => {
@@ -95,17 +104,14 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
 
     // Handle page change
     const handlePageChange = (newPageId: string) => {
-        console.log('handlePageChange2222', newPageId);
         const page = currentVersion?.pages.find(p => p.id === newPageId);
         if (page) {
-            console.log('Navigating to page:', page.name);
             router.push(`/editor/${siteId}/${page.name.toLowerCase()}`);
         }
     };
 
     // Handle section change
     const handleSectionChange = (newSectionId: string | null) => {
-        console.log('handleSectionChange', newSectionId);
         const page = currentVersion?.pages.find(p => p.id === currentPage);
         if (!page) {
             console.log('No current page found');
