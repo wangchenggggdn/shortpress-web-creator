@@ -37,7 +37,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
     // Initialize with server-side data
     useEffect(() => {
-        console.log('initialData', initialData);
         if (!editWebsite && initialData) {
             setEditWebsite(initialData);
             const version = initialData.versions.find((v: Version) => v.id === initialData.currentVersion);
