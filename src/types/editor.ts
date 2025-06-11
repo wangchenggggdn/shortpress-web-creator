@@ -25,13 +25,10 @@ export enum DataSourceType {
  * Base section parameters interface
  */
 export interface BaseSectionParams {
-    id: string;
-    title?: string;
-    description?: string;
-    style?: Record<string, any>;
-    data?: any;
-    order: number;
-    extend: Record<string, any>;
+    extend: {
+        menuItems?: MenuItem[];
+        isGlobal?: boolean;
+    };
 }
 
 /**
@@ -40,62 +37,25 @@ export interface BaseSectionParams {
 export interface MenuItem {
     id: string;
     label: string;
-    path: string;
+    content?: string;
+    image?: string;
     visible: boolean;
+}
+
+export interface pathMenuItem extends MenuItem {
+    path: string;
+}
+
+export interface dataMenuItem extends MenuItem {
+    data: any;
 }
 
 /**
  * Nav menu interface
  */
-export interface NavMenu {
-    showIcon?: boolean;
-    icon?: string;
+export interface NavMenu extends MenuItem {
     items: MenuItem[];
 }
-
-/**
- * Header section specific parameters
- */
-export interface HeaderSectionParams extends BaseSectionParams {
-    extend: {
-        showLogo?: boolean;
-        logo?: string;
-        showLabel?: boolean;
-        label?: string;
-        showSearchIcon?: boolean;
-        showAccountIcon?: boolean;
-        navMenu?: NavMenu;
-        isGlobal?: boolean;
-    };
-}
-
-/**
- * Footer section specific parameters
- */
-export interface FooterSectionParams extends BaseSectionParams {
-    extend: {
-        menuItems?: MenuItem[];
-        footerText?: string;
-        showShortPressLogo?: boolean;
-        isGlobal?: boolean;
-    };
-}
-
-/**
- * Carousel section specific parameters
- */
-export interface CarouselSectionParams extends BaseSectionParams {
-    extend: {
-        contentType?: DataSourceType;
-        items?: Array<any>;
-        headLine?: string;
-    };
-}
-
-/**
- * Union type for all section parameters
- */
-export type SectionParams = HeaderSectionParams | FooterSectionParams | CarouselSectionParams;
 
 /**
  * Section interface
@@ -113,8 +73,13 @@ export interface Section {
  */
 export interface Page {
     id: string;
-    name: string;
     path: string;
+    name: string;
+    metadata?: {
+        title: string;
+        description: string;
+        keywords: string[];
+    };
     sections: Section[];
 }
 
@@ -123,22 +88,19 @@ export interface Page {
  */
 export interface Version {
     id: string;
-    number: number;
     pages: Page[];
-    createdAt: string;
-    updatedAt: string;
-    shareSections?: Array<Section>;
+    shareSections: Section[];
 }
 
 /**
  * Website interface
  */
-export interface Website {
+export interface EditWebsite {
     id: string;
     name: string;
     domain?: string;
     versions: Version[];
-    currentVersion: number;
+    currentVersion: string;
 }
 
 /**
@@ -155,7 +117,7 @@ export interface HistoryRecord {
  * Editor state interface
  */
 export interface EditorState {
-    website: Website | null;
+    website: EditWebsite | null;
     currentVersion: Version | null;
     currentPage: string | null;
     currentSection: string | null;

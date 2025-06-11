@@ -8,19 +8,20 @@ import SectionList from '@/components/editor/section-list';
 import SectionEditor from '@/components/editor/section-editor';
 import Preview from '@/components/editor/preview';
 import WebsiteApi from '@/api/website';
-import { Website, Version } from '@/types/editor';
+import { EditWebsite, Version } from '@/types/editor';
 
 interface EditorLayoutProps {
     siteId: string;
     pageId: string;
     sectionId?: string;
+    initialData: EditWebsite;
 }
 
-const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }) => {
+const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, initialData }) => {
     const router = useRouter();
     const {
-        website,
-        setWebsite,
+        editWebsite,
+        setEditWebsite,
         currentVersion,
         setCurrentVersion,
         currentPage,
@@ -34,38 +35,18 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
         initializeHistory
     } = useEditorStore();
 
-    // Load website data
+    // Initialize with server-side data
     useEffect(() => {
-        const loadWebsite = async () => {
-            try {
-                // 如果已经有website数据，不需要重新加载
-                if (website && currentVersion) {
-                    console.log('Website data already loaded, skipping initialization');
-                    return;
-                }
-
-                console.log('Loading website data...');
-                const res = await WebsiteApi.editGet(siteId);
-                const websiteData = res.code === 0 && res.data ? res.data : null;
-                
-                if (websiteData) {
-                    setWebsite(websiteData);
-                    // Load the current version
-                    const version = websiteData.versions.find(v => v.number === websiteData.currentVersion);
-                    if (version) {
-                        setCurrentVersion(version);
-                        initializeHistory(version);
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to load website:', error);
+        console.log('initialData', initialData);
+        if (!editWebsite && initialData) {
+            setEditWebsite(initialData);
+            const version = initialData.versions.find((v: Version) => v.id === initialData.currentVersion);
+            if (version) {
+                setCurrentVersion(version);
+                initializeHistory(version);
             }
-        };
-
-        if (siteId) {
-            loadWebsite();
         }
-    }, [siteId, website, currentVersion, setWebsite, setCurrentVersion, initializeHistory]);
+    }, [initialData, editWebsite, setEditWebsite, setCurrentVersion, initializeHistory]);
 
     // Sync route params with store
     useEffect(() => {
@@ -131,27 +112,27 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
     };
 
     const handleSave = async () => {
-        if (!website || !isDirty || !currentVersion) return;
+        if (!editWebsite || !isDirty || !currentVersion) return;
 
         try {
             // Create a new version with current pages
-            const res = await WebsiteApi.editCreateVersion(website.id, currentVersion.pages);
+            const res = await WebsiteApi.editCreateVersion(editWebsite.id, currentVersion.pages);
 
             if (res.code === 0 && res.data) {
                 const newVersion = res.data;
                 // Update website with new version
-                const websiteUpdate: Partial<Website> = {
-                    versions: [...website.versions, newVersion],
-                    currentVersion: newVersion.number
+                const websiteUpdate: Partial<EditWebsite> = {
+                    versions: [...editWebsite.versions, newVersion],
+                    currentVersion: newVersion.id
                 };
                 const updateRes = await WebsiteApi.editModify(websiteUpdate);
 
                 if (updateRes.code === 0) {
                     // Update local state
-                    setWebsite({
-                        ...website,
-                        versions: [...website.versions, newVersion],
-                        currentVersion: newVersion.number
+                    setEditWebsite({
+                        ...editWebsite,
+                        versions: [...editWebsite.versions, newVersion],
+                        currentVersion: newVersion.id
                     });
                     setCurrentVersion(newVersion);
                     saveVersion();
@@ -187,7 +168,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId }
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [undo, redo]);
 
-    if (!website || !currentVersion) {
+    if (!editWebsite || !currentVersion) {
         return <div>Loading...</div>;
     }
 

@@ -6,14 +6,14 @@ import PageList from '@/components/editor/page-list';
 import SectionList from '@/components/editor/section-list';
 import Preview from '@/components/editor/preview';
 import WebsiteApi from '@/api/website';
-import { Website, Version } from '@/types/editor';
+import { EditWebsite, Version } from '@/types/editor';
 
 interface EditorClientProps {
     siteId: string;
 }
 
 const EditorClient: React.FC<EditorClientProps> = ({ siteId }) => {
-    const { website, setWebsite, currentVersion, setCurrentVersion, isDirty, saveVersion } = useEditorStore();
+    const { editWebsite, setEditWebsite, currentVersion, setCurrentVersion, isDirty, saveVersion } = useEditorStore();
 
     useEffect(() => {
         const loadWebsite = async () => {
@@ -22,9 +22,9 @@ const EditorClient: React.FC<EditorClientProps> = ({ siteId }) => {
                 const websiteData = res.code === 0 && res.data ? res.data : null;
                 
                 if (websiteData) {
-                    setWebsite(websiteData);
+                    setEditWebsite(websiteData);
                     // Load the current version
-                    const version = websiteData.versions.find(v => v.number === websiteData.currentVersion);
+                    const version = websiteData.versions.find((v: Version) => v.id === websiteData.currentVersion);
                     if (version) {
                         setCurrentVersion(version);
                     }
@@ -37,29 +37,29 @@ const EditorClient: React.FC<EditorClientProps> = ({ siteId }) => {
         if (siteId) {
             loadWebsite();
         }
-    }, [siteId, setWebsite, setCurrentVersion]);
+    }, [siteId, setEditWebsite, setCurrentVersion]);
 
     const handleSave = async () => {
-        if (!website || !isDirty || !currentVersion) return;
+        if (!editWebsite || !isDirty || !currentVersion) return;
 
         try {
             // Create a new version with current pages
-            const res = await WebsiteApi.editCreateVersion(website.id, currentVersion.pages);
+            const res = await WebsiteApi.editCreateVersion(editWebsite.id, currentVersion.pages);
             if (res.code === 0 && res.data) {
                 const newVersion = res.data;
                 // Update website with new version
                 const updateRes = await WebsiteApi.editModify({
-                    id: website.id,
-                    versions: [...website.versions, newVersion],
-                    currentVersion: newVersion.number
-                } as Partial<Website>);
+                    id: editWebsite.id,
+                    versions: [...editWebsite.versions, newVersion],
+                    currentVersion: newVersion.id
+                } as Partial<EditWebsite>);
 
                 if (updateRes.code === 0) {
                     // Update local state
-                    setWebsite({
-                        ...website,
-                        versions: [...website.versions, newVersion],
-                        currentVersion: newVersion.number
+                    setEditWebsite({
+                        ...editWebsite,
+                        versions: [...editWebsite.versions, newVersion],
+                        currentVersion: newVersion.id
                     });
                     setCurrentVersion(newVersion);
                     saveVersion();
@@ -70,7 +70,7 @@ const EditorClient: React.FC<EditorClientProps> = ({ siteId }) => {
         }
     };
 
-    if (!website || !currentVersion) {
+    if (!editWebsite || !currentVersion) {
         return <div>Loading...</div>;
     }
 

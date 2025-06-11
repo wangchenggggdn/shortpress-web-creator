@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Website, Version, Page, Section, HistoryRecord, SectionType, DataSourceType } from '@/types/editor';
+import { EditWebsite, Version, Page, Section, HistoryRecord, SectionType, DataSourceType } from '@/types/editor';
 import { v4 as uuidv4 } from 'uuid';
 
 const generateUniqueId = (prefix: string): string => {
@@ -8,7 +8,7 @@ const generateUniqueId = (prefix: string): string => {
 
 interface EditorStore {
     // State
-    website: Website | null;
+    editWebsite: EditWebsite | null;
     currentVersion: Version | null;
     currentPage: string | null;
     currentSection: string | null;
@@ -18,7 +18,7 @@ interface EditorStore {
     currentHistoryIndex: number;
 
     // Actions
-    setWebsite: (website: Website) => void;
+    setEditWebsite: (website: EditWebsite) => void;
     setCurrentVersion: (version: Version) => void;
     setCurrentPage: (pageId: string | null) => void;
     setCurrentSection: (sectionId: string | null) => void;
@@ -53,16 +53,13 @@ const createSection = (type: SectionType): Section => ({
     type,
     order: 0,
     params: {
-        id: generateUniqueId('params'),
-        title: `New ${type} Section`,
         extend: {},
-        order: 0
     }
 });
 
 const useEditorStore = create<EditorStore>((set, get) => ({
     // Initial state
-    website: null,
+    editWebsite: null,
     currentVersion: null,
     currentPage: null,
     currentSection: null,
@@ -72,7 +69,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     currentHistoryIndex: -1,
 
     // Basic actions
-    setWebsite: (website) => set({ website }),
+    setEditWebsite: (website) => set({ editWebsite: website }),
     setCurrentVersion: (version) => set({ currentVersion: version }),
     setCurrentPage: (pageId) => set({ currentPage: pageId }),
     setCurrentSection: (sectionId) => set({ currentSection: sectionId }),
@@ -247,7 +244,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                         : page
                 )
             };
-            get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.params?.title || sectionId}`);
+            get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
             return { currentVersion: newVersion };
         }),
 
@@ -269,7 +266,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                         : page
                 )
             };
-            get().addToHistory(newVersion, 'delete_section', `Deleted section: ${section?.params.title || sectionId}`);
+            get().addToHistory(newVersion, 'delete_section', `Deleted section: ${section?.type || sectionId}`);
             return {
                 currentVersion: newVersion,
                 currentSection: state.currentSection === sectionId ? null : state.currentSection
