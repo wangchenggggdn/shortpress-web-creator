@@ -12,7 +12,17 @@ export const INITIAL_VERSION: Version = {
                 description: 'Home page',
                 keywords: ['home', 'page']
             },
-            sections: []
+            sections: [
+                {
+                    id: 'footer',
+                    type: SectionType.FOOTER,
+                    order: 0,
+                    params: {
+                        extend: {},
+                    },
+                    isHidden: true
+                }
+            ]
         },
         {
             id: 'explore',

@@ -12,6 +12,7 @@ interface EditorStore {
     currentVersion: Version | null;
     currentPage: string | null;
     currentSection: string | null;
+    shareSections: Section[];
     selectedComponent: string | null;
     isDirty: boolean;
     history: HistoryRecord[];
@@ -22,6 +23,7 @@ interface EditorStore {
     setCurrentVersion: (version: Version) => void;
     setCurrentPage: (pageId: string | null) => void;
     setCurrentSection: (sectionId: string | null) => void;
+    setShareSections: (sections: Section[]) => void;
     setSelectedComponent: (componentId: string | null) => void;
 
     // History actions
@@ -38,6 +40,7 @@ interface EditorStore {
     // Section actions
     addSection: (pageId: string, sectionType: SectionType) => void;
     updateSection: (pageId: string, sectionId: string, updates: Partial<Section>) => void;
+    updateShareSection: (sectionId: string, updates: Partial<Section>) => void;
     deleteSection: (pageId: string, sectionId: string) => void;
     reorderSections: (pageId: string, sectionIds: string[]) => void;
 
@@ -63,6 +66,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     currentVersion: null,
     currentPage: null,
     currentSection: null,
+    shareSections: [],
     selectedComponent: null,
     isDirty: false,
     history: [],
@@ -73,6 +77,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     setCurrentVersion: (version) => set({ currentVersion: version }),
     setCurrentPage: (pageId) => set({ currentPage: pageId }),
     setCurrentSection: (sectionId) => set({ currentSection: sectionId }),
+    setShareSections: (sections) => set({ shareSections: sections }),
     setSelectedComponent: (componentId) => set({ selectedComponent: componentId }),
 
     // History actions
@@ -271,6 +276,19 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                 currentVersion: newVersion,
                 currentSection: state.currentSection === sectionId ? null : state.currentSection
             };
+        }),
+
+    updateShareSection: (sectionId, updates) =>
+        set((state) => {
+            if (!state.currentVersion) return state;
+            const newVersion = {
+                ...state.currentVersion,
+                shareSections: state.shareSections.map((section) =>
+                    section.id === sectionId ? { ...section, ...updates } : section
+                )
+            };
+            get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
+            return { currentVersion: newVersion };
         }),
 
     reorderSections: (pageId, sectionIds) =>

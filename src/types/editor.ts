@@ -27,7 +27,6 @@ export enum DataSourceType {
 export interface BaseSectionParams {
     extend: {
         menuItems?: MenuItem[];
-        isGlobal?: boolean;
     };
 }
 

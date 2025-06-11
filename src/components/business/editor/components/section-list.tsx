@@ -11,6 +11,7 @@ interface SectionListProps {
 
 const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const {
+        shareSections,
         currentVersion,
         currentPage,
         currentSection,
@@ -63,7 +64,8 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     // 获取当前页面的 header 和 footer sections
     const headerSection = currentPageData?.sections.find(s => s.type === SectionType.HEADER);
     const footerSection = currentPageData?.sections.find(s => s.type === SectionType.FOOTER);
-
+    const shareHeaderSection = shareSections.find(s => s.type === SectionType.HEADER);
+    const shareFooterSection = shareSections.find(s => s.type === SectionType.FOOTER);
     return (
         <div className="p-4">
             <div className="flex items-center justify-between mb-4">
@@ -72,7 +74,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
             <div className="space-y-2">
                 {/* Header Section */}
-                <div
+                {headerSection&&!headerSection.isHidden&& <div
                     className={`flex items-center p-2 rounded cursor-pointer ${
                         currentSection === headerSection?.id
                             ? 'bg-blue-100'
@@ -82,7 +84,18 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 >
                     <IconEye size={16} className="mr-2" />
                     <span className="flex-1">Header</span>
-                </div>
+                </div>}
+                {!headerSection&&shareHeaderSection&&!shareHeaderSection.isHidden&& <div
+                    className={`flex items-center p-2 rounded cursor-pointer ${
+                        currentSection === shareHeaderSection?.id
+                            ? 'bg-blue-100'
+                            : 'hover:bg-gray-100'
+                    }`}
+                    onClick={() => shareHeaderSection && handleSectionClick(shareHeaderSection.id)}
+                >
+                    <IconEye size={16} className="mr-2" />
+                    <span className="flex-1">Header</span>
+                </div>}
 
                 {/* Regular Sections */}
                 {currentPageData?.sections
@@ -99,7 +112,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                             onClick={() => handleSectionClick(section.id)}
                         >
                             <span className="flex-1 truncate">
-                                {section.params.title || section.type}
+                                {section.type.toLowerCase()}
                             </span>
                             <button
                                 onClick={e => {
@@ -143,7 +156,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 </div>
 
                 {/* Footer Section */}
-                <div
+                {footerSection&&!footerSection.isHidden&& <div
                     className={`flex items-center p-2 rounded cursor-pointer ${
                         currentSection === footerSection?.id
                             ? 'bg-blue-100'
@@ -153,7 +166,19 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 >
                     <IconEye size={16} className="mr-2" />
                     <span className="flex-1">Footer</span>
-                </div>
+                </div>}
+
+                {!footerSection&&shareFooterSection&&!shareFooterSection.isHidden&& <div
+                    className={`flex items-center p-2 rounded cursor-pointer ${
+                        currentSection === shareFooterSection?.id
+                            ? 'bg-blue-100'
+                            : 'hover:bg-gray-100'   
+                    }`}
+                    onClick={() => shareFooterSection && handleSectionClick(shareFooterSection.id)}
+                >
+                    <IconEye size={16} className="mr-2" />
+                    <span className="flex-1">Footer</span>
+                </div>} 
             </div>
         </div>
     );

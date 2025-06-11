@@ -2,9 +2,9 @@
 
 import React, { useEffect } from 'react';
 import useEditorStore from '@/store/useEditorStore';
-import PageList from '@/components/editor/page-list';
-import SectionList from '@/components/editor/section-list';
-import Preview from '@/components/editor/preview';
+import PageList from '@/components/business/editor/components/page-list';
+import SectionList from '@/components/business/editor/components/section-list';
+import Preview from '@/components/business/editor/components/preview';
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
 
