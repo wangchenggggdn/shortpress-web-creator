@@ -24,6 +24,7 @@ export enum DataSourceType {
 export enum WidgetType {
     DEFAULT = 'default',
     LOGO = 'logo',
+    NAV = 'nav',
     DATA = 'data',
     PATH = 'path',
 }

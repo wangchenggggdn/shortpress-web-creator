@@ -11,8 +11,8 @@ interface EditorStore {
     // State
     editWebsite: EditWebsite | null;
     currentVersion: Version | null;
-    currentPage: string | null;
-    currentSection: string | null;
+    currentPage: Page | null;
+    currentSection: Section | null;
     selectedComponent: string | null;
     isDirty: boolean;
     history: HistoryRecord[];
@@ -21,8 +21,8 @@ interface EditorStore {
     // Actions
     setEditWebsite: (website: EditWebsite) => void;
     setCurrentVersion: (version: Version) => void;
-    setCurrentPage: (pageId: string | null) => void;
-    setCurrentSection: (sectionId: string | null) => void;
+    setCurrentPage: (page: Page | null) => void;
+    setCurrentSection: (section: Section | null) => void;
     setSelectedComponent: (componentId: string | null) => void;
 
     // History actions
@@ -74,8 +74,8 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     // Basic actions
     setEditWebsite: (website) => set({ editWebsite: website }),
     setCurrentVersion: (version) => set({ currentVersion: version }),
-    setCurrentPage: (pageId) => set({ currentPage: pageId }),
-    setCurrentSection: (sectionId) => set({ currentSection: sectionId }),
+    setCurrentPage: (page) => set({ currentPage: page }),
+    setCurrentSection: (section) => set({ currentSection: section }),
     setSelectedComponent: (componentId) => set({ selectedComponent: componentId }),
 
     // History actions
@@ -201,7 +201,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
             get().addToHistory(newVersion, 'delete_page', `Deleted page: ${page?.name || pageId}`);
             return {
                 currentVersion: newVersion,
-                currentPage: state.currentPage === pageId ? null : state.currentPage
+                currentPage: state.currentPage?.id === pageId ? null : state.currentPage
             };
         }),
 
@@ -294,7 +294,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
             get().addToHistory(newVersion, 'delete_section', `Deleted section: ${section?.type || sectionId}`);
             return {
                 currentVersion: newVersion,
-                currentSection: state.currentSection === sectionId ? null : state.currentSection
+                currentSection: state.currentSection?.id === sectionId ? null : state.currentSection
             };
         }),
 

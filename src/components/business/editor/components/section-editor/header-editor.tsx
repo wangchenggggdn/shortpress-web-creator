@@ -3,10 +3,11 @@ import { IconArrowLeft } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { BaseSectionParams, Section, Widget, WidgetType } from '@/types/editor';
 import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/section-editor/common/menu-items';
-import NavMenuEditor from './nav-menu-editor';
+import NavMenuEditor from '../widgetId-editor/nav-menu-editor';
 import { createUniqueUUID } from '@/utils/public';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
+import WidgetIdEditor from '../widgetId-editor';
 
 interface HeaderEditorProps {
     onBack: () => void;
@@ -22,7 +23,7 @@ const MENU_TYPES = {
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     const { currentVersion, currentPage, currentSection, updateSection, updateShareSection } = useEditorStore();
-    const [showNavMenu, setShowNavMenu] = useState(false);
+    const [showWidget, setShowWidget] = useState<Widget | null>(null);
     const [localSection, setLocalSection] = useState<Section | null>(null);
     const [isSharedSection, setIsSharedSection] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +36,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     useEffect(() => {
         if (!currentSection) return;
         // Check if the section is in shareSections
-        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection);
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection.id);
         if (sharedSection) {
             setLocalSection(sharedSection);
             setIsSharedSection(true);
@@ -44,10 +45,10 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
 
         // If not in shareSections, check in currentPage
         if (!currentVersion || !currentPage) return;
-        const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
+        const currentPageData = currentPage;
         if (!currentPageData) return;
         
-        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection);
+        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection.id);
         if (pageSection) {
             setLocalSection(pageSection);
             setIsSharedSection(false);
@@ -69,7 +70,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         if (isSharedSection) {
             updateShareSection(localSection.id, updatedSection);
         } else if (currentPage) {
-            updateSection(currentPage, localSection.id, updatedSection);
+            updateSection(currentPage.id, localSection.id, updatedSection);
         }
     };
 
@@ -150,7 +151,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         const existingItem = widgets.find(item => item.id === id);
         
         if (existingItem) {
-            existingItem.label = value;
+            existingItem.data = value;
         } else {
             widgets.push({
                 id: MENU_TYPES.LABEL,
@@ -174,11 +175,12 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         return null; // or loading state
     }
 
-    if (showNavMenu) {
+    if (showWidget) {
         return (
-            <NavMenuEditor
+            <WidgetIdEditor
                 section={localSection}
-                onBack={() => setShowNavMenu(false)}
+                widget={showWidget}
+                onBack={() => setShowWidget(null)}
             />
         );
     }
@@ -187,9 +189,10 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     const labelItem = getMenuItem(1);
     const searchItem = getMenuItem(2);
     const accountItem = getMenuItem(3);
+    const navItem = getMenuItem(4);
 
     return (
-        <div className="p-4 bg-white">
+        <div className="p-4 bg-white overflow-y-auto h-full">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button
@@ -237,7 +240,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             {/* Nav Menu */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
                 <button
-                    onClick={() => setShowNavMenu(true)}
+                    onClick={() => setShowWidget(navItem)}
                     className="w-full text-left"
                 >
                     <div className="text-[15px] font-medium text-black-purple">Nav Menu</div>

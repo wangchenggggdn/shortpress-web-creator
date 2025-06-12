@@ -79,7 +79,26 @@ export const INITIAL_VERSION: Version = {
                             label: 'Nav Menu',
                             content: '',
                             visible: true,
-                            type: WidgetType.PATH
+                            type: WidgetType.NAV,
+                            widgets: [
+                                {
+                                    id: generateId(),
+                                    label: 'Nav icon',
+                                    type: WidgetType.LOGO
+                                },
+                                {
+                                    id: generateId(),
+                                    label: 'Home',
+                                    type: WidgetType.PATH,
+                                    path: '/home'
+                                },
+                                {
+                                    id: generateId(),
+                                    label: 'Explore',
+                                    type: WidgetType.PATH,
+                                    path: '/explore'
+                                },
+                            ]
                         }
                     ]
                 },

@@ -10,7 +10,7 @@ import InputModal from '@/components/common/input-modal';
 import { createUniqueUUID } from '@/utils/public';
 
 interface PageListProps {
-    onPageChange?: (pageId: string) => void;
+    onPageChange?: (page: Page) => void;
 }
 
 const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
@@ -34,9 +34,9 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         };
 
         addPage(newPage);
-        setCurrentPage(newPage.id);
+        setCurrentPage(newPage);
         if (onPageChange) {
-            onPageChange(newPage.id);
+            onPageChange(newPage);
         }
     };
 
@@ -44,10 +44,10 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         deletePage(pageId);
     };
 
-    const handlePageClick = (pageId: string) => {
-        setCurrentPage(pageId);
+    const handlePageClick = (page: Page) => {
+        setCurrentPage(page);
         if (onPageChange) {
-            onPageChange(pageId);
+            onPageChange(page);
         }
     };
 
@@ -101,41 +101,41 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         return <div className="p-4 text-center text-gray-500">Loading...</div>;
     }
 
-    const renderPageItem = (id: string, name: string, isCustom: boolean = false, page?: Page) => {
-        const isHome = page?.isHome;
+    const renderPageItem = (page: Page, isCustom: boolean = false) => {
+        const isHome = page.isHome;
         
         return (
             <div
-                key={id}
+                key={page.id}
                 className={`flex items-center p-2 rounded-lg cursor-pointer group transition-colors ${
                     isCustom 
-                        ? currentPage === id 
+                        ? currentPage?.id === page.id 
                             ? 'bg-primary text-white' 
                             : 'bg-white border border-gray-200 hover:border-primary hover:text-primary'
                         : 'bg-white border border-gray-200 text-gray-400 cursor-not-allowed'
                 }`}
-                onClick={() => isCustom && handlePageClick(id)}
+                onClick={() => isCustom && handlePageClick(page)}
             >
-                {id === 'home' ? (
+                {page.id === 'home' ? (
                     <IconHome size={18} className={`mr-2 ${
                         isCustom 
-                            ? currentPage === id ? 'text-white' : 'text-gray-400'
+                            ? currentPage?.id === page.id ? 'text-white' : 'text-gray-400'
                             : 'text-gray-400'
                     }`} />
                 ) : (
                     <IconFile size={18} className={`mr-2 ${
                         isCustom 
-                            ? currentPage === id ? 'text-white' : 'text-gray-400'
+                            ? currentPage?.id === page.id ? 'text-white' : 'text-gray-400'
                             : 'text-gray-400'
                     }`} />
                 )}
-                <span className="truncate flex-1 font-medium">{name}</span>
+                <span className="truncate flex-1 font-medium">{page.name}</span>
                 {isCustom && (
                     <div className="flex items-center">
                         {isHome && (
                             <IconHome 
                                 size={18} 
-                                className={`mr-2 ${currentPage === id ? 'text-white' : 'text-primary'}`}
+                                className={`mr-2 ${currentPage?.id === page.id ? 'text-white' : 'text-primary'}`}
                             />
                         )}
                         <Menu position="bottom-end" offset={4} withArrow>
@@ -143,10 +143,10 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                 <button
                                     onClick={e => e.stopPropagation()}
                                     className={`p-1 rounded ${
-                                        currentPage === id ? 'hover:bg-primary-dark' : 'hover:bg-gray-100'
+                                        currentPage?.id === page.id ? 'hover:bg-primary-dark' : 'hover:bg-gray-100'
                                     }`}
                                 >
-                                    <IconDots size={16} className={currentPage === id ? 'text-white' : 'text-gray-500'} />
+                                    <IconDots size={16} className={currentPage?.id === page.id ? 'text-white' : 'text-gray-500'} />
                                 </button>
                             </Menu.Target>
                             <Menu.Dropdown>
@@ -154,7 +154,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                     leftSection={<IconHome size={16} />}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleSetAsHome(page!);
+                                        handleSetAsHome(page);
                                     }}
                                 >
                                     Set as Home page
@@ -172,7 +172,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                     leftSection={<IconCopy size={16} />}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleDuplicatePage(page!);
+                                        handleDuplicatePage(page);
                                     }}
                                 >
                                     Duplicate
@@ -183,7 +183,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                     color="red"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        handleDeletePage(id);
+                                        handleDeletePage(page.id);
                                     }}
                                 >
                                     Delete Page
@@ -213,7 +213,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                     {/* Custom Pages Section */}
                     <div className="px-4">
                         <div className="space-y-1">
-                            {currentVersion.pages.map((page: Page) => renderPageItem(page.id, page.name, true, page))}
+                            {currentVersion.pages.map((page: Page) => renderPageItem(page, true))}
                         </div>
                     </div>
 
@@ -221,7 +221,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                     <div className="p-4 pb-8">
                         <h2 className="text-sm font-medium text-gray-500 mb-2">Default Pages</h2>
                         <div className="space-y-1">
-                            {DEFAULT_PAGES.map((page) => renderPageItem(page.id, page.name))}
+                            {DEFAULT_PAGES.map((page) => renderPageItem(page))}
                         </div>
                     </div>
                 </div>

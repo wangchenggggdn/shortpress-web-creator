@@ -18,11 +18,11 @@ const BaseSection: React.FC<BaseSectionProps> = ({
     children
 }) => {
     const { currentSection, setCurrentSection, selectedComponent } = useEditorStore();
-    const isSelected = currentSection === section.id;
+    const isSelected = currentSection?.id === section.id;
 
     const handleClick = () => {
         if (!isPreview) {
-            setCurrentSection(section.id);
+            setCurrentSection(section);
         }
     };
 
