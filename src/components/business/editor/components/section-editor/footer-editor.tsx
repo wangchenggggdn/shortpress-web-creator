@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IconArrowLeft, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
+import { Section, BaseSectionParams, Widget, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
 interface FooterEditorProps {
@@ -45,12 +45,12 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         }
     }, [currentSection, currentPage, currentVersion, shareSections]);
 
-    const getMenuItem = (type: string): MenuItem | undefined => {
-        return localSection?.params.extend.menuItems?.find(item => item.content === type);
+    const getMenuItem = (type: string): Widget | undefined => {
+        return localSection?.params.extend.widgets?.find(item => item.content === type);
     };
 
-    const getFooterItems = (): MenuItem[] => {
-        const items = localSection?.params.extend.menuItems || [];
+    const getFooterItems = (): Widget[] => {
+        const items = localSection?.params.extend.widgets || [];
         return items.filter(item => item.content === MENU_TYPES.FOOTER_ITEM);
     };
 
@@ -74,41 +74,42 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const handleAddMenuItem = () => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
+        const widgets = [...(localSection.params.extend.widgets || [])];
         
-        const newItem: MenuItem = {
-            id: createUniqueUUID(menuItems.map(item => item.id)),
+        const newItem: Widget = {
+            id: createUniqueUUID(widgets.map(item => item.id)),
             label: 'New Menu Item',
             content: MENU_TYPES.FOOTER_ITEM,
-            visible: true
+            visible: true,
+            type: WidgetType.DEFAULT
         };
         
-        menuItems.push(newItem);
+        widgets.push(newItem);
         
         updateSectionData({
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
     };
 
-    const handleMenuItemUpdate = (itemId: string, updates: Partial<MenuItem>) => {
+    const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const itemIndex = menuItems.findIndex(item => item.id === itemId);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const itemIndex = widgets.findIndex(item => item.id === itemId);
         
         if (itemIndex !== -1) {
-            menuItems[itemIndex] = { ...menuItems[itemIndex], ...updates };
+            widgets[itemIndex] = { ...widgets[itemIndex], ...updates };
             
             updateSectionData({
                 params: {
                     extend: {
                         ...localSection.params.extend,
-                        menuItems
+                        widgets
                     }
                 }
             });
@@ -118,14 +119,14 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const handleMenuItemDelete = (itemId: string) => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const filteredItems = menuItems.filter(item => item.id !== itemId);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const filteredItems = widgets.filter(item => item.id !== itemId);
         
         updateSectionData({
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems: filteredItems
+                    widgets: filteredItems
                 }
             }
         });
@@ -134,23 +135,23 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const handleMenuItemDuplicate = (itemId: string) => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const itemToDuplicate = menuItems.find(item => item.id === itemId);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const itemToDuplicate = widgets.find(item => item.id === itemId);
         
         if (itemToDuplicate) {
-            const newItem: MenuItem = {
+            const newItem: Widget = {
                 ...itemToDuplicate,
-                id: createUniqueUUID(menuItems.map(item => item.id)),
+                id: createUniqueUUID(widgets.map(item => item.id)),
                 label: `${itemToDuplicate.label} (Copy)`
             };
             
-            menuItems.push(newItem);
+            widgets.push(newItem);
             
             updateSectionData({
                 params: {
                     extend: {
                         ...localSection.params.extend,
-                        menuItems
+                        widgets
                     }
                 }
             });
@@ -160,17 +161,18 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const handleFooterTextChange = (text: string) => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const footerText = menuItems.find(item => item.content === MENU_TYPES.FOOTER_TEXT);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const footerText = widgets.find(item => item.content === MENU_TYPES.FOOTER_TEXT);
         
         if (footerText) {
             footerText.label = text;
         } else {
-            menuItems.push({
-                id: createUniqueUUID(menuItems.map(item => item.id)),
+            widgets.push({
+                id: createUniqueUUID(widgets.map(item => item.id)),
                 label: text,
                 content: MENU_TYPES.FOOTER_TEXT,
-                visible: true
+                visible: true,
+                type: WidgetType.DEFAULT
             });
         }
         
@@ -178,7 +180,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
@@ -187,17 +189,18 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const handleToggleShortPressLogo = () => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const shortPressLogo = menuItems.find(item => item.content === MENU_TYPES.SHORTPRESS_LOGO);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const shortPressLogo = widgets.find(item => item.content === MENU_TYPES.SHORTPRESS_LOGO);
         
         if (shortPressLogo) {
             shortPressLogo.visible = !shortPressLogo.visible;
         } else {
-            menuItems.push({
-                id: createUniqueUUID(menuItems.map(item => item.id)),
+            widgets.push({
+                id: createUniqueUUID(widgets.map(item => item.id)),
                 label: 'ShortPress Logo',
                 content: MENU_TYPES.SHORTPRESS_LOGO,
-                visible: true
+                visible: true,
+                type: WidgetType.LOGO
             });
         }
         
@@ -205,7 +208,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });

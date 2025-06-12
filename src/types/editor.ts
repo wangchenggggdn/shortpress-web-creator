@@ -21,12 +21,19 @@ export enum DataSourceType {
     NEW_RELEASE = 'new_release'
 }
 
+export enum WidgetType {
+    DEFAULT = 'default',
+    LOGO = 'logo',
+    DATA = 'data',
+    PATH = 'path',
+}
+
 /**
  * Base section parameters interface
  */
 export interface BaseSectionParams {
     extend: {
-        menuItems?: MenuItem[];
+        widgets?: Widget[];
         notSharePages?: string[];
     };
 }
@@ -34,27 +41,28 @@ export interface BaseSectionParams {
 /**
  * Menu item interface
  */
-export interface MenuItem {
+export interface Widget {
     id: string;
     label: string;
+    type: WidgetType;
     content?: string;
     image?: string;
     visible: boolean;
 }
 
-export interface pathMenuItem extends MenuItem {
+export interface PathWidget extends Widget {
+    type: WidgetType.PATH;
     path: string;
 }
 
-export interface dataMenuItem extends MenuItem {
+export interface DataWidget extends Widget {
+    type: WidgetType.DATA;
     data: any;
 }
 
-/**
- * Nav menu interface
- */
-export interface NavMenu extends MenuItem {
-    items: MenuItem[];
+export interface NavMenu extends Widget {
+    type: WidgetType.PATH;
+    widgets: Widget[];
 }
 
 /**

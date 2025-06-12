@@ -1,4 +1,4 @@
-import { Version, Page, SectionType } from '@/types/editor';
+import { Version, Page, SectionType, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
 // 创建一个存储所有已使用ID的Set
@@ -44,7 +44,45 @@ export const INITIAL_VERSION: Version = {
             type: SectionType.HEADER,
             order: 0,
             params: {
-                extend: {},
+                extend: {
+                    widgets: [
+                        {
+                            id: generateId(),
+                            label: 'Logo',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.LOGO
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Label',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.DATA
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Search',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.DEFAULT
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Account',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.DEFAULT
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Nav Menu',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.PATH
+                        }
+                    ]
+                },
             }
         }, {
             id: generateId(),
@@ -52,7 +90,37 @@ export const INITIAL_VERSION: Version = {
             order: 0,
             params: {
                 extend: {
-                    notSharePages: ['/']
+                    widgets: [
+                        {
+                            id: generateId(),
+                            label: 'Terms of Service',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.PATH
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Privacy Policy',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.PATH
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Footer Text',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.DATA
+                        },
+                        {
+                            id: generateId(),
+                            label: 'logo',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.LOGO
+                        }
+                    ],
+                    notSharePages: ['/home']
                 },
             }
         }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconX } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, DataSourceType, BaseSectionParams, MenuItem } from '@/types/editor';
+import { Section, DataSourceType, BaseSectionParams, Widget, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
 interface CarouselEditorProps {
@@ -18,24 +18,25 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
     const [showContentSelector, setShowContentSelector] = useState(false);
     const params = section.params as BaseSectionParams;
 
-    const getContentItem = (): MenuItem | undefined => {
-        return params.extend.menuItems?.find(item => item.content === MENU_TYPES.CONTENT);
+    const getContentItem = (): Widget | undefined => {
+        return params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
     };
 
     const handleContentTypeSelect = (type: DataSourceType) => {
         if (!currentPage) return;
         
-        const menuItems = [...(params.extend.menuItems || [])];
-        const contentItem = menuItems.find(item => item.content === MENU_TYPES.CONTENT);
+        const widgets = [...(params.extend.widgets || [])];
+        const contentItem = widgets.find(item => item.content === MENU_TYPES.CONTENT);
         
         if (contentItem) {
             contentItem.label = type;
         } else {
-            menuItems.push({
-                id: createUniqueUUID(menuItems.map(item => item.id)),
+            widgets.push({
+                id: createUniqueUUID(widgets.map(item => item.id)),
                 label: type,
                 content: MENU_TYPES.CONTENT,
-                visible: true
+                visible: true,
+                type: WidgetType.DATA
             });
         }
         
@@ -43,7 +44,7 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
             params: {
                 extend: {
                     ...params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });

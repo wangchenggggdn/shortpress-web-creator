@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
+import { Section, BaseSectionParams, WidgetType, Widget } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
 interface NavMenuEditorProps {
@@ -19,11 +19,11 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const params = section.params as BaseSectionParams;
 
-    const getNavMenu = (): MenuItem | undefined => {
-        return params.extend.menuItems?.find(item => item.content === MENU_TYPES.NAV);
+    const getNavMenu = (): Widget | undefined => {
+        return params.extend.widgets?.find(item => item.content === MENU_TYPES.NAV);
     };
 
-    const getNavItems = (): MenuItem[] => {
+    const getNavItems = (): Widget[] => {
         const navMenu = getNavMenu();
         if (!navMenu?.content) return [];
         try {
@@ -39,18 +39,19 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
         // TODO: Implement file upload
         console.log('Upload nav icon:', file);
         
-        const menuItems = [...(params.extend.menuItems || [])];
-        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        const widgets = [...(params.extend.widgets || [])];
+        const navMenu = widgets.find(item => item.content === MENU_TYPES.NAV);
         
         if (navMenu) {
             navMenu.image = URL.createObjectURL(file);
         } else {
-            menuItems.push({
-                id: createUniqueUUID(menuItems.map(item => item.id)),
+            widgets.push({
+                id: createUniqueUUID(widgets.map(item => item.id)),
                 label: 'Navigation Menu',
                 content: JSON.stringify([]),
                 image: URL.createObjectURL(file),
-                visible: true
+                visible: true,
+                type: WidgetType.DEFAULT
             });
         }
         
@@ -58,7 +59,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
             params: {
                 extend: {
                     ...params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
@@ -67,25 +68,27 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
     const handleAddMenuItem = () => {
         if (!currentPage) return;
         
-        const menuItems = [...(params.extend.menuItems || [])];
-        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        const widgets = [...(params.extend.widgets || [])];
+        const navMenu = widgets.find(item => item.content === MENU_TYPES.NAV);
         
-        const newItem: MenuItem = {
-            id: createUniqueUUID(menuItems.map(item => item.id)),
+        const newItem: Widget = {
+            id: createUniqueUUID(widgets.map(item => item.id)),
             label: 'New Menu Item',
             content: MENU_TYPES.NAV_ITEM,
-            visible: true
+            visible: true,
+            type: WidgetType.DEFAULT
         };
         
         if (navMenu) {
             const items = getNavItems();
             navMenu.content = JSON.stringify([...items, newItem]);
         } else {
-            menuItems.push({
-                id: createUniqueUUID([...menuItems.map(item => item.id), newItem.id]),
+            widgets.push({
+                id: createUniqueUUID([...widgets.map(item => item.id), newItem.id]),
                 label: 'Navigation Menu',
                 content: JSON.stringify([newItem]),
-                visible: true
+                visible: true,
+                type: WidgetType.DEFAULT
             });
         }
         
@@ -93,17 +96,17 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
             params: {
                 extend: {
                     ...params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
     };
 
-    const handleMenuItemUpdate = (itemId: string, updates: Partial<MenuItem>) => {
+    const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
         if (!currentPage) return;
         
-        const menuItems = [...(params.extend.menuItems || [])];
-        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        const widgets = [...(params.extend.widgets || [])];
+        const navMenu = widgets.find(item => item.content === MENU_TYPES.NAV);
         
         if (navMenu) {
             const items = getNavItems();
@@ -116,7 +119,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
                 params: {
                     extend: {
                         ...params.extend,
-                        menuItems
+                        widgets
                     }
                 }
             });
@@ -126,8 +129,8 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
     const handleMenuItemDelete = (itemId: string) => {
         if (!currentPage) return;
         
-        const menuItems = [...(params.extend.menuItems || [])];
-        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        const widgets = [...(params.extend.widgets || [])];
+        const navMenu = widgets.find(item => item.content === MENU_TYPES.NAV);
         
         if (navMenu) {
             const items = getNavItems();
@@ -138,7 +141,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
                 params: {
                     extend: {
                         ...params.extend,
-                        menuItems
+                        widgets
                     }
                 }
             });
@@ -148,15 +151,15 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
     const handleMenuItemDuplicate = (itemId: string) => {
         if (!currentPage) return;
         
-        const menuItems = [...(params.extend.menuItems || [])];
-        const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+        const widgets = [...(params.extend.widgets || [])];
+        const navMenu = widgets.find(item => item.content === MENU_TYPES.NAV);
         
         if (navMenu) {
             const items = getNavItems();
             const itemToDuplicate = items.find(item => item.id === itemId);
             
             if (itemToDuplicate) {
-                const newItem: MenuItem = {
+                const newItem: Widget = {
                     ...itemToDuplicate,
                     id: createUniqueUUID([...items.map(item => item.id)]),
                     label: `${itemToDuplicate.label} (Copy)`
@@ -168,7 +171,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
                     params: {
                         extend: {
                             ...params.extend,
-                            menuItems
+                            widgets
                         }
                     }
                 });
@@ -204,15 +207,15 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
                         />
                         <button
                             onClick={() => {
-                                const menuItems = [...(params.extend.menuItems || [])];
-                                const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
+                                const widgets = [...(params.extend.widgets || [])];
+                                const navMenu = widgets.find(item => item.content === MENU_TYPES.NAV);
                                 if (navMenu) {
                                     navMenu.image = undefined;
                                     updateSection(currentPage!, section.id, { 
                                         params: {
                                             extend: {
                                                 ...params.extend,
-                                                menuItems
+                                                widgets
                                             }
                                         }
                                     });

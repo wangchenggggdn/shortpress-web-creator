@@ -311,6 +311,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                     section.id === sectionId ? { ...section, ...updates } : section
                 )
             };
+            console.log('updateShareSection', newVersion);
             get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
             return { currentVersion: newVersion };
         }),

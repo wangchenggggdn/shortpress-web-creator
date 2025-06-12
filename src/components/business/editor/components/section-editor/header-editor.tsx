@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { IconArrowLeft } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { BaseSectionParams, Section, MenuItem, Page } from '@/types/editor';
+import { BaseSectionParams, Section, Widget, WidgetType } from '@/types/editor';
 import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/section-editor/common/menu-items';
 import NavMenuEditor from './nav-menu-editor';
+import { createUniqueUUID } from '@/utils/public';
 
 interface HeaderEditorProps {
     onBack: () => void;
@@ -18,24 +19,28 @@ const MENU_TYPES = {
 } as const;
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
-    const { currentVersion, currentPage, currentSection, updateSection, updateShareSection, shareSections } = useEditorStore();
+    const { currentVersion, currentPage, currentSection, updateSection, updateShareSection, shareSections,setShareSections } = useEditorStore();
     const [showNavMenu, setShowNavMenu] = useState(false);
     const [localSection, setLocalSection] = useState<Section | null>(null);
     const [labelValue, setLabelValue] = useState('');
     const [isSharedSection, setIsSharedSection] = useState(false);
 
-    
+    useEffect(() => {
+        console.log('localSection', localSection);
+    }, [localSection]);
 
     // Sync with store when version changes
     useEffect(() => {
         if (!currentSection) return;
+        console.log('currentVersion', currentVersion);
         // Check if the section is in shareSections
-        const sharedSection = shareSections.find((s: Section) => s.id === currentSection);
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection);
+        console.log('111111111111-------',sharedSection);
         if (sharedSection) {
             setLocalSection(sharedSection);
             setIsSharedSection(true);
             // Update label value if exists
-            const labelItem = sharedSection.params.extend.menuItems?.find((item: MenuItem) => item.content === MENU_TYPES.LABEL);
+            const labelItem = sharedSection.params.extend.widgets?.find((item: Widget) => item.content === MENU_TYPES.LABEL);
             if (labelItem) {
                 setLabelValue(labelItem.label || '');
             }
@@ -44,7 +49,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
 
         // If not in shareSections, check in currentPage
         if (!currentVersion || !currentPage) return;
-        
+        console.log('222222222222-------');
         const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
         if (!currentPageData) return;
         
@@ -53,7 +58,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             setLocalSection(pageSection);
             setIsSharedSection(false);
             // Update label value if exists
-            const labelItem = pageSection.params.extend.menuItems?.find((item: MenuItem) => item.content === MENU_TYPES.LABEL);
+            const labelItem = pageSection.params.extend.widgets?.find((item: Widget) => item.content === MENU_TYPES.LABEL);
             if (labelItem) {
                 setLabelValue(labelItem.label || '');
             }
@@ -61,7 +66,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     }, [currentSection, currentPage, currentVersion, shareSections]);
 
     const getMenuItem = (type: string) => {
-        return localSection?.params.extend.menuItems?.find(item => item.content === type);
+        return localSection?.params.extend.widgets?.find(item => item.content === type);
     };
 
     const updateSectionData = (updates: Partial<Section>) => {
@@ -72,40 +77,42 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             ...updates
         };
         
-        console.log('updateSectionData', updatedSection);
-
-        setLocalSection(updatedSection);
         if (isSharedSection) {
-            updateShareSection(localSection.id, updates);
+            updateShareSection(localSection.id, updatedSection);
         } else if (currentPage) {
-            updateSection(currentPage, localSection.id, updates);
+            updateSection(currentPage, localSection.id, updatedSection);
         }
     };
 
-    const handleToggle = (type: string) => {
+    const handleToggle = (id: string, type: string) => {
         if (!localSection) return;
 
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const existingItem = menuItems.find(item => item.content === type);
+        console.log('id--------:', id);
+        console.log('handleToggle', localSection);
+
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const existingItem = widgets.find(item => item.content === id);
         
         if (existingItem) {
             console.log('2222222222222');
             existingItem.visible = !existingItem.visible;
         } else {
             console.log('1111111111111');
-            menuItems.push({
-                id: type,
+            widgets.push({
+                id: createUniqueUUID(widgets.map(item => item.id)),
                 label: type,
                 content: type,
-                visible: true
+                visible: true,
+                type: WidgetType.DEFAULT
             });
         }
 
+        console.log('widgets', widgets);
         updateSectionData({
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
@@ -114,18 +121,19 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     const handleLogoUpload = async (file: File) => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const existingItem = menuItems.find(item => item.content === MENU_TYPES.LOGO);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const existingItem = widgets.find(item => item.content === MENU_TYPES.LOGO);
         
         if (existingItem) {
             existingItem.image = URL.createObjectURL(file);
         } else {
-            menuItems.push({
+            widgets.push({
                 id: MENU_TYPES.LOGO,
                 label: 'Logo',
                 content: MENU_TYPES.LOGO,
                 image: URL.createObjectURL(file),
-                visible: true
+                visible: true,
+                type: WidgetType.LOGO
             });
         }
         
@@ -133,7 +141,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
@@ -146,24 +154,25 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     const handleLabelBlur = () => {
         if (!localSection) return;
         
-        const menuItems = [...(localSection.params.extend.menuItems || [])];
-        const existingItem = menuItems.find(item => item.content === MENU_TYPES.LABEL);
+        const widgets = [...(localSection.params.extend.widgets || [])];
+        const existingItem = widgets.find(item => item.content === MENU_TYPES.LABEL);
         
         if (existingItem) {
             existingItem.label = labelValue;
         } else {
-            menuItems.push({
+            widgets.push({
                 id: MENU_TYPES.LABEL,
                 label: labelValue,
                 content: MENU_TYPES.LABEL,
-                visible: true
+                visible: true,
+                type: WidgetType.DEFAULT
             });
         }
         updateSectionData({
             params: {
                 extend: {
                     ...localSection.params.extend,
-                    menuItems
+                    widgets
                 }
             }
         });
@@ -209,14 +218,14 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             <LogoMenuItem
                 title="Logo"
                 menuItem={logoItem}
-                onToggle={() => handleToggle(MENU_TYPES.LOGO)}
+                onToggle={() => handleToggle(logoItem?.id??'',MENU_TYPES.LOGO)}
                 onUpload={handleLogoUpload}
             />
 
             <LabelMenuItem
                 title="Label"
                 menuItem={labelItem}
-                onToggle={() => handleToggle(MENU_TYPES.LABEL)}
+                onToggle={() => handleToggle(labelItem?.id??'',MENU_TYPES.LABEL)}
                 onChange={handleLabelChange}
                 onBlur={handleLabelBlur}
                 value={labelValue}
@@ -225,13 +234,13 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             <IconMenuItem
                 title="Search Icon"
                 menuItem={searchItem}
-                onToggle={() => handleToggle(MENU_TYPES.SEARCH)}
+                onToggle={() => handleToggle(searchItem?.id??'',MENU_TYPES.SEARCH)}
             />
 
             <IconMenuItem
                 title="Account Icon"
                 menuItem={accountItem}
-                onToggle={() => handleToggle(MENU_TYPES.ACCOUNT)}
+                onToggle={() => handleToggle(accountItem?.id??'',MENU_TYPES.ACCOUNT)}
             />
 
             {/* Nav Menu */}
