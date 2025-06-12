@@ -3,7 +3,7 @@ import { IconMenuItemProps } from './types';
 
 const IconMenuItem: React.FC<IconMenuItemProps> = ({
     title,
-    menuItem,
+    widget,
     onToggle,
 }) => {
     return (
@@ -14,7 +14,7 @@ const IconMenuItem: React.FC<IconMenuItemProps> = ({
                     <input
                         type="checkbox"
                         className="sr-only peer"
-                        checked={menuItem?.visible ?? true}
+                        checked={widget?.visible ?? true}
                         onChange={onToggle}
                     />
                     <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>

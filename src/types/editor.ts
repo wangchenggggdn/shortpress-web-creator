@@ -33,7 +33,7 @@ export enum WidgetType {
  */
 export interface BaseSectionParams {
     extend: {
-        widgets?: Widget[];
+        widgets?: any[];
         notSharePages?: string[];
     };
 }

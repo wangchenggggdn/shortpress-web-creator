@@ -5,6 +5,8 @@ import { BaseSectionParams, Section, Widget, WidgetType } from '@/types/editor';
 import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/section-editor/common/menu-items';
 import NavMenuEditor from './nav-menu-editor';
 import { createUniqueUUID } from '@/utils/public';
+import CreatorApi from '@/api/creator';
+import { toast } from 'sonner';
 
 interface HeaderEditorProps {
     onBack: () => void;
@@ -22,8 +24,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     const { currentVersion, currentPage, currentSection, updateSection, updateShareSection } = useEditorStore();
     const [showNavMenu, setShowNavMenu] = useState(false);
     const [localSection, setLocalSection] = useState<Section | null>(null);
-    const [labelValue, setLabelValue] = useState('');
     const [isSharedSection, setIsSharedSection] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         console.log('localSection', localSection);
@@ -37,11 +39,6 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         if (sharedSection) {
             setLocalSection(sharedSection);
             setIsSharedSection(true);
-            // Update label value if exists
-            const labelItem = sharedSection.params.extend.widgets?.find((item: Widget) => item.content === MENU_TYPES.LABEL);
-            if (labelItem) {
-                setLabelValue(labelItem.label || '');
-            }
             return;
         }
 
@@ -54,11 +51,6 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         if (pageSection) {
             setLocalSection(pageSection);
             setIsSharedSection(false);
-            // Update label value if exists
-            const labelItem = pageSection.params.extend.widgets?.find((item: Widget) => item.content === MENU_TYPES.LABEL);
-            if (labelItem) {
-                setLabelValue(labelItem.label || '');
-            }
         }
     }, [currentSection, currentPage, currentVersion]);
 
@@ -108,20 +100,34 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         });
     };
 
-    const handleLogoUpload = async (file: File) => {
+    const handleLogoUpload = async (id: string,file: File) => {
+        let imageUrl = '';
+        if(file){
+            setIsLoading(true);
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await CreatorApi.uploadFile(formData);
+            setIsLoading(false);
+            if(res.code === 0){
+                imageUrl = res.data ?? '';
+            }else{
+                toast.error(res.info);
+                return;
+            }
+        }
         if (!localSection) return;
         
         const widgets = [...(localSection.params.extend.widgets || [])];
-        const existingItem = widgets.find(item => item.content === MENU_TYPES.LOGO);
+        const existingItem = widgets.find(item => item.id === id);
         
         if (existingItem) {
-            existingItem.image = URL.createObjectURL(file);
+            existingItem.image = imageUrl;
         } else {
             widgets.push({
                 id: MENU_TYPES.LOGO,
                 label: 'Logo',
                 content: MENU_TYPES.LOGO,
-                image: URL.createObjectURL(file),
+                image: imageUrl,
                 visible: true,
                 type: WidgetType.LOGO
             });
@@ -137,22 +143,18 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         });
     };
 
-    const handleLabelChange = (value: string) => {
-        setLabelValue(value);
-    };
-
-    const handleLabelBlur = () => {
+    const handleLabelBlur = (id: string,value: string) => {
         if (!localSection) return;
         
         const widgets = [...(localSection.params.extend.widgets || [])];
-        const existingItem = widgets.find(item => item.content === MENU_TYPES.LABEL);
+        const existingItem = widgets.find(item => item.id === id);
         
         if (existingItem) {
-            existingItem.label = labelValue;
+            existingItem.label = value;
         } else {
             widgets.push({
                 id: MENU_TYPES.LABEL,
-                label: labelValue,
+                label: value,
                 content: MENU_TYPES.LABEL,
                 visible: true,
                 type: WidgetType.DEFAULT
@@ -206,30 +208,29 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
 
             {/* Menu Items */}
             <LogoMenuItem
+                isLoading={isLoading}
                 title="Logo"
-                menuItem={logoItem}
+                widget={logoItem}
                 onToggle={() => handleToggle(logoItem?.id??'',MENU_TYPES.LOGO)}
-                onUpload={handleLogoUpload}
+                onUpload={(file) => handleLogoUpload(logoItem?.id??'',file)}
             />
 
             <LabelMenuItem
                 title="Label"
-                menuItem={labelItem}
+                widget={labelItem}
                 onToggle={() => handleToggle(labelItem?.id??'',MENU_TYPES.LABEL)}
-                onChange={handleLabelChange}
-                onBlur={handleLabelBlur}
-                value={labelValue}
+                onBlur={(value) => handleLabelBlur(labelItem?.id??'',value)}
             />
 
             <IconMenuItem
                 title="Search Icon"
-                menuItem={searchItem}
+                widget={searchItem}
                 onToggle={() => handleToggle(searchItem?.id??'',MENU_TYPES.SEARCH)}
             />
 
             <IconMenuItem
                 title="Account Icon"
-                menuItem={accountItem}
+                widget={accountItem}
                 onToggle={() => handleToggle(accountItem?.id??'',MENU_TYPES.ACCOUNT)}
             />
 

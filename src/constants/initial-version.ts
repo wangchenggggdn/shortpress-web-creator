@@ -58,7 +58,7 @@ export const INITIAL_VERSION: Version = {
                             label: 'Label',
                             content: '',
                             visible: true,
-                            type: WidgetType.DATA
+                            type: WidgetType.DATA,
                         },
                         {
                             id: generateId(),

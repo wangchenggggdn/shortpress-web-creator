@@ -1,20 +1,19 @@
-import { MenuItem } from '@/types/editor';
+import { Widget } from '@/types/editor';
 
 export interface BaseMenuItemProps {
     title: string;
-    menuItem?: MenuItem;
+    widget?: any;
     onToggle: () => void;
 }
 
 export interface LogoMenuItemProps extends BaseMenuItemProps {
+    isLoading?: boolean;
     icon?: React.ReactNode;
     onUpload: (file: File) => void;
 }
 
 export interface LabelMenuItemProps extends BaseMenuItemProps {
-    onChange: (value: string) => void;
-    onBlur?: () => void;
-    value?: string;
+    onBlur?: (value: string) => void;
 }
 
 export interface IconMenuItemProps extends BaseMenuItemProps { } 
