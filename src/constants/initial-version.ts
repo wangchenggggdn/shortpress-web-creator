@@ -1,11 +1,22 @@
 import { Version, Page, SectionType } from '@/types/editor';
+import { createUniqueUUID } from '@/utils/public';
+
+// 创建一个存储所有已使用ID的Set
+const usedIds = new Set<string>();
+
+// 生成唯一ID的辅助函数
+const generateId = () => {
+    const newId = createUniqueUUID(usedIds);
+    usedIds.add(newId);
+    return newId;
+};
 
 export const INITIAL_VERSION: Version = {
-    id: 'initial',
+    id: generateId(),
     pages: [
         {
-            id: 'home',
-            path: '/',
+            id: generateId(),
+            path: '/home',
             name: 'Home',
             isHome: true,
             metadata: {
@@ -16,7 +27,7 @@ export const INITIAL_VERSION: Version = {
             sections: []
         },
         {
-            id: 'explore',
+            id: generateId(),
             path: '/explore',
             name: 'Explore',
             metadata: {
@@ -29,14 +40,14 @@ export const INITIAL_VERSION: Version = {
     ],
     shareSections: [
         {
-            id: 'header',
+            id: generateId(),
             type: SectionType.HEADER,
             order: 0,
             params: {
                 extend: {},
             }
         }, {
-            id: 'footer',
+            id: generateId(),
             type: SectionType.FOOTER,
             order: 0,
             params: {
@@ -50,43 +61,43 @@ export const INITIAL_VERSION: Version = {
 
 export const DEFAULT_PAGES: Page[] = [
     {
-        id: '404',
+        id: generateId(),
         name: '404',
         path: '404',
         sections: []
     },
     {
-        id: 'search-result',
+        id: generateId(),
         name: 'Search Result',
         path: 'search-result',
         sections: []
     },
     {
-        id: 'category',
+        id: generateId(),
         name: 'Category',
         path: 'category',
         sections: []
     },
     {
-        id: 'playlist',
+        id: generateId(),
         name: 'Playlist',
         path: 'playlist',
         sections: []
     },
     {
-        id: 'player',
+        id: generateId(),
         name: 'Player',
         path: 'player',
         sections: []
     },
     {
-        id: 'privacy-policy',
+        id: generateId(),
         name: 'Privacy Policy',
         path: 'privacy-policy',
         sections: []
     },
     {
-        id: 'terms-of-service',
+        id: generateId(),
         name: 'Terms of Service',
         path: 'terms-of-service',
         sections: []

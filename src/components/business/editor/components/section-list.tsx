@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { IconPlus, IconTrash, IconEye, IconEyeOff } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
+import { createUniqueUUID } from '@/utils/public';
 
 interface SectionListProps {
     onSectionChange?: (sectionId: string | null) => void;

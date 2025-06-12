@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IconArrowLeft, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
-import { v4 as uuidv4 } from 'uuid';
+import { createUniqueUUID } from '@/utils/public';
 
 interface FooterEditorProps {
     onBack: () => void;
@@ -77,7 +77,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         const menuItems = [...(localSection.params.extend.menuItems || [])];
         
         const newItem: MenuItem = {
-            id: uuidv4(),
+            id: createUniqueUUID(menuItems.map(item => item.id)),
             label: 'New Menu Item',
             content: MENU_TYPES.FOOTER_ITEM,
             visible: true
@@ -140,7 +140,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         if (itemToDuplicate) {
             const newItem: MenuItem = {
                 ...itemToDuplicate,
-                id: uuidv4(),
+                id: createUniqueUUID(menuItems.map(item => item.id)),
                 label: `${itemToDuplicate.label} (Copy)`
             };
             
@@ -167,7 +167,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             footerText.label = text;
         } else {
             menuItems.push({
-                id: MENU_TYPES.FOOTER_TEXT,
+                id: createUniqueUUID(menuItems.map(item => item.id)),
                 label: text,
                 content: MENU_TYPES.FOOTER_TEXT,
                 visible: true
@@ -194,7 +194,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             shortPressLogo.visible = !shortPressLogo.visible;
         } else {
             menuItems.push({
-                id: MENU_TYPES.SHORTPRESS_LOGO,
+                id: createUniqueUUID(menuItems.map(item => item.id)),
                 label: 'ShortPress Logo',
                 content: MENU_TYPES.SHORTPRESS_LOGO,
                 visible: true

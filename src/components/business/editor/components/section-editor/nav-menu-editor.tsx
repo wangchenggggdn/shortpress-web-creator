@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
-import { v4 as uuidv4 } from 'uuid';
+import { createUniqueUUID } from '@/utils/public';
 
 interface NavMenuEditorProps {
     section: Section;
@@ -46,7 +46,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
             navMenu.image = URL.createObjectURL(file);
         } else {
             menuItems.push({
-                id: MENU_TYPES.NAV,
+                id: createUniqueUUID(menuItems.map(item => item.id)),
                 label: 'Navigation Menu',
                 content: JSON.stringify([]),
                 image: URL.createObjectURL(file),
@@ -71,7 +71,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
         const navMenu = menuItems.find(item => item.content === MENU_TYPES.NAV);
         
         const newItem: MenuItem = {
-            id: uuidv4(),
+            id: createUniqueUUID(menuItems.map(item => item.id)),
             label: 'New Menu Item',
             content: MENU_TYPES.NAV_ITEM,
             visible: true
@@ -82,7 +82,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
             navMenu.content = JSON.stringify([...items, newItem]);
         } else {
             menuItems.push({
-                id: MENU_TYPES.NAV,
+                id: createUniqueUUID([...menuItems.map(item => item.id), newItem.id]),
                 label: 'Navigation Menu',
                 content: JSON.stringify([newItem]),
                 visible: true
@@ -158,7 +158,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ section, onBack }) => {
             if (itemToDuplicate) {
                 const newItem: MenuItem = {
                     ...itemToDuplicate,
-                    id: uuidv4(),
+                    id: createUniqueUUID([...items.map(item => item.id)]),
                     label: `${itemToDuplicate.label} (Copy)`
                 };
                 

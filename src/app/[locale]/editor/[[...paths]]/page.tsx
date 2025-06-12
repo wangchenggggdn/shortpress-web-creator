@@ -1,6 +1,7 @@
 import React from 'react';
 import EditorLayout from '@/components/business/editor/editor-layout';
 import { INITIAL_VERSION } from '@/constants/initial-version';
+import { redirect } from 'next/navigation';
 
 interface EditorSectionPageProps {
     params: {
@@ -11,10 +12,9 @@ interface EditorSectionPageProps {
 const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) => {
     const { paths } = params;
     const siteId = paths?.[0];
-    const pageId = paths?.[1]??'home';
+    const pageId = paths?.[1];
     const sectionId = paths?.[2];
 
-    console.log('paths:', paths);
     if (!siteId ) {
         return <div>Failed to load website data</div>;
     }
@@ -30,7 +30,7 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
     return (
         <EditorLayout
             siteId={siteId}
-            pageId={pageId}
+            pageId={pageId??''}
             sectionId={sectionId}
             initialData={initialData}
         />

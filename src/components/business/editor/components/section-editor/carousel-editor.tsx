@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IconX } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, DataSourceType, BaseSectionParams, MenuItem } from '@/types/editor';
+import { createUniqueUUID } from '@/utils/public';
 
 interface CarouselEditorProps {
     section: Section;
@@ -31,7 +32,7 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
             contentItem.label = type;
         } else {
             menuItems.push({
-                id: MENU_TYPES.CONTENT,
+                id: createUniqueUUID(menuItems.map(item => item.id)),
                 label: type,
                 content: MENU_TYPES.CONTENT,
                 visible: true

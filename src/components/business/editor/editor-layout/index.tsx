@@ -40,8 +40,16 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     // Initialize with server-side data
     useEffect(() => {
         if (!editWebsite && initialData) {
-            setEditWebsite(initialData);
-            const version = initialData.versions.find((v: Version) => v.id === initialData.currentVersion);
+            let nowData = initialData;
+            const initialDataLocal = localStorage.getItem('initialData');
+            if(initialDataLocal){
+                nowData = JSON.parse(initialDataLocal);
+            }else{
+                localStorage.setItem('initialData', JSON.stringify(nowData));
+            }
+            setEditWebsite(nowData);
+            console.log('editWebsite', nowData);
+            const version = nowData.versions.find((v: Version) => v.id === nowData.currentVersion);
             if (version) {
                 setCurrentVersion(version);
                 initializeHistory(version);
@@ -53,25 +61,25 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     // Sync route params with store
     useEffect(() => {
         if (currentVersion) {
+            console.log('pageId', pageId);
             // Find page by name
             const page = currentVersion.pages.find(
-                p => p.id.toLowerCase() === pageId.toLowerCase()
+                p => p.id=== pageId
             );
-            
+            console.log('currentPage', page);
             if (page) {
                 console.log('Found page:', page.name, page.id);
                 if (page.id !== currentPage) {
                     setCurrentPage(page.id);
                 }
-
                 // Find section by type
                 if (sectionId) {
                     let section = page.sections.find(
-                        s => s.id.toLowerCase() === sectionId.toLowerCase()
+                        s => s.id === sectionId
                     );
                     if(!section){
                         section = shareSections.find(
-                            s => s.id.toLowerCase() === sectionId.toLowerCase()
+                            s => s.id === sectionId
                         );
                     }
                     if (section) {
@@ -80,11 +88,15 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                             setCurrentSection(section.id);
                         }
                     }
+
+                    console.log('currentSection', section);
                 } else if (currentSection) {
                     console.log('Clearing section');
                     setCurrentSection(null);
                 }
             }
+
+    
         }
     }, [pageId, sectionId, currentVersion, currentPage, currentSection, setCurrentPage, setCurrentSection]);
 
@@ -92,7 +104,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     const handlePageChange = (newPageId: string) => {
         const page = currentVersion?.pages.find(p => p.id === newPageId);
         if (page) {
-            router.push(`/editor/${siteId}/${page.name.toLowerCase()}`);
+            router.push(`/editor/${siteId}/${page.id}`);
         }
     };
 
@@ -111,11 +123,11 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 section = shareSections.find(s => s.id === newSectionId);
             }
             if (section) {
-                router.push(`/editor/${siteId}/${page.name.toLowerCase()}/${section.type.toLowerCase()}`);
+                router.push(`/editor/${siteId}/${page.id}/${section.id}`);
             }
         } else {
             console.log('Navigating to page only:', page.name);
-            router.push(`/editor/${siteId}/${page.name.toLowerCase()}`);
+            router.push(`/editor/${siteId}/${page.id}`);
         }
     };
 

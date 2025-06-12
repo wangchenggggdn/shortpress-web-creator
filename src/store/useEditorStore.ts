@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { EditWebsite, Version, Page, Section, HistoryRecord, SectionType, DataSourceType } from '@/types/editor';
 import { v4 as uuidv4 } from 'uuid';
+import { createUniqueUUID } from '@/utils/public';
 
 const generateUniqueId = (prefix: string): string => {
     return `${prefix}-${Date.now()}-${uuidv4()}`;
@@ -52,8 +53,8 @@ interface EditorStore {
     initializeHistory: (initialVersion: Version) => void;
 }
 
-const createSection = (type: SectionType): Section => ({
-    id: generateUniqueId('section'),
+const createSection = (type: SectionType, existingSections: Section[] = []): Section => ({
+    id: createUniqueUUID(existingSections.map(s => s.id)),
     type,
     order: 0,
     params: {
@@ -224,7 +225,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
         // Create new section with correct order
         const newSection = {
-            ...createSection(sectionType),
+            ...createSection(sectionType, page.sections),
             order: page.sections.length // Set order to current length
         };
 

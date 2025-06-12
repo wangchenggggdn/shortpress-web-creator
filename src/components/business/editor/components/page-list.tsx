@@ -7,6 +7,7 @@ import { Page, Section } from '@/types/editor';
 import { DEFAULT_PAGES } from '@/constants/initial-version';
 import { Menu } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
+import { createUniqueUUID } from '@/utils/public';
 
 interface PageListProps {
     onPageChange?: (pageId: string) => void;
@@ -19,8 +20,14 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     const handleAddPage = (pageName: string) => {
         if (!currentVersion) return;
 
+        // 获取所有已存在的页面ID
+        const existingIds = [
+            ...currentVersion.pages.map(page => page.id),
+            ...DEFAULT_PAGES.map(page => page.id)
+        ];
+
         const newPage: Page = {
-            id: `page-${Date.now()}`,
+            id: createUniqueUUID(existingIds),
             name: pageName,
             path: pageName.toLowerCase().replace(/\s+/g, '-'),
             sections: []
@@ -65,9 +72,15 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     const handleDuplicatePage = (page: Page) => {
         if (!currentVersion) return;
 
+        // 获取所有已存在的页面ID
+        const existingIds = [
+            ...currentVersion.pages.map(page => page.id),
+            ...DEFAULT_PAGES.map(page => page.id)
+        ];
+
         const newPage: Page = {
             ...page,
-            id: `page-${Date.now()}`,
+            id: createUniqueUUID(existingIds),
             name: `${page.name} Copy`,
             path: `${page.path}-copy`,
             isHome: false
