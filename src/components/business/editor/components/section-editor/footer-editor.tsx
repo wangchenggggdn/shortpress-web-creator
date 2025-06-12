@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
+import { IconArrowLeft, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, BaseSectionParams, MenuItem } from '@/types/editor';
 import { v4 as uuidv4 } from 'uuid';
@@ -220,30 +220,30 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const footerItems = getFooterItems();
 
     return (
-        <div className="p-4">
+        <div className="p-4 bg-white">
             {/* Header */}
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-3 mb-2">
                 <button
                     onClick={onBack}
-                    className="p-2 hover:bg-gray-200 rounded"
+                    className="text-gray-400"
                 >
-                    <IconX size={20} />
+                    <IconArrowLeft size={20} />
                 </button>
-                <h2 className="text-lg font-medium">Footer</h2>
+                <h2 className="text-[20px] font-semibold text-black-purple">Footer</h2>
             </div>
 
             {/* Info Message */}
-            <div className="mb-6 p-4 bg-blue-50 rounded-lg text-sm text-blue-800">
+            <div className="mb-6 text-sm text-gray-500">
                 <p>Footer Section is used on all pages. Any changes made here will affect all of your pages unless otherwise specified</p>
             </div>
 
             {/* Menu Items */}
-            <div className="mb-6">
+            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">Menu Items</h3>
+                    <h3 className="text-[15px] font-medium text-black-purple">Menu Items</h3>
                     <button
                         onClick={handleAddMenuItem}
-                        className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover"
                     >
                         Add Menu
                     </button>
@@ -254,16 +254,17 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
                         <div
                             key={item.id}
                             className={`bg-white border rounded-lg ${
-                                activeMenu === item.id ? 'border-blue-500' : 'border-gray-200'
+                                activeMenu === item.id ? 'border-primary' : 'border-gray-200'
                             }`}
                         >
                             <div className="flex items-center p-3">
                                 <IconGripVertical size={16} className="text-gray-400 mr-2" />
                                 <input
                                     type="text"
-                                    className="flex-1 bg-transparent focus:outline-none"
+                                    className="flex-1 bg-transparent focus:outline-none focus:border-primary"
                                     value={item.label}
                                     onChange={(e) => handleMenuItemUpdate(item.id, { label: e.target.value })}
+                                    placeholder="Enter menu item text"
                                 />
                                 <div className="relative">
                                     <button
@@ -302,10 +303,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             </div>
 
             {/* Footer Text */}
-            <div className="mb-6">
-                <h3 className="font-medium mb-2">Footer Text</h3>
+            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
+                <h3 className="text-[15px] font-medium text-black-purple mb-2">Footer Text</h3>
                 <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
                     rows={3}
                     value={footerText?.label || ''}
                     onChange={(e) => handleFooterTextChange(e.target.value)}
@@ -314,9 +315,9 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             </div>
 
             {/* ShortPress Logo */}
-            <div className="mb-6">
+            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
                 <div className="flex items-center justify-between">
-                    <span className="font-medium">ShortPress Logo</span>
+                    <span className="text-[15px] font-medium text-black-purple">ShortPress Logo</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                         <input
                             type="checkbox"
@@ -324,7 +325,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
                             checked={shortPressLogo?.visible ?? false}
                             onChange={handleToggleShortPressLogo}
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                 </div>
             </div>

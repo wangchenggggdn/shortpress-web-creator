@@ -64,7 +64,7 @@ export interface Section {
     id: string;
     type: SectionType;
     params: BaseSectionParams;
-    order: number;
+    order: number; //delete
     isHidden?: boolean;
 }
 

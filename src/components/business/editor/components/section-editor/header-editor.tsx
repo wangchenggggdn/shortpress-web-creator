@@ -28,9 +28,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
 
     // Sync with store when version changes
     useEffect(() => {
-        console.log(currentVersion, currentPage, currentSection, shareSections);
         if (!currentSection) return;
-        
         // Check if the section is in shareSections
         const sharedSection = shareSections.find((s: Section) => s.id === currentSection);
         if (sharedSection) {
@@ -74,8 +72,9 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
             ...updates
         };
         
+        console.log('updateSectionData', updatedSection);
+
         setLocalSection(updatedSection);
-        
         if (isSharedSection) {
             updateShareSection(localSection.id, updates);
         } else if (currentPage) {
@@ -85,13 +84,15 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
 
     const handleToggle = (type: string) => {
         if (!localSection) return;
-        
+
         const menuItems = [...(localSection.params.extend.menuItems || [])];
         const existingItem = menuItems.find(item => item.content === type);
         
         if (existingItem) {
+            console.log('2222222222222');
             existingItem.visible = !existingItem.visible;
         } else {
+            console.log('1111111111111');
             menuItems.push({
                 id: type,
                 label: type,
@@ -99,7 +100,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
                 visible: true
             });
         }
-        
+
         updateSectionData({
             params: {
                 extend: {
@@ -158,7 +159,6 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
                 visible: true
             });
         }
-        
         updateSectionData({
             params: {
                 extend: {
