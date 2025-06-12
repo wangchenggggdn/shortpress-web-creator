@@ -15,7 +15,7 @@ const MENU_TYPES = {
 } as const;
 
 const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
-    const { currentVersion, currentPage, currentSection, updateSection, updateShareSection, shareSections } = useEditorStore();
+    const { currentVersion, currentPage, currentSection, updateSection, updateShareSection } = useEditorStore();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [localSection, setLocalSection] = useState<Section | null>(null);
     const [isSharedSection, setIsSharedSection] = useState(false);
@@ -25,7 +25,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         if (!currentSection) return;
         
         // Check if the section is in shareSections
-        const sharedSection = shareSections.find((s: Section) => s.id === currentSection);
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection);
         if (sharedSection) {
             setLocalSection(sharedSection);
             setIsSharedSection(true);
@@ -43,7 +43,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             setLocalSection(pageSection);
             setIsSharedSection(false);
         }
-    }, [currentSection, currentPage, currentVersion, shareSections]);
+    }, [currentSection, currentPage, currentVersion]);
 
     const getMenuItem = (type: string): Widget | undefined => {
         return localSection?.params.extend.widgets?.find(item => item.content === type);

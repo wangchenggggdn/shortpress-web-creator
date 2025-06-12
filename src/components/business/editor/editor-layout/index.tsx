@@ -20,8 +20,6 @@ interface EditorLayoutProps {
 const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, initialData }) => {
     const router = useRouter();
     const {
-        shareSections,
-        setShareSections,
         editWebsite,
         setEditWebsite,
         currentVersion,
@@ -53,7 +51,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
             if (version) {
                 setCurrentVersion(version);
                 initializeHistory(version);
-                setShareSections(version.shareSections);
             }
         }
     }, [initialData, editWebsite, setEditWebsite, setCurrentVersion, initializeHistory]);
@@ -78,7 +75,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                         s => s.id === sectionId
                     );
                     if(!section){
-                        section = shareSections.find(
+                        section = currentVersion?.shareSections.find(
                             s => s.id === sectionId
                         );
                     }
@@ -120,7 +117,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         if (newSectionId) {
             let section = page.sections.find(s => s.id === newSectionId);
             if (!section) {
-                section = shareSections.find(s => s.id === newSectionId);
+                section = currentVersion?.shareSections.find(s => s.id === newSectionId);
             }
             if (section) {
                 router.push(`/editor/${siteId}/${page.id}/${section.id}`);

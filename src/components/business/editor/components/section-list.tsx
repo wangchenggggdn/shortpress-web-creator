@@ -12,7 +12,6 @@ interface SectionListProps {
 
 const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const {
-        shareSections,
         currentVersion,
         currentPage,
         currentSection,
@@ -80,8 +79,8 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     // 获取当前页面的 header 和 footer sections
     const headerSection = currentPageData?.sections.find(s => s.type === SectionType.HEADER);
     const footerSection = currentPageData?.sections.find(s => s.type === SectionType.FOOTER);
-    const shareHeaderSection = shareSections.find(s => s.type === SectionType.HEADER);
-    const shareFooterSection = shareSections.find(s => s.type === SectionType.FOOTER);
+    const shareHeaderSection = currentVersion?.shareSections.find(s => s.type === SectionType.HEADER);
+    const shareFooterSection = currentVersion?.shareSections.find(s => s.type === SectionType.FOOTER);
 
     const isVisibleShareFooter = shareFooterSection&&!shareFooterSection.isHidden&&!shareFooterSection.params.extend.notSharePages?.includes(currentPageData?.path??'');
 

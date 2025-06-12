@@ -13,7 +13,6 @@ interface EditorStore {
     currentVersion: Version | null;
     currentPage: string | null;
     currentSection: string | null;
-    shareSections: Section[];
     selectedComponent: string | null;
     isDirty: boolean;
     history: HistoryRecord[];
@@ -24,7 +23,6 @@ interface EditorStore {
     setCurrentVersion: (version: Version) => void;
     setCurrentPage: (pageId: string | null) => void;
     setCurrentSection: (sectionId: string | null) => void;
-    setShareSections: (sections: Section[]) => void;
     setSelectedComponent: (componentId: string | null) => void;
 
     // History actions
@@ -68,7 +66,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     currentVersion: null,
     currentPage: null,
     currentSection: null,
-    shareSections: [],
     selectedComponent: null,
     isDirty: false,
     history: [],
@@ -79,7 +76,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     setCurrentVersion: (version) => set({ currentVersion: version }),
     setCurrentPage: (pageId) => set({ currentPage: pageId }),
     setCurrentSection: (sectionId) => set({ currentSection: sectionId }),
-    setShareSections: (sections) => set({ shareSections: sections }),
     setSelectedComponent: (componentId) => set({ selectedComponent: componentId }),
 
     // History actions
@@ -305,9 +301,10 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     updateShareSection: (sectionId, updates) =>
         set((state) => {
             if (!state.currentVersion) return state;
+            const shareSections = state.currentVersion.shareSections;
             const newVersion = {
                 ...state.currentVersion,
-                shareSections: state.shareSections.map((section) =>
+                shareSections: shareSections.map((section) =>
                     section.id === sectionId ? { ...section, ...updates } : section
                 )
             };
