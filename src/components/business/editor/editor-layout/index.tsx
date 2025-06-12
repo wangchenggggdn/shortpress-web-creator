@@ -55,7 +55,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         if (currentVersion) {
             // Find page by name
             const page = currentVersion.pages.find(
-                p => p.name.toLowerCase() === pageId.toLowerCase()
+                p => p.id.toLowerCase() === pageId.toLowerCase()
             );
             
             if (page) {
@@ -66,9 +66,14 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
                 // Find section by type
                 if (sectionId) {
-                    const section = page.sections.find(
-                        s => s.type.toLowerCase() === sectionId.toLowerCase()
+                    let section = page.sections.find(
+                        s => s.id.toLowerCase() === sectionId.toLowerCase()
                     );
+                    if(!section){
+                        section = shareSections.find(
+                            s => s.id.toLowerCase() === sectionId.toLowerCase()
+                        );
+                    }
                     if (section) {
                         console.log('Found section:', section.type, section.id);
                         if (section.id !== currentSection) {

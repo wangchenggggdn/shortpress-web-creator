@@ -27,9 +27,9 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
 
     switch (section.type) {
         case SectionType.HEADER:
-            return <HeaderEditor section={section} onBack={onBack} />;
+            return <HeaderEditor onBack={onBack} />;
         case SectionType.FOOTER:
-            return <FooterEditor section={section} onBack={onBack} />;
+            return <FooterEditor onBack={onBack} />;
         case SectionType.CAROUSEL:
             return <CarouselEditor section={section} onBack={onBack} />;
         default:

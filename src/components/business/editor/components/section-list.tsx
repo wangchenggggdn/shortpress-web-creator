@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconPlus, IconTrash, IconEye, IconEyeOff } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
@@ -25,6 +25,10 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
 
+    useEffect(() => {
+        console.log('currentSection：', currentSection);
+    }, [currentSection]);
+
     const handleAddSection = (type: SectionType) => {
         if (!currentPage) return;
         addSection(currentPage, type);
@@ -44,6 +48,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     };
 
     const handleSectionClick = (sectionId: string) => {
+        console.log('handleSectionClick', sectionId);
         setCurrentSection(sectionId);
         if (onSectionChange) {
             onSectionChange(sectionId);
