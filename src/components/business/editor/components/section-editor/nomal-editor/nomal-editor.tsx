@@ -174,7 +174,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                                 <div>
                                     <Menu>
                                         <Menu.Target>
-                                            <button className="px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal">Add Content</button>
+                                            <button className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal">Add Content</button>
                                         </Menu.Target>
                                         <ContentTypeSelector sectionType={section.type} onSelect={handleContentTypeSelect} />
                                     </Menu>
