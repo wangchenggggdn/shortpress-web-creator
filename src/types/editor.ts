@@ -63,7 +63,7 @@ export interface DataWidget extends Widget {
 
 export interface NavMenu extends Widget {
     type: WidgetType.PATH;
-    widgets: Widget[];
+    widgets: any[];
 }
 
 /**

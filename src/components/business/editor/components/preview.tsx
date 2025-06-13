@@ -19,7 +19,7 @@ const SectionComponents: Record<SectionType, React.FC<any>> = {
 
 const Preview = () => {
     const { currentVersion, currentPage } = useEditorStore();
-    const currentPageData = currentPage;
+    const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
 
     if (!currentVersion) {
         return (
@@ -56,7 +56,7 @@ const Preview = () => {
                                 <SectionComponent
                                     key={section.id}
                                     section={section}
-                                    pageId={currentPage.id}
+                                    pageId={currentPage}
                                 />
                             );
                         })}

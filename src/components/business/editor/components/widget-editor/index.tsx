@@ -1,29 +1,24 @@
 'use client';
 
-import useEditorStore from '@/store/useEditorStore';
-import { Section, Widget, WidgetType } from '@/types/editor';
-import { IconArrowLeft } from '@tabler/icons-react';
 import React from 'react';
+import { IconArrowLeft } from '@tabler/icons-react';
+import useEditorStore from '@/store/useEditorStore';
+import { Section, SectionType, Widget, WidgetType } from '@/types/editor';
 import NavMenuEditor from './nav-menu-editor';
 
 
 interface SectionEditorProps {
-    section: Section;
-    widget: any;
+    widget: Widget;
     onBack: () => void;
-}
+}       
 
-const SectionEditor: React.FC<SectionEditorProps> = ({ section,widget, onBack }) => {
-    console.log('widget', widget);
+const SectionEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) => {
+    const { currentVersion, currentPage, currentSection } = useEditorStore();
+
+
     switch (widget.type) {
         case WidgetType.NAV:
             return <NavMenuEditor widget={widget} onBack={onBack} />;
-        // case WidgetType.DATA:
-        //     return <LabelEditor onBack={onBack} />;
-        // case WidgetType.PATH:
-        //     return <SearchEditor onBack={onBack} />;
-        // case WidgetType.DEFAULT:
-        //     return <AccountEditor onBack={onBack} />;
         default:
             return (
                 <div className="p-4">
@@ -35,12 +30,12 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ section,widget, onBack })
                         >
                             <IconArrowLeft size={20} />
                         </button>
-                        <h2 className="text-lg font-medium">Edit {section.type}</h2>
+                        <h2 className="text-lg font-medium">Edit {widget.type}</h2>
                     </div>
 
                     <div className="space-y-4">
                         <div className="text-gray-500">
-                            Section editor for {section.type} is under development
+                            Section editor for {widget.type} is under development
                         </div>
                     </div>
                 </div>

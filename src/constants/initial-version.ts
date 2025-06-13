@@ -97,7 +97,7 @@ export const INITIAL_VERSION: Version = {
                                     label: 'Explore',
                                     type: WidgetType.PATH,
                                     path: '/explore'
-                                },
+                                }
                             ]
                         }
                     ]

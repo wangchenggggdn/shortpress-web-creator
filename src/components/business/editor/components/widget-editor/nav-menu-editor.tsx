@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { BaseSectionParams, WidgetType, Widget, NavMenu, Section } from '@/types/editor';
+import { Section, BaseSectionParams, WidgetType, Widget } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
+import { LogoMenuItem } from '../section-editor/common/menu-items';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
-import LogoMenuItem from '../section-editor/common/menu-items/logo-menu-item';
 
 interface NavMenuEditorProps {
-    widget: NavMenu;
+    widget: any;
     onBack: () => void;
 }
 
@@ -17,76 +17,106 @@ const MENU_TYPES = {
     NAV_ITEM: 'nav_item'
 } as const;
 
-const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ onBack, widget }) => {
-    const { currentPage, updateSection, currentSection, currentVersion } = useEditorStore();
+const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
+    const { currentPage,currentVersion, currentSection, updateSection,updateShareSection, isSharedSectionFunc } = useEditorStore();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [localSection, setLocalSection] = useState<Section | null>(null);
+    const [isSharedSection, setIsSharedSection] = useState(false);
+  
+    
 
     useEffect(() => {
-        console.log('widget', widget);
-    }, [currentVersion]);
+        console.log('localWidget', localSection);
+    }, [localSection]);
+
+    // Sync with store when version changes
+    useEffect(() => {
+        if (!currentSection) return;
+        setIsSharedSection(isSharedSectionFunc());
+        // Check if the section is in shareSections
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection);
+        if (sharedSection) {
+            setLocalSection(sharedSection);
+            return;
+        }
+
+        // If not in shareSections, check in currentPage
+        if (!currentVersion || !currentPage) return;
+        const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
+        if (!currentPageData) return;
+        
+        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection);
+        if (pageSection) {
+            setLocalSection(pageSection);
+        }
+    }, [currentSection, currentPage, currentVersion]);
 
     const getNavItems = (): Widget[] => {
-        return widget.widgets.slice(1);
+        return localSection?.params.extend.widgets?.filter((w: Widget) => w.id === widget.id)??[];
     };
 
-    const updateWidget = (updatedWidget: NavMenu) => {
-        if (!currentPage || !currentSection) return;
-        
-        const section = currentVersion?.pages.find(p => p.id === currentPage.id)?.sections.find(s => s.id === currentSection.id);
-        if (!section) return;
+    const updateWidgetData = (updatedItems: Widget[]) => {
+        if (!currentPage || !localSection) return;
 
-        const widgets = [...(section.params.extend.widgets || [])];
-        const widgetIndex = widgets.findIndex(w => w.id === widget.id);
-        
-        if (widgetIndex !== -1) {
-            widgets[widgetIndex] = updatedWidget;
-            updateSection(currentPage.id, currentSection.id, {
-                params: {
-                    extend: {
-                        ...section.params.extend,
-                        widgets
-                    }
-                }
-            });
+        const sectionUpdate = currentVersion?.pages.find(p => p.id === currentPage)?.sections.find(s => s.id === localSection.id);
+        if (!sectionUpdate) return;
+        const widgetUpdate = sectionUpdate.params.extend.widgets?.find(w => w.id === widget.id);
+        if (!widgetUpdate) return;
+        widgetUpdate.widgets = updatedItems;
+
+        if (isSharedSection) {
+            updateShareSection(localSection.id, sectionUpdate);
+        } else {
+            updateSection(currentPage, localSection.id, sectionUpdate);
         }
     };
 
     const handleIconUpload = async (file: File) => {
         if (!file) return;
-
+        
         setIsLoading(true);
         const formData = new FormData();
         formData.append('file', file);
-        const res = await CreatorApi.uploadFile(formData);
-        setIsLoading(false);
-
-        if (res.code === 0) {
-            const updatedWidget = {
-                ...widget,
-                image: res.data
-            };
-            updateWidget(updatedWidget);
-        } else {
-            toast.error(res.info);
+        
+        try {
+            const res = await CreatorApi.uploadFile(formData);
+            setIsLoading(false);
+            
+            if (res.code === 0) {
+                const imageUrl = res.data;
+                const items = getNavItems();
+                const navIcon = items[0] || {
+                    id: createUniqueUUID(items.map(item => item.id)),
+                    label: 'Nav Icon',
+                    content: MENU_TYPES.NAV,
+                    type: WidgetType.DEFAULT,
+                    visible: true
+                };
+                
+                navIcon.image = imageUrl;
+                const updatedItems = items.length > 0 ? [navIcon, ...items.slice(1)] : [navIcon];
+                updateWidgetData(updatedItems);
+            } else {
+                toast.error(res.info);
+            }
+        } catch (error) {
+            setIsLoading(false);
+            toast.error('Failed to upload image');
         }
     };
 
     const handleAddMenuItem = () => {
+        const items = getNavItems();
         const newItem: Widget = {
-            id: createUniqueUUID(widget.widgets.map(item => item.id)),
+            id: createUniqueUUID(items.map(item => item.id)),
             label: 'New Menu Item',
             content: MENU_TYPES.NAV_ITEM,
             visible: true,
-            type: WidgetType.PATH
+            type: WidgetType.DEFAULT
         };
         
-        const updatedWidget = {
-            ...widget,
-            widgets: [...widget.widgets, newItem]
-        };
-        
-        updateWidget(updatedWidget);
+        updateWidgetData([...items, newItem]);
     };
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
@@ -95,24 +125,14 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ onBack, widget }) => {
             item.id === itemId ? { ...item, ...updates } : item
         );
         
-        const updatedWidget = {
-            ...widget,
-            widgets: updatedItems
-        };
-        
-        updateWidget(updatedWidget);
+        updateWidgetData(updatedItems);
     };
 
     const handleMenuItemDelete = (itemId: string) => {
         const items = getNavItems();
         const updatedItems = items.filter(item => item.id !== itemId);
         
-        const updatedWidget = {
-            ...widget,
-            widgets: updatedItems
-        };
-        
-        updateWidget(updatedWidget);
+        updateWidgetData(updatedItems);
     };
 
     const handleMenuItemDuplicate = (itemId: string) => {
@@ -122,24 +142,34 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ onBack, widget }) => {
         if (itemToDuplicate) {
             const newItem: Widget = {
                 ...itemToDuplicate,
-                id: createUniqueUUID([...items.map(item => item.id)]),
+                id: createUniqueUUID(items.map(item => item.id)),
                 label: `${itemToDuplicate.label} (Copy)`
             };
             
-            const updatedWidget = {
-                ...widget,
-                widgets: [...items, newItem]
-            };
-            
-            updateWidget(updatedWidget);
+            updateWidgetData([...items, newItem]);
         }
     };
 
+    const handleToggle = (itemId: string) => {
+        console.log('itemId', itemId);
+        const items = widget.widgets??[];
+
+        console.log('updatedItems', items);
+        const updatedItems = items.map((item: Widget) =>
+            item.id === itemId ? { ...item, visible: item.visible === undefined? true : !item.visible } : item
+        );
+        console.log('updatedItems', updatedItems);
+        updateWidgetData(updatedItems);
+    };
+
+    const navIcon = getNavItems()[0];
     const navItems = getNavItems();
-    const navIcon = widget.widgets[0];
+
+    console.log('navItems', navItems);
+    console.log('navIcon', navIcon);
 
     return (
-        <div className="p-4 bg-white overflow-y-auto h-full">
+        <div className="p-4 bg-white">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button
@@ -152,7 +182,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ onBack, widget }) => {
             </div>
 
             {/* Nav Icon */}
-            <LogoMenuItem widget={navIcon} onUpload={handleIconUpload} onToggle={() => {}} isLoading={isLoading} title="Nav icon" icon={<IconUpload size={20} className="text-gray-400 mb-1" />} />
+            <LogoMenuItem widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id) } } title={'Nav Icon'}/>
 
             {/* Menu Items */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
@@ -194,7 +224,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ onBack, widget }) => {
                                         <div className="absolute right-0 mt-1 w-40 py-1 bg-white rounded-lg shadow-xl z-10">
                                             <button
                                                 className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
-                                                onClick={() => handleMenuItemUpdate(item.id, { visible: !item.visible })}
+                                                onClick={() => handleToggle(item.id)}
                                             >
                                                 {item.visible ? 'Hide in Menu' : 'Show in Menu'}
                                             </button>

@@ -7,10 +7,9 @@ interface EditorSectionPageProps {
     params: {
         paths?: string[]; // slug 是一个可选的字符串数组
       };
-    searchParams: {};        
 }
 
-const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params, searchParams }) => {
+const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) => {
     const { paths } = params;
     const siteId = paths?.[0];
     const pageId = paths?.[1];

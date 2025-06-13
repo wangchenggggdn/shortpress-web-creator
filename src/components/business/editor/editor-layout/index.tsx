@@ -66,8 +66,8 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
             console.log('currentPage', page);
             if (page) {
                 console.log('Found page:', page.name, page.id);
-                if (page.id !== currentPage?.id) {
-                    setCurrentPage(page);
+                if (page.id !== currentPage) {
+                    setCurrentPage(page.id);
                 }
                 // Find section by type
                 if (sectionId) {
@@ -81,8 +81,8 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                     }
                     if (section) {
                         console.log('Found section:', section.type, section.id);
-                        if (section.id !== currentSection?.id) {
-                            setCurrentSection(section);
+                        if (section.id !== currentSection) {
+                            setCurrentSection(section.id);
                         }
                     }
 
@@ -107,7 +107,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
     // Handle section change
     const handleSectionChange = (newSectionId: string | null) => {
-        let page = currentVersion?.pages.find(p => p.id === currentPage?.id);
+        let page = currentVersion?.pages.find(p => p.id === currentPage);
        
         if (!page) {
             console.log('No current page found');
@@ -193,9 +193,9 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         <div className="flex h-screen">
             {/* Left Sidebar - Pages */}
             <div className="w-64 bg-gray-100 border-r">
-                <PageList onPageChange={(newPage) => {
-                    console.log('onPageChange', newPage);
-                    handlePageChange(newPage.id);
+                <PageList onPageChange={(newPageId) => {
+                    console.log('onPageChange', newPageId);
+                    handlePageChange(newPageId);
                 }} />
             </div>
 
@@ -204,9 +204,8 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 {sectionId ? (
                     <SectionEditor sectionId={sectionId} onBack={() => handleSectionChange(null)} />
                 ) : (
-                    <SectionList onSectionChange={(section) => handleSectionChange(section?.id ?? null)} />
+                    <SectionList onSectionChange={handleSectionChange} />
                 )}
-
             </div>
 
             {/* Right - Preview */}

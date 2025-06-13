@@ -25,7 +25,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         if (!currentSection) return;
         
         // Check if the section is in shareSections
-        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection.id);
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection);
         if (sharedSection) {
             setLocalSection(sharedSection);
             setIsSharedSection(true);
@@ -35,10 +35,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         // If not in shareSections, check in currentPage
         if (!currentVersion || !currentPage) return;
         
-        const currentPageData = currentPage;
+        const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
         if (!currentPageData) return;
         
-        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection.id);
+        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection);
         if (pageSection) {
             setLocalSection(pageSection);
             setIsSharedSection(false);
@@ -67,7 +67,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         if (isSharedSection) {
             updateShareSection(localSection.id, updates);
         } else if (currentPage) {
-            updateSection(currentPage.id, localSection.id, updates);
+            updateSection(currentPage, localSection.id, updates);
         }
     };
 
@@ -223,7 +223,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const footerItems = getFooterItems();
 
     return (
-        <div className="p-4 bg-white overflow-y-auto h-full">
+        <div className="p-4 bg-white">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button

@@ -40,7 +40,7 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
             });
         }
         
-        updateSection(currentPage.id, section.id, {
+        updateSection(currentPage, section.id, {
             params: {
                 extend: {
                     ...params.extend,
@@ -55,7 +55,7 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
     const contentItem = getContentItem();
 
     return (
-        <div className="p-4 bg-white overflow-y-auto h-full">
+        <div className="p-4">
             {/* Header */}
             <div className="flex items-center gap-2 mb-6">
                 <button

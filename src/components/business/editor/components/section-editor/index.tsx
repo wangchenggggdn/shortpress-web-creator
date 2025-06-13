@@ -15,7 +15,7 @@ interface SectionEditorProps {
 
 const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
     const { currentVersion, currentPage } = useEditorStore();
-    const currentPageData = currentPage;
+    const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
     let section = currentPageData?.sections.find(s => s.id === sectionId);
 
     if (!section) {
