@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { IconPlus, IconFile, IconHome, IconDots, IconTrash, IconSettings, IconCopy } from '@tabler/icons-react';
+import { IconPlus, IconFile, IconHome, IconDots, IconTrash, IconSettings, IconCopy, IconPencil } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Page, Section } from '@/types/editor';
 import { DEFAULT_PAGES } from '@/constants/initial-version';
 import { Menu } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import { createUniqueUUID } from '@/utils/public';
+import PageSettingsModal from './common/PageSettingsModal';
 
 interface PageListProps {
     onPageChange?: (pageId: string) => void;
@@ -15,7 +16,11 @@ interface PageListProps {
 
 const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     const { currentVersion, currentPage, setCurrentPage, addPage, deletePage, updatePage } = useEditorStore();
+    const [currentOperatePage, setCurrentOperatePage] = useState<Page | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+    const [settingsPage, setSettingsPage] = useState<Page | null>(null);
 
     const handleAddPage = (pageName: string) => {
         if (!currentVersion) return;
@@ -30,7 +35,8 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             id: createUniqueUUID(existingIds),
             name: pageName,
             path: pageName.toLowerCase().replace(/\s+/g, '-'),
-            sections: []
+            sections: [],
+            metadata: {}
         };
 
         addPage(newPage);
@@ -81,7 +87,8 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             id: createUniqueUUID(existingIds),
             name: `${page.name} Copy`,
             path: `${page.path}-copy`,
-            isHome: false
+            isHome: false,
+            metadata: {}
         };
 
         addPage(newPage);
@@ -139,7 +146,10 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                         <Menu position="bottom-end" offset={4} withArrow>
                             <Menu.Target>
                                 <button
-                                    onClick={e => e.stopPropagation()}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        setCurrentOperatePage(page!);
+                                    }}
                                     className={`p-1 rounded ${
                                         currentPage === id ? 'hover:bg-primary-dark' : 'hover:bg-gray-100'
                                     }`}
@@ -161,10 +171,20 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                     leftSection={<IconSettings size={16} />}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        // TODO: Open settings modal
+                                        setCurrentOperatePage(page!);
+                                        setIsSettingsModalOpen(true);
                                     }}
                                 >
                                     Settings
+                                </Menu.Item>
+                                <Menu.Item
+                                    leftSection={<IconPencil size={16} />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsRenameModalOpen(true);
+                                    }}
+                                >
+                                    Rename
                                 </Menu.Item>
                                 <Menu.Item
                                     leftSection={<IconCopy size={16} />}
@@ -226,6 +246,15 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             </div>
 
             <InputModal
+                opened={isRenameModalOpen}
+                onClose={() => setIsRenameModalOpen(false)}
+                onSubmit={(newName) => handleRenamePage(currentOperatePage!, newName)}
+                title="Rename Page"
+                placeholder="Enter Page Name"
+                submitText="Rename"
+            />
+
+            <InputModal
                 opened={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={handleAddPage}
@@ -233,6 +262,13 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                 placeholder="Enter Page Name"
                 submitText="Add Page"
             />
+
+            {currentOperatePage &&<PageSettingsModal
+                open={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+                page={currentOperatePage!}
+                onUpdate={updatedPage => updatePage(updatedPage.id, updatedPage)}
+            />}
         </>
     );
 };

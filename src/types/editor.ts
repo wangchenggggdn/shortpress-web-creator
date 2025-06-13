@@ -86,9 +86,11 @@ export interface Page {
     name: string;
     isHome?: boolean;
     metadata?: {
-        title?: string;
-        description?: string;
-        keywords?: string[];
+        seo?: {
+            title?: string;
+            description?: string;
+            keywords?: string;
+        };
     };
     sections: Section[];
 }
