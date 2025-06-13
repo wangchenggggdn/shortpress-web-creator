@@ -13,9 +13,6 @@ interface SectionEditorProps {
 }       
 
 const SectionEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) => {
-    const { currentVersion, currentPage, currentSection } = useEditorStore();
-
-
     switch (widget.type) {
         case WidgetType.NAV:
             return <NavMenuEditor widget={widget} onBack={onBack} />;

@@ -283,7 +283,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     updateShareSection: (sectionId, updates) =>
         set((state) => {
             if (!state.currentVersion) return state;
-            console.log('updateShareSection', sectionId, updates);
             const shareSections = state.currentVersion.shareSections;
             const newVersion = {
                 ...state.currentVersion,

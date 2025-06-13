@@ -18,20 +18,27 @@ const MENU_TYPES = {
 } as const;
 
 const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
-    const { currentSection,currentPage, updateSection,updateShareSection, isSharedSectionFunc } = useEditorStore();
+    const {currentVersion,currentSection,setCurrentSection,currentPage, updateSection,updateShareSection, isSharedSectionFunc } = useEditorStore();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isSharedSection, setIsSharedSection] = useState(false);
 
-
     useEffect(() => {
-        setIsSharedSection(isSharedSectionFunc());
-    }, [currentSection]);
-
+        const isShared = isSharedSectionFunc();
+        setIsSharedSection(isShared);
+        let section = null;
+        if(isShared){
+            section = currentVersion?.shareSections.find(s => s.id === currentSection?.id);
+        }else{
+            section = currentVersion?.pages.find(p => p.id === currentPage)?.sections.find(s => s.id === currentSection?.id);
+        }
+        if(section){
+            setCurrentSection(section);
+        }
+    }, [currentVersion]);
 
     const getNavItems = (): Widget[] => {
-        const items = currentSection?(currentSection.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[]:widget.widgets??[];
-        console.log('items', items);
+        const items = (currentSection?.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[];
         return items;
     };
 
@@ -128,14 +135,10 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
     };
 
     const handleToggle = (itemId: string) => {
-        console.log('itemId', itemId);
         const items = widget.widgets??[];
-
-        console.log('updatedItems', items);
         const updatedItems = items.map((item: Widget) =>
-            item.id === itemId ? { ...item, visible: item.visible === undefined? true : !item.visible } : item
+            item.id === itemId ? { ...item, visible: item.visible === undefined? false : !item.visible } : item
         );
-        console.log('updatedItems', updatedItems);
         updateWidgetData(updatedItems);
     };
 
