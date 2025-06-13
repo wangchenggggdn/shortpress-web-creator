@@ -3,7 +3,7 @@ import { IconX } from '@tabler/icons-react';
 import { Section, DataSourceType, Widget, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
-interface CarouselEditorProps {
+interface NormalEditorProps {
     section: Section;
     onBack: () => void;
     updateSection: (updates: Partial<Section>) => void;
@@ -13,7 +13,7 @@ const MENU_TYPES = {
     CONTENT: 'content'
 } as const;
 
-const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack, updateSection }) => {
+const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSection }) => {
     const [showContentSelector, setShowContentSelector] = useState(false);
 
     const getContentItem = (): Widget | undefined => {
@@ -116,4 +116,4 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack, update
     );
 };
 
-export default CarouselEditor; 
+export default NormalEditor; 

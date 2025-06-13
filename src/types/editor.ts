@@ -36,6 +36,7 @@ export interface BaseSectionParams {
     extend: {
         widgets?: any[];
         notSharePages?: string[];
+        dataSourceType?: DataSourceType;
     };
 }
 

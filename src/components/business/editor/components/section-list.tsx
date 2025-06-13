@@ -2,9 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { IconPlus, IconTrash, IconEye, IconEyeOff } from '@tabler/icons-react';
+import { Menu } from '@mantine/core';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
+import SectionTypeSelector from './common/SectionTypeSelector';
 
 interface SectionListProps {
     onSectionChange?: (sectionId: string | null) => void;
@@ -166,29 +168,17 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
                 {/* Add Section Button */}
                 <div className="relative">
-                    <button
-                        className="w-full p-2 text-left hover:bg-gray-100 rounded-lg border border-gray-200 flex items-center"
-                        onClick={() => setShowTypeSelector(!showTypeSelector)}
-                    >
-                        <IconPlus size={16} className="mr-2" />
-                        <span>Add Section</span>
-                    </button>
-
-                    {showTypeSelector && (
-                        <div className="absolute left-0 right-0 mt-1 py-2 bg-white rounded-lg shadow-xl z-10">
-                            {Object.values(SectionType)
-                                .filter(type => type !== SectionType.HEADER && type !== SectionType.FOOTER)
-                                .map(type => (
-                                    <button
-                                        key={type}
-                                        className="w-full px-4 py-2 text-left hover:bg-gray-100 flex items-center"
-                                        onClick={() => handleAddSection(type)}
-                                    >
-                                        <span className="capitalize">{type.toLowerCase()}</span>
-                                    </button>
-                                ))}
-                        </div>
-                    )}
+                    <Menu>
+                        <Menu.Target>
+                            <button
+                                className="w-full p-2 text-left hover:bg-gray-100 rounded-lg border border-gray-200 flex items-center"
+                            >
+                                <IconPlus size={16} className="mr-2" />
+                                <span>Add Section</span>
+                            </button>
+                        </Menu.Target>
+                        <SectionTypeSelector onSelect={handleAddSection} />
+                    </Menu>
                 </div>
 
                 {/* Footer Section */}
