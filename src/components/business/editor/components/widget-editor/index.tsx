@@ -1,21 +1,55 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IconArrowLeft } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, Widget, WidgetType } from '@/types/editor';
 import NavMenuEditor from './nav-menu-editor';
-
 
 interface SectionEditorProps {
     widget: Widget;
     onBack: () => void;
 }       
 
-const SectionEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) => {
+const SectionWidgetEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) => {
+    const { currentVersion, currentPage, currentSection, setCurrentSection, updateSection, updateShareSection, isSharedSectionFunc } = useEditorStore();
+
+    useEffect(() => {
+        const isShared = isSharedSectionFunc();
+        let section = null;
+        if(isShared){
+            section = currentVersion?.shareSections.find(s => s.id === currentSection?.id);
+        }else{
+            section = currentVersion?.pages.find(p => p.id === currentPage)?.sections.find(s => s.id === currentSection?.id);
+        }
+        if(section){
+            setCurrentSection(section);
+        }
+    }, [currentVersion]);
+
+    const updateWidgetDataToSection = (updates: Partial<Widget>) => {
+        if (!currentSection) return;
+
+        const widgetUpdate = currentSection.params.extend.widgets?.find(w => w.id === widget.id);
+        if (!widgetUpdate) return;
+
+        Object.assign(widgetUpdate, updates);
+
+        if (isSharedSectionFunc()) {
+            updateShareSection(currentSection.id, currentSection);
+        } else if (currentPage) {
+            updateSection(currentPage, currentSection.id, currentSection);
+        }
+    };
+
     switch (widget.type) {
         case WidgetType.NAV:
-            return <NavMenuEditor widget={widget} onBack={onBack} />;
+            return currentSection&& <NavMenuEditor 
+                widget={widget} 
+                currentSection={currentSection}
+                onBack={onBack} 
+                updateWidgetDataToSection={updateWidgetDataToSection}
+            />;
         default:
             return (
                 <div className="p-4">
@@ -40,4 +74,4 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) => {
     }
 };
 
-export default SectionEditor; 
+export default SectionWidgetEditor; 

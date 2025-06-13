@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IconArrowLeft, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
-import useEditorStore from '@/store/useEditorStore';
-import { Section, BaseSectionParams, Widget, WidgetType } from '@/types/editor';
+import { Section, Widget, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
 interface FooterEditorProps {
+    section: Section;
     onBack: () => void;
+    updateSection: (updates: Partial<Section>) => void;
 }
 
 const MENU_TYPES = {
@@ -14,67 +15,20 @@ const MENU_TYPES = {
     FOOTER_ITEM: 'footer_item'
 } as const;
 
-const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
-    const { currentVersion, currentPage, currentSection, updateSection, updateShareSection } = useEditorStore();
+const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSection }) => {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
-    const [localSection, setLocalSection] = useState<Section | null>(null);
-    const [isSharedSection, setIsSharedSection] = useState(false);
-
-    // Sync with store when version changes
-    useEffect(() => {
-        if (!currentSection) return;
-        
-        // Check if the section is in shareSections
-        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection.id);
-        if (sharedSection) {
-            setLocalSection(sharedSection);
-            setIsSharedSection(true);
-            return;
-        }
-
-        // If not in shareSections, check in currentPage
-        if (!currentVersion || !currentPage) return;
-        
-        const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
-        if (!currentPageData) return;
-        
-        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection.id);
-        if (pageSection) {
-            setLocalSection(pageSection);
-            setIsSharedSection(false);
-        }
-    }, [currentSection, currentPage, currentVersion]);
 
     const getMenuItem = (type: string): Widget | undefined => {
-        return localSection?.params.extend.widgets?.find(item => item.content === type);
+        return section.params.extend.widgets?.find(item => item.content === type);
     };
 
     const getFooterItems = (): Widget[] => {
-        const items = localSection?.params.extend.widgets || [];
+        const items = section.params.extend.widgets || [];
         return items.filter(item => item.content === MENU_TYPES.FOOTER_ITEM);
     };
 
-    const updateSectionData = (updates: Partial<Section>) => {
-        if (!localSection) return;
-        
-        const updatedSection = {
-            ...localSection,
-            ...updates
-        };
-        
-        setLocalSection(updatedSection);
-        
-        if (isSharedSection) {
-            updateShareSection(localSection.id, updates);
-        } else if (currentPage) {
-            updateSection(currentPage, localSection.id, updates);
-        }
-    };
-
     const handleAddMenuItem = () => {
-        if (!localSection) return;
-        
-        const widgets = [...(localSection.params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         
         const newItem: Widget = {
             id: createUniqueUUID(widgets.map(item => item.id)),
@@ -86,10 +40,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
         
         widgets.push(newItem);
         
-        updateSectionData({
+        updateSection({
             params: {
                 extend: {
-                    ...localSection.params.extend,
+                    ...section.params.extend,
                     widgets
                 }
             }
@@ -97,18 +51,16 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     };
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
-        if (!localSection) return;
-        
-        const widgets = [...(localSection.params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         const itemIndex = widgets.findIndex(item => item.id === itemId);
         
         if (itemIndex !== -1) {
             widgets[itemIndex] = { ...widgets[itemIndex], ...updates };
             
-            updateSectionData({
+            updateSection({
                 params: {
                     extend: {
-                        ...localSection.params.extend,
+                        ...section.params.extend,
                         widgets
                     }
                 }
@@ -117,15 +69,13 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     };
 
     const handleMenuItemDelete = (itemId: string) => {
-        if (!localSection) return;
-        
-        const widgets = [...(localSection.params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         const filteredItems = widgets.filter(item => item.id !== itemId);
         
-        updateSectionData({
+        updateSection({
             params: {
                 extend: {
-                    ...localSection.params.extend,
+                    ...section.params.extend,
                     widgets: filteredItems
                 }
             }
@@ -133,9 +83,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     };
 
     const handleMenuItemDuplicate = (itemId: string) => {
-        if (!localSection) return;
-        
-        const widgets = [...(localSection.params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         const itemToDuplicate = widgets.find(item => item.id === itemId);
         
         if (itemToDuplicate) {
@@ -147,10 +95,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             
             widgets.push(newItem);
             
-            updateSectionData({
+            updateSection({
                 params: {
                     extend: {
-                        ...localSection.params.extend,
+                        ...section.params.extend,
                         widgets
                     }
                 }
@@ -159,9 +107,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     };
 
     const handleFooterTextChange = (text: string) => {
-        if (!localSection) return;
-        
-        const widgets = [...(localSection.params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         const footerText = widgets.find(item => item.content === MENU_TYPES.FOOTER_TEXT);
         
         if (footerText) {
@@ -176,10 +122,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             });
         }
         
-        updateSectionData({
+        updateSection({
             params: {
                 extend: {
-                    ...localSection.params.extend,
+                    ...section.params.extend,
                     widgets
                 }
             }
@@ -187,9 +133,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     };
 
     const handleToggleShortPressLogo = () => {
-        if (!localSection) return;
-        
-        const widgets = [...(localSection.params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         const shortPressLogo = widgets.find(item => item.content === MENU_TYPES.SHORTPRESS_LOGO);
         
         if (shortPressLogo) {
@@ -204,19 +148,15 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
             });
         }
         
-        updateSectionData({
+        updateSection({
             params: {
                 extend: {
-                    ...localSection.params.extend,
+                    ...section.params.extend,
                     widgets
                 }
             }
         });
     };
-
-    if (!localSection) {
-        return null; // or loading state
-    }
 
     const footerText = getMenuItem(MENU_TYPES.FOOTER_TEXT);
     const shortPressLogo = getMenuItem(MENU_TYPES.SHORTPRESS_LOGO);

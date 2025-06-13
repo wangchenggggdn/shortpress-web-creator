@@ -1,31 +1,27 @@
 import React, { useState } from 'react';
 import { IconX } from '@tabler/icons-react';
-import useEditorStore from '@/store/useEditorStore';
-import { Section, DataSourceType, BaseSectionParams, Widget, WidgetType } from '@/types/editor';
+import { Section, DataSourceType, Widget, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
 interface CarouselEditorProps {
     section: Section;
     onBack: () => void;
+    updateSection: (updates: Partial<Section>) => void;
 }
 
 const MENU_TYPES = {
     CONTENT: 'content'
 } as const;
 
-const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
-    const { currentPage, updateSection } = useEditorStore();
+const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack, updateSection }) => {
     const [showContentSelector, setShowContentSelector] = useState(false);
-    const params = section.params as BaseSectionParams;
 
     const getContentItem = (): Widget | undefined => {
-        return params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
+        return section.params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
     };
 
     const handleContentTypeSelect = (type: DataSourceType) => {
-        if (!currentPage) return;
-        
-        const widgets = [...(params.extend.widgets || [])];
+        const widgets = [...(section.params.extend.widgets || [])];
         const contentItem = widgets.find(item => item.content === MENU_TYPES.CONTENT);
         
         if (contentItem) {
@@ -40,10 +36,10 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
             });
         }
         
-        updateSection(currentPage, section.id, {
+        updateSection({
             params: {
                 extend: {
-                    ...params.extend,
+                    ...section.params.extend,
                     widgets
                 }
             }

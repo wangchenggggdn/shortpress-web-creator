@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconArrowLeft } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType } from '@/types/editor';
@@ -14,24 +14,74 @@ interface SectionEditorProps {
 }
 
 const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
-    const { currentVersion, currentPage } = useEditorStore();
-    const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
-    let section = currentPageData?.sections.find(s => s.id === sectionId);
+    const { currentVersion, currentPage, updateSection, updateShareSection } = useEditorStore();
+    const [localSection, setLocalSection] = useState<Section | null>(null);
+    const [isSharedSection, setIsSharedSection] = useState(false);
 
-    if (!section) {
-        section = currentVersion?.shareSections.find(s => s.id === sectionId);
-        if (!section) {
-            return <div className="p-4 text-center text-gray-500">Section not found</div>;
+    // Sync with store when version changes
+    useEffect(() => {
+        if (!sectionId) return;
+        
+        // Check if the section is in shareSections
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === sectionId);
+        if (sharedSection) {
+            setLocalSection(sharedSection);
+            setIsSharedSection(true);
+            return;
         }
+
+        // If not in shareSections, check in currentPage
+        if (!currentVersion || !currentPage) return;
+        const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
+        if (!currentPageData) return;
+        
+        const pageSection = currentPageData.sections.find((s: Section) => s.id === sectionId);
+        if (pageSection) {
+            setLocalSection(pageSection);
+            setIsSharedSection(false);
+        }
+    }, [sectionId, currentPage, currentVersion]);
+
+    const updateSectionData = (updates: Partial<Section>) => {
+        if (!localSection) return;
+        
+        const updatedSection = {
+            ...localSection,
+            ...updates
+        };
+        
+        setLocalSection(updatedSection);
+        
+        if (isSharedSection) {
+            updateShareSection(localSection.id, updatedSection);
+        } else if (currentPage) {
+            updateSection(currentPage, localSection.id, updatedSection);
+        }
+    };
+
+    if (!localSection) {
+        return <div className="p-4 text-center text-gray-500">Loading...</div>;
     }
 
-    switch (section.type) {
+    switch (localSection.type) {
         case SectionType.HEADER:
-            return <HeaderEditor onBack={onBack} />;
+            return <HeaderEditor 
+                section={localSection} 
+                onBack={onBack} 
+                updateSection={updateSectionData}
+            />;
         case SectionType.FOOTER:
-            return <FooterEditor onBack={onBack} />;
+            return <FooterEditor 
+                section={localSection} 
+                onBack={onBack} 
+                updateSection={updateSectionData}
+            />;
         case SectionType.CAROUSEL:
-            return <CarouselEditor section={section} onBack={onBack} />;
+            return <CarouselEditor 
+                section={localSection} 
+                onBack={onBack} 
+                updateSection={updateSectionData}
+            />;
         default:
             return (
                 <div className="p-4">
@@ -43,12 +93,12 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
                         >
                             <IconArrowLeft size={20} />
                         </button>
-                        <h2 className="text-lg font-medium">Edit {section.type}</h2>
+                        <h2 className="text-lg font-medium">Edit {localSection.type}</h2>
                     </div>
 
                     <div className="space-y-4">
                         <div className="text-gray-500">
-                            Section editor for {section.type} is under development
+                            Section editor for {localSection.type} is under development
                         </div>
                     </div>
                 </div>

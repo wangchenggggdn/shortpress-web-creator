@@ -9,7 +9,9 @@ import { toast } from 'sonner';
 
 interface NavMenuEditorProps {
     widget: any;
+    currentSection: Section;
     onBack: () => void;
+    updateWidgetDataToSection: (updates: Partial<Widget>) => void;
 }
 
 const MENU_TYPES = {
@@ -17,25 +19,10 @@ const MENU_TYPES = {
     NAV_ITEM: 'nav_item'
 } as const;
 
-const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
-    const {currentVersion,currentSection,setCurrentSection,currentPage, updateSection,updateShareSection, isSharedSectionFunc } = useEditorStore();
+const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget,currentSection, onBack,updateWidgetDataToSection }) => {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isSharedSection, setIsSharedSection] = useState(false);
 
-    useEffect(() => {
-        const isShared = isSharedSectionFunc();
-        setIsSharedSection(isShared);
-        let section = null;
-        if(isShared){
-            section = currentVersion?.shareSections.find(s => s.id === currentSection?.id);
-        }else{
-            section = currentVersion?.pages.find(p => p.id === currentPage)?.sections.find(s => s.id === currentSection?.id);
-        }
-        if(section){
-            setCurrentSection(section);
-        }
-    }, [currentVersion]);
 
     const getNavItems = (): Widget[] => {
         const items = (currentSection?.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[];
@@ -44,16 +31,10 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
 
     const updateWidgetData = (updatedItems: Widget[]) => {
         if (!currentSection) return;
-
         const widgetUpdate = currentSection.params.extend.widgets?.find(w => w.id === widget.id);
-        if (!currentPage || !widgetUpdate) return;
+        if (!widgetUpdate) return;
         widgetUpdate.widgets = updatedItems;
-
-        if (isSharedSection) {
-            updateShareSection(currentSection.id, currentSection);
-        } else {
-            updateSection(currentPage, currentSection.id, currentSection);
-        }
+        updateWidgetDataToSection(widgetUpdate);
     };
 
     const handleIconUpload = async (file: File) => {
@@ -165,7 +146,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
             </div>
 
             {/* Nav Icon */}
-            <LogoMenuItem widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id) } } title={'Nav Icon'}/>
+            <LogoMenuItem isLoading={isLoading} widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id) } } title={'Nav Icon'}/>
 
             {/* Menu Items */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
