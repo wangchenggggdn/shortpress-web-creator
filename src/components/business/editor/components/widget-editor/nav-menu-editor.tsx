@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
+import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical, IconPlaylist, IconFile, IconLink, IconSearch } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, BaseSectionParams, WidgetType, Widget } from '@/types/editor';
+import { Section, WidgetType, Widget, DataSourceType, PathWidget, DataWidget } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 import { LogoMenuItem } from '../common/menu-items';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
-import { Menu } from '@mantine/core';
+import { Menu, Modal, TextInput, Select } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import WidgetPageItem from '../common/WidgetPageItem';
 import {
@@ -23,6 +23,9 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import PlaylistSelector from '../common/PlaylistSelector';
+import PageSelector from '../common/PageSelector';
+import UrlInputSelector from '../common/UrlInputSelector';
 
 interface NavMenuEditorProps {
     widget: any;
@@ -33,13 +36,22 @@ interface NavMenuEditorProps {
 
 const MENU_TYPES = {
     NAV: 'nav',
-    NAV_ITEM: 'nav_item'
+    NAV_ITEM: 'nav_item',
+    PLAYLIST: 'playlist',
+    PAGE: 'page',
+    URL: 'url'
 } as const;
 
 const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, onBack, updateWidgetDataToSection }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [currentMenuItem, setCurrentMenuItem] = useState<Widget | null>(null);
+    const [showAddTypeMenu, setShowAddTypeMenu] = useState(false);
+    const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+    const [showPageModal, setShowPageModal] = useState(false);
+    const [showUrlModal, setShowUrlModal] = useState(false);
+    const [urlInput, setUrlInput] = useState('');
+    const { currentVersion } = useEditorStore();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -95,17 +107,50 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         }
     };
 
-    const handleAddMenuItem = () => {
+    const handleAddPlaylistItem = (playlistId: string, playlistName: string) => {
         const items = getNavItems();
-        const newItem: Widget = {
+        const newItem: DataWidget = {
             id: createUniqueUUID(items.map(item => item.id)),
-            label: 'New Menu Item',
-            content: MENU_TYPES.NAV_ITEM,
+            label: playlistName,
+            content: MENU_TYPES.PLAYLIST,
             visible: true,
-            type: WidgetType.DEFAULT
+            type: WidgetType.DATA,
+            data: {
+                type: DataSourceType.PLAYLIST,
+                id: playlistId
+            }
         };
         
         updateWidgetData([...items, newItem]);
+        setShowPlaylistModal(false);
+    };
+
+    const handleAddPageItem = (pageId: string, pageName: string) => {
+        const items = getNavItems();
+        const newItem: PathWidget = {
+            id: createUniqueUUID(items.map(item => item.id)),
+            label: pageName,
+            content: MENU_TYPES.PAGE,
+            visible: true,
+            type: WidgetType.PATH,
+            path: pageId
+        };
+        
+        updateWidgetData([...items, newItem]);
+        setShowPageModal(false);
+    };
+
+    const handleAddUrlItem = (url: string) => {
+        // Add the URL menu item
+        const newWidget: PathWidget = {
+            id: createUniqueUUID(getNavItems().map(item => item.id)),
+            type: WidgetType.PATH,
+            path: url,
+            label: url,
+            visible: true
+        };
+        updateWidgetData([...getNavItems(), newWidget]);
+        setShowUrlModal(false);
     };
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
@@ -205,12 +250,47 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[15px] font-medium text-black-purple">Menu Items</h3>
-                    <button
-                        onClick={handleAddMenuItem}
-                        className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
-                    >
-                        Add Menu
-                    </button>
+                    <Menu opened={showAddTypeMenu} onChange={setShowAddTypeMenu}>
+                        <Menu.Target>
+                            <button
+                                className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+                            >
+                                Add Menu
+                            </button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            <Menu.Item
+                                leftSection={<IconPlaylist size={16} />}
+                                onClick={() => {
+                                    setShowAddTypeMenu(false);
+                                    setShowPlaylistModal(true);
+                                }}
+                            >
+                                Playlist
+                                <div className="text-xs text-gray-500">Add existing playlists to section</div>
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={<IconFile size={16} />}
+                                onClick={() => {
+                                    setShowAddTypeMenu(false);
+                                    setShowPageModal(true);
+                                }}
+                            >
+                                Page
+                                <div className="text-xs text-gray-500">Link directly to another page</div>
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={<IconLink size={16} />}
+                                onClick={() => {
+                                    setShowAddTypeMenu(false);
+                                    setShowUrlModal(true);
+                                }}
+                            >
+                                URL
+                                <div className="text-xs text-gray-500">Link an external resource</div>
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
                 </div>
 
                 <DndContext
@@ -250,6 +330,28 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
                 placeholder="Enter menu item name"
                 submitText="Rename"
                 initialValue={currentMenuItem?.label}
+            />
+
+            {/* Playlist Selection Modal */}
+            <PlaylistSelector
+                open={showPlaylistModal}
+                onClose={() => setShowPlaylistModal(false)}
+                onSelect={handleAddPlaylistItem}
+            />
+
+            {/* Page Selection Modal */}
+            <PageSelector
+                open={showPageModal}
+                onClose={() => setShowPageModal(false)}
+                pages={currentVersion?.pages || []}
+                onSelect={handleAddPageItem}
+            />
+
+            {/* URL Input Modal */}
+            <UrlInputSelector
+                open={showUrlModal}
+                onClose={() => setShowUrlModal(false)}
+                onSelect={handleAddUrlItem}
             />
         </div>
     );
