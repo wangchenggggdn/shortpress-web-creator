@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconX, IconChevronRight } from '@tabler/icons-react';
-import { Section, DataSourceType, Widget, WidgetType } from '@/types/editor';
+import { Section, DataSourceType, Widget, WidgetType, DataWidget, SectionType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 import ContentTypeSelector from '../../common/ContentTypeSelector';
-import { Menu } from '@mantine/core';
+import { Menu, TextInput } from '@mantine/core';
 import PlaylistData from './playlist-data';
 import PlaylistSelector from '../../common/PlaylistSelector';
 import { Playlist } from '@/types/playlist';
+import useEditorStore from '@/store/useEditorStore';
 
 interface NormalEditorProps {
     section: Section;
@@ -22,6 +23,12 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
     const [showContentSelector, setShowContentSelector] = useState(false);
     const [showPlaylistData, setShowPlaylistData] = useState(false);
     const [showPlaylistAdd, setShowPlaylistAdd] = useState(false);
+    const [sectionTitle, setSectionTitle] = useState(section.title || '');
+    const {currentSection} = useEditorStore();
+
+    useEffect(() => {
+        setSectionTitle(section.title || '');
+    }, [section.title]);
 
     const getContentItem = (): Widget | undefined => {
         return section.params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
@@ -57,6 +64,10 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
     };
 
     const handleAddPlaylistItem = (playlists:Playlist[]) => {
+        updateWidgetDataToSection(playlists);
+    };
+
+    const updateWidgetDataToSection = (playlists:Playlist[]) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const contentItem = widgets[0];
         if (contentItem) {
@@ -73,16 +84,24 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         });
     };
 
+    const handleTitleChange = (value: string) => {
+        setSectionTitle(value);
+        updateSection({
+            ...section,
+            title: value
+        });
+    };
+
     const contentItem = getContentItem();
     const isPlaylistType = section.params.extend.dataSourceType === DataSourceType.PLAYLIST;
 
     return (
         <>
-           <div className="p-4 h-full overflow-y-auto">
+           <div className="p-4 h-full overflow-y-auto text-purple-black">
                 {!showPlaylistData && 
                     <div>
-                                        {/* Header */}
-                                        <div className="flex items-center justify-end mb-2">
+                            {/* Header */}
+                             <div className="flex items-center justify-end mb-2">
                                 <button
                                     onClick={onBack}
                                     className="p-1.5 hover:bg-gray-100 rounded"
@@ -91,11 +110,48 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                                 </button>
                             </div>
 
-                            {/* Section Title */}
-                            <div className="mb-4">
-                                <h1 className="text-2xl font-bold text-[#1E293B] capitalize">{section.type} Section</h1>
-                                <h2 className="text-lg text-[#64748B] mt-1 capitalize">{section.type} Section</h2>
+                            <div>
+                                <h1 className="text-lg font-medium  mb-2">{section.title}</h1>
+                                <h1 className="text-sm font-medium  mb-2">{section.type}</h1>
                             </div>
+
+                            {/* Section Title */}
+                            {section.type !== SectionType.FEATURE && section.type !== SectionType.CAROUSEL && (
+                                                           <div className="mb-4">
+
+                                                           <div className="rounded-lg border border-gray-200 p-4">
+                                                               <h1 className="text-base font-medium mb-2">{'Headline'}</h1>
+                                                               <TextInput
+                                                                       value={sectionTitle}
+                                                                       onChange={(event) => handleTitleChange(event.currentTarget.value)}
+                                                                       placeholder="Enter section title"
+                                                                       className="w-full"
+                                                                       styles={{
+                                                                           input: {
+                                                                               border: '1px solid #E2E8F0', // 1. 加上一个细边框会更好看
+                                                                               borderRadius: '8px',         // 2. 加上圆角
+                                                                               backgroundColor: '#F1F5F9',  // 3. 修改背景色
+                                                                               fontSize: '1.125rem',
+                                                                               // padding: '0.5rem 0.75rem', // 4. 建议使用合适的 padding
+                                                                               color: '#64748B',
+                                                                               '&::placeholder': {
+                                                                                   color: '#94A3B8'
+                                                                               },
+                                                                               // 5. 添加 :focus 状态的样式，提升用户体验
+                                                                               '&:focus': {
+                                                                                   borderColor: '#2563EB', // 聚焦时边框变色
+                                                                                   boxShadow: '0 0 0 2px rgba(37, 99, 235, 0.2)' // 聚焦时显示光晕
+                                                                               }
+                                                                           },
+                                                                           // wrapper 通常不需要修改，除非有特殊布局需求
+                                                                           // wrapper: {
+                                                                           //     border: 'none'
+                                                                           // }
+                                                                       }}
+                                                                   />
+                                                           </div>
+                                                       </div> 
+                            )}
 
                             {/* Content */}
                             <div className="mb-4">
@@ -146,11 +202,12 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                 {showPlaylistData && (
                     <PlaylistData widgets={section.params.extend.widgets || []} onClose={() => setShowPlaylistData(false)} addContent={() => {
                         setShowPlaylistAdd(true);
-                    }} />
+                    }} updateWidgetDataToSection={updateWidgetDataToSection} />
                 )}
             </div>
              <PlaylistSelector
                     open={showPlaylistAdd}
+                    isMultiSelect={true}
                     onClose={() => setShowPlaylistAdd(false)}
                     onSelect={handleAddPlaylistItem}
             />

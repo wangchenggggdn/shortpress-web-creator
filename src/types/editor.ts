@@ -2,31 +2,31 @@
  * Section type enum
  */
 export enum SectionType {
-    HEADER = 'header',
-    FEATURE = 'feature',
-    CAROUSEL = 'carousel',
-    SCROLL = 'scroll',
-    GRID = 'grid',
-    LIST = 'list',
-    COLUMN = 'column',
-    FOOTER = 'footer'
+    HEADER = 'Header',
+    FEATURE = 'Feature',
+    CAROUSEL = 'Carousel',
+    SCROLL = 'Scroll',
+    GRID = 'Grid',
+    LIST = 'List',
+    COLUMN = 'Column',
+    FOOTER = 'Footer'
 }
 
 /**
  * Section data source type enum
  */
 export enum DataSourceType {
-    PLAYLIST = 'playlist',
-    CONTINUE_WATCHING = 'continue_watching',
-    NEW_RELEASE = 'new_release'
+    PLAYLIST = 'Playlist',
+    CONTINUE_WATCHING = 'Continue Watching',
+    NEW_RELEASE = 'New Release'
 }
 
 export enum WidgetType {
-    DEFAULT = 'default',
-    LOGO = 'logo',
-    NAV = 'nav',
-    DATA = 'data',
-    PATH = 'path',
+    DEFAULT = 'Default',
+    LOGO = 'Logo',
+    NAV = 'Nav',
+    DATA = 'Data',
+    PATH = 'Path',
 }
 
 /**
@@ -72,6 +72,7 @@ export interface NavMenu extends Widget {
  */
 export interface Section {
     id: string;
+    title: string;
     type: SectionType;
     params: BaseSectionParams;
     order: number; //delete

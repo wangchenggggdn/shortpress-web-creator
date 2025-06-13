@@ -17,7 +17,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         // Mock data, replace with real API call
         {
             playlistId: '1',
-            title: "Mafia's tender torutre",
+            title: "Mafia's tender torutre1",
             videoCount: 30,
             cover: 'https://placeholder.com/300x200',
             createdAt: 1718236800,
@@ -28,7 +28,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         },
         {
             playlistId: '2',
-            title: "Mafia's tender torutre",
+            title: "Mafia's tender torutre2",
             videoCount: 30,
             cover: 'https://placeholder.com/300x200',
             createdAt: 1718236800,
@@ -39,7 +39,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         },
         {
             playlistId: '3',
-            title: "Mafia's tender torutre",
+            title: "Mafia's tender torutre3",
             videoCount: 30,
             cover: 'https://placeholder.com/300x200',
             createdAt: 1718236800,
@@ -50,7 +50,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         },
         {
             playlistId: '4',
-            title: "Mafia's tender torutre",
+            title: "Mafia's tender torutre4",
             videoCount: 30,
             cover: 'https://placeholder.com/300x200',
             createdAt: 1718236800,
@@ -61,7 +61,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         },
         {
             playlistId: '5',
-            title: "Mafia's tender torutre",
+            title: "Mafia's tender torutre5",
             videoCount: 30,
             cover: 'https://placeholder.com/300x200',
             createdAt: 1718236800,
@@ -72,7 +72,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         },
         {
             playlistId: '6',
-            title: "Mafia's tender torutre",
+            title: "Mafia's tender torutre6",
             videoCount: 30,
             cover: 'https://placeholder.com/300x200',
             createdAt: 1718236800,

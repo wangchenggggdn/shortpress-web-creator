@@ -70,6 +70,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 if (page.id !== currentPage) {
                     setCurrentPage(page.id);
                 }
+                
                 // Find section by type
                 if (sectionId) {
                     let section = page.sections.find(

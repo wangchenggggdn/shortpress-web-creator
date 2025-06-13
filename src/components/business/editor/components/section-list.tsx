@@ -151,7 +151,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                                 )}
                             </button>
                             <span className="flex-1 truncate">
-                                {section.type.toLowerCase()}
+                                {section.title}
                             </span>
                             <button
                                 onClick={e => {

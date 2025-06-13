@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconGripVertical, IconDotsVertical, IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconGripVertical, IconDotsVertical, IconEye, IconEyeOff, IconTrash } from '@tabler/icons-react';
 import { Menu } from '@mantine/core';
 import { Widget } from '@/types/editor';
 import { CSS } from '@dnd-kit/utilities';
@@ -12,6 +12,7 @@ interface WidgetPageItemProps {
     onDuplicate: (id: string) => void;
     onDelete: (id: string) => void;
     onRename: (item: Widget) => void;
+    variant?: 'full' | 'simple';
 }
 
 const WidgetPageItem: React.FC<WidgetPageItemProps> = ({
@@ -20,6 +21,7 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({
     onDuplicate,
     onDelete,
     onRename,
+    variant = 'full'
 }) => {
     const {
         attributes,
@@ -34,6 +36,35 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({
         transform: CSS.Transform.toString(transform),
         transition,
     };
+
+    if (variant === 'simple') {
+        return (
+            <div
+                ref={setNodeRef}
+                style={style}
+                className={clsx(
+                    'flex items-center gap-3 p-2 bg-[#EEF2FF] rounded-lg',
+                    isDragging && 'shadow-lg'
+                )}
+            >
+                <button
+                    className="cursor-grab hover:bg-gray-100 p-1 rounded text-gray-400"
+                    {...attributes}
+                    {...listeners}
+                >
+                    <IconGripVertical size={16} />
+                </button>
+                <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0" />
+                <span className="flex-1 text-[#1E293B]">{item.label}</span>
+                <button
+                    onClick={() => onDelete(item.id)}
+                    className="text-red-500 hover:bg-red-50 p-1 rounded"
+                >
+                    <IconTrash size={16} />
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div

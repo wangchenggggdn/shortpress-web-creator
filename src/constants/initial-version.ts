@@ -45,6 +45,7 @@ export const INITIAL_VERSION: Version = {
     shareSections: [
         {
             id: generateId(),
+            title: 'Header',
             type: SectionType.HEADER,
             order: 0,
             params: {
@@ -112,6 +113,7 @@ export const INITIAL_VERSION: Version = {
             }
         }, {
             id: generateId(),
+            title: 'Footer',
             type: SectionType.FOOTER,
             order: 0,
             params: {

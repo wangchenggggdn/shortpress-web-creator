@@ -17,7 +17,7 @@ interface SectionEditorProps {
 }
 
 const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
-    const { currentVersion, currentPage, updateSection, updateShareSection } = useEditorStore();
+    const { currentVersion,currentSection, currentPage, updateSection, updateShareSection } = useEditorStore();
     const [localSection, setLocalSection] = useState<Section | null>(null);
     const [isSharedSection, setIsSharedSection] = useState(false);
     const [showTypeSelector, setShowTypeSelector] = useState(false);
@@ -104,6 +104,7 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
         case SectionType.GRID:
         case SectionType.LIST:
         case SectionType.COLUMN:
+        case SectionType.FEATURE:
             return <NormalEditor 
                 section={localSection} 
                 onBack={onBack} 

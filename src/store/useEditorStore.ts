@@ -55,6 +55,7 @@ interface EditorStore {
 
 const createSection = (type: SectionType, existingSections: Section[] = []): Section => ({
     id: createUniqueUUID(existingSections.map(s => s.id)),
+    title: type,
     type,
     order: 0,
     params: {
