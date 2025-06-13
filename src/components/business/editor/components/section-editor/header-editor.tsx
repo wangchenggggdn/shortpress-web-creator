@@ -189,7 +189,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
     const navItem = getMenuItem(4);
 
     return (
-        <div className="p-4 bg-white">
+        <div className="p-4 bg-white h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button

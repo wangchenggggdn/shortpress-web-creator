@@ -18,57 +18,34 @@ const MENU_TYPES = {
 } as const;
 
 const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
-    const { currentPage,currentVersion, currentSection, updateSection,updateShareSection, isSharedSectionFunc } = useEditorStore();
+    const { currentSection,currentPage, updateSection,updateShareSection, isSharedSectionFunc } = useEditorStore();
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [localSection, setLocalSection] = useState<Section | null>(null);
     const [isSharedSection, setIsSharedSection] = useState(false);
-  
-    
+
 
     useEffect(() => {
-        console.log('localWidget', localSection);
-    }, [localSection]);
-
-    // Sync with store when version changes
-    useEffect(() => {
-        if (!currentSection) return;
         setIsSharedSection(isSharedSectionFunc());
-        // Check if the section is in shareSections
-        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection.id);
-        if (sharedSection) {
-            setLocalSection(sharedSection);
-            return;
-        }
+    }, [currentSection]);
 
-        // If not in shareSections, check in currentPage
-        if (!currentVersion || !currentPage) return;
-        const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
-        if (!currentPageData) return;
-        
-        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection.id);
-        if (pageSection) {
-            setLocalSection(pageSection);
-        }
-    }, [currentSection, currentPage, currentVersion]);
 
     const getNavItems = (): Widget[] => {
-        return localSection?.params.extend.widgets?.filter((w: Widget) => w.id === widget.id)??[];
+        const items = currentSection?(currentSection.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[]:widget.widgets??[];
+        console.log('items', items);
+        return items;
     };
 
     const updateWidgetData = (updatedItems: Widget[]) => {
-        if (!currentPage || !localSection) return;
+        if (!currentSection) return;
 
-        const sectionUpdate = currentVersion?.pages.find(p => p.id === currentPage)?.sections.find(s => s.id === localSection.id);
-        if (!sectionUpdate) return;
-        const widgetUpdate = sectionUpdate.params.extend.widgets?.find(w => w.id === widget.id);
-        if (!widgetUpdate) return;
+        const widgetUpdate = currentSection.params.extend.widgets?.find(w => w.id === widget.id);
+        if (!currentPage || !widgetUpdate) return;
         widgetUpdate.widgets = updatedItems;
 
         if (isSharedSection) {
-            updateShareSection(localSection.id, sectionUpdate);
+            updateShareSection(currentSection.id, currentSection);
         } else {
-            updateSection(currentPage, localSection.id, sectionUpdate);
+            updateSection(currentPage, currentSection.id, currentSection);
         }
     };
 
@@ -162,14 +139,17 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, onBack }) => {
         updateWidgetData(updatedItems);
     };
 
+    if(getNavItems().length === 0){
+        return <></>;
+    }
     const navIcon = getNavItems()[0];
-    const navItems = getNavItems();
+    const navItems = getNavItems().slice(1);
 
     console.log('navItems', navItems);
     console.log('navIcon', navIcon);
 
     return (
-        <div className="p-4 bg-white">
+        <div className="p-4 bg-white h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button

@@ -85,7 +85,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const isVisibleShareFooter = shareFooterSection&&!shareFooterSection.isHidden&&!shareFooterSection.params.extend.notSharePages?.includes(currentPageData?.path??'');
 
     return (
-        <div className="p-4">
+        <div className="p-4 h-full overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium">Sections</h2>
             </div>

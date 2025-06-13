@@ -223,7 +223,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ onBack }) => {
     const footerItems = getFooterItems();
 
     return (
-        <div className="p-4 bg-white">
+        <div className="p-4 bg-white h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button

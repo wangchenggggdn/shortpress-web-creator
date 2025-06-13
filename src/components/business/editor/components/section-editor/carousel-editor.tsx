@@ -55,7 +55,7 @@ const CarouselEditor: React.FC<CarouselEditorProps> = ({ section, onBack }) => {
     const contentItem = getContentItem();
 
     return (
-        <div className="p-4">
+        <div className="p-4 h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-2 mb-6">
                 <button
