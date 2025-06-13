@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, BaseSectionParams, WidgetType, Widget } from '@/types/editor';
@@ -6,6 +6,23 @@ import { createUniqueUUID } from '@/utils/public';
 import { LogoMenuItem } from '../common/menu-items';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
+import { Menu } from '@mantine/core';
+import InputModal from '@/components/common/input-modal';
+import WidgetPageItem from '../common/WidgetPageItem';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface NavMenuEditorProps {
     widget: any;
@@ -19,10 +36,17 @@ const MENU_TYPES = {
     NAV_ITEM: 'nav_item'
 } as const;
 
-const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget,currentSection, onBack,updateWidgetDataToSection }) => {
-    const [activeMenu, setActiveMenu] = useState<string | null>(null);
+const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, onBack, updateWidgetDataToSection }) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+    const [currentMenuItem, setCurrentMenuItem] = useState<Widget | null>(null);
 
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     const getNavItems = (): Widget[] => {
         const items = (currentSection?.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[];
@@ -93,48 +117,77 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget,currentSection, on
         updateWidgetData(updatedItems);
     };
 
-    const handleMenuItemDelete = (itemId: string) => {
-        const items = getNavItems();
-        const updatedItems = items.filter(item => item.id !== itemId);
-        
-        updateWidgetData(updatedItems);
-    };
-
-    const handleMenuItemDuplicate = (itemId: string) => {
-        const items = getNavItems();
-        const itemToDuplicate = items.find(item => item.id === itemId);
-        
-        if (itemToDuplicate) {
-            const newItem: Widget = {
-                ...itemToDuplicate,
-                id: createUniqueUUID(items.map(item => item.id)),
-                label: `${itemToDuplicate.label} (Copy)`
-            };
-            
-            updateWidgetData([...items, newItem]);
+    const handleDragEnd = (event: any) => {
+        const { active, over } = event;
+        if (active.id !== over.id) {
+            const items = getNavItems();
+            const oldIndex = items.findIndex((item) => item.id === active.id);
+            const newIndex = items.findIndex((item) => item.id === over.id);
+            updateWidgetData(arrayMove(items, oldIndex, newIndex));
         }
     };
 
-    const handleToggle = (itemId: string) => {
-        const items = widget.widgets??[];
-        const updatedItems = items.map((item: Widget) =>
-            item.id === itemId ? { ...item, visible: item.visible === undefined? false : !item.visible } : item
-        );
+    const handleToggle = (id: string) => {
+        const items = getNavItems();
+        const updatedItems = items.map(item => {
+            if (item.id === id) {
+                return { ...item, visible: !item.visible };
+            }
+            return item;
+        });
         updateWidgetData(updatedItems);
     };
 
+    const handleMenuItemDuplicate = (id: string) => {
+        const items = getNavItems();
+        const itemToDuplicate = items.find(item => item.id === id);
+        if (!itemToDuplicate) return;
+
+        const newItem = {
+            ...itemToDuplicate,
+            id: createUniqueUUID(items.map(item => item.id)),
+            label: `${itemToDuplicate.label} (Copy)`
+        };
+
+        updateWidgetData([...items, newItem]);
+    };
+
+    const handleMenuItemDelete = (id: string) => {
+        const items = getNavItems();
+        const updatedItems = items.filter(item => item.id !== id);
+        updateWidgetData(updatedItems);
+    };
+
+    const handleRename = (newName: string) => {
+        if (!currentMenuItem) return;
+        handleMenuItemUpdate(currentMenuItem.id, { label: newName });
+        setIsRenameModalOpen(false);
+        setCurrentMenuItem(null);
+    };
+
     if(getNavItems().length === 0){
-        return <></>;
+        return (
+            <div className="p-4 bg-white h-full overflow-y-auto">
+                <div className="flex items-center mb-4">
+                    <button onClick={onBack} className="mr-2">
+                        <IconArrowLeft size={20} />
+                    </button>
+                    <h2 className="text-lg font-medium">Navigation Menu</h2>
+                </div>
+                <div className="flex flex-col items-center justify-center h-[calc(100%-4rem)]">
+                    <IconUpload size={48} className="text-gray-400 mb-4" />
+                    <p className="text-gray-600 mb-2">No menu items yet</p>
+                    <p className="text-gray-400 text-sm">Add a logo or text to get started</p>
+                </div>
+            </div>
+        );
     }
+
     const navIcon = getNavItems()[0];
     const navItems = getNavItems().slice(1);
 
-    console.log('navItems', navItems);
-    console.log('navIcon', navIcon);
-
     return (
         <div className="p-4 bg-white h-full overflow-y-auto">
-            {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button
                     onClick={onBack}
@@ -146,7 +199,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget,currentSection, on
             </div>
 
             {/* Nav Icon */}
-            <LogoMenuItem isLoading={isLoading} widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id) } } title={'Nav Icon'}/>
+            <LogoMenuItem isLoading={isLoading} widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id)}} title={'Nav Icon'}/>
 
             {/* Menu Items */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
@@ -160,58 +213,44 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget,currentSection, on
                     </button>
                 </div>
 
-                <div className="space-y-2">
-                    {navItems.map((item) => (
-                        <div
-                            key={item.id}
-                            className={`bg-white border rounded-lg ${
-                                activeMenu === item.id ? 'border-primary' : 'border-gray-200'
-                            }`}
-                        >
-                            <div className="flex items-center p-3">
-                                <IconGripVertical size={16} className="text-gray-400 mr-2" />
-                                <input
-                                    type="text"
-                                    className="flex-1 bg-transparent focus:outline-none focus:border-primary"
-                                    value={item.label}
-                                    onChange={(e) => handleMenuItemUpdate(item.id, { label: e.target.value })}
-                                    placeholder="Enter menu item text"
-                                />
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setActiveMenu(activeMenu === item.id ? null : item.id)}
-                                        className="p-1 hover:bg-gray-100 rounded transition-colors"
-                                    >
-                                        <IconDotsVertical size={16} />
-                                    </button>
-                                    {activeMenu === item.id && (
-                                        <div className="absolute right-0 mt-1 w-40 py-1 bg-white rounded-lg shadow-xl z-10">
-                                            <button
-                                                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
-                                                onClick={() => handleToggle(item.id)}
-                                            >
-                                                {item.visible ? 'Hide in Menu' : 'Show in Menu'}
-                                            </button>
-                                            <button
-                                                className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
-                                                onClick={() => handleMenuItemDuplicate(item.id)}
-                                            >
-                                                Duplicate
-                                            </button>
-                                            <button
-                                                className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100 transition-colors"
-                                                onClick={() => handleMenuItemDelete(item.id)}
-                                            >
-                                                Delete Menu
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={navItems}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {navItems.map((item) => (
+                            <WidgetPageItem
+                                key={item.id}
+                                item={item}
+                                onToggleVisibility={handleToggle}
+                                onDuplicate={handleMenuItemDuplicate}
+                                onDelete={handleMenuItemDelete}
+                                onRename={(item) => {
+                                    setCurrentMenuItem(item);
+                                    setIsRenameModalOpen(true);
+                                }}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
             </div>
+
+            <InputModal
+                opened={isRenameModalOpen}
+                onClose={() => {
+                    setIsRenameModalOpen(false);
+                    setCurrentMenuItem(null);
+                }}
+                onSubmit={handleRename}
+                title="Rename Menu Item"
+                placeholder="Enter menu item name"
+                submitText="Rename"
+                initialValue={currentMenuItem?.label}
+            />
         </div>
     );
 };

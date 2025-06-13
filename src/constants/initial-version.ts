@@ -20,20 +20,24 @@ export const INITIAL_VERSION: Version = {
             name: 'Home',
             isHome: true,
             metadata: {
-                title: 'Home',
-                description: 'Home page',
-                keywords: ['home', 'page']
+                seo: {
+                    title: 'Home',
+                    description: 'Home page',
+                    keywords: "home,page"
+                }
             },
-            sections: []
+            sections: [],
         },
         {
             id: generateId(),
             path: '/explore',
             name: 'Explore',
             metadata: {
-                title: 'Explore',
-                description: 'Explore page',
-                keywords: ['explore', 'page']
+                seo: {
+                    title: 'Explore',
+                    description: 'Explore page',
+                    keywords: "explore,page"
+                }
             },
             sections: []
         }
@@ -84,19 +88,22 @@ export const INITIAL_VERSION: Version = {
                                 {
                                     id: generateId(),
                                     label: 'Nav icon',
-                                    type: WidgetType.LOGO
+                                    type: WidgetType.LOGO,
+                                    visible: true
                                 },
                                 {
                                     id: generateId(),
                                     label: 'Home',
                                     type: WidgetType.PATH,
-                                    path: '/home'
+                                    path: '/home',
+                                    visible: true
                                 },
                                 {
                                     id: generateId(),
                                     label: 'Explore',
                                     type: WidgetType.PATH,
-                                    path: '/explore'
+                                    path: '/explore',
+                                    visible: true
                                 }
                             ]
                         }
@@ -115,7 +122,7 @@ export const INITIAL_VERSION: Version = {
                             label: 'Terms of Service',
                             content: '',
                             visible: true,
-                            type: WidgetType.PATH
+                            type: WidgetType.PATH,
                         },
                         {
                             id: generateId(),
