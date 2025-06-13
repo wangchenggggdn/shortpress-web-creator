@@ -107,7 +107,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     // Handle section change
     const handleSectionChange = (newSectionId: string | null) => {
         let page = currentVersion?.pages.find(p => p.id === currentPage);
-       
         if (!page) {
             console.log('No current page found');
             return;

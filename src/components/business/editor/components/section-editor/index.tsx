@@ -6,10 +6,10 @@ import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
 import HeaderEditor from './header-editor';
 import FooterEditor from './footer-editor';
-import CarouselEditor from './nomal-editor';
+import CarouselEditor from './nomal-editor/nomal-editor';
 import SectionTypeModal from './section-type-modal';
 import ContentTypeModal from './content-type-modal';
-import NormalEditor from './nomal-editor';
+import NormalEditor from './nomal-editor/nomal-editor';
 
 interface SectionEditorProps {
     sectionId: string;

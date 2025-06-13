@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Menu, Modal, TextInput, Select } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import WidgetPageItem from '../common/WidgetPageItem';
+
 import {
     DndContext,
     closestCenter,
@@ -26,6 +27,7 @@ import {
 import PlaylistSelector from '../common/PlaylistSelector';
 import PageSelector from '../common/PageSelector';
 import UrlInputSelector from '../common/UrlInputSelector';
+import { Playlist } from '@/types/playlist';
 
 interface NavMenuEditorProps {
     widget: any;
@@ -107,7 +109,9 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         }
     };
 
-    const handleAddPlaylistItem = (playlistId: string, playlistName: string) => {
+    const handleAddPlaylistItem = (playlists: Playlist[]) => {
+        const playlistId = playlists[0].playlistId;
+        const playlistName = playlists[0].title;
         const items = getNavItems();
         const newItem: DataWidget = {
             id: createUniqueUUID(items.map(item => item.id)),

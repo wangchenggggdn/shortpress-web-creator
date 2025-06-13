@@ -1,77 +1,101 @@
 import React, { useState } from 'react';
 import { TextInput } from '@mantine/core';
 import { IconSearch, IconArrowLeft } from '@tabler/icons-react';
-
-interface Playlist {
-    id: string;
-    name: string;
-    videoCount: number;
-    coverUrl?: string;
-}
+import { Playlist } from '@/types/playlist';
 
 interface PlaylistSelectorProps {
     open: boolean;
+    isMultiSelect?: boolean;
     onClose: () => void;
-    onSelect: (playlistId: string, playlistName: string) => void;
+    onSelect: (playlists: Playlist[]) => void;
 }
 
-const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, onClose, onSelect }) => {
+const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect = false, onClose, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist[]>([]);
     const [playlists, setPlaylists] = useState<Playlist[]>([
         // Mock data, replace with real API call
         {
-            id: '1',
-            name: "Mafia's tender torutre",
+            playlistId: '1',
+            title: "Mafia's tender torutre",
             videoCount: 30,
-            coverUrl: 'https://placeholder.com/300x200'
+            cover: 'https://placeholder.com/300x200',
+            createdAt: 1718236800,
+            updatedAt: 1718236800,
+            accessType: 1,
+            singleVideoPrice: 0,
+            freeVideos: 0
         },
         {
-            id: '2',
-            name: "Mafia's tender torutre",
+            playlistId: '2',
+            title: "Mafia's tender torutre",
             videoCount: 30,
-            coverUrl: 'https://placeholder.com/300x200'
+            cover: 'https://placeholder.com/300x200',
+            createdAt: 1718236800,
+            updatedAt: 1718236800,
+            accessType: 1,
+            singleVideoPrice: 0,
+            freeVideos: 0
         },
         {
-            id: '3',
-            name: "Mafia's tender torutre",
+            playlistId: '3',
+            title: "Mafia's tender torutre",
             videoCount: 30,
-            coverUrl: 'https://placeholder.com/300x200'
+            cover: 'https://placeholder.com/300x200',
+            createdAt: 1718236800,
+            updatedAt: 1718236800,
+            accessType: 1,
+            singleVideoPrice: 0,
+            freeVideos: 0
         },
         {
-            id: '4',
-            name: "Mafia's tender torutre",
+            playlistId: '4',
+            title: "Mafia's tender torutre",
             videoCount: 30,
-            coverUrl: 'https://placeholder.com/300x200'
+            cover: 'https://placeholder.com/300x200',
+            createdAt: 1718236800,
+            updatedAt: 1718236800,
+            accessType: 1,
+            singleVideoPrice: 0,
+            freeVideos: 0
         },
         {
-            id: '5',
-            name: "Mafia's tender torutre",
+            playlistId: '5',
+            title: "Mafia's tender torutre",
             videoCount: 30,
-            coverUrl: 'https://placeholder.com/300x200'
+            cover: 'https://placeholder.com/300x200',
+            createdAt: 1718236800,
+            updatedAt: 1718236800,
+            accessType: 1,
+            singleVideoPrice: 0,
+            freeVideos: 0
         },
         {
-            id: '6',
-            name: "Mafia's tender torutre",
+            playlistId: '6',
+            title: "Mafia's tender torutre",
             videoCount: 30,
-            coverUrl: 'https://placeholder.com/300x200'
+            cover: 'https://placeholder.com/300x200',
+            createdAt: 1718236800,
+            updatedAt: 1718236800,
+            accessType: 1,
+            singleVideoPrice: 0,
+            freeVideos: 0
         }
     ]);
-    const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
+
 
     if (!open) return null;
 
     const filteredPlaylists = playlists.filter(playlist =>
-        playlist.name.toLowerCase().includes(searchTerm.toLowerCase())
+        playlist.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleSelect = () => {
         if (selectedPlaylist) {
-            const playlist = playlists.find(p => p.id === selectedPlaylist);
-            if (playlist) {
-                onSelect(playlist.id, playlist.name);
-                onClose();
-            }
+            onSelect(selectedPlaylist);
+            onClose();
         }
+  
     };
 
     return (
@@ -99,24 +123,38 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, onClose, onSe
                     <div className="grid grid-cols-2 gap-4">
                         {filteredPlaylists.map((playlist) => (
                             <div
-                                key={playlist.id}
+                                key={playlist.playlistId}
                                 className={`cursor-pointer rounded-lg overflow-hidden border ${
-                                    selectedPlaylist === playlist.id ? 'border-primary' : 'border-gray-200'
+                                    selectedPlaylist.includes(playlist) ? 'border-primary' : 'border-gray-200'
                                 }`}
-                                onClick={() => setSelectedPlaylist(playlist.id)}
+                                onClick={() => {
+                                    if (isMultiSelect) {
+                                        if (selectedPlaylist.includes(playlist)) {
+                                            setSelectedPlaylist(selectedPlaylist.filter(p => p.playlistId !== playlist.playlistId));
+                                        } else {
+                                            setSelectedPlaylist([...(selectedPlaylist || []), playlist]);
+                                        }
+                                    } else {
+                                        if (selectedPlaylist.includes(playlist)) {
+                                            setSelectedPlaylist(selectedPlaylist.filter(p => p.playlistId !== playlist.playlistId));
+                                        } else {
+                                            setSelectedPlaylist([playlist]);
+                                        }
+                                    }
+                                }}
                             >
                                 <div className="aspect-video bg-gray-100">
-                                    {playlist.coverUrl && (
-                                        <img
-                                            src={playlist.coverUrl}
-                                            alt={playlist.name}
+                                    {playlist.cover && (
+                                        <img    
+                                            src={playlist.cover}
+                                            alt={playlist.title}
                                             className="w-full h-full object-cover"
                                         />
                                     )}
                                 </div>
                                 <div className="p-2">
                                     <div className="text-sm font-medium text-gray-900 truncate">
-                                        {playlist.name}
+                                        {playlist.title}
                                     </div>
                                     <div className="text-xs text-gray-500">
                                         {playlist.videoCount} videos

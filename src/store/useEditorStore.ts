@@ -38,7 +38,7 @@ interface EditorStore {
     deletePage: (pageId: string) => void;
 
     // Section actions
-    addSection: (pageId: string, sectionType: SectionType) => void;
+    addSection: (pageId: string, sectionType: SectionType) => Section | null;
     updateSection: (pageId: string, sectionId: string, updates: Partial<Section>) => void;
     updateShareSection: (sectionId: string, updates: Partial<Section>) => void;
     deleteSection: (pageId: string, sectionId: string) => void;
@@ -208,10 +208,10 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     // Section actions
     addSection: (pageId: string, sectionType: SectionType) => {
         const { currentVersion } = get();
-        if (!currentVersion) return;
+        if (!currentVersion) return null;
 
         const page = currentVersion.pages.find((p: Page) => p.id === pageId);
-        if (!page) return;
+        if (!page) return null;
         // Create new section with correct order
         const newSection = {
             ...createSection(sectionType, page.sections),
@@ -220,7 +220,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
         const newVersion = JSON.parse(JSON.stringify(currentVersion));
         const targetPage = newVersion.pages.find((p: Page) => p.id === pageId);
-        if (!targetPage) return;
+        if (!targetPage) return null;
 
         // Add section and ensure all sections have correct order
         targetPage.sections.push(newSection);
@@ -231,6 +231,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
         set({ currentVersion: newVersion });
         get().addToHistory(newVersion, 'add_section', `Added section: ${sectionType}`);
+        return newSection;
     },
 
     updateSection: (pageId, sectionId, updates) =>
