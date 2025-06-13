@@ -6,7 +6,7 @@ import useEditorStore from '@/store/useEditorStore';
 import PageList from '@/components/business/editor/components/page-list';
 import SectionList from '@/components/business/editor/components/section-list';
 import SectionEditor from '@/components/business/editor/components/section-editor';
-import Preview from '@/components/business/editor/components/preview';
+import Preview from '@/components/business/editor/components/preview/preview';
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
 
