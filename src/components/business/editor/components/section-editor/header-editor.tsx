@@ -36,7 +36,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         if (!currentSection) return;
         setIsSharedSection(isSharedSectionFunc());
         // Check if the section is in shareSections
-        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection);
+        const sharedSection = currentVersion?.shareSections.find((s: Section) => s.id === currentSection.id);
         if (sharedSection) {
             setLocalSection(sharedSection);
             return;
@@ -47,7 +47,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ onBack }) => {
         const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
         if (!currentPageData) return;
         
-        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection);
+        const pageSection = currentPageData.sections.find((s: Section) => s.id === currentSection.id);
         if (pageSection) {
             setLocalSection(pageSection);
         }

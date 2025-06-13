@@ -38,7 +38,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const handleDeleteSection = (sectionId: string) => {
         if (!currentPage) return;
         deleteSection(currentPage, sectionId);
-        if (currentSection === sectionId) {
+        if (currentSection?.id === sectionId) {
             setCurrentSection(null);
             console.log('handleDeleteSection', null);
             if (onSectionChange) {
@@ -47,11 +47,11 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         }
     };
 
-    const handleSectionClick = (sectionId: string) => {
-        console.log('handleSectionClick', sectionId);
-        setCurrentSection(sectionId);
+    const handleSectionClick = (section: Section) => {
+        console.log('handleSectionClick', section);
+        setCurrentSection(section);
         if (onSectionChange) {
-            onSectionChange(sectionId);
+            onSectionChange(section.id);
         }
     };
 
@@ -94,11 +94,11 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 {/* Header Section */}
                 {headerSection && <div
                     className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
-                        currentSection === headerSection?.id
+                        currentSection?.id === headerSection?.id
                             ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]'
                             : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => headerSection && handleSectionClick(headerSection.id)}
+                    onClick={() => headerSection && handleSectionClick(headerSection)}
                 >
                     <button
                         onClick={(e) => handleToggleVisibility(e, headerSection)}
@@ -114,11 +114,11 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 </div>}
                 {!headerSection && shareHeaderSection && <div
                     className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
-                        currentSection === shareHeaderSection?.id
+                        currentSection?.id === shareHeaderSection?.id
                             ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]'
                             : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => shareHeaderSection && handleSectionClick(shareHeaderSection.id)}
+                    onClick={() => shareHeaderSection && handleSectionClick(shareHeaderSection)}
                 >
                     <IconEye size={16} className="mr-2 text-gray-500" />
                     <span className="flex-1">Header</span>
@@ -132,11 +132,11 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                         <div
                             key={section.id}
                             className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
-                                currentSection === section.id
+                                currentSection?.id === section.id
                                     ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]'
                                     : 'hover:bg-gray-50'
                             }`}
-                            onClick={() => handleSectionClick(section.id)}
+                            onClick={() => handleSectionClick(section)}
                         >
                             <button
                                 onClick={(e) => handleToggleVisibility(e, section)}
@@ -194,11 +194,11 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 {/* Footer Section */}
                 {footerSection && <div
                     className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
-                        currentSection === footerSection?.id
+                        currentSection?.id === footerSection?.id
                             ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]'
                             : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => footerSection && handleSectionClick(footerSection.id)}
+                    onClick={() => footerSection && handleSectionClick(footerSection)}
                 >
                     <button
                         onClick={(e) => handleToggleVisibility(e, footerSection)}
@@ -215,11 +215,11 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
                 {!footerSection && isVisibleShareFooter && <div
                     className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
-                        currentSection === shareFooterSection?.id
+                        currentSection?.id === shareFooterSection?.id
                             ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]'
                             : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => shareFooterSection && handleSectionClick(shareFooterSection.id)}
+                    onClick={() => shareFooterSection && handleSectionClick(shareFooterSection)}
                 >
                     <IconEye size={16} className="mr-2 text-gray-500" />
                     <span className="flex-1">Footer</span>

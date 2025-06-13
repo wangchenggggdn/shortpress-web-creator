@@ -58,6 +58,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     // Sync route params with store
     useEffect(() => {
         if (currentVersion) {
+            console.log('currentVersion', currentVersion);
             console.log('pageId', pageId);
             // Find page by name
             const page = currentVersion.pages.find(
@@ -81,8 +82,8 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                     }
                     if (section) {
                         console.log('Found section:', section.type, section.id);
-                        if (section.id !== currentSection) {
-                            setCurrentSection(section.id);
+                        if (section.id !== currentSection?.id) {
+                            setCurrentSection(section);
                         }
                     }
 
@@ -92,8 +93,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                     setCurrentSection(null);
                 }
             }
-
-    
         }
     }, [pageId, sectionId, currentVersion, currentPage, currentSection, setCurrentPage, setCurrentSection]);
 

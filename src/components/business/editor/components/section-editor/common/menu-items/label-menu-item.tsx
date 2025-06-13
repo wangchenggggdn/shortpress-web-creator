@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LabelMenuItemProps } from './types';
 
 const LabelMenuItem: React.FC<LabelMenuItemProps> = ({
@@ -7,11 +7,17 @@ const LabelMenuItem: React.FC<LabelMenuItemProps> = ({
     onToggle,
     onBlur,
 }) => {
+  
+
     const [localValue, setLocalValue] = useState(widget?.data || '');
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setLocalValue(e.target.value);
     }
 
+    useEffect(() => {
+        setLocalValue(widget?.data || '');
+    }, [widget]);
+    
     return (
         <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
             <div className="flex items-center justify-between mb-4">

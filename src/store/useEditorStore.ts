@@ -12,7 +12,7 @@ interface EditorStore {
     editWebsite: EditWebsite | null;
     currentVersion: Version | null;
     currentPage: string | null;
-    currentSection: string | null;
+    currentSection: Section | null;
     selectedComponent: string | null;
     isDirty: boolean;
     history: HistoryRecord[];
@@ -22,7 +22,7 @@ interface EditorStore {
     setEditWebsite: (website: EditWebsite) => void;
     setCurrentVersion: (version: Version) => void;
     setCurrentPage: (pageId: string | null) => void;
-    setCurrentSection: (sectionId: string | null) => void;
+    setCurrentSection: (section: Section | null) => void;
     setSelectedComponent: (componentId: string | null) => void;
 
     // History actions
@@ -77,7 +77,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     setEditWebsite: (website) => set({ editWebsite: website }),
     setCurrentVersion: (version) => set({ currentVersion: version }),
     setCurrentPage: (pageId) => set({ currentPage: pageId }),
-    setCurrentSection: (sectionId) => set({ currentSection: sectionId }),
+    setCurrentSection: (section) => set({ currentSection: section }),
     setSelectedComponent: (componentId) => set({ selectedComponent: componentId }),
 
     // History actions
@@ -104,7 +104,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
     undo: () => {
         const { history, currentHistoryIndex } = get();
-        console.log('undo', history, currentHistoryIndex - 1);
         // Can only undo if we have at least 2 records (initial state + 1 change)
         if (currentHistoryIndex < 0) return;
 
@@ -121,7 +120,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
     redo: () => {
         const { history, currentHistoryIndex } = get();
-        console.log('redo', history, currentHistoryIndex + 1);
         // Can only redo if we have future history
         if (currentHistoryIndex >= history.length - 1) return;
 
@@ -214,13 +212,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
 
         const page = currentVersion.pages.find((p: Page) => p.id === pageId);
         if (!page) return;
-
-        console.log('Add Section - Before:', {
-            pageId,
-            sectionType,
-            currentSections: page.sections.length
-        });
-
         // Create new section with correct order
         const newSection = {
             ...createSection(sectionType, page.sections),
@@ -237,17 +228,6 @@ const useEditorStore = create<EditorStore>((set, get) => ({
             ...section,
             order: index
         }));
-
-        console.log('Add Section - After:', {
-            pageId,
-            sectionType,
-            newSections: targetPage.sections.length,
-            sections: targetPage.sections.map((s: Section) => ({
-                id: s.id,
-                type: s.type,
-                order: s.order
-            }))
-        });
 
         set({ currentVersion: newVersion });
         get().addToHistory(newVersion, 'add_section', `Added section: ${sectionType}`);
@@ -272,7 +252,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                 )
             };
             get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
-            return { currentVersion: newVersion };
+            return { currentVersion: newVersion, currentSection: state.currentSection?.id === sectionId ? { ...state.currentSection, ...updates } : state.currentSection };
         }),
 
     deleteSection: (pageId, sectionId) =>
@@ -296,13 +276,14 @@ const useEditorStore = create<EditorStore>((set, get) => ({
             get().addToHistory(newVersion, 'delete_section', `Deleted section: ${section?.type || sectionId}`);
             return {
                 currentVersion: newVersion,
-                currentSection: state.currentSection === sectionId ? null : state.currentSection
+                currentSection: state.currentSection?.id === sectionId ? null : state.currentSection
             };
         }),
 
     updateShareSection: (sectionId, updates) =>
         set((state) => {
             if (!state.currentVersion) return state;
+            console.log('updateShareSection', sectionId, updates);
             const shareSections = state.currentVersion.shareSections;
             const newVersion = {
                 ...state.currentVersion,
@@ -310,9 +291,8 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                     section.id === sectionId ? { ...section, ...updates } : section
                 )
             };
-            console.log('updateShareSection', newVersion);
             get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
-            return { currentVersion: newVersion };
+            return { currentVersion: newVersion, currentSection: state.currentSection?.id === sectionId ? { ...state.currentSection, ...updates } : state.currentSection };
         }),
 
     reorderSections: (pageId, sectionIds) =>
@@ -366,7 +346,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     isSharedSectionFunc: () => {
         const { currentVersion, currentSection } = get();
         if (!currentVersion || !currentSection) return false;
-        return currentVersion.shareSections.some(section => section.id === currentSection);
+        return currentVersion.shareSections.some(section => section.id === currentSection.id);
     }
 }));
 
