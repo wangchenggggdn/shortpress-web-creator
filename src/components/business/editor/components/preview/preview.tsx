@@ -3,7 +3,7 @@
 import React from 'react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType } from '@/types/editor';
-import BaseSection from './base-section';
+import BaseSection from './common/base-section';
 
 // 动态导入各种类型的 Section 组件
 const SectionComponents: Record<SectionType, React.FC<any>> = {
