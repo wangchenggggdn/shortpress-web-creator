@@ -3,7 +3,7 @@ import { IconArrowLeft, IconUpload, IconX, IconGripVertical, IconDotsVertical } 
 import useEditorStore from '@/store/useEditorStore';
 import { Section, BaseSectionParams, WidgetType, Widget } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
-import { LogoMenuItem } from '../section-editor/common/menu-items';
+import { LogoMenuItem } from '../common/menu-items';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 

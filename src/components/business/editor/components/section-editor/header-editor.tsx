@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { Section, Widget, WidgetType } from '@/types/editor';
-import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/section-editor/common/menu-items';
+import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/common/menu-items';
 import NavMenuEditor from '../widget-editor/nav-menu-editor';
 import { createUniqueUUID } from '@/utils/public';
 import CreatorApi from '@/api/creator';
