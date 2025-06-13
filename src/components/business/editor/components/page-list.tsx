@@ -26,17 +26,14 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         if (!currentVersion) return;
 
         // 获取所有已存在的页面ID
-        const existingIds = [
-            ...currentVersion.pages.map(page => page.id),
-            ...DEFAULT_PAGES.map(page => page.id)
-        ];
+        const existingIds = [...currentVersion.pages.map(page => page.id), ...DEFAULT_PAGES.map(page => page.id)];
 
         const newPage: Page = {
             id: createUniqueUUID(existingIds),
             name: pageName,
             path: pageName.toLowerCase().replace(/\s+/g, '-'),
             sections: [],
-            metadata: {}
+            metadata: {},
         };
 
         addPage(newPage);
@@ -59,7 +56,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
 
     const handleSetAsHome = (page: Page) => {
         if (!currentVersion) return;
-        
+
         // 先清除其他页面的home标记
         currentVersion.pages.forEach(p => {
             if (p.id !== page.id && p.isHome) {
@@ -69,7 +66,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
 
         // 设置当前页面为home
         updatePage(page.id, {
-            isHome: true
+            isHome: true,
         });
     };
 
@@ -77,10 +74,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         if (!currentVersion) return;
 
         // 获取所有已存在的页面ID
-        const existingIds = [
-            ...currentVersion.pages.map(page => page.id),
-            ...DEFAULT_PAGES.map(page => page.id)
-        ];
+        const existingIds = [...currentVersion.pages.map(page => page.id), ...DEFAULT_PAGES.map(page => page.id)];
 
         const newPage: Page = {
             ...page,
@@ -88,7 +82,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             name: `${page.name} Copy`,
             path: `${page.path}-copy`,
             isHome: false,
-            metadata: {}
+            metadata: {},
         };
 
         addPage(newPage);
@@ -98,7 +92,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         if (!currentVersion) return;
         updatePage(page.id, {
             name: newName,
-            path: newName.toLowerCase().replace(/\s+/g, '-')
+            path: newName.toLowerCase().replace(/\s+/g, '-'),
         });
     };
 
@@ -108,41 +102,28 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
 
     const renderPageItem = (id: string, name: string, isCustom: boolean = false, page?: Page) => {
         const isHome = page?.isHome;
-        
+
         return (
             <div
                 key={id}
                 className={`flex items-center p-2 rounded-lg cursor-pointer group transition-colors ${
-                    isCustom 
-                        ? currentPage === id 
-                            ? 'bg-primary text-white' 
+                    isCustom
+                        ? currentPage === id
+                            ? 'bg-primary text-white'
                             : 'bg-white border border-gray-200 hover:border-primary hover:text-primary'
                         : 'bg-white border border-gray-200 text-gray-400 cursor-not-allowed'
                 }`}
                 onClick={() => isCustom && handlePageClick(id)}
             >
                 {id === 'home' ? (
-                    <IconHome size={18} className={`mr-2 ${
-                        isCustom 
-                            ? currentPage === id ? 'text-white' : 'text-gray-400'
-                            : 'text-gray-400'
-                    }`} />
+                    <IconHome size={18} className={`mr-2 ${isCustom ? (currentPage === id ? 'text-white' : 'text-gray-400') : 'text-gray-400'}`} />
                 ) : (
-                    <IconFile size={18} className={`mr-2 ${
-                        isCustom 
-                            ? currentPage === id ? 'text-white' : 'text-gray-400'
-                            : 'text-gray-400'
-                    }`} />
+                    <IconFile size={18} className={`mr-2 ${isCustom ? (currentPage === id ? 'text-white' : 'text-gray-400') : 'text-gray-400'}`} />
                 )}
                 <span className="truncate flex-1 font-medium">{name}</span>
                 {isCustom && (
                     <div className="flex items-center">
-                        {isHome && (
-                            <IconHome 
-                                size={18} 
-                                className={`mr-2 ${currentPage === id ? 'text-white' : 'text-primary'}`}
-                            />
-                        )}
+                        {isHome && <IconHome size={18} className={`mr-2 ${currentPage === id ? 'text-white' : 'text-primary'}`} />}
                         <Menu position="bottom-end" offset={4} withArrow>
                             <Menu.Target>
                                 <button
@@ -150,9 +131,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                         e.stopPropagation();
                                         setCurrentOperatePage(page!);
                                     }}
-                                    className={`p-1 rounded ${
-                                        currentPage === id ? 'hover:bg-primary-dark' : 'hover:bg-gray-100'
-                                    }`}
+                                    className={`p-1 rounded ${currentPage === id ? 'hover:bg-primary-dark' : 'hover:bg-gray-100'}`}
                                 >
                                     <IconDots size={16} className={currentPage === id ? 'text-white' : 'text-gray-500'} />
                                 </button>
@@ -160,7 +139,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                             <Menu.Dropdown>
                                 <Menu.Item
                                     leftSection={<IconHome size={16} />}
-                                    onClick={(e) => {
+                                    onClick={e => {
                                         e.stopPropagation();
                                         handleSetAsHome(page!);
                                     }}
@@ -169,7 +148,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                 </Menu.Item>
                                 <Menu.Item
                                     leftSection={<IconSettings size={16} />}
-                                    onClick={(e) => {
+                                    onClick={e => {
                                         e.stopPropagation();
                                         setCurrentOperatePage(page!);
                                         setIsSettingsModalOpen(true);
@@ -179,7 +158,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                 </Menu.Item>
                                 <Menu.Item
                                     leftSection={<IconPencil size={16} />}
-                                    onClick={(e) => {
+                                    onClick={e => {
                                         e.stopPropagation();
                                         setIsRenameModalOpen(true);
                                     }}
@@ -188,7 +167,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                 </Menu.Item>
                                 <Menu.Item
                                     leftSection={<IconCopy size={16} />}
-                                    onClick={(e) => {
+                                    onClick={e => {
                                         e.stopPropagation();
                                         handleDuplicatePage(page!);
                                     }}
@@ -199,7 +178,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                 <Menu.Item
                                     leftSection={<IconTrash size={16} />}
                                     color="red"
-                                    onClick={(e) => {
+                                    onClick={e => {
                                         e.stopPropagation();
                                         handleDeletePage(id);
                                     }}
@@ -219,28 +198,20 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             <div className="flex flex-col h-full bg-gray-50/50 gap-2">
                 <div className="px-4 pt-4 flex items-center justify-between mb-2 sticky top-0">
                     <h2 className="text-sm font-medium text-gray-500">Custom Pages</h2>
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="p-1 hover:bg-gray-100 rounded-lg text-primary"
-                        title="Add new page"
-                    >
+                    <button onClick={() => setIsAddModalOpen(true)} className="p-1 hover:bg-gray-100 rounded-lg text-primary" title="Add new page">
                         <IconPlus size={18} />
                     </button>
                 </div>
                 <div className="flex-1 overflow-y-auto">
                     {/* Custom Pages Section */}
                     <div className="px-4">
-                        <div className="space-y-1">
-                            {currentVersion.pages.map((page: Page) => renderPageItem(page.id, page.name, true, page))}
-                        </div>
+                        <div className="space-y-1">{currentVersion.pages.map((page: Page) => renderPageItem(page.id, page.name, true, page))}</div>
                     </div>
 
                     {/* Default Pages Section */}
                     <div className="p-4 pb-8">
                         <h2 className="text-sm font-medium text-gray-500 mb-2">Default Pages</h2>
-                        <div className="space-y-1">
-                            {DEFAULT_PAGES.map((page) => renderPageItem(page.id, page.name))}
-                        </div>
+                        <div className="space-y-1">{DEFAULT_PAGES.map(page => renderPageItem(page.id, page.name))}</div>
                     </div>
                 </div>
             </div>
@@ -248,7 +219,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             <InputModal
                 opened={isRenameModalOpen}
                 onClose={() => setIsRenameModalOpen(false)}
-                onSubmit={(newName) => handleRenamePage(currentOperatePage!, newName)}
+                onSubmit={newName => handleRenamePage(currentOperatePage!, newName)}
                 title="Rename Page"
                 placeholder="Enter Page Name"
                 submitText="Rename"
@@ -263,14 +234,16 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                 submitText="Add Page"
             />
 
-            {currentOperatePage &&<PageSettingsModal
-                open={isSettingsModalOpen}
-                onClose={() => setIsSettingsModalOpen(false)}
-                page={currentOperatePage!}
-                onUpdate={updatedPage => updatePage(updatedPage.id, updatedPage)}
-            />}
+            {currentOperatePage && (
+                <PageSettingsModal
+                    open={isSettingsModalOpen}
+                    onClose={() => setIsSettingsModalOpen(false)}
+                    page={currentOperatePage!}
+                    onUpdate={updatedPage => updatePage(updatedPage.id, updatedPage)}
+                />
+            )}
         </>
     );
 };
 
-export default PageList; 
+export default PageList;

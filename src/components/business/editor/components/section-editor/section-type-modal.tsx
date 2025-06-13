@@ -28,10 +28,12 @@ const SectionTypeModal: React.FC<SectionTypeModalProps> = ({ open, onClose, onSe
                 {/* 内容 */}
                 <div className="flex-1 overflow-y-auto p-6">
                     <div className="space-y-2">
-                        <SectionTypeSelector onSelect={(type) => {
-                            onSelect(type);
-                            onClose();
-                        }} />
+                        <SectionTypeSelector
+                            onSelect={type => {
+                                onSelect(type);
+                                onClose();
+                            }}
+                        />
                     </div>
                 </div>
             </div>
@@ -39,4 +41,4 @@ const SectionTypeModal: React.FC<SectionTypeModalProps> = ({ open, onClose, onSe
     );
 };
 
-export default SectionTypeModal; 
+export default SectionTypeModal;

@@ -12,7 +12,7 @@ interface FooterEditorProps {
 const MENU_TYPES = {
     FOOTER_TEXT: 'footer_text',
     SHORTPRESS_LOGO: 'shortpress_logo',
-    FOOTER_ITEM: 'footer_item'
+    FOOTER_ITEM: 'footer_item',
 } as const;
 
 const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSection }) => {
@@ -29,41 +29,41 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
 
     const handleAddMenuItem = () => {
         const widgets = [...(section.params.extend.widgets || [])];
-        
+
         const newItem: Widget = {
             id: createUniqueUUID(widgets.map(item => item.id)),
             label: 'New Menu Item',
             content: MENU_TYPES.FOOTER_ITEM,
             visible: true,
-            type: WidgetType.DEFAULT
+            type: WidgetType.DEFAULT,
         };
-        
+
         widgets.push(newItem);
-        
+
         updateSection({
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets
-                }
-            }
+                    widgets,
+                },
+            },
         });
     };
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const itemIndex = widgets.findIndex(item => item.id === itemId);
-        
+
         if (itemIndex !== -1) {
             widgets[itemIndex] = { ...widgets[itemIndex], ...updates };
-            
+
             updateSection({
                 params: {
                     extend: {
                         ...section.params.extend,
-                        widgets
-                    }
-                }
+                        widgets,
+                    },
+                },
             });
         }
     };
@@ -71,37 +71,37 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
     const handleMenuItemDelete = (itemId: string) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const filteredItems = widgets.filter(item => item.id !== itemId);
-        
+
         updateSection({
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets: filteredItems
-                }
-            }
+                    widgets: filteredItems,
+                },
+            },
         });
     };
 
     const handleMenuItemDuplicate = (itemId: string) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const itemToDuplicate = widgets.find(item => item.id === itemId);
-        
+
         if (itemToDuplicate) {
             const newItem: Widget = {
                 ...itemToDuplicate,
                 id: createUniqueUUID(widgets.map(item => item.id)),
-                label: `${itemToDuplicate.label} (Copy)`
+                label: `${itemToDuplicate.label} (Copy)`,
             };
-            
+
             widgets.push(newItem);
-            
+
             updateSection({
                 params: {
                     extend: {
                         ...section.params.extend,
-                        widgets
-                    }
-                }
+                        widgets,
+                    },
+                },
             });
         }
     };
@@ -109,7 +109,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
     const handleFooterTextChange = (text: string) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const footerText = widgets.find(item => item.content === MENU_TYPES.FOOTER_TEXT);
-        
+
         if (footerText) {
             footerText.label = text;
         } else {
@@ -118,24 +118,24 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                 label: text,
                 content: MENU_TYPES.FOOTER_TEXT,
                 visible: true,
-                type: WidgetType.DEFAULT
+                type: WidgetType.DEFAULT,
             });
         }
-        
+
         updateSection({
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets
-                }
-            }
+                    widgets,
+                },
+            },
         });
     };
 
     const handleToggleShortPressLogo = () => {
         const widgets = [...(section.params.extend.widgets || [])];
         const shortPressLogo = widgets.find(item => item.content === MENU_TYPES.SHORTPRESS_LOGO);
-        
+
         if (shortPressLogo) {
             shortPressLogo.visible = !shortPressLogo.visible;
         } else {
@@ -144,17 +144,17 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                 label: 'ShortPress Logo',
                 content: MENU_TYPES.SHORTPRESS_LOGO,
                 visible: true,
-                type: WidgetType.LOGO
+                type: WidgetType.LOGO,
             });
         }
-        
+
         updateSection({
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets
-                }
-            }
+                    widgets,
+                },
+            },
         });
     };
 
@@ -166,10 +166,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
         <div className="p-4 bg-white h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
-                <button
-                    onClick={onBack}
-                    className="text-gray-400"
-                >
+                <button onClick={onBack} className="text-gray-400">
                     <IconArrowLeft size={20} />
                 </button>
                 <h2 className="text-[20px] font-semibold text-black-purple">Footer</h2>
@@ -184,36 +181,25 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[15px] font-medium text-black-purple">Menu Items</h3>
-                    <button
-                        onClick={handleAddMenuItem}
-                        className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover"
-                    >
+                    <button onClick={handleAddMenuItem} className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover">
                         Add Menu
                     </button>
                 </div>
 
                 <div className="space-y-2">
-                    {footerItems.map((item) => (
-                        <div
-                            key={item.id}
-                            className={`bg-white border rounded-lg ${
-                                activeMenu === item.id ? 'border-primary' : 'border-gray-200'
-                            }`}
-                        >
+                    {footerItems.map(item => (
+                        <div key={item.id} className={`bg-white border rounded-lg ${activeMenu === item.id ? 'border-primary' : 'border-gray-200'}`}>
                             <div className="flex items-center p-3">
                                 <IconGripVertical size={16} className="text-gray-400 mr-2" />
                                 <input
                                     type="text"
                                     className="flex-1 bg-transparent focus:outline-none focus:border-primary"
                                     value={item.label}
-                                    onChange={(e) => handleMenuItemUpdate(item.id, { label: e.target.value })}
+                                    onChange={e => handleMenuItemUpdate(item.id, { label: e.target.value })}
                                     placeholder="Enter menu item text"
                                 />
                                 <div className="relative">
-                                    <button
-                                        onClick={() => setActiveMenu(activeMenu === item.id ? null : item.id)}
-                                        className="p-1 hover:bg-gray-100 rounded"
-                                    >
+                                    <button onClick={() => setActiveMenu(activeMenu === item.id ? null : item.id)} className="p-1 hover:bg-gray-100 rounded">
                                         <IconDotsVertical size={16} />
                                     </button>
                                     {activeMenu === item.id && (
@@ -224,16 +210,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                                             >
                                                 {item.visible ? 'Hide in Menu' : 'Show in Menu'}
                                             </button>
-                                            <button
-                                                className="w-full px-4 py-2 text-left hover:bg-gray-100"
-                                                onClick={() => handleMenuItemDuplicate(item.id)}
-                                            >
+                                            <button className="w-full px-4 py-2 text-left hover:bg-gray-100" onClick={() => handleMenuItemDuplicate(item.id)}>
                                                 Duplicate
                                             </button>
-                                            <button
-                                                className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100"
-                                                onClick={() => handleMenuItemDelete(item.id)}
-                                            >
+                                            <button className="w-full px-4 py-2 text-left text-red-500 hover:bg-gray-100" onClick={() => handleMenuItemDelete(item.id)}>
                                                 Delete Menu
                                             </button>
                                         </div>
@@ -252,7 +232,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                     className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-primary"
                     rows={3}
                     value={footerText?.label || ''}
-                    onChange={(e) => handleFooterTextChange(e.target.value)}
+                    onChange={e => handleFooterTextChange(e.target.value)}
                     placeholder="Enter footer text"
                 />
             </div>
@@ -262,12 +242,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                 <div className="flex items-center justify-between">
                     <span className="text-[15px] font-medium text-black-purple">ShortPress Logo</span>
                     <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={shortPressLogo?.visible ?? false}
-                            onChange={handleToggleShortPressLogo}
-                        />
+                        <input type="checkbox" className="sr-only peer" checked={shortPressLogo?.visible ?? false} onChange={handleToggleShortPressLogo} />
                         <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                 </div>
@@ -276,4 +251,4 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
     );
 };
 
-export default FooterEditor; 
+export default FooterEditor;

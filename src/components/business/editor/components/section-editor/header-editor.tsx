@@ -19,7 +19,7 @@ const MENU_TYPES = {
     LABEL: 'label',
     SEARCH: 'search',
     ACCOUNT: 'account',
-    NAV: 'nav'
+    NAV: 'nav',
 } as const;
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSection }) => {
@@ -33,7 +33,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
     const handleToggle = (id: string, type: string) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const existingItem = widgets.find(item => item.id === id);
-        
+
         if (existingItem) {
             existingItem.visible = !existingItem.visible;
         } else {
@@ -42,7 +42,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
                 label: type,
                 content: type,
                 visible: true,
-                type: WidgetType.DEFAULT
+                type: WidgetType.DEFAULT,
             });
         }
 
@@ -50,31 +50,31 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets
-                }
-            }
+                    widgets,
+                },
+            },
         });
     };
 
     const handleLogoUpload = async (id: string, file: File) => {
         let imageUrl = '';
-        if(file){
+        if (file) {
             setIsLoading(true);
             const formData = new FormData();
             formData.append('file', file);
             const res = await CreatorApi.uploadFile(formData);
             setIsLoading(false);
-            if(res.code === 0){
+            if (res.code === 0) {
                 imageUrl = res.data ?? '';
-            }else{
+            } else {
                 toast.error(res.info);
                 return;
             }
         }
-        
+
         const widgets = [...(section.params.extend.widgets || [])];
         const existingItem = widgets.find(item => item.id === id);
-        
+
         if (existingItem) {
             existingItem.image = imageUrl;
         } else {
@@ -84,24 +84,24 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
                 content: MENU_TYPES.LOGO,
                 image: imageUrl,
                 visible: true,
-                type: WidgetType.LOGO
+                type: WidgetType.LOGO,
             });
         }
-        
+
         updateSection({
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets
-                }
-            }
+                    widgets,
+                },
+            },
         });
     };
 
     const handleLabelBlur = (id: string, value: string) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const existingItem = widgets.find(item => item.id === id);
-        
+
         if (existingItem) {
             existingItem.data = value;
         } else {
@@ -110,26 +110,21 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
                 label: value,
                 content: MENU_TYPES.LABEL,
                 visible: true,
-                type: WidgetType.DEFAULT
+                type: WidgetType.DEFAULT,
             });
         }
         updateSection({
             params: {
                 extend: {
                     ...section.params.extend,
-                    widgets
-                }
-            }
+                    widgets,
+                },
+            },
         });
     };
 
     if (showWidget) {
-        return (
-            <SectionWidgetEditor
-                widget={showWidget}
-                onBack={() => setShowWidget(null)}
-            />
-        );
+        return <SectionWidgetEditor widget={showWidget} onBack={() => setShowWidget(null)} />;
     }
 
     const logoItem = getMenuItem(0);
@@ -142,10 +137,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
         <div className="p-4 bg-white h-full overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
-                <button
-                    onClick={onBack}
-                    className="text-gray-400"
-                >
+                <button onClick={onBack} className="text-gray-400">
                     <IconArrowLeft size={20} />
                 </button>
                 <h2 className="text-[20px] font-semibold text-black-purple">Header</h2>
@@ -161,35 +153,24 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
                 isLoading={isLoading}
                 title="Logo"
                 widget={logoItem}
-                onToggle={() => handleToggle(logoItem?.id??'', MENU_TYPES.LOGO)}
-                onUpload={(file) => handleLogoUpload(logoItem?.id??'', file)}
+                onToggle={() => handleToggle(logoItem?.id ?? '', MENU_TYPES.LOGO)}
+                onUpload={file => handleLogoUpload(logoItem?.id ?? '', file)}
             />
 
             <LabelMenuItem
                 title="Label"
                 widget={labelItem}
-                onToggle={() => handleToggle(labelItem?.id??'', MENU_TYPES.LABEL)}
-                onBlur={(value) => handleLabelBlur(labelItem?.id??'', value)}
+                onToggle={() => handleToggle(labelItem?.id ?? '', MENU_TYPES.LABEL)}
+                onBlur={value => handleLabelBlur(labelItem?.id ?? '', value)}
             />
 
-            <IconMenuItem
-                title="Search Icon"
-                widget={searchItem}
-                onToggle={() => handleToggle(searchItem?.id??'', MENU_TYPES.SEARCH)}
-            />
+            <IconMenuItem title="Search Icon" widget={searchItem} onToggle={() => handleToggle(searchItem?.id ?? '', MENU_TYPES.SEARCH)} />
 
-            <IconMenuItem
-                title="Account Icon"
-                widget={accountItem}
-                onToggle={() => handleToggle(accountItem?.id??'', MENU_TYPES.ACCOUNT)}
-            />
+            <IconMenuItem title="Account Icon" widget={accountItem} onToggle={() => handleToggle(accountItem?.id ?? '', MENU_TYPES.ACCOUNT)} />
 
             {/* Nav Menu */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
-                <button
-                    onClick={() => setShowWidget(navItem)}
-                    className="w-full text-left"
-                >
+                <button onClick={() => setShowWidget(navItem)} className="w-full text-left">
                     <div className="text-[15px] font-medium text-black-purple">Nav Menu</div>
                     <div className="text-sm text-gray-500">Organize your site navigation</div>
                 </button>
@@ -198,4 +179,4 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
     );
 };
 
-export default HeaderEditor; 
+export default HeaderEditor;

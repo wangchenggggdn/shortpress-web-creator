@@ -32,7 +32,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         saveVersion,
         undo,
         redo,
-        initializeHistory
+        initializeHistory,
     } = useEditorStore();
 
     // Initialize with server-side data
@@ -40,9 +40,9 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         if (!editWebsite && initialData) {
             let nowData = initialData;
             const initialDataLocal = localStorage.getItem('initialData');
-            if(initialDataLocal){
+            if (initialDataLocal) {
                 nowData = JSON.parse(initialDataLocal);
-            }else{
+            } else {
                 localStorage.setItem('initialData', JSON.stringify(nowData));
             }
             setEditWebsite(nowData);
@@ -61,25 +61,19 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
             console.log('currentVersion', currentVersion);
             console.log('pageId', pageId);
             // Find page by name
-            const page = currentVersion.pages.find(
-                p => p.id=== pageId
-            );
+            const page = currentVersion.pages.find(p => p.id === pageId);
             console.log('currentPage', page);
             if (page) {
                 console.log('Found page:', page.name, page.id);
                 if (page.id !== currentPage) {
                     setCurrentPage(page.id);
                 }
-                
+
                 // Find section by type
                 if (sectionId) {
-                    let section = page.sections.find(
-                        s => s.id === sectionId
-                    );
-                    if(!section){
-                        section = currentVersion?.shareSections.find(
-                            s => s.id === sectionId
-                        );
+                    let section = page.sections.find(s => s.id === sectionId);
+                    if (!section) {
+                        section = currentVersion?.shareSections.find(s => s.id === sectionId);
                     }
                     if (section) {
                         console.log('Found section:', section.type, section.id);
@@ -139,7 +133,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 // Update website with new version
                 const websiteUpdate: Partial<EditWebsite> = {
                     versions: [...editWebsite.versions, newVersion],
-                    currentVersion: newVersion.id
+                    currentVersion: newVersion.id,
                 };
                 const updateRes = await WebsiteApi.editModify(websiteUpdate);
 
@@ -148,7 +142,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                     setEditWebsite({
                         ...editWebsite,
                         versions: [...editWebsite.versions, newVersion],
-                        currentVersion: newVersion.id
+                        currentVersion: newVersion.id,
                     });
                     setCurrentVersion(newVersion);
                     saveVersion();
@@ -192,19 +186,17 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         <div className="flex h-screen">
             {/* Left Sidebar - Pages */}
             <div className="w-64 bg-gray-100 border-r">
-                <PageList onPageChange={(newPageId) => {
-                    console.log('onPageChange', newPageId);
-                    handlePageChange(newPageId);
-                }} />
+                <PageList
+                    onPageChange={newPageId => {
+                        console.log('onPageChange', newPageId);
+                        handlePageChange(newPageId);
+                    }}
+                />
             </div>
 
             {/* Middle - Sections or Section Editor */}
             <div className="w-80 bg-white border-r">
-                {sectionId ? (
-                    <SectionEditor sectionId={sectionId} onBack={() => handleSectionChange(null)} />
-                ) : (
-                    <SectionList onSectionChange={handleSectionChange} />
-                )}
+                {sectionId ? <SectionEditor sectionId={sectionId} onBack={() => handleSectionChange(null)} /> : <SectionList onSectionChange={handleSectionChange} />}
             </div>
 
             {/* Right - Preview */}
@@ -215,27 +207,15 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
             {/* Toolbar */}
             <div className="fixed bottom-4 right-4 flex gap-2">
                 {/* Undo/Redo */}
-                <button
-                    className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300"
-                    onClick={undo}
-                    title="Undo (Ctrl+Z)"
-                >
+                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300" onClick={undo} title="Undo (Ctrl+Z)">
                     ↩
                 </button>
-                <button
-                    className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300"
-                    onClick={redo}
-                    title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
-                >
+                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300" onClick={redo} title="Redo (Ctrl+Y or Ctrl+Shift+Z)">
                     ↪
                 </button>
                 {/* Save Button */}
                 <button
-                    className={`px-4 py-2 rounded ${
-                        isDirty
-                            ? 'bg-blue-500 text-white hover:bg-blue-600'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
+                    className={`px-4 py-2 rounded ${isDirty ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
                     onClick={handleSave}
                     disabled={!isDirty}
                     title="Save (Ctrl+S)"
@@ -247,4 +227,4 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     );
 };
 
-export default EditorLayout; 
+export default EditorLayout;

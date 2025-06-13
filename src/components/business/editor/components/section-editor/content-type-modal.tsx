@@ -31,7 +31,7 @@ const ContentTypeModal: React.FC<ContentTypeModalProps> = ({ open, onClose, sect
                     <div className="space-y-2">
                         <ContentTypeSelector
                             sectionType={sectionType}
-                            onSelect={(type) => {
+                            onSelect={type => {
                                 onSelect(type);
                                 onClose();
                             }}
@@ -43,4 +43,4 @@ const ContentTypeModal: React.FC<ContentTypeModalProps> = ({ open, onClose, sect
     );
 };
 
-export default ContentTypeModal; 
+export default ContentTypeModal;

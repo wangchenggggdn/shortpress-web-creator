@@ -38,7 +38,7 @@ const UrlInputSelector: React.FC<UrlInputSelectorProps> = ({ open, onClose, onSe
                 <div className="flex-1 overflow-y-auto p-6">
                     <TextInput
                         value={urlInput}
-                        onChange={(e) => setUrlInput(e.target.value)}
+                        onChange={e => setUrlInput(e.target.value)}
                         placeholder="Input or Paste URL"
                         error={urlInput === '/' ? 'Root path is not allowed' : ''}
                         variant="filled"
@@ -48,9 +48,7 @@ const UrlInputSelector: React.FC<UrlInputSelectorProps> = ({ open, onClose, onSe
                 <div className="p-6 border-t">
                     <button
                         className={`w-full py-2 rounded transition-colors ${
-                            urlInput && urlInput !== '/'
-                                ? 'bg-primary text-white hover:bg-primary-hover'
-                                : 'bg-gray-100 text-gray-400'
+                            urlInput && urlInput !== '/' ? 'bg-primary text-white hover:bg-primary-hover' : 'bg-gray-100 text-gray-400'
                         }`}
                         onClick={handleSelect}
                         disabled={!urlInput || urlInput === '/'}
@@ -63,4 +61,4 @@ const UrlInputSelector: React.FC<UrlInputSelectorProps> = ({ open, onClose, onSe
     );
 };
 
-export default UrlInputSelector; 
+export default UrlInputSelector;

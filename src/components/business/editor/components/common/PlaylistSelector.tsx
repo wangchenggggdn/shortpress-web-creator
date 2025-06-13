@@ -24,7 +24,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             updatedAt: 1718236800,
             accessType: 1,
             singleVideoPrice: 0,
-            freeVideos: 0
+            freeVideos: 0,
         },
         {
             playlistId: '2',
@@ -35,7 +35,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             updatedAt: 1718236800,
             accessType: 1,
             singleVideoPrice: 0,
-            freeVideos: 0
+            freeVideos: 0,
         },
         {
             playlistId: '3',
@@ -46,7 +46,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             updatedAt: 1718236800,
             accessType: 1,
             singleVideoPrice: 0,
-            freeVideos: 0
+            freeVideos: 0,
         },
         {
             playlistId: '4',
@@ -57,7 +57,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             updatedAt: 1718236800,
             accessType: 1,
             singleVideoPrice: 0,
-            freeVideos: 0
+            freeVideos: 0,
         },
         {
             playlistId: '5',
@@ -68,7 +68,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             updatedAt: 1718236800,
             accessType: 1,
             singleVideoPrice: 0,
-            freeVideos: 0
+            freeVideos: 0,
         },
         {
             playlistId: '6',
@@ -79,23 +79,19 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             updatedAt: 1718236800,
             accessType: 1,
             singleVideoPrice: 0,
-            freeVideos: 0
-        }
+            freeVideos: 0,
+        },
     ]);
-
 
     if (!open) return null;
 
-    const filteredPlaylists = playlists.filter(playlist =>
-        playlist.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredPlaylists = playlists.filter(playlist => playlist.title.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const handleSelect = () => {
         if (selectedPlaylist) {
             onSelect(selectedPlaylist);
             onClose();
         }
-  
     };
 
     return (
@@ -115,18 +111,16 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
                     <TextInput
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Search playlist"
                         leftSection={<IconSearch size={16} />}
                         variant="filled"
                     />
                     <div className="grid grid-cols-2 gap-4">
-                        {filteredPlaylists.map((playlist) => (
+                        {filteredPlaylists.map(playlist => (
                             <div
                                 key={playlist.playlistId}
-                                className={`cursor-pointer rounded-lg overflow-hidden border ${
-                                    selectedPlaylist.includes(playlist) ? 'border-primary' : 'border-gray-200'
-                                }`}
+                                className={`cursor-pointer rounded-lg overflow-hidden border ${selectedPlaylist.includes(playlist) ? 'border-primary' : 'border-gray-200'}`}
                                 onClick={() => {
                                     if (isMultiSelect) {
                                         if (selectedPlaylist.includes(playlist)) {
@@ -144,21 +138,11 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                                 }}
                             >
                                 <div className="aspect-video bg-gray-100">
-                                    {playlist.cover && (
-                                        <img    
-                                            src={playlist.cover}
-                                            alt={playlist.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    )}
+                                    {playlist.cover && <img src={playlist.cover} alt={playlist.title} className="w-full h-full object-cover" />}
                                 </div>
                                 <div className="p-2">
-                                    <div className="text-sm font-medium text-gray-900 truncate">
-                                        {playlist.title}
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                        {playlist.videoCount} videos
-                                    </div>
+                                    <div className="text-sm font-medium text-gray-900 truncate">{playlist.title}</div>
+                                    <div className="text-xs text-gray-500">{playlist.videoCount} videos</div>
                                 </div>
                             </div>
                         ))}
@@ -167,11 +151,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                 {/* 底部按钮 */}
                 <div className="p-6 border-t">
                     <button
-                        className={`w-full py-2 rounded transition-colors ${
-                            selectedPlaylist
-                                ? 'bg-primary text-white hover:bg-primary-hover'
-                                : 'bg-gray-100 text-gray-400'
-                        }`}
+                        className={`w-full py-2 rounded transition-colors ${selectedPlaylist ? 'bg-primary text-white hover:bg-primary-hover' : 'bg-gray-100 text-gray-400'}`}
                         onClick={handleSelect}
                         disabled={!selectedPlaylist}
                     >
@@ -183,4 +163,4 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
     );
 };
 
-export default PlaylistSelector; 
+export default PlaylistSelector;

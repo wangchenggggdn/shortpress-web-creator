@@ -22,19 +22,11 @@ const Preview = () => {
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
 
     if (!currentVersion) {
-        return (
-            <div className="h-full flex items-center justify-center text-gray-500">
-                Loading...
-            </div>
-        );
+        return <div className="h-full flex items-center justify-center text-gray-500">Loading...</div>;
     }
 
     if (!currentPage || !currentPageData) {
-        return (
-            <div className="h-full flex items-center justify-center text-gray-500">
-                Select a page to preview
-            </div>
-        );
+        return <div className="h-full flex items-center justify-center text-gray-500">Select a page to preview</div>;
     }
 
     return (
@@ -52,25 +44,15 @@ const Preview = () => {
                         .sort((a: Section, b: Section) => a.order - b.order)
                         .map((section: Section) => {
                             const SectionComponent = SectionComponents[section.type];
-                            return (
-                                <SectionComponent
-                                    key={section.id}
-                                    section={section}
-                                    pageId={currentPage}
-                                />
-                            );
+                            return <SectionComponent key={section.id} section={section} pageId={currentPage} />;
                         })}
 
                     {/* Empty State */}
-                    {currentPageData.sections.length === 0 && (
-                        <div className="text-center py-12 text-gray-500">
-                            Add sections to start building your page
-                        </div>
-                    )}
+                    {currentPageData.sections.length === 0 && <div className="text-center py-12 text-gray-500">Add sections to start building your page</div>}
                 </div>
             </div>
         </div>
     );
 };
 
-export default Preview; 
+export default Preview;

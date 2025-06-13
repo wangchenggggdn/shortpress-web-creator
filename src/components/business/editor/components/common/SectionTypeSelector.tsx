@@ -17,17 +17,13 @@ const SectionTypeSelector: React.FC<SectionTypeSelectorProps> = ({ onSelect }) =
         { type: SectionType.CAROUSEL, icon: section_carousel, label: 'Carousel' },
         { type: SectionType.SCROLL, icon: section_scroll, label: 'Scroll' },
         { type: SectionType.GRID, icon: section_grid, label: 'Grid' },
-        { type: SectionType.LIST, icon: section_list, label: 'List' }
+        { type: SectionType.LIST, icon: section_list, label: 'List' },
     ];
 
     return (
         <Menu.Dropdown>
             {sectionTypes.map(({ type, icon, label }) => (
-                <Menu.Item
-                    key={type}
-                    rightSection={<img src={icon.src} alt={label} className="w-20 h-12" />}
-                    onClick={() => onSelect(type)}
-                >
+                <Menu.Item key={type} rightSection={<img src={icon.src} alt={label} className="w-20 h-12" />} onClick={() => onSelect(type)}>
                     {label}
                 </Menu.Item>
             ))}
@@ -35,4 +31,4 @@ const SectionTypeSelector: React.FC<SectionTypeSelectorProps> = ({ onSelect }) =
     );
 };
 
-export default SectionTypeSelector; 
+export default SectionTypeSelector;

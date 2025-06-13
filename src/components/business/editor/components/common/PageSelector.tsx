@@ -43,7 +43,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ open, onClose, pages, onSel
                     <Select
                         data={pages.map(page => ({
                             value: page.id,
-                            label: page.name
+                            label: page.name,
                         }))}
                         value={selectedPage}
                         onChange={setSelectedPage}
@@ -54,11 +54,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ open, onClose, pages, onSel
                 {/* 底部按钮 */}
                 <div className="p-6 border-t">
                     <button
-                        className={`w-full py-2 rounded transition-colors ${
-                            selectedPage
-                                ? 'bg-primary text-white hover:bg-primary-hover'
-                                : 'bg-gray-100 text-gray-400'
-                        }`}
+                        className={`w-full py-2 rounded transition-colors ${selectedPage ? 'bg-primary text-white hover:bg-primary-hover' : 'bg-gray-100 text-gray-400'}`}
                         onClick={handleSelect}
                         disabled={!selectedPage}
                     >
@@ -70,4 +66,4 @@ const PageSelector: React.FC<PageSelectorProps> = ({ open, onClose, pages, onSel
     );
 };
 
-export default PageSelector; 
+export default PageSelector;
