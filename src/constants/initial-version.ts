@@ -70,14 +70,21 @@ export const INITIAL_VERSION: Version = {
                             label: 'Search',
                             content: '',
                             visible: true,
-                            type: WidgetType.DEFAULT
+                            type: WidgetType.PATH
                         },
                         {
                             id: generateId(),
                             label: 'Account',
                             content: '',
                             visible: true,
-                            type: WidgetType.DEFAULT
+                            type: WidgetType.PATH
+                        },
+                        {
+                            id: generateId(),
+                            label: 'Vip',
+                            content: '',
+                            visible: true,
+                            type: WidgetType.PATH
                         },
                         {
                             id: generateId(),

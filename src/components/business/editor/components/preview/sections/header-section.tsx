@@ -3,7 +3,9 @@
 import React from 'react';
 import { Section } from '@/types/editor';
 import BaseSection from '../common/base-section';
-import Image from 'next/image';
+import { IconSearch, IconUser } from '@tabler/icons-react';
+import vipIcon from '@/assets/images/preview/vip.webp';
+import { Burger } from '@mantine/core';
 
 interface HeaderSectionProps {
     section: Section;
@@ -11,38 +13,33 @@ interface HeaderSectionProps {
 }
 
 const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
-    const logo = section.params.extend.widgets?.find(widget => widget.type === 'logo');
-    const menu = section.params.extend.widgets?.find(widget => widget.type === 'menu');
+    const menus = section?.params?.extend?.widgets??[];
+
+    console.log('---------menus:', menus);
+
+    const icon = menus[0];
+    const title = menus[1];
+    const searc = menus[2];
+    const account = menus[3];
+    const vip = menus[4];
+    const nav = menus[5];
 
     return (
         <BaseSection section={section} pageId={pageId}>
-            <div className="flex items-center justify-between p-4 bg-black">
-                <div className="flex items-center">
-                    {logo && (
-                        <div className="w-8 h-8">
-                            <Image 
-                                src={logo.data.url || '/logo.png'} 
-                                alt="Logo" 
-                                width={32} 
-                                height={32}
-                                className="object-contain"
-                            />
+            <div className="flex items-center justify-between px-4 bg-black">
+                    <div className="flex flex-row justify-between w-full space-x-4">
+                        <div className="flex items-center space-x-2">
+                            {icon?.visible&&icon?.image && <img src={icon.image} alt={icon.label} width={24} height={24} />}
+                            {title?.visible && <span  className="text-white text-xl font-bold">{title.label}</span>}
                         </div>
-                    )}
-                    <span className="ml-2 text-white text-xl font-bold">Dramahub</span>
+                        <div className="flex items-center gap-4">
+                            {searc?.visible && <IconSearch color='white' size={35} className="p-1.5 rounded-full text-gray-500" />}
+                            {account?.visible && <IconUser size={16} className="w-6 h-6 p-1.5 rounded-full bg-white text-gray-500" />}
+                            {vip?.visible && <img src={vipIcon.src} alt="vip" width={28} height={28} />}
+                            <Burger hiddenFrom="md" aria-label="Toggle navigation" />
+                        </div>
+                    </div>
                 </div>
-                <div className="flex items-center space-x-4">
-                    {menu?.data?.items?.map((item: any, index: number) => (
-                        <a 
-                            key={index} 
-                            href={item.link} 
-                            className="text-white hover:text-gray-300"
-                        >
-                            {item.label}
-                        </a>
-                    ))}
-                </div>
-            </div>
         </BaseSection>
     );
 };

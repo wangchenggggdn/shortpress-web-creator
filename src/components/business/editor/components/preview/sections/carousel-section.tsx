@@ -8,8 +8,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import './ant-styles/swiper-style.css';
+import './ant-styles/swiper-carousel-style.css';
 import { createUniqueUUID } from '@/utils/public';
 
 interface CarouselSectionProps {

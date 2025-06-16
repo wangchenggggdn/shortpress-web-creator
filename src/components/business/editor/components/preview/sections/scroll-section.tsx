@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Section } from '@/types/editor';
 import BaseSection from '../common/base-section';
 import Image from 'next/image';
@@ -11,30 +11,46 @@ interface ScrollSectionProps {
 }
 
 const ScrollSection: React.FC<ScrollSectionProps> = ({ section, pageId }) => {
-    const title = section.title || 'Continue Watching';
-    const items = section.params.extend.widgets || [];
+    const items = [
+        { id: 'placeholder-1', title: 'Placeholder 1' },
+        { id: 'placeholder-2', title: 'Placeholder 2' },
+        { id: 'placeholder-3', title: 'Placeholder 3' },
+        { id: 'placeholder-1', title: 'Placeholder 4' },
+        { id: 'placeholder-2', title: 'Placeholder 5' },
+        { id: 'placeholder-3', title: 'Placeholder 6' }
+    ];
+    const [currentItem, setCurrentItem] = useState<any>(items);
+
+    useEffect(() => {
+        if ((section.params.extend.widgets?.[0]?.data || []).length > 0) {
+            setCurrentItem(section.params.extend.widgets?.[0]?.data || []);
+        } else {
+            setCurrentItem(items);
+        }
+    }, [section.params.extend.widgets]);
 
     return (
         <BaseSection section={section} pageId={pageId}>
-            <div className="p-4">
-                <h2 className="text-2xl font-bold text-white mb-4">{title}</h2>
-                <div className="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide">
-                    {items.map((item: any, index: number) => (
-                        <div key={index} className="flex-none w-[200px]">
-                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
-                                <Image
-                                    src={item.data.coverUrl || '/placeholder.png'}
-                                    alt={item.data.title || 'Scroll item'}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="mt-2">
-                                <h3 className="text-white font-medium truncate">{item.data.title}</h3>
-                                {item.data.description && (
-                                    <p className="text-gray-400 text-sm mt-1 truncate">{item.data.description}</p>
+            <div className="px-4 pb-4">
+                <h2 className="text-2xl font-bold text-white mb-4">{section.title || 'Scroll Section'}</h2>
+                <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
+                    {currentItem.map((item: any, index: number) => (
+                        <div key={index} className="flex-none w-[100px]">
+                            <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-500">
+                                {item.coverUrl && (
+                                    <Image
+                                        src={item.coverUrl}
+                                        alt={item.title || ''}
+                                        fill
+                                        className="object-cover"
+                                    />
                                 )}
                             </div>
+                            <div className="pt-1">
+                                    <h3 className="text-white text-sm font-bold truncate">
+                                        {item.title || 'Coming Soon'}
+                                    </h3>
+                                </div>
                         </div>
                     ))}
                 </div>

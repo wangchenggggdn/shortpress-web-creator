@@ -2,12 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section } from '@/types/editor';
+import { Section, SectionType } from '@/types/editor';
 import { SectionComponents } from './sections';
+import HeaderSection from './sections/header-section';
+import FooterSection from './sections/footer-section';
+import { Box ,Center, Collapse, Divider, Drawer,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { Button } from 'antd-mobile';
 
 const Preview = () => {
     const { currentVersion, currentPage } = useEditorStore();
     const [previewWidth, setPreviewWidth] = useState(0);
+    const [drawerOpened, { toggle: toggleDrawer }] = useDisclosure(false);
 
     // Calculate preview width based on height and iPhone 15's aspect ratio (19.5:9)
     useEffect(() => {
@@ -34,17 +40,30 @@ const Preview = () => {
         return <div className="p-4 text-center text-gray-500">Page not found</div>;
     }
 
+    let headerSection = currentVersion.shareSections.find((section: Section) => section.type === SectionType.HEADER);
+    let footerSection = currentVersion.shareSections.find((section: Section) => section.type === SectionType.FOOTER);
+
+    if(!headerSection){
+       headerSection = currentPageData.sections.find((section: Section) => section.type === SectionType.HEADER);
+    }
+    if(!footerSection){
+        footerSection = currentPageData.sections.find((section: Section) => section.type === SectionType.FOOTER);
+    }
+
     return (
-        <div className="h-full w-full flex justify-center items-center bg-gray-100">
+        <div className="h-full w-full flex justify-center items-center">
             <div 
-                className="h-full overflow-auto bg-black"
+                className="h-full overflow-auto  bg-black"
                 style={{ 
                     width: `${previewWidth}px`,
                     maxHeight: '100vh'
                 }}
             >
+                {/* Header */}
+                <div className="bg-black sticky top-0 z-50">
+                    <HeaderSection section={headerSection!} pageId={currentPage} />
+                </div>
                 {/* Sections */}
-                <div className="space-y-8">
                     {currentPageData.sections
                         .sort((a: Section, b: Section) => a.order - b.order)
                         .map((section: Section) => {
@@ -62,12 +81,27 @@ const Preview = () => {
 
                     {/* Empty State */}
                     {currentPageData.sections.length === 0 && (
-                        <div className="text-center py-12 text-gray-500">
-                            Add sections to start building your page
+                        <div className="flex justify-center items-center h-full">
+                            <Button color="primary">
+                                Add Section
+                            </Button>
                         </div>
                     )}
-                </div>
-            </div>
+
+                    {/* Footer */}
+                    <div className="h-[100px]">
+                        <FooterSection section={footerSection!} pageId={currentPage} />
+                    </div>
+
+                    <Drawer opened={drawerOpened} onClose={toggleDrawer}  size="100%" padding="md" title="Navigation" hiddenFrom="md" zIndex={1000000}>
+                       <ScrollArea className="h-100vh pb-5" type="always" mx="-md">
+                            <Divider className="mb-4" />
+                            <ul className="px-4 flex flex-col gap-4">
+                            </ul>
+                         </ScrollArea>
+                    </Drawer>
+             </div>
+             
         </div>
     );
 };

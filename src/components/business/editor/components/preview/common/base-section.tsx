@@ -13,7 +13,7 @@ interface BaseSectionProps {
 
 const BaseSection: React.FC<BaseSectionProps> = ({ section, pageId, isPreview = false, children }) => {
     const { currentSection, setCurrentSection, selectedComponent } = useEditorStore();
-    const isSelected = currentSection?.id === section.id;
+    const isSelected = currentSection?.id === section?.id;
 
     const handleClick = () => {
         if (!isPreview) {
@@ -23,11 +23,11 @@ const BaseSection: React.FC<BaseSectionProps> = ({ section, pageId, isPreview = 
 
     return (
         <div className={`relative transition-all ${isSelected && !isPreview ? 'outline outline-2 outline-blue-500' : ''}`} onClick={handleClick}>
-            {!isPreview && (
+            {/* {!isPreview && (
                 <div className="absolute top-2 right-2 z-10 flex gap-2">
                     <span className="bg-gray-800 text-white text-xs px-2 py-1 rounded">{section.type}</span>
                 </div>
-            )}
+            )} */}
             {children}
         </div>
     );

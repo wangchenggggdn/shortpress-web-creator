@@ -200,7 +200,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
             </div>
 
             {/* Right - Preview */}
-            <div className="flex-1 bg-gray-50">
+            <div className="flex-1">
                 <Preview />
             </div>
 

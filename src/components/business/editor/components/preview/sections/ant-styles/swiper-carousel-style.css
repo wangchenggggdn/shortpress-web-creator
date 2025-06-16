@@ -1,7 +1,7 @@
 /* swiper-style.css */
 
 .mySimpleSwiper {
-    padding: 32px 0;
+  padding: 16px 0;
 }
 
 /* 
@@ -9,7 +9,7 @@
   这是解决垂直对-齐问题的核心。
 */
 .mySimpleSwiper .swiper-wrapper {
-    align-items: center;
+  align-items: center;
 }
 
 
@@ -18,18 +18,18 @@
   我们只需要在这里定义缩放效果。
 */
 .mySimpleSwiper .swiper-slide {
-    height: auto;
-    /* 高度由内部的 aspect-ratio 决定，这是好的 */
+  height: auto;
+  /* 高度由内部的 aspect-ratio 决定，这是好的 */
 
-    /* 默认状态 (两边的卡片): 缩小 */
-    transform: scale(0.8);
-    transition: transform 0.4s ease-in-out;
-    opacity: 0.7;
+  /* 默认状态 (两边的卡片): 缩小 */
+  transform: scale(0.8);
+  transition: transform 0.4s ease-in-out;
+  opacity: 0.7;
 }
 
 .mySimpleSwiper .swiper-slide-active {
-    /* 激活状态 (中间的卡片): 恢复正常大小 */
-    transform: scale(1);
-    opacity: 1;
-    z-index: 1;
+  /* 激活状态 (中间的卡片): 恢复正常大小 */
+  transform: scale(1);
+  opacity: 1;
+  z-index: 1;
 }
