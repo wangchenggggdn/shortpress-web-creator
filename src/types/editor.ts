@@ -94,6 +94,7 @@ export interface Page {
             keywords?: string;
         };
     };
+    type?: 'custom' | 'playlist' | 'video';
     sections: Section[];
 }
 

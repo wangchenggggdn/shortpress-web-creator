@@ -26,6 +26,7 @@ export const INITIAL_VERSION: Version = {
                     keywords: "home,page"
                 }
             },
+            type: 'playlist',
             sections: [],
         },
         {
@@ -60,7 +61,7 @@ export const INITIAL_VERSION: Version = {
                         },
                         {
                             id: generateId(),
-                            label: 'Label',
+                            label: 'DramaHub',
                             content: '',
                             visible: true,
                             type: WidgetType.DATA,

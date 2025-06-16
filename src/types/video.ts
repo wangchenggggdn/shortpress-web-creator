@@ -69,6 +69,10 @@ export interface IVideo {
     };
     /** Video source URL */
     videoSourceUrl?: string;
+    /** Video playlist cover */
+    playlistCover?: string;
+    /** Video playlist title */
+    playlistTitle?: string;
 }
 
 export interface IUploadVideo extends IVideo {

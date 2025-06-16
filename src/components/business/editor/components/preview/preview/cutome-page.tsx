@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType } from '@/types/editor';
-import { SectionComponents } from './sections';
-import HeaderSection from './sections/header-section';
-import FooterSection from './sections/footer-section';
+import { SectionComponents } from '../sections';
+import HeaderSection from '../sections/header-section';
+import FooterSection from '../sections/footer-section';
 import { Box ,Button,Center, Collapse, Divider, Drawer,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconPlusEqual } from '@tabler/icons-react';
 
-const Preview = () => {
+const CustomPage = () => {
     const { currentVersion, currentPage } = useEditorStore();
     const [previewWidth, setPreviewWidth] = useState(0);
     const [drawerOpened, { toggle: toggleDrawer }] = useDisclosure(false);
@@ -106,4 +106,4 @@ const Preview = () => {
     );
 };
 
-export default Preview;
+export default CustomPage;
