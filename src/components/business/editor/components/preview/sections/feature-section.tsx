@@ -11,7 +11,7 @@ interface FeatureSectionProps {
 }
 
 const FeatureSection: React.FC<FeatureSectionProps> = ({ section, pageId }) => {
-    const title = section.params.extend.title || 'Feature';
+    const title = section.title || 'Feature';
     const items = section.params.extend.widgets || [];
 
     return (

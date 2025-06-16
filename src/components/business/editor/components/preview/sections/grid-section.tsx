@@ -11,7 +11,7 @@ interface GridSectionProps {
 }
 
 const GridSection: React.FC<GridSectionProps> = ({ section, pageId }) => {
-    const title = section.params.extend.title || 'More Recommend';
+    const title = section.title || 'More Recommend';
     const items = section.params.extend.widgets || [];
 
     return (

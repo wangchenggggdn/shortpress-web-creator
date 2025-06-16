@@ -11,7 +11,7 @@ interface ScrollSectionProps {
 }
 
 const ScrollSection: React.FC<ScrollSectionProps> = ({ section, pageId }) => {
-    const title = section.params.extend.title || 'Continue Watching';
+    const title = section.title || 'Continue Watching';
     const items = section.params.extend.widgets || [];
 
     return (

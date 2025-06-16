@@ -11,7 +11,7 @@ interface ListSectionProps {
 }
 
 const ListSection: React.FC<ListSectionProps> = ({ section, pageId }) => {
-    const title = section.params.extend.title || 'Top Rank';
+    const title = section.title || 'Top Rank';
     const items = section.params.extend.widgets || [];
 
     return (

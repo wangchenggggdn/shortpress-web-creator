@@ -1,12 +1,28 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section } from '@/types/editor';
 import { SectionComponents } from './sections';
 
 const Preview = () => {
     const { currentVersion, currentPage } = useEditorStore();
+    const [previewWidth, setPreviewWidth] = useState(0);
+
+    // Calculate preview width based on height and iPhone 15's aspect ratio (19.5:9)
+    useEffect(() => {
+        const updatePreviewWidth = () => {
+            const containerHeight = window.innerHeight;
+            // iPhone 15 aspect ratio is 19.5:9
+            // If container height is h, then width should be (h * 9 / 19.5)
+            const width = Math.min(500, Math.floor(containerHeight * 9 / 19.5));
+            setPreviewWidth(width);
+        };
+
+        updatePreviewWidth();
+        window.addEventListener('resize', updatePreviewWidth);
+        return () => window.removeEventListener('resize', updatePreviewWidth);
+    }, []);
 
     if (!currentVersion || !currentPage) {
         return <div className="p-4 text-center text-gray-500">Loading...</div>;
@@ -19,8 +35,14 @@ const Preview = () => {
     }
 
     return (
-        <div className="h-full overflow-auto bg-black">
-            <div className="max-w-screen-xl mx-auto">
+        <div className="h-full w-full flex justify-center items-center bg-gray-100">
+            <div 
+                className="h-full overflow-auto bg-black"
+                style={{ 
+                    width: `${previewWidth}px`,
+                    maxHeight: '100vh'
+                }}
+            >
                 {/* Sections */}
                 <div className="space-y-8">
                     {currentPageData.sections
