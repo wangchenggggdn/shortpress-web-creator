@@ -6,9 +6,9 @@ import { Section, SectionType } from '@/types/editor';
 import { SectionComponents } from './sections';
 import HeaderSection from './sections/header-section';
 import FooterSection from './sections/footer-section';
-import { Box ,Center, Collapse, Divider, Drawer,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
+import { Box ,Button,Center, Collapse, Divider, Drawer,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Button } from 'antd-mobile';
+import { IconPlus, IconPlusEqual } from '@tabler/icons-react';
 
 const Preview = () => {
     const { currentVersion, currentPage } = useEditorStore();
@@ -82,7 +82,7 @@ const Preview = () => {
                     {/* Empty State */}
                     {currentPageData.sections.length === 0 && (
                         <div className="flex justify-center items-center h-full">
-                            <Button color="primary">
+                            <Button color="primary" leftSection={<IconPlus size={16} />}>
                                 Add Section
                             </Button>
                         </div>
