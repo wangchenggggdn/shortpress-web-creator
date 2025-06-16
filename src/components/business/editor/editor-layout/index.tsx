@@ -6,7 +6,7 @@ import useEditorStore from '@/store/useEditorStore';
 import PageList from '@/components/business/editor/components/page-list';
 import SectionList from '@/components/business/editor/components/section-list';
 import SectionEditor from '@/components/business/editor/components/section-editor';
-import Preview from '@/components/business/editor/components/preview/preview/cutome-page';
+import Preview from '@/components/business/editor/components/preview';
 import EditorHeader from '@/components/business/editor/components/editor-header';
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
@@ -183,6 +183,8 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         return <div>Loading...</div>;
     }
 
+    const currentPageData = currentVersion.pages.find(page => page.id === currentPage);
+
     return (
         <div className="flex flex-col h-screen">
             {/* Header */}
@@ -207,7 +209,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
                 {/* Right - Preview */}
                 <div className="flex-1">
-                    <Preview />
+                    <Preview page={currentPageData!} />
                 </div>
             </div>
         </div>

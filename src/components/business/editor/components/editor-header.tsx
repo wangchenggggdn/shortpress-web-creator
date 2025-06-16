@@ -50,7 +50,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
     };
 
     return (
-        <div className="h-14 border-b flex items-center bg-white">
+        <div className="min-h-14 border-b flex items-center bg-white">
             <div className="w-64 border-r border-gray-200 flex items-center">
                     {/* back */}
                     <button
@@ -73,20 +73,24 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
                 >
                     <IconDeviceMobile size={20} />
                 </Button>
-                <Button
+                {/* <Button
                     variant="subtle"
                     size="sm"
                     className="px-2"
                 >
                     <IconShare size={20} />
-                </Button>
+                </Button> */}
             </div>
 
             {/* page switch - center */}
             <div className="flex-1 flex justify-center">
                 <Select
                     value={currentPage}
-                    onChange={(value) => value && setCurrentPage(value)}
+                    onChange={(value) => {
+                        if(value){
+                            router.push(`/editor/${siteId}/${value}`);
+                        }
+                    }}
                     data={currentVersion?.pages.map(page => ({
                         value: page.id,
                         label: page.name
@@ -121,7 +125,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
                 </div>
 
                 {/* save and publish button */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 pr-2">
                     <Button
                         variant="outline"
                         onClick={onSave}

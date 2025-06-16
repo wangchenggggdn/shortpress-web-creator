@@ -30,6 +30,7 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
 
     if(!pageId){
         pageId = initialData.versions[0].pages[0].id;
+        redirect(`/editor/${siteId}/${pageId}`);
     }
 
     return (

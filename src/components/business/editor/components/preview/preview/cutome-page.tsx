@@ -6,12 +6,13 @@ import { Section, SectionType } from '@/types/editor';
 import { SectionComponents } from '../sections';
 import HeaderSection from '../sections/header-section';
 import FooterSection from '../sections/footer-section';
-import { Box ,Button,Center, Collapse, Divider, Drawer,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
+import { Box ,Button,Center, Collapse, Divider, Drawer,Menu,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconPlusEqual } from '@tabler/icons-react';
+import SectionTypeSelector from '../../common/SectionTypeSelector';
 
 const CustomPage = () => {
-    const { currentVersion, currentPage } = useEditorStore();
+    const { currentVersion, currentPage,addSection } = useEditorStore();
     const [previewWidth, setPreviewWidth] = useState(0);
     const [drawerOpened, { toggle: toggleDrawer }] = useDisclosure(false);
 
@@ -50,6 +51,10 @@ const CustomPage = () => {
         footerSection = currentPageData.sections.find((section: Section) => section.type === SectionType.FOOTER);
     }
 
+    const handleAddSection = (type: SectionType) => {
+        addSection(currentPage, type);
+    };
+
     return (
         <div className="h-full w-full flex justify-center items-center">
             <div 
@@ -80,13 +85,17 @@ const CustomPage = () => {
                         })}
 
                     {/* Empty State */}
-                    {currentPageData.sections.length === 0 && (
-                        <div className="flex justify-center items-center h-full">
+                 
+                    <div className={`flex justify-center items-center  ${currentPageData.sections.length === 0 ? 'h-full' : ''}`}>
+                        <Menu>
+                            <Menu.Target>
                             <Button color="primary" leftSection={<IconPlus size={16} />}>
-                                Add Section
-                            </Button>
-                        </div>
-                    )}
+                                    Add Section
+                                </Button>
+                            </Menu.Target>
+                            <SectionTypeSelector onSelect={handleAddSection} />
+                        </Menu>   
+                    </div>
 
                     {/* Footer */}
                     <div className="h-[100px]">

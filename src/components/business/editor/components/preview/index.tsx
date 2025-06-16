@@ -24,7 +24,6 @@ export const PreviewComponents: Record<PreviewType, PreviewComponent> = {
 };
 
 const Preview: React.FC<PreviewProps> = ({ page, isPreview = false }) => {
-    // 根据页面元数据确定预览类型
     const getPreviewType = (page: Page): PreviewType => {
         if (page.type === 'playlist') {
             return PreviewType.PLAYLIST;
@@ -34,10 +33,12 @@ const Preview: React.FC<PreviewProps> = ({ page, isPreview = false }) => {
         }
         return PreviewType.CUSTOM;
     };
+    if(!page){
+        return <div></div>;
+    }
 
     const previewType = getPreviewType(page);
     const PreviewComponent = PreviewComponents[previewType];
-    
     return <PreviewComponent page={page} isPreview={isPreview} />;
 };
 

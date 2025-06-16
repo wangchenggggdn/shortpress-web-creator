@@ -14,9 +14,6 @@ interface SectionListProps {
 
 const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const { currentVersion, currentPage, currentSection, addSection, deleteSection, setCurrentSection, updateSection } = useEditorStore();
-
-    const [showTypeSelector, setShowTypeSelector] = useState(false);
-
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
 
     useEffect(() => {
@@ -26,7 +23,6 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const handleAddSection = (type: SectionType) => {
         if (!currentPage) return;
         addSection(currentPage, type);
-        setShowTypeSelector(false);
     };
 
     const handleDeleteSection = (sectionId: string) => {
@@ -137,7 +133,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                     ))}
 
                 {/* Add Section Button */}
-                <div className="relative">
+                {currentPageData?.type !== 'playlist' && <div className="relative">
                     <Menu>
                         <Menu.Target>
                             <button className="w-full p-2 text-left hover:bg-gray-100 rounded-lg border border-gray-200 flex items-center">
@@ -147,7 +143,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                         </Menu.Target>
                         <SectionTypeSelector onSelect={handleAddSection} />
                     </Menu>
-                </div>
+                </div>}
 
                 {/* Footer Section */}
                 {footerSection && (
