@@ -16,6 +16,7 @@ import {
     IconChevronLeftPipe,
     IconSquareChevronsLeft,
     IconChevronsLeft,
+    IconPackage,
 } from '@tabler/icons-react';
 import { Avatar, Text, Menu } from '@mantine/core';
 import { Website } from '@/types/website';
@@ -61,6 +62,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
      */
     const menuItems: MenuItem[] = [
         { icon: <IconBrowser size={20} />, label: 'Content', path: `/content` },
+        { icon: <IconPackage size={20} />, label: 'Pages', path: `/preview` },
         { icon: <IconUsers size={20} />, label: 'Customers', path: `/customers` },
         { icon: <IconCoin size={20} />, label: 'Monetization', path: `/monetization` },
         { icon: <IconChartBar size={20} />, label: 'Analytics', path: `/analytics` },

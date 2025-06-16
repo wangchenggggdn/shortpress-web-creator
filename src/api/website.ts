@@ -4,7 +4,8 @@ import { IPaginationResponse } from '@/types/public';
 import { WebsiteArgs } from './args';
 import { Playlist } from '@/types/playlist';
 import { mockApi } from './mock';
-import { Version, Page } from '@/types/editor';
+import { Version, Page, EditWebsite } from '@/types/editor';
+import { IResponse } from '@/types/public';
 
 /**
  * API class for website related operations
@@ -164,5 +165,9 @@ export default class WebsiteApi {
      */
     static editModify(website: Partial<Website>) {
         return mockApi.updateWebsite(website);
+    }
+
+    public static async publish(websiteId: string): Promise<IResponse<any>> {
+        return fetch.post(`/api/website/${websiteId}/publish`);
     }
 }

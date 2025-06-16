@@ -5,15 +5,16 @@ import { redirect } from 'next/navigation';
 
 interface EditorSectionPageProps {
     params: {
-        paths?: string[]; // slug 是一个可选的字符串数组
+        siteId?:string,
+        paths?: string[], // slug 是一个可选的字符串数组
       };
 }
 
 const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) => {
-    const { paths } = params;
-    const siteId = paths?.[0];
-    const pageId = paths?.[1];
-    const sectionId = paths?.[2];
+    const { paths} = params;
+    let siteId = paths?.[0];
+    let pageId = paths?.[1];
+    let sectionId = paths?.[2];
 
     if (!siteId ) {
         return <div>Failed to load website data</div>;
@@ -26,6 +27,10 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
         versions: [INITIAL_VERSION],
         currentVersion: INITIAL_VERSION.id
     };
+
+    if(!pageId){
+        pageId = initialData.versions[0].pages[0].id;
+    }
 
     return (
         <EditorLayout

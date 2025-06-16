@@ -113,9 +113,11 @@ export interface Version {
 export interface EditWebsite {
     id: string;
     name: string;
+    description?: string;
     domain?: string;
     versions: Version[];
     currentVersion: string;
+    status?: number; // 0: 未发布, 1: 已发布
 }
 
 /**

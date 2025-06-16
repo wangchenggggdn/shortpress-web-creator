@@ -6,7 +6,8 @@ import useEditorStore from '@/store/useEditorStore';
 import PageList from '@/components/business/editor/components/page-list';
 import SectionList from '@/components/business/editor/components/section-list';
 import SectionEditor from '@/components/business/editor/components/section-editor';
-import Preview from '@/components/business/editor/components/preview/preview/preview';
+import Preview from '@/components/business/editor/components/preview/preview/cutome-page';
+import EditorHeader from '@/components/business/editor/components/editor-header';
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
 
@@ -68,7 +69,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 if (page.id !== currentPage) {
                     setCurrentPage(page.id);
                 }
-
+                console.log('sectionId', sectionId);
                 // Find section by type
                 if (sectionId) {
                     let section = page.sections.find(s => s.id === sectionId);
@@ -183,45 +184,31 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     }
 
     return (
-        <div className="flex h-screen">
-            {/* Left Sidebar - Pages */}
-            <div className="w-64 bg-gray-100 border-r">
-                <PageList
-                    onPageChange={newPageId => {
-                        console.log('onPageChange', newPageId);
-                        handlePageChange(newPageId);
-                    }}
-                />
-            </div>
+        <div className="flex flex-col h-screen">
+            {/* Header */}
+            <EditorHeader siteId={siteId} onSave={handleSave} />
 
-            {/* Middle - Sections or Section Editor */}
-            <div className="w-80 bg-white border-r">
-                {sectionId ? <SectionEditor sectionId={sectionId} onBack={() => handleSectionChange(null)} /> : <SectionList onSectionChange={handleSectionChange} />}
-            </div>
+            {/* Main Content */}
+            <div className="flex flex-1">
+                {/* Left Sidebar - Pages */}
+                <div className="w-64 bg-gray-100 border-r">
+                    <PageList
+                        onPageChange={newPageId => {
+                            console.log('onPageChange', newPageId);
+                            handlePageChange(newPageId);
+                        }}
+                    />
+                </div>
 
-            {/* Right - Preview */}
-            <div className="flex-1">
-                <Preview />
-            </div>
+                {/* Middle - Sections or Section Editor */}
+                <div className="w-80 bg-white border-r">
+                    {sectionId ? <SectionEditor sectionId={sectionId} onBack={() => handleSectionChange(null)} /> : <SectionList onSectionChange={handleSectionChange} />}
+                </div>
 
-            {/* Toolbar */}
-            <div className="fixed bottom-4 right-4 flex gap-2">
-                {/* Undo/Redo */}
-                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300" onClick={undo} title="Undo (Ctrl+Z)">
-                    ↩
-                </button>
-                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300" onClick={redo} title="Redo (Ctrl+Y or Ctrl+Shift+Z)">
-                    ↪
-                </button>
-                {/* Save Button */}
-                <button
-                    className={`px-4 py-2 rounded ${isDirty ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-                    onClick={handleSave}
-                    disabled={!isDirty}
-                    title="Save (Ctrl+S)"
-                >
-                    Save Changes
-                </button>
+                {/* Right - Preview */}
+                <div className="flex-1">
+                    <Preview />
+                </div>
             </div>
         </div>
     );
