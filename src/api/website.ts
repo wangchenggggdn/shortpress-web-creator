@@ -134,7 +134,12 @@ export default class WebsiteApi {
      * @returns Promise with Website object including versions
      */
     static editGet(siteId: string) {
-        return fetch.get(`/api/pages-builder/info`, {
+        return fetch.get<{
+            version_number: number;
+            last_published_version: number;
+            site_data: EditWebsite;
+            code: number;
+        }>(`/api/pages-builder/info`, {
             siteId
         });
     }

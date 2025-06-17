@@ -11,6 +11,7 @@ interface WebsitePreviewPageProps {
 }
 
 const CustomPreviewPage: React.FC<WebsitePreviewPageProps> = ({ searchParams }) => {
+    console.log('----------searchParams', searchParams);
     const url = decodeURIComponent(searchParams.url);
     return (
         <div className='h-screen'>

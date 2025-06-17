@@ -23,10 +23,10 @@ export const formatPath = (pathname: string): string => {
 export const getWebsitePreviewUrl = (website: Website, sectionPath: string = '', isAddHttp: boolean = true): string => {
     const http = isAddHttp ? 'https://' : '';
     if (process.env.NEXT_PUBLIC_NODE_ENV === 'dev') {
-        return `${http.replace('https://', 'http://')}localhost:3001/${website.path}/${sectionPath}`;
+        return `${http.replace('https://', 'http://')}localhost:3001/${website.path}${sectionPath}`;
     }
     if (website.domain) {
-        return `${http}${website.domain}/${sectionPath}`;
+        return `${http}${website.domain}${sectionPath}`;
     }
-    return `${http}${website.officialDomain}/${website.path}/${sectionPath}`;
+    return `${http}${website.officialDomain}/${website.path}${sectionPath}`;
 };

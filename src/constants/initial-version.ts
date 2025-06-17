@@ -29,19 +29,6 @@ export const INITIAL_VERSION: Version = {
             type: 'playlist',
             sections: [],
         },
-        {
-            id: generateId(),
-            path: '/explore',
-            name: 'Explore',
-            metadata: {
-                seo: {
-                    title: 'Explore',
-                    description: 'Explore page',
-                    keywords: "explore,page"
-                }
-            },
-            sections: []
-        }
     ],
     shareSections: [
         {
