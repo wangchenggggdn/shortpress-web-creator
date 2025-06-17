@@ -42,6 +42,8 @@ const SectionWidgetEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) =
         }
     };
 
+    console.log('-----------------widget', widget);
+    
     switch (widget.type) {
         case WidgetType.NAV:
             return currentSection&& <NavMenuEditor 

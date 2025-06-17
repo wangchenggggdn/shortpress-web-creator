@@ -19,6 +19,7 @@ const MENU_TYPES = {
     LABEL: 'label',
     SEARCH: 'search',
     ACCOUNT: 'account',
+    VIP: 'vip',
     NAV: 'nav',
 } as const;
 
@@ -131,7 +132,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
     const labelItem = getMenuItem(1);
     const searchItem = getMenuItem(2);
     const accountItem = getMenuItem(3);
-    const navItem = getMenuItem(4);
+    const vipItem0 = getMenuItem(4);
+    const navItem = getMenuItem(5);
 
     return (
         <div className="p-4 bg-white h-full overflow-y-auto">
@@ -167,6 +169,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
             <IconMenuItem title="Search Icon" widget={searchItem} onToggle={() => handleToggle(searchItem?.id ?? '', MENU_TYPES.SEARCH)} />
 
             <IconMenuItem title="Account Icon" widget={accountItem} onToggle={() => handleToggle(accountItem?.id ?? '', MENU_TYPES.ACCOUNT)} />
+
+            <IconMenuItem title="VIP Icon" widget={vipItem0} onToggle={() => handleToggle(vipItem0?.id ?? '', MENU_TYPES.VIP)} />
 
             {/* Nav Menu */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">

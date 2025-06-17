@@ -5,7 +5,8 @@ import { Section } from '@/types/editor';
 import BaseSection from '../common/base-section';
 import { IconSearch, IconUser } from '@tabler/icons-react';
 import vipIcon from '@/assets/images/preview/vip.webp';
-import { Burger } from '@mantine/core';
+import { Burger, Divider, Drawer, ScrollArea } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 interface HeaderSectionProps {
     section: Section;
@@ -14,9 +15,7 @@ interface HeaderSectionProps {
 
 const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
     const menus = section?.params?.extend?.widgets??[];
-
-    console.log('---------menus:', menus);
-
+    const [drawerOpened, { toggle: toggleDrawer }] = useDisclosure(false);
     const icon = menus[0];
     const title = menus[1];
     const searc = menus[2];
@@ -40,6 +39,16 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                         </div>
                     </div>
                 </div>
+                <Drawer opened={drawerOpened} onClose={toggleDrawer}  size="100%" padding="md" title="Navigation" hiddenFrom="md" zIndex={1000000}>
+                    <ScrollArea className="h-100vh pb-5" type="always" mx="-md">
+                        <Divider className="mb-4" />
+                         <ul className="px-4 flex flex-col gap-4">
+                            {section?.params?.extend?.widgets?.map((widget: any) => (
+                                 <li key={widget.id}>{widget.name}</li>
+                            ))}
+                        </ul>
+                     </ScrollArea>
+                </Drawer>
         </BaseSection>
     );
 };

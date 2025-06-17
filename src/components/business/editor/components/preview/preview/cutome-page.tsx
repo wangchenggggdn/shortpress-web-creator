@@ -12,9 +12,8 @@ import { IconPlus, IconPlusEqual } from '@tabler/icons-react';
 import SectionTypeSelector from '../../common/SectionTypeSelector';
 
 const CustomPage = () => {
-    const { currentVersion, currentPage,addSection } = useEditorStore();
+    const { currentVersion, currentPage,addSection,currentSection } = useEditorStore();
     const [previewWidth, setPreviewWidth] = useState(0);
-    const [drawerOpened, { toggle: toggleDrawer }] = useDisclosure(false);
 
     // Calculate preview width based on height and iPhone 15's aspect ratio (19.5:9)
     useEffect(() => {
@@ -101,14 +100,6 @@ const CustomPage = () => {
                     <div className="h-[100px]">
                         <FooterSection section={footerSection!} pageId={currentPage} />
                     </div>
-
-                    <Drawer opened={drawerOpened} onClose={toggleDrawer}  size="100%" padding="md" title="Navigation" hiddenFrom="md" zIndex={1000000}>
-                       <ScrollArea className="h-100vh pb-5" type="always" mx="-md">
-                            <Divider className="mb-4" />
-                            <ul className="px-4 flex flex-col gap-4">
-                            </ul>
-                         </ScrollArea>
-                    </Drawer>
              </div>
              
         </div>

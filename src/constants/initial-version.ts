@@ -96,12 +96,6 @@ export const INITIAL_VERSION: Version = {
                             widgets: [
                                 {
                                     id: generateId(),
-                                    label: 'Nav icon',
-                                    type: WidgetType.LOGO,
-                                    visible: true
-                                },
-                                {
-                                    id: generateId(),
                                     label: 'Home',
                                     type: WidgetType.PATH,
                                     path: '/home',
