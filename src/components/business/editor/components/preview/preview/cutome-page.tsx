@@ -64,7 +64,7 @@ const CustomPage = () => {
                 }}
             >
                 {/* Header */}
-                <div className="bg-black sticky top-0 z-50">
+                <div className="bg-black sticky top-0 z-5">
                     <HeaderSection section={headerSection!} pageId={currentPage} />
                 </div>
                 {/* Sections */}

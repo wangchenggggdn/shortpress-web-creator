@@ -8,6 +8,7 @@ import PlaylistData from './playlist-data';
 import PlaylistSelector from '../../common/PlaylistSelector';
 import { Playlist } from '@/types/playlist';
 import useEditorStore from '@/store/useEditorStore';
+import WebsiteApi from '@/api/website';
 
 interface NormalEditorProps {
     section: Section;
@@ -24,7 +25,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
     const [showPlaylistData, setShowPlaylistData] = useState(false);
     const [showPlaylistAdd, setShowPlaylistAdd] = useState(false);
     const [sectionTitle, setSectionTitle] = useState(section.title || '');
-    const { currentSection } = useEditorStore();
+    const { currentSection,editWebsite } = useEditorStore();
 
     useEffect(() => {
         setSectionTitle(section.title || '');
@@ -34,19 +35,22 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         return section.params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
     };
 
-    const handleContentTypeSelect = (type: DataSourceType) => {
+    const handleContentTypeSelect = async (type: DataSourceType) => {
         const widgets = [...(section.params.extend.widgets || [])];
         const contentItem = widgets.find(item => item.content === MENU_TYPES.CONTENT);
 
         if (contentItem) {
             contentItem.label = type;
         } else {
+            const dataNew: Playlist[] = await getDataSourceData();
+
             widgets.push({
                 id: createUniqueUUID(widgets.map(item => item.id)),
                 label: type,
                 content: MENU_TYPES.CONTENT,
                 visible: true,
                 type: WidgetType.DATA,
+                data: dataNew,
             });
         }
 
@@ -62,6 +66,20 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
 
         setShowContentSelector(false);
     };
+
+    const getDataSourceData = async () => {
+        switch(section.params.extend.dataSourceType){
+            case DataSourceType.NEW_RELEASE:
+                return await getNewRelease();
+            default:
+                return [];
+        }
+    }
+
+    const getNewRelease = async () => {
+        const res = await WebsiteApi.getNewRelease(editWebsite?.id as string);
+        return res.data;
+    }
 
     const handleAddPlaylistItem = (playlists: Playlist[]) => {
         updateWidgetDataToSection(playlists);
@@ -195,7 +213,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                     />
                 )}
             </div>
-            <PlaylistSelector open={showPlaylistAdd} isMultiSelect={true} onClose={() => setShowPlaylistAdd(false)} onSelect={handleAddPlaylistItem} />
+            <PlaylistSelector key={'normal-editor-playlist-selector'} open={showPlaylistAdd} isMultiSelect={true} onClose={() => setShowPlaylistAdd(false)} onSelect={handleAddPlaylistItem} />
         </>
     );
 };

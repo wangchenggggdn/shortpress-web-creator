@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useEffect, useState, useCallback } from 'react';
 import { TextInput } from '@mantine/core';
 import { IconSearch, IconArrowLeft } from '@tabler/icons-react';
 import { Playlist } from '@/types/playlist';
+import PlaylistApi from '@/api/playlist';
+import useEditorStore from '@/store/useEditorStore';
+import { InView } from 'react-intersection-observer';
+import LoadingData from '@/components/common/loading-data';
+import { useDebouncedValue } from '@mantine/hooks';
 
 interface PlaylistSelectorProps {
     open: boolean;
@@ -11,149 +18,186 @@ interface PlaylistSelectorProps {
 }
 
 const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect = false, onClose, onSelect }) => {
-    const [searchTerm, setSearchTerm] = useState('');
     const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist[]>([]);
-    const [playlists, setPlaylists] = useState<Playlist[]>([
-        // Mock data, replace with real API call
-        {
-            playlistId: '1',
-            title: "Mafia's tender torutre1",
-            videoCount: 30,
-            cover: 'https://placeholder.com/300x200',
-            createdAt: 1718236800,
-            updatedAt: 1718236800,
-            accessType: 1,
-            singleVideoPrice: 0,
-            freeVideos: 0,
-        },
-        {
-            playlistId: '2',
-            title: "Mafia's tender torutre2",
-            videoCount: 30,
-            cover: 'https://placeholder.com/300x200',
-            createdAt: 1718236800,
-            updatedAt: 1718236800,
-            accessType: 1,
-            singleVideoPrice: 0,
-            freeVideos: 0,
-        },
-        {
-            playlistId: '3',
-            title: "Mafia's tender torutre3",
-            videoCount: 30,
-            cover: 'https://placeholder.com/300x200',
-            createdAt: 1718236800,
-            updatedAt: 1718236800,
-            accessType: 1,
-            singleVideoPrice: 0,
-            freeVideos: 0,
-        },
-        {
-            playlistId: '4',
-            title: "Mafia's tender torutre4",
-            videoCount: 30,
-            cover: 'https://placeholder.com/300x200',
-            createdAt: 1718236800,
-            updatedAt: 1718236800,
-            accessType: 1,
-            singleVideoPrice: 0,
-            freeVideos: 0,
-        },
-        {
-            playlistId: '5',
-            title: "Mafia's tender torutre5",
-            videoCount: 30,
-            cover: 'https://placeholder.com/300x200',
-            createdAt: 1718236800,
-            updatedAt: 1718236800,
-            accessType: 1,
-            singleVideoPrice: 0,
-            freeVideos: 0,
-        },
-        {
-            playlistId: '6',
-            title: "Mafia's tender torutre6",
-            videoCount: 30,
-            cover: 'https://placeholder.com/300x200',
-            createdAt: 1718236800,
-            updatedAt: 1718236800,
-            accessType: 1,
-            singleVideoPrice: 0,
-            freeVideos: 0,
-        },
-    ]);
-
-    if (!open) return null;
-
-    const filteredPlaylists = playlists.filter(playlist => playlist.title.toLowerCase().includes(searchTerm.toLowerCase()));
-
+    const [playlists, setPlaylists] = useState<Playlist[]>([]);
+    const [loadingData, setLoadingData] = useState(false);
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(10);
+    const [hasMore, setHasMore] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch] = useDebouncedValue(searchQuery, 500);
+    const { editWebsite } = useEditorStore();
     const handleSelect = () => {
-        if (selectedPlaylist) {
+        if (selectedPlaylist.length > 0) {
             onSelect(selectedPlaylist);
-            onClose();
+            handleClose();
         }
     };
 
+    useEffect(() => {
+        if (open) {
+            setPage(1);
+            setHasMore(true);
+            fetchPlaylistsBySearch(1);
+        }
+    }, [debouncedSearch, open]);
+
+    const handleClose = () => {
+        setPage(1);
+        setPlaylists([]);
+        setHasMore(true);
+        setSearchQuery('');
+        setSelectedPlaylist([]);
+        onClose();
+    };
+
+    // 加载更多数据
+    const loadMore = () => {
+        if (!loadingData && hasMore) {
+            fetchPlaylistsBySearch(page + 1);
+        }
+    };
+
+    /**
+     * Search playlists based on query
+     */
+    const fetchPlaylistsBySearch = async (currentPage: number) => {
+        if (loadingData) return;
+        
+        setLoadingData(true);
+        try {
+            const res = await PlaylistApi.search({
+                page: currentPage,
+                pageSize,
+                siteId: editWebsite?.id as string,
+                orderType: 1,
+                status: 2,
+                keyword: debouncedSearch, // 使用 debouncedSearch 而不是 searchQuery
+            });
+
+            if (res.code !== 0) {
+                setHasMore(false);
+                return;
+            }
+
+            const playlistIds = res.data.items || [];
+            if (playlistIds.length === 0) {
+                setHasMore(false);
+                return;
+            }
+
+            const resD = await PlaylistApi.batchGet(playlistIds.join(','));
+            if (resD.code !== 0) {
+                setHasMore(false);
+                return;
+            }
+
+            const newPlaylists = playlistIds.map((id: string) => {
+                return resD.data.items.find((item: any) => item.playlistId === id)!;
+            }).filter(Boolean);
+
+            setPlaylists(prev => currentPage === 1 ? newPlaylists : [...prev, ...newPlaylists]);
+            setPage(currentPage);
+            setHasMore(res.data.hasMore);
+        } catch (error) {
+            console.error('Failed to fetch playlists:', error);
+            setHasMore(false);
+        } finally {
+            setLoadingData(false);
+        }
+    };
+    if (!open) return null;
+    
     return (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-10 flex">
             {/* 遮罩 */}
-            <div className="flex-1 bg-black/30" onClick={onClose}></div>
+            <div className="flex-1 bg-black/30" onClick={handleClose}></div>
             {/* 侧边栏内容 */}
             <div className="w-[400px] h-full bg-white shadow-xl flex flex-col">
                 {/* 顶部 */}
                 <div className="flex items-center gap-2 px-4 py-4 border-b">
-                    <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded">
+                    <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded">
                         <IconArrowLeft size={20} />
                     </button>
                     <h2 className="text-lg font-semibold">Add Playlist to Menu</h2>
                 </div>
-                {/* 内容 */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    <TextInput
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
+                <TextInput
+                        className="p-4"
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                        }}
                         placeholder="Search playlist"
                         leftSection={<IconSearch size={16} />}
                         variant="filled"
-                    />
+                />
+                {/* 内容 */}
+                <div className="flex-1 overflow-y-auto px-4 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        {filteredPlaylists.map(playlist => (
+                        {playlists.map(playlist => (
                             <div
                                 key={playlist.playlistId}
-                                className={`cursor-pointer rounded-lg overflow-hidden border ${selectedPlaylist.includes(playlist) ? 'border-primary' : 'border-gray-200'}`}
+                                className={`cursor-pointer rounded-lg overflow-hidden border ${
+                                    selectedPlaylist.includes(playlist) ? 'border-primary' : 'border-gray-200'
+                                }`}
                                 onClick={() => {
                                     if (isMultiSelect) {
-                                        if (selectedPlaylist.includes(playlist)) {
-                                            setSelectedPlaylist(selectedPlaylist.filter(p => p.playlistId !== playlist.playlistId));
-                                        } else {
-                                            setSelectedPlaylist([...(selectedPlaylist || []), playlist]);
-                                        }
+                                        setSelectedPlaylist(prev => 
+                                            prev.includes(playlist)
+                                                ? prev.filter(p => p.playlistId !== playlist.playlistId)
+                                                : [...prev, playlist]
+                                        );
                                     } else {
-                                        if (selectedPlaylist.includes(playlist)) {
-                                            setSelectedPlaylist(selectedPlaylist.filter(p => p.playlistId !== playlist.playlistId));
-                                        } else {
-                                            setSelectedPlaylist([playlist]);
-                                        }
+                                        setSelectedPlaylist(prev =>
+                                            prev.includes(playlist) ? [] : [playlist]
+                                        );
                                     }
                                 }}
                             >
                                 <div className="aspect-video bg-gray-100">
-                                    {playlist.cover && <img src={playlist.cover} alt={playlist.title} className="w-full h-full object-cover" />}
+                                    {playlist.cover && (
+                                        <img
+                                            src={playlist.cover}
+                                            alt={playlist.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    )}
                                 </div>
                                 <div className="p-2">
-                                    <div className="text-sm font-medium text-gray-900 truncate">{playlist.title}</div>
-                                    <div className="text-xs text-gray-500">{playlist.videoCount} videos</div>
+                                    <div className="text-sm font-medium text-gray-900 truncate">
+                                        {playlist.title}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        {playlist.videoCount} videos
+                                    </div>
                                 </div>
                             </div>
                         ))}
+
+                        {/* InView 组件用于检测滚动到底部 */}
+                        <InView
+                            as="div"
+                            onChange={(inView) => {
+                                if (inView) {
+                                    loadMore();
+                                }
+                            }}
+                            className="col-span-2 h-10 flex justify-center"
+                        >
+                            {loadingData && <LoadingData className="w-10 h-10" />}
+                        </InView>
                     </div>
                 </div>
                 {/* 底部按钮 */}
                 <div className="p-6 border-t">
                     <button
-                        className={`w-full py-2 rounded transition-colors ${selectedPlaylist ? 'bg-primary text-white hover:bg-primary-hover' : 'bg-gray-100 text-gray-400'}`}
+                        className={`w-full py-2 rounded transition-colors ${
+                            selectedPlaylist.length > 0
+                                ? 'bg-primary text-white hover:bg-primary-hover'
+                                : 'bg-gray-100 text-gray-400'
+                        }`}
                         onClick={handleSelect}
-                        disabled={!selectedPlaylist}
+                        disabled={selectedPlaylist.length === 0}
                     >
                         Add to Menu
                     </button>

@@ -82,12 +82,18 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
+        const playlists = res.data.items.map((item: any) => {
+            const playlist = resD.data.items.find((item2: any) => item2.playlistId === item)!;
+            return playlist;
+        });
+
         resD.data.total = res.data.total;
         resD.data.page = res.data.page;
         resD.data.pageSize = res.data.pageSize;
         resD.data.hasMore = res.data.hasMore;
         setTotal(res.data.total);
-        setPlaylists(resD.data.items);
+        setPlaylists(playlists);
         setCurrentPlaylistsIndex(0);
         fetchVideos(resD.data.items);
         // setLoadingData(false);
@@ -138,12 +144,18 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
         setLoadingData(true);
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
+        const playlists = res.data.items.map((item: any) => {
+            const playlist = resD.data.items.find((item2: any) => item2.playlistId === item)!;
+            return playlist;
+        });
+
         resD.data.total = res.data.total;
         resD.data.page = res.data.page;
         resD.data.pageSize = res.data.pageSize;
         resD.data.hasMore = res.data.hasMore;
         setTotal(res.data.total);
-        setPlaylists(resD.data.items);
+        setPlaylists(playlists);
         setVideoPage(1);
         setVideos([]);
         fetchVideos(resD.data.items);

@@ -15,9 +15,9 @@ const ListSection: React.FC<ListSectionProps> = ({ section, pageId }) => {
         { id: 'placeholder-1', title: 'Placeholder 1' },
         { id: 'placeholder-2', title: 'Placeholder 2' },
         { id: 'placeholder-3', title: 'Placeholder 3' },
-        { id: 'placeholder-1', title: 'Placeholder 4' },
-        { id: 'placeholder-2', title: 'Placeholder 5' },
-        { id: 'placeholder-3', title: 'Placeholder 6' }
+        { id: 'placeholder-4', title: 'Placeholder 4' },
+        { id: 'placeholder-5', title: 'Placeholder 5' },
+        { id: 'placeholder-6', title: 'Placeholder 6' }
     ];
     const [currentItem, setCurrentItem] = useState<any>(items);
 

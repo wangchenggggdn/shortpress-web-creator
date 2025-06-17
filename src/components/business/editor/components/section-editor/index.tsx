@@ -6,8 +6,6 @@ import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType, DataSourceType } from '@/types/editor';
 import HeaderEditor from './header-editor';
 import FooterEditor from './footer-editor';
-import CarouselEditor from './nomal-editor/nomal-editor';
-import SectionTypeModal from './section-type-modal';
 import ContentTypeModal from './content-type-modal';
 import NormalEditor from './nomal-editor/nomal-editor';
 
@@ -20,7 +18,6 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
     const { currentVersion, currentSection, currentPage, updateSection, updateShareSection } = useEditorStore();
     const [localSection, setLocalSection] = useState<Section | null>(null);
     const [isSharedSection, setIsSharedSection] = useState(false);
-    const [showTypeSelector, setShowTypeSelector] = useState(false);
     const [showContentSelector, setShowContentSelector] = useState(false);
 
     // Sync with store when version changes
@@ -35,6 +32,9 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
             return;
         }
 
+        console.log('-----------------sectionId', sectionId);
+        console.log('-----------------currentVersion', currentVersion);
+        console.log('-----------------currentPage', currentPage);
         // If not in shareSections, check in currentPage
         if (!currentVersion || !currentPage) return;
         const currentPageData = currentVersion.pages.find(p => p.id === currentPage);
@@ -83,7 +83,7 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
     };
 
     if (!localSection) {
-        return <div className="p-4 text-center text-gray-500">Loading...</div>;
+       return null;
     }
 
     switch (localSection.type) {

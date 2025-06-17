@@ -147,7 +147,7 @@ export default class WebsiteApi {
     static editModify(siteId: string, editWebsite: Partial<EditWebsite>) {
         return fetch.post(`/api/pages-builder/save`, {
             siteId,
-            data: editWebsite
+            siteData: editWebsite
         });
     }
 
@@ -157,7 +157,10 @@ export default class WebsiteApi {
         });
     }
 
-    public static async publish(websiteId: string): Promise<IResponse<any>> {
-        return fetch.post(`/api/website/${websiteId}/publish`);
+    static getNewRelease(siteId: string) {
+        return fetch.get<Playlist[]>(`/api/client-site/new-release`, {
+            siteId
+        });
     }
+
 }

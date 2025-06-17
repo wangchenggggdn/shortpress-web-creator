@@ -338,6 +338,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
 
             {/* Playlist Selection Modal */}
             <PlaylistSelector
+                key={'nav-menu-playlist-selector'}
                 open={showPlaylistModal}
                 onClose={() => setShowPlaylistModal(false)}
                 onSelect={handleAddPlaylistItem}
