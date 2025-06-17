@@ -37,8 +37,8 @@ const ListSection: React.FC<ListSectionProps> = ({ section, pageId }) => {
                     {currentItem.map((item: any, index: number) => (
                         <div key={index} className="flex space-x-4">
                             <div className="relative w-[100px] aspect-[2/3] rounded-lg overflow-hidden bg-gray-500">
-                           { item.coverUrl && <Image
-                                    src={item.coverUrl || '/placeholder.png'}
+                           { item.cover && <Image
+                                    src={item.cover || '/placeholder.png'}
                                     alt={item.title || 'List item'}
                                     fill
                                     className="object-cover"

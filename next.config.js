@@ -20,7 +20,7 @@ const nextConfig = {
         optimizePackageImports: ['@mantine/core', '@mantine/hooks', '@mantine/carousel'],
     },
     images: {
-        domains: ['picsum.photos'],
+        domains: ['picsum.photos', process.env.IMAGE_DOMAIN].filter(Boolean),
     },
 };
 

@@ -49,9 +49,9 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ section, pageId }) => {
                 {currentItem.map((item: any, index: number) => (
                     <SwiperSlide key={index}>
                         <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-500">
-                            {item.coverUrl && (
+                            {item.cover && (
                                 <Image
-                                    src={item.coverUrl}
+                                    src={item.cover}
                                     alt={item.title || ''}
                                     fill
                                     className="object-cover"

@@ -7,6 +7,7 @@ import { IconDeviceMobile, IconDeviceDesktop, IconShare } from '@tabler/icons-re
 import LoadingData from '@/components/common/loading-data';
 import { Website } from '@/types/website';
 import { useRouter } from 'next/navigation';
+import { getWebsitePreviewUrl } from '@/utils/path';
 
 interface WebsitePreviewPageProps {
     params: {
@@ -45,16 +46,17 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen">
             {/* top toolbar */}
-            <div className="h-14 bg-white border-b flex items-center justify-between px-4">
+            <div className="h-14 border-b flex items-center justify-between px-4">
                 <div className="flex items-center gap-4">
                     <IconDeviceMobile size={20}/>
                     <Button
                         variant={"subtle"}
                         color='black'
                         onClick={() => {
-                            window.open(`https://www.dramahub.com/preview/${website.siteId}`, '_blank');
+                            const url = encodeURIComponent(getWebsitePreviewUrl(website));
+                            window.open(`/preview?url=${url}`, '_blank');
                         }}
                     >
                         <IconShare size={20} />
@@ -83,15 +85,15 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
 
             {/* preview content */}
             <div className="flex justify-center py-8 px-4">
-                <div className={`bg-white shadow-lg  w-[300px] h-[calc(100vh-200px)] overflow-y-auto`}>
+                <div className={`bg-white shadow-lg  w-[350px] h-[calc(100vh-200px)]`}>
                 
                     <div className="h-6 bg-gray-100 flex items-center justify-center">
                         <div className="w-16 h-1 bg-gray-300 rounded" />
                     </div>
                 
-                    <div className="relative">
+                    <div className="relative h-full">
                         <iframe
-                            src={`/preview/${website.siteId}`}
+                            src={`/preview?url=${encodeURIComponent(getWebsitePreviewUrl(website))}`}
                             className="w-full h-full"
                         />
                     </div>

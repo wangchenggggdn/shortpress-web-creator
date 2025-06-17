@@ -18,10 +18,8 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
     const router = useRouter();
     const {
         editWebsite,
-        setEditWebsite,
         currentVersion,
         currentPage,
-        setCurrentPage,
         isDirty,
         undo,
         redo,

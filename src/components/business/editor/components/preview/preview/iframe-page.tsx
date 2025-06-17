@@ -26,7 +26,7 @@ const IframePage: React.FC<IframePageProps> = ({ url }) => {
     }, []);
 
     return (
-        <div className="h-full w-full flex justify-center items-center">
+        <div className="h-full w-full flex justify-center items-center bg-black">
             <div 
                 className="h-full overflow-auto  bg-black"
                 style={{ 

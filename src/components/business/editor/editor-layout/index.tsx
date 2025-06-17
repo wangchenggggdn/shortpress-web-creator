@@ -37,7 +37,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         initializeHistory,
     } = useEditorStore();
 
-    //监听刷新提示用户刷新弹窗 将失去编辑的内容，希望可以先save
     useEffect(() => {   
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {  
              e.returnValue = 'refresh will lost your changes, please save first'; 

@@ -67,7 +67,7 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
                     maxHeight: '100vh'
                 }}
             >
-                <div className="bg-black sticky top-0 z-50">
+                <div className="bg-black sticky top-0 z-7">
                     <HeaderSection section={headerSection!} pageId={currentPage} />
                 </div>
                 <div className="h-full overflow-auto  bg-black">

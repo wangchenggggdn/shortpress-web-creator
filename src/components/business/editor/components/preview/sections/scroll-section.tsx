@@ -37,9 +37,9 @@ const ScrollSection: React.FC<ScrollSectionProps> = ({ section, pageId }) => {
                     {currentItem.map((item: any, index: number) => (
                         <div key={index} className="flex-none w-[100px]">
                             <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-500">
-                                {item.coverUrl && (
+                                {item.cover && (
                                     <Image
-                                        src={item.coverUrl}
+                                        src={item.cover}
                                         alt={item.title || ''}
                                         fill
                                         className="object-cover"

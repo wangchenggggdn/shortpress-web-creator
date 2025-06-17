@@ -158,7 +158,7 @@ export default class WebsiteApi {
     }
 
     static getNewRelease(siteId: string) {
-        return fetch.get<Playlist[]>(`/api/client-site/new-release`, {
+        return fetch.get<Playlist[]>(`/api/client/site/new-release`, {
             siteId
         });
     }

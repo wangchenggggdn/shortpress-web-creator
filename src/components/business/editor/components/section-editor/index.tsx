@@ -32,9 +32,6 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
             return;
         }
 
-        console.log('-----------------sectionId', sectionId);
-        console.log('-----------------currentVersion', currentVersion);
-        console.log('-----------------currentPage', currentPage);
         // If not in shareSections, check in currentPage
         if (!currentVersion || !currentPage) return;
         const currentPageData = currentVersion.pages.find(p => p.id === currentPage);

@@ -42,8 +42,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         if (contentItem) {
             contentItem.label = type;
         } else {
-            const dataNew: Playlist[] = await getDataSourceData();
-
+            const dataNew: Playlist[] = await getDataSourceData(type);
             widgets.push({
                 id: createUniqueUUID(widgets.map(item => item.id)),
                 label: type,
@@ -67,8 +66,8 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         setShowContentSelector(false);
     };
 
-    const getDataSourceData = async () => {
-        switch(section.params.extend.dataSourceType){
+    const getDataSourceData = async (type: DataSourceType) => {
+        switch(type){
             case DataSourceType.NEW_RELEASE:
                 return await getNewRelease();
             default:
@@ -78,7 +77,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
 
     const getNewRelease = async () => {
         const res = await WebsiteApi.getNewRelease(editWebsite?.id as string);
-        return res.data;
+        return res?.data??[];
     }
 
     const handleAddPlaylistItem = (playlists: Playlist[]) => {

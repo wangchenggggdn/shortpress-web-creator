@@ -19,13 +19,13 @@ const GridSection: React.FC<GridSectionProps> = ({ section, pageId }) => {
         { id: 'placeholder-5', title: 'Placeholder 5' },
         { id: 'placeholder-6', title: 'Placeholder 6' }
     ];
-    const [currentItem, setCurrentItem] = useState<any>(items);
+    const [currentItems, setCurrentItems] = useState<any>(items);
 
     useEffect(() => {
         if ((section.params.extend.widgets?.[0]?.data || []).length > 0) {
-            setCurrentItem(section.params.extend.widgets?.[0]?.data || []);
+            setCurrentItems(section.params.extend.widgets?.[0]?.data || []);
         } else {
-            setCurrentItem(items);
+            setCurrentItems(items);
         }
     }, [section.params.extend.widgets]);
 
@@ -34,11 +34,12 @@ const GridSection: React.FC<GridSectionProps> = ({ section, pageId }) => {
             <div className="px-4 pb-4">
                 <h2 className="text-2xl font-bold text-white mb-4">{section.title}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {items.map((item: any, index: number) => (
+                    {currentItems.map((item: any, index: number) => (
+                        console.log('-----------------item', item),
                         <div key={index}>
                             <div className="relative aspect-[2/3] bg-gray-500 rounded-lg overflow-hidden">
-                                {item.coverUrl && <Image
-                                    src={item.coverUrl || '/placeholder.png'}
+                                {item.cover && <Image
+                                    src={item.cover || '/placeholder.png'}
                                     alt={item.title || 'Grid item'}
                                     fill
                                     className="object-cover"
