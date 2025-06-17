@@ -7,6 +7,7 @@ import useEditorStore from '@/store/useEditorStore';
 import WebsiteApi from '@/api/website';
 import { EditWebsite } from '@/types/editor';
 import { Button, Select } from '@mantine/core';
+import { toast } from 'sonner';
 
 interface EditorHeaderProps {
     siteId: string;
@@ -37,12 +38,9 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
             if (isDirty && onSave) {
                 await onSave();
             }
-            const res = await WebsiteApi.publish(editWebsite.id);
+            const res = await WebsiteApi.editPublish(editWebsite.id);
             if (res.code === 0) {
-                setEditWebsite({
-                    ...editWebsite,
-                    status: 1,
-                });
+               toast.success('Publish success');
             }
         } catch (error) {
             console.error('Failed to publish website:', error);

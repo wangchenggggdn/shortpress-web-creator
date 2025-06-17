@@ -10,6 +10,7 @@ import Preview from '@/components/business/editor/components/preview';
 import EditorHeader from '@/components/business/editor/components/editor-header';
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
+import { toast } from 'sonner';
 
 interface EditorLayoutProps {
     siteId: string;
@@ -126,29 +127,18 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         if (!editWebsite || !isDirty || !currentVersion) return;
 
         try {
-            // Create a new version with current pages
-            const res = await WebsiteApi.editCreateVersion(editWebsite.id, currentVersion);
-
-            if (res.code === 0 && res.data) {
-                const newVersion = res.data;
-                // Update website with new version
-                const websiteUpdate: Partial<EditWebsite> = {
-                    versions: [...editWebsite.versions, newVersion],
-                    currentVersion: newVersion.id,
+                const websiteUpdate = {
+                    ...editWebsite,
+                    versions: [currentVersion],
+                    currentVersion: currentVersion.id,
                 };
-                const updateRes = await WebsiteApi.editModify(websiteUpdate);
 
+                const updateRes = await WebsiteApi.editModify(editWebsite.id,websiteUpdate);
                 if (updateRes.code === 0) {
-                    // Update local state
-                    setEditWebsite({
-                        ...editWebsite,
-                        versions: [...editWebsite.versions, newVersion],
-                        currentVersion: newVersion.id,
-                    });
-                    setCurrentVersion(newVersion);
+                    toast.success('Save success');
+                    setEditWebsite(websiteUpdate);
                     saveVersion();
                 }
-            }
         } catch (error) {
             console.error('Failed to save website:', error);
         }

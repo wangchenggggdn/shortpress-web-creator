@@ -3,7 +3,6 @@ import { Website } from '@/types/website';
 import { IPaginationResponse } from '@/types/public';
 import { WebsiteArgs } from './args';
 import { Playlist } from '@/types/playlist';
-import { mockApi } from './mock';
 import { Version, Page, EditWebsite } from '@/types/editor';
 import { IResponse } from '@/types/public';
 
@@ -135,27 +134,9 @@ export default class WebsiteApi {
      * @returns Promise with Website object including versions
      */
     static editGet(siteId: string) {
-        return mockApi.getWebsite(siteId);
-    }
-
-    /**
-     * Create a new version in editor
-     * @param siteId Website ID
-     * @param pages Pages for new version
-     * @returns Promise with Version object
-     */
-    static editCreateVersion(siteId: string, version: Version) {
-        return mockApi.createVersion(siteId, version);
-    }
-
-    /**
-     * Get version information for editor
-     * @param siteId Website ID
-     * @param versionId Version ID
-     * @returns Promise with Version object
-     */
-    static editGetVersion(siteId: string, versionId: string) {
-        return mockApi.getVersion(siteId, versionId);
+        return fetch.get(`/api/pages-builder/info`, {
+            siteId
+        });
     }
 
     /**
@@ -163,8 +144,17 @@ export default class WebsiteApi {
      * @param website Website update data
      * @returns Promise
      */
-    static editModify(website: Partial<Website>) {
-        return mockApi.updateWebsite(website);
+    static editModify(siteId: string, editWebsite: Partial<EditWebsite>) {
+        return fetch.post(`/api/pages-builder/save`, {
+            siteId,
+            data: editWebsite
+        });
+    }
+
+    static editPublish(siteId: string) {
+        return fetch.post(`/api/pages-builder/publish`, {
+            siteId
+        });
     }
 
     public static async publish(websiteId: string): Promise<IResponse<any>> {
