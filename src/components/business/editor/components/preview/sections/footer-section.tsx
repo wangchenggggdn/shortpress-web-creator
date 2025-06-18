@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Section } from '@/types/editor';
+import React, { useEffect, useState } from 'react';
+import { Section, Widget, WidgetType } from '@/types/editor';
 import BaseSection from '../common/base-section';
 
 interface FooterSectionProps {
@@ -10,16 +10,41 @@ interface FooterSectionProps {
 }
 
 const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
+    const [currentItem, setCurrentItem] = useState<any>([]);
+
+    useEffect(() => {
+        if((section.params.extend.widgets || []).length > 0){
+            setCurrentItem(section.params.extend.widgets || []);
+        }else{
+            setCurrentItem([]);
+        }
+    }, [section.params.extend.widgets]);
+
+
+    const getMenuItem = (type: string): any | undefined => {
+        return currentItem?.find((item: any) => item.type === type);
+    };
+
+    const getFooterItems = (): any[] => {
+        const items = currentItem || [];
+        return items.filter((item: any) => item.type === WidgetType.PATH);
+    };
+
+    const footerItems = getFooterItems();
+    const footerText = getMenuItem(WidgetType.DATA);
+    const shortPressLogo = getMenuItem(WidgetType.LOGO);
+    console.error(shortPressLogo);
     return (
         <BaseSection section={section} pageId={pageId}>
-            <div className="bg-black text-white p-4">
-                <div className="flex justify-center space-x-4 mb-4">
-                    <a  className="hover:text-gray-300">Terms of Service</a>
-                    <a  className="hover:text-gray-300">Privacy Policy</a>
+            <div className="bg-black text-gray-400 p-4">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    {footerItems.map((item: any) => (
+                        <div className="hover:text-gray-300 text-center" key={item.id}>{item.label}</div>
+                    ))}
                 </div>
                 <div className="text-center text-sm text-gray-400">
-                    <p>© 2025 Dramahub.tv. All Rights reserved</p>
-                    <p>Powered by ShortPress.com</p>
+                    {footerText&&footerText.visible && <p>{footerText?.data??'© 2025 Dramahub.tv. All Rights reserved'}</p>}
+                    {shortPressLogo&&shortPressLogo.visible && <p>{shortPressLogo?.data??'Powered by ShortPress.com'}</p>}
                 </div>
             </div>
         </BaseSection>
