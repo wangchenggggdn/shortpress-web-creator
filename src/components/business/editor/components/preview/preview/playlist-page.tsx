@@ -67,7 +67,14 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
 
     
     return (
-        <div className="h-full w-full">
+        <div className="h-full w-full flex justify-center items-center">
+        <div 
+            className="h-full overflow-auto  bg-black"
+            style={{ 
+                width: `${previewWidth}px`,
+                maxHeight: '100vh'
+            }}
+        >
                 <div className="bg-black">
                     <HeaderSection section={headerSection!} pageId={currentPage} />
                 </div>
@@ -75,7 +82,7 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
                     <SwiperPlaylist playlist={playlist} />
                 </div>
         </div>
-
+        </div>
     );
 };
 
