@@ -251,7 +251,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             <LogoMenuItem isLoading={isLoading} widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id)}} title={'Nav Icon'}/>
 
             {/* Menu Items */}
-            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
+            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl max-h-[400px] overflow-y-auto">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[15px] font-medium text-black-purple">Menu Items</h3>
                     <Menu opened={showAddTypeMenu} onChange={setShowAddTypeMenu}>

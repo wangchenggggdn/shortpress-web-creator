@@ -264,65 +264,76 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
             </div>
 
             {/* Menu Items */}
+            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl max-h-[400px] overflow-y-auto">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[15px] font-medium text-black-purple">Menu Items</h3>
+                    <Menu opened={showAddTypeMenu} onChange={setShowAddTypeMenu}>
+                        <Menu.Target>
+                            <button
+                                className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+                            >
+                                Add Menu
+                            </button>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            <Menu.Item
+                                leftSection={<IconPlaylist size={16} />}
+                                onClick={() => {
+                                    setShowAddTypeMenu(false);
+                                    setShowPlaylistModal(true);
+                                }}
+                            >
+                                Playlist
+                                <div className="text-xs text-gray-500">Add existing playlists to section</div>
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={<IconFile size={16} />}
+                                onClick={() => {
+                                    setShowAddTypeMenu(false);
+                                    setShowPageModal(true);
+                                }}
+                            >
+                                Page
+                                <div className="text-xs text-gray-500">Link directly to another page</div>
+                            </Menu.Item>
+                            <Menu.Item
+                                leftSection={<IconLink size={16} />}
+                                onClick={() => {
+                                    setShowAddTypeMenu(false);
+                                    setShowUrlModal(true);
+                                }}
+                            >
+                                URL
+                                <div className="text-xs text-gray-500">Link an external resource</div>
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                </div>
 
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={footerItems.map(item => item.id)} strategy={verticalListSortingStrategy}>
-                        <div className="space-y-2">
-                            {footerItems.map(item => (
-                                <WidgetPageItem
-                                    key={item.id}
-                                    item={item}
-                                    onToggleVisibility={(id) => handleMenuItemUpdate(id, { visible: !item.visible })}
-                                    onDuplicate={handleMenuItemDuplicate}
-                                    onDelete={handleMenuItemDelete}
-                                    onRename={(item) => setItemToRename(item)}
-                                />
-                            ))}
-                        </div>
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <SortableContext
+                        items={footerItems}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        {footerItems.map((item) => (
+                            <WidgetPageItem
+                                key={item.id}
+                                item={item}
+                                onToggleVisibility={handleToggle}
+                                onDuplicate={handleMenuItemDuplicate}
+                                onDelete={handleMenuItemDelete}
+                                onRename={(item) => {
+                                    setItemToRename(item);
+                                }}
+                            />
+                        ))}
                     </SortableContext>
                 </DndContext>
-
-                <Menu opened={showAddTypeMenu} onChange={setShowAddTypeMenu}>
-                    <Menu.Target>
-                        <div className={`flex items-center justify-center gap-3 p-2 rounded-lg border border-black my-2 cursor-pointer`} onClick={() => setShowAddTypeMenu(true)}>
-                            <IconPlus size={16} className="text-purple-black" />
-                            <span className="text-purple-black">Add Menu</span>
-                        </div>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Item
-                            leftSection={<IconPlaylist size={16} />}
-                            onClick={() => {
-                                setShowAddTypeMenu(false);
-                                setShowPlaylistModal(true);
-                            }}
-                        >
-                            Playlist
-                            <div className="text-xs text-gray-500">Link to a playlist</div>
-                        </Menu.Item>
-                        <Menu.Item
-                            leftSection={<IconFile size={16} />}
-                            onClick={() => {
-                                setShowAddTypeMenu(false);
-                                setShowPageModal(true);
-                            }}
-                        >
-                            Page
-                            <div className="text-xs text-gray-500">Link to a page</div>
-                        </Menu.Item>
-                        <Menu.Item
-                            leftSection={<IconLink size={16} />}
-                            onClick={() => {
-                                setShowAddTypeMenu(false);
-                                setShowUrlModal(true);
-                            }}
-                        >
-                            URL
-                            <div className="text-xs text-gray-500">Link an external resource</div>
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
- 
+            </div>
             {/* Footer Text */}
             <LabelMenuItem
                 title="Footer Text"

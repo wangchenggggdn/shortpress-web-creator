@@ -27,7 +27,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
     const nav = menus[5];
 
     return (
-        <BaseSection section={section} pageId={pageId}>
+        <BaseSection section={section} pageId={pageId} isPreview={false}>
             <div className="flex items-center justify-between px-4 bg-black">
                 <div className="flex flex-row justify-between w-full space-x-4">
                     <div className="flex items-center space-x-2">
@@ -43,7 +43,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                 </div>
             </div>
 
-            {currentWidget && currentWidget.id === nav?.id && <div className='z-10'>
+            {currentWidget && currentWidget.id === nav?.id && <div className=''>
                 <InlinedDrawer
                         opened={true}
                         onClose={(e)=>{
@@ -51,8 +51,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                             closeDrawer();
                         }}
                         title="Navigation"
-                        size="80%"
-                        
+                        size="80%"                        
                     >
                         <div className="p-4"> 
                             <ul className="flex flex-col gap-4 mt-4 text-white">

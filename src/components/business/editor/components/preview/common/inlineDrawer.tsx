@@ -21,6 +21,7 @@ export const InlinedDrawer: React.FC<InlinedDrawerProps> = ({
     return (
         <div
             className={`
+                z-30
                 absolute top-0 right-0 h-full bg-black text-white
                 flex flex-col shadow-lg 
                 transform transition-transform duration-300 ease-in-out
