@@ -57,10 +57,9 @@ const CustomPage = () => {
     return (
         <div className="h-full w-full flex justify-center items-center">
             <div 
-                className="h-full overflow-auto  bg-black"
+                className="max-h-[calc(100vh-64px)] overflow-auto  bg-black"
                 style={{ 
                     width: `${previewWidth}px`,
-                    maxHeight: '100vh'
                 }}
             >
                 {/* Header */}

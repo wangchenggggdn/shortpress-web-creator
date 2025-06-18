@@ -209,7 +209,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                         <IconPlus size={18} />
                     </button>
                 </div>
-                <div className="flex-1 overflow-y-auto">
+                <div className="max-h-[calc(100vh-64px)] overflow-y-auto">
                     {/* Custom Pages Section */}
                     <div className="px-4">
                         <div className="space-y-1">{currentVersion.pages.map((page: Page) => renderPageItem(page.id, page.name, true, page))}</div>

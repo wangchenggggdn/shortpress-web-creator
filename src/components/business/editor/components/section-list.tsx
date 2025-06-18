@@ -93,7 +93,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     };
 
     const handleRenameSectionConfirm = (newTitle: string) => {
-        if (!sectionToRename || !currentPage) return;
+        if (!sectionToRename || !currentPage) return false;
         
         handleUpdateSection({
             ...sectionToRename,
@@ -101,6 +101,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         });
         
         setSectionToRename(null);
+        return true;
     };
 
     const handleUpdateSection = (section: Section) => {
@@ -165,7 +166,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         .sort((a, b) => a.order - b.order) || [];
 
     return (
-        <div className="p-4 h-full overflow-y-auto">
+        <div className="p-4 max-h-[calc(100vh-64px)] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-medium">Sections</h2>
             </div>
