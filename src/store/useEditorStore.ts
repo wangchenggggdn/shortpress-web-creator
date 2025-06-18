@@ -85,6 +85,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     addToHistory: (newVersion: Version, action: string, description: string) => {
         const { history, currentHistoryIndex } = get();
 
+        newVersion.id = createUniqueUUID(history.map(h => h.version.id));
         // Remove any future history if we're not at the latest point
         const newHistory = history.slice(0, currentHistoryIndex + 1);
 

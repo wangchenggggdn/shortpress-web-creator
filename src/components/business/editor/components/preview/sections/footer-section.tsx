@@ -14,8 +14,8 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
         <BaseSection section={section} pageId={pageId}>
             <div className="bg-black text-white p-4">
                 <div className="flex justify-center space-x-4 mb-4">
-                    <a href="/terms" className="hover:text-gray-300">Terms of Service</a>
-                    <a href="/privacy" className="hover:text-gray-300">Privacy Policy</a>
+                    <a  className="hover:text-gray-300">Terms of Service</a>
+                    <a  className="hover:text-gray-300">Privacy Policy</a>
                 </div>
                 <div className="text-center text-sm text-gray-400">
                     <p>© 2025 Dramahub.tv. All Rights reserved</p>

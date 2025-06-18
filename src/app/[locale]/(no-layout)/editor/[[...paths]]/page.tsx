@@ -2,6 +2,8 @@ import React from 'react';
 import EditorLayout from '@/components/business/editor/editor-layout';
 import { INITIAL_VERSION } from '@/constants/initial-version';
 import { redirect } from 'next/navigation';
+import WebsiteApi from '@/api/website';
+import { EditWebsite } from '@/types/editor';
 
 interface EditorSectionPageProps {
     params: {
@@ -20,13 +22,19 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
         return <div>Failed to load website data</div>;
     }
 
-    const initialData = {
+    let initialData:EditWebsite = {
         id: siteId,
         name: 'New Website',
         description: 'A new website',
         versions: [INITIAL_VERSION],
         currentVersion: INITIAL_VERSION.id
     };
+
+    const res = await WebsiteApi.editGet(siteId);
+    console.error('res', res.data.site_data.versions[0].pages);
+    if(res.code === 0){
+        initialData = res.data.site_data;
+    }
 
     if(!pageId){
         pageId = initialData.versions[0].pages[0].id;

@@ -53,12 +53,19 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     useEffect(() => {
         if (!editWebsite && initialData) {
             let nowData = initialData;
-            const initialDataLocal = localStorage.getItem('initialData');
-            if (initialDataLocal) {
-                nowData = JSON.parse(initialDataLocal);
-            } else {
-                localStorage.setItem('initialData', JSON.stringify(nowData));
-            }
+            // const initialDataLocal = localStorage.getItem('initialData');
+            // const initialDataLocalObj = JSON.parse(initialDataLocal!);
+            // console.error('initialDataLocalObj', initialDataLocalObj);
+            // console.error('initialData', initialData);
+            // if (initialDataLocal) {
+            //     if(initialData.currentVersion=== initialDataLocalObj.currentVersion){
+            //         nowData = initialDataLocalObj;
+            //     }else{
+
+            //     }
+            // } else {
+            //     localStorage.setItem('initialData', JSON.stringify(nowData));
+            // }
             setEditWebsite(nowData);
             console.log('editWebsite', nowData);
             const version = nowData.versions.find((v: Version) => v.id === nowData.currentVersion);
