@@ -95,7 +95,7 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
                         variant={"subtle"}
                         color='black'
                         onClick={() => {
-                            const url = encodeURIComponent(getWebsitePreviewUrl(website));
+                            const url = encodeURIComponent(getWebsitePreviewUrl(website,'',true));
                             window.open(`/preview?url=${url}`, '_blank');
                         }}
                     >
@@ -148,7 +148,7 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
                 
                     <div className="relative h-full">
                         <iframe
-                            src={`/preview?url=${encodeURIComponent(getWebsitePreviewUrl(website, currentPage || ''))}`}
+                            src={`/preview?url=${encodeURIComponent(getWebsitePreviewUrl(website, currentPage || '',true))}`}
                             className="w-full h-full"
                         />
                     </div>

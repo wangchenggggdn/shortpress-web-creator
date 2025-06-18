@@ -20,13 +20,12 @@ export const formatPath = (pathname: string): string => {
 };
 
 
-export const getWebsitePreviewUrl = (website: Website, sectionPath: string = '', isAddHttp: boolean = true): string => {
-    const http = isAddHttp ? 'https://' : '';
-    if (process.env.NEXT_PUBLIC_NODE_ENV === 'dev') {
-        return `${http.replace('https://', 'http://')}localhost:3001/${website.path}${sectionPath}`;
+export const getWebsitePreviewUrl = (website: Website, sectionPath: string = '', isPreview: boolean = false): string => {
+    if (process.env.NEXT_PUBLIC_NODE_ENV === 'local_dev') {
+        return `${isPreview ? process.env.NEXT_PUBLIC_DOMAIN_CUSTOM_PREVIEW : process.env.NEXT_PUBLIC_DOMAIN_CUSTOM}/${website.path}${sectionPath}`;
     }
     if (website.domain) {
-        return `${http}${website.domain}${sectionPath}`;
+        return `https://${website.domain}${sectionPath}`;
     }
-    return `${http}${website.officialDomain}/${website.path}${sectionPath}`;
+    return `https://${website.officialDomain}/${website.path}${sectionPath}`;
 };
