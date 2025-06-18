@@ -47,6 +47,8 @@ const BaseSection: React.FC<BaseSectionProps> = ({ section, pageId, isPreview = 
         };
 
     return (
+       <>
+       {!section.isHidden && (
         <div className={`relative transition-all ${isSelected && !isPreview ? 'outline outline-2 outline-blue-500' : ''}`} onClick={handleClick}>
             {/* {!isPreview && (
                 <div className="absolute top-2 right-2 z-10 flex gap-2">
@@ -54,7 +56,9 @@ const BaseSection: React.FC<BaseSectionProps> = ({ section, pageId, isPreview = 
                 </div>
             )} */}
             {children}
-        </div>
+         </div>
+       )}
+       </>
     );
 };
 

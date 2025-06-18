@@ -13,7 +13,7 @@ interface SectionListProps {
 }
 
 const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
-    const { currentVersion, currentPage, currentSection, addSection, deleteSection, setCurrentSection, updateSection } = useEditorStore();
+    const { currentVersion, currentPage, currentSection, addSection, deleteSection, setCurrentSection, updateSection, updateShareSection, isSharedSectionFunc } = useEditorStore();
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
 
     useEffect(() => {
@@ -48,10 +48,18 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const handleToggleVisibility = (e: React.MouseEvent, section: Section) => {
         e.stopPropagation();
         if (!currentPage) return;
-        updateSection(currentPage, section.id, {
+        handleUpdateSection({
             ...section,
             isHidden: !section.isHidden,
         });
+    };
+
+    const handleUpdateSection = (section: Section) => {
+        if (isSharedSectionFunc(section)) {
+            updateShareSection(section.id, section);
+        } else if (currentPage) {
+            updateSection(currentPage, section.id, section);
+        }
     };
 
     if (!currentVersion) {
@@ -68,7 +76,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const shareHeaderSection = currentVersion?.shareSections.find(s => s.type === SectionType.HEADER);
     const shareFooterSection = currentVersion?.shareSections.find(s => s.type === SectionType.FOOTER);
 
-    const isVisibleShareFooter = shareFooterSection && !shareFooterSection.isHidden && !shareFooterSection.params.extend.notSharePages?.includes(currentPageData?.path ?? '');
+    const isVisibleShareFooter = shareFooterSection && !shareFooterSection.params.extend.notSharePages?.includes(currentPageData?.path ?? '');
 
     return (
         <div className="p-4 h-full overflow-y-auto">
@@ -98,7 +106,9 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                         }`}
                         onClick={() => shareHeaderSection && handleSectionClick(shareHeaderSection)}
                     >
-                        <IconEye size={16} className="mr-2 text-gray-500" />
+                        <button onClick={e => handleToggleVisibility(e, shareHeaderSection)} className="mr-2 text-gray-500 hover:text-gray-700">
+                            {shareHeaderSection.isHidden ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                        </button>
                         <span className="flex-1">Header</span>
                     </div>
                 )}
@@ -167,7 +177,9 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                         }`}
                         onClick={() => shareFooterSection && handleSectionClick(shareFooterSection)}
                     >
-                        <IconEye size={16} className="mr-2 text-gray-500" />
+                        <button onClick={e => handleToggleVisibility(e, shareFooterSection)} className="mr-2 text-gray-500 hover:text-gray-700">
+                            {shareFooterSection.isHidden ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                        </button>
                         <span className="flex-1">Footer</span>
                     </div>
                 )}

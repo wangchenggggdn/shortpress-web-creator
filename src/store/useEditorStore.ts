@@ -50,7 +50,7 @@ interface EditorStore {
     // New actions
     initializeHistory: (initialVersion: Version) => void;
 
-    isSharedSectionFunc: () => boolean;
+    isSharedSectionFunc: (sectionN: Section) => boolean;
 }
 
 const createSection = (type: SectionType, existingSections: Section[] = []): Section => ({
@@ -345,10 +345,10 @@ const useEditorStore = create<EditorStore>((set, get) => ({
         });
     },
 
-    isSharedSectionFunc: () => {
-        const { currentVersion, currentSection } = get();
-        if (!currentVersion || !currentSection) return false;
-        return currentVersion.shareSections.some(section => section.id === currentSection.id);
+    isSharedSectionFunc: (sectionN: Section) => {
+        const { currentVersion } = get();
+        if (!currentVersion || !sectionN) return false;
+        return currentVersion.shareSections.some(section => section.id === sectionN.id);
     }
 }));
 

@@ -175,7 +175,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                     Duplicate
                                 </Menu.Item>
                                 <Menu.Divider />
-                                <Menu.Item
+                                {page?.id !== currentVersion.pages[0].id && <Menu.Item
                                     leftSection={<IconTrash size={16} />}
                                     color="red"
                                     onClick={e => {
@@ -184,7 +184,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                                     }}
                                 >
                                     Delete Page
-                                </Menu.Item>
+                                </Menu.Item>}
                             </Menu.Dropdown>
                         </Menu>
                     </div>

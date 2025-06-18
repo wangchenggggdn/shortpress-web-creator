@@ -64,9 +64,11 @@ const CustomPage = () => {
                 }}
             >
                 {/* Header */}
-                <div className="bg-black sticky top-0 z-10">
-                    <HeaderSection section={headerSection!} pageId={currentPage} />
-                </div>
+                {headerSection&&!headerSection.isHidden && (
+                    <div className="bg-black sticky top-0 z-10">
+                        <HeaderSection section={headerSection!} pageId={currentPage} />
+                    </div>
+                )}
                 {/* Sections */}
                     {currentPageData.sections
                         .sort((a: Section, b: Section) => a.order - b.order)
@@ -97,9 +99,11 @@ const CustomPage = () => {
                     </div>
 
                     {/* Footer */}
-                    <div className="h-[100px]">
-                        <FooterSection section={footerSection!} pageId={currentPage} />
-                    </div>
+                    {footerSection&&!footerSection.isHidden && (
+                        <div className="bg-black sticky bottom-0 z-10">
+                            <FooterSection section={footerSection!} pageId={currentPage} />
+                        </div>
+                    )}
              </div>
              
         </div>

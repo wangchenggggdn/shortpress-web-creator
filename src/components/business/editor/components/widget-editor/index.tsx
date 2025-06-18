@@ -15,7 +15,7 @@ const SectionWidgetEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) =
     const { currentVersion, currentPage, currentSection, setCurrentSection, updateSection, updateShareSection, isSharedSectionFunc } = useEditorStore();
 
     useEffect(() => {
-        const isShared = isSharedSectionFunc();
+        const isShared = isSharedSectionFunc(currentSection!);
         let section = null;
         if(isShared){
             section = currentVersion?.shareSections.find(s => s.id === currentSection?.id);
@@ -35,7 +35,7 @@ const SectionWidgetEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) =
 
         Object.assign(widgetUpdate, updates);
 
-        if (isSharedSectionFunc()) {
+        if (isSharedSectionFunc(currentSection)) {
             updateShareSection(currentSection.id, currentSection);
         } else if (currentPage) {
             updateSection(currentPage, currentSection.id, currentSection);
