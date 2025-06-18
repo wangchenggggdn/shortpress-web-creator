@@ -4,7 +4,7 @@ import { IconX } from '@tabler/icons-react';
 interface InputModalProps {
     opened: boolean;
     onClose: () => void;
-    onSubmit: (value: string) => void;
+    onSubmit: (value: string) => boolean;
     title: string;
     placeholder?: string;
     submitText?: string;
@@ -30,9 +30,10 @@ const InputModal: React.FC<InputModalProps> = ({
 
     const handleSubmit = () => {
         if (!value.trim()) return;
-        onSubmit(value.trim());
-        setValue('');
-        onClose();
+        const success = onSubmit(value.trim());
+        if (success) {
+           setValue('');
+        }
     };
 
     if (!opened) return null;

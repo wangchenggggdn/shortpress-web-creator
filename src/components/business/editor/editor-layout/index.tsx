@@ -205,7 +205,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 <div className="w-64 bg-gray-100 border-r">
                     <PageList
                         onPageChange={newPageId => {
-                            console.log('onPageChange', newPageId);
                             handlePageChange(newPageId);
                         }}
                     />

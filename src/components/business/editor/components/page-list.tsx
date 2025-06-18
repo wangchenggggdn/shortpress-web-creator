@@ -9,6 +9,7 @@ import { Menu } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import { createUniqueUUID } from '@/utils/public';
 import PageSettingsModal from './common/PageSettingsModal';
+import { toast } from 'sonner';
 
 interface PageListProps {
     onPageChange?: (pageId: string) => void;
@@ -23,24 +24,29 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     const [settingsPage, setSettingsPage] = useState<Page | null>(null);
 
     const handleAddPage = (pageName: string) => {
-        if (!currentVersion) return;
-
-        // 获取所有已存在的页面ID
+        if (!currentVersion) return false;
         const existingIds = [...currentVersion.pages.map(page => page.id), ...DEFAULT_PAGES.map(page => page.id)];
+        const existingPath = currentVersion.pages.find(page => page.path === '/'+ pageName.toLowerCase().replace(/\s+/g, '-'));
+        if (existingPath) {
+            toast.error('Page path already exists');
+            return false;
+        }
 
         const newPage: Page = {
             id: createUniqueUUID(existingIds),
             name: pageName,
-            path: pageName.toLowerCase().replace(/\s+/g, '-'),
+            path: '/'+ pageName.toLowerCase().replace(/\s+/g, '-'),
             sections: [],
             metadata: {},
         };
-
+         
+        setIsAddModalOpen(false);
         addPage(newPage);
         setCurrentPage(newPage.id);
         if (onPageChange) {
             onPageChange(newPage.id);
         }
+        return true;
     };
 
     const handleDeletePage = (pageId: string) => {
@@ -89,11 +95,12 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     };
 
     const handleRenamePage = (page: Page, newName: string) => {
-        if (!currentVersion) return;
+        if (!currentVersion) return false;
         updatePage(page.id, {
             name: newName,
             path: newName.toLowerCase().replace(/\s+/g, '-'),
         });
+        return true;
     };
 
     if (!currentVersion) {
