@@ -1,16 +1,16 @@
 import { IVideo } from '@/types/video';
 import React from 'react';
 import { Swiper } from 'antd-mobile';
-import SwiperVideoItem from './swiper-video-item';
+import WebsiteVideoPlayer from './video-player';
 
 interface VideoInfoProps {
     playlist:IVideo[];
 }
 
 const SwiperPlaylist: React.FC<VideoInfoProps> = ({playlist}) => {
-
     return (
-        <Swiper
+        <div className='h-full w-full'>
+            <Swiper
             style={
                 {
                     height: '100%',
@@ -25,10 +25,19 @@ const SwiperPlaylist: React.FC<VideoInfoProps> = ({playlist}) => {
             defaultIndex={0}
             indicator={() => null}
         >
-            {playlist.map((item, index) => (
-                <SwiperVideoItem key={index} video={item} />
+            {playlist.map((video, index) => (
+                <Swiper.Item className='' key={index}>
+                    <WebsiteVideoPlayer
+                        poster={video.playlistCover ?? ''}
+                        cover={video.cover ?? ''}
+                        title={video.playlistTitle ?? ''}
+                        description={video.title}
+                    />
+                </Swiper.Item>
             ))}
-    </Swiper>
+            </Swiper>
+        </div>
+        
     );
 };
 

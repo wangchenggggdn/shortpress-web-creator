@@ -7,6 +7,7 @@ import SwiperPlaylist from '../swiper-playlist';
 import { IVideo } from '@/types/video';
 import HeaderSection from '../sections/header-section';
 import useEditorStore from '@/store/useEditorStore';
+import { fetchPlaylistFeed } from '@/api';
 
 interface PlaylistPageProps {
     page: Page;
@@ -32,6 +33,13 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
         window.addEventListener('resize', updatePreviewWidth);
         return () => window.removeEventListener('resize', updatePreviewWidth);
     }, []);
+
+
+    useEffect(() => {
+        fetchPlaylistFeed(1, page.path).then(res => {
+            setPlaylist(res?.items??[]);
+        });
+    }, [page]);
 
     useEffect(() => {
         setPlaylist(playlist);
@@ -59,22 +67,15 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
 
     
     return (
-        <div className="h-full w-full flex justify-center items-center">
-            <div 
-                className="h-full overflow-auto  bg-black"
-                style={{ 
-                    width: `${previewWidth}px`,
-                    maxHeight: '100vh'
-                }}
-            >
-                <div className="bg-black sticky top-0 z-7">
+        <div className="h-full w-full">
+                <div className="bg-black">
                     <HeaderSection section={headerSection!} pageId={currentPage} />
                 </div>
-                <div className="h-full overflow-auto  bg-black">
+                <div className="h-full">
                     <SwiperPlaylist playlist={playlist} />
                 </div>
-            </div>
         </div>
+
     );
 };
 

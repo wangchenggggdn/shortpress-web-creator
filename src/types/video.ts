@@ -73,6 +73,10 @@ export interface IVideo {
     playlistCover?: string;
     /** Video playlist title */
     playlistTitle?: string;
+    /** Video playlist id */
+    playlistId?: string;
+    /** Video episode */
+    episode?: number;
 }
 
 export interface IUploadVideo extends IVideo {

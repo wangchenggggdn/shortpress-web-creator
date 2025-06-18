@@ -18,8 +18,8 @@ const VideoInfo: React.FC<VideoInfoProps> = ({
 }) => {
     
     return (
-        <div className="h-screen w-screen">
-            <div className="absolute bottom-0 left-0 right-0 p-4 z-20 ">
+        <div className="h-full w-full">
+            <div className="absolute bottom-0 left-0 right-0 p-4">
    
             <div className="flex flex-row items-center justify-start gap-3">
                         <div className="w-12 h-20 flex-shrink-0 rounded-md overflow-hidden cursor-pointer">
@@ -44,17 +44,19 @@ const VideoInfo: React.FC<VideoInfoProps> = ({
                         <IconChevronRight size={18} />
                     </button>
                     <div className="flex flex-row items-center gap-2">
-                        <Slider
-                            value={0}
-                            styles={{
-                                thumb: {
-                                    display: 'none',
-                                },
-                                track: {
-                                    height: 2,
-                                },
-                            }}
-                        />
+                        <div className='flex-1'>
+                            <Slider
+                                value={0}
+                                styles={{
+                                    thumb: {
+                                        display: 'none',
+                                    },
+                                    track: {
+                                        height: 2,
+                                    },
+                                }}
+                            />
+                        </div>
                         <button 
                            
                             className="text-white/80 hover:text-white transition-colors"

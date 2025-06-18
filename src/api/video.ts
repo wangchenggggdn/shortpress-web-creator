@@ -1,5 +1,5 @@
 import fetch from '@/libs/fetch/fetch';
-import { IVideo, VideoStatus } from '@/types/video';
+import { IPlaylist, IVideo, VideoStatus } from '@/types/video';
 import { IPaginationResponse } from '@/types/public';
 import { VideoArgs } from './args';
 
@@ -91,5 +91,30 @@ export default class VideoApi {
      */
     static batchGet(vids: string) {
         return fetch.get<IPaginationResponse<IVideo>>('/api/video/batch-get', { vids });
+    }
+
+
+    /**
+    * Get playlist information for multiple playlists
+    * @param playlistIds Comma-separated string of playlist IDs
+    * @returns Promise with paginated Playlist objects
+    */
+    static playlistsInfoBatchGet(playlistIds: string) {
+        return fetch.get<IPaginationResponse<IPlaylist>>('/api/playlist/batch-get', { playlistIds });
+    }
+
+    /**
+     * Get video feed
+     * @param sitePath Website path
+     * @param page Page number
+     * @param pageSize Page size
+     * @returns Promise with paginated Video objects
+     */
+    static feed(sitePath: string, page: number = 1, pageSize: number = 4) {
+        return fetch.get<IPaginationResponse<{
+            videoId: string;
+            playlistId: string;
+            episode: number;
+        }>>('/api/client/feed', { sitePath, page, pageSize });
     }
 } 
