@@ -43,7 +43,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                 </div>
             </div>
 
-            {currentWidget && currentWidget.id === nav?.id && <div className=''>
+            {currentWidget && currentWidget.id === nav?.id && 
                 <InlinedDrawer
                         opened={true}
                         onClose={(e)=>{
@@ -60,8 +60,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                                     ))}
                             </ul>
                          </div>       
-                    </InlinedDrawer>
-              </div>    
+                    </InlinedDrawer>   
             }
         </BaseSection>
     );

@@ -33,7 +33,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
     const footerItems = getFooterItems();
     const footerText = getMenuItem(WidgetType.DATA);
     const shortPressLogo = getMenuItem(WidgetType.LOGO);
-    console.error(shortPressLogo);
+
     return (
         <BaseSection section={section} pageId={pageId}>
             <div className="bg-black text-gray-400 p-4">

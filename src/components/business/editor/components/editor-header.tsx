@@ -46,7 +46,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
     };
 
     return (
-        <div className="min-h-14 border-b flex items-center bg-white">
+        <div className="min-h-[68px] border-b flex items-center bg-white">
             <div className="w-64 border-r border-gray-200 flex items-center">
                     {/* back */}
                     <button
