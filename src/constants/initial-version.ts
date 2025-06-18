@@ -111,28 +111,30 @@ export const INITIAL_VERSION: Version = {
                         {
                             id: generateId(),
                             label: 'Terms of Service',
-                            content: '',
+                            content: 'Terms of Service',
                             visible: true,
                             type: WidgetType.PATH,
+                            path: '/terms-of-service'
                         },
                         {
                             id: generateId(),
                             label: 'Privacy Policy',
-                            content: '',
+                            content: 'Privacy Policy',
                             visible: true,
-                            type: WidgetType.PATH
+                            type: WidgetType.PATH,
+                            path: '/privacy-policy'
                         },
                         {
                             id: generateId(),
                             label: 'Footer Text',
-                            content: '',
+                            content: '© 2025 Dramahub.tv. All Rights reserved',
                             visible: true,
                             type: WidgetType.DATA
                         },
                         {
                             id: generateId(),
                             label: 'logo',
-                            content: '',
+                            content: 'Powered by ShortPress.com',
                             visible: true,
                             type: WidgetType.LOGO
                         }

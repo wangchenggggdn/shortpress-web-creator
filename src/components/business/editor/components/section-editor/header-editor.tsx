@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconExclamationCircle } from '@tabler/icons-react';
 import { Section, Widget, WidgetType } from '@/types/editor';
 import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/common/menu-items';
 import NavMenuEditor from '../widget-editor/nav-menu-editor';
@@ -146,7 +146,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
             </div>
 
             {/* Info Message */}
-            <div className="mb-6 text-sm text-gray-500">
+            <div className="mb-6 text-sm text-gray-500 flex items-center gap-2">
+                 <IconExclamationCircle className="text-primary flex-shrink-0" size={16} />
                 <p>Header Section is used on all pages. Any changes made here will affect all of your pages unless otherwise specified</p>
             </div>
 

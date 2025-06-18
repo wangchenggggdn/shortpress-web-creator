@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IconX, IconChevronRight } from '@tabler/icons-react';
+import { IconX, IconChevronRight, IconArrowLeft } from '@tabler/icons-react';
 import { Section, DataSourceType, Widget, WidgetType, DataWidget, SectionType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 import ContentTypeSelector from '../../common/ContentTypeSelector';
@@ -118,15 +118,16 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                 {!showPlaylistData && (
                     <div>
                         {/* Header */}
-                        <div className="flex items-center justify-end mb-2">
-                            <button onClick={onBack} className="p-1.5 hover:bg-gray-100 rounded">
-                                <IconX size={18} />
+                        <div className="flex items-center gap-3 mb-2">
+                            <button onClick={onBack} className="text-gray-400">
+                                <IconArrowLeft size={20} />
                             </button>
+                            <h2 className="text-[20px] font-semibold text-black-purple">{section.title}</h2>
                         </div>
 
-                        <div>
-                            <h1 className="text-lg font-medium  mb-2">{section.title}</h1>
-                            <h1 className="text-sm font-medium  mb-2">{section.type}</h1>
+                        {/* Info Message */}
+                        <div className="mb-6 text-sm text-gray-500">
+                            <p>{section.type+' Section'}</p>
                         </div>
 
                         {/* Section Title */}
