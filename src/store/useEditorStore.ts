@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { EditWebsite, Version, Page, Section, HistoryRecord, SectionType, DataSourceType } from '@/types/editor';
+import { EditWebsite, Version, Page, Section, HistoryRecord, SectionType, DataSourceType, Widget } from '@/types/editor';
 import { v4 as uuidv4 } from 'uuid';
 import { createUniqueUUID } from '@/utils/public';
 
@@ -11,6 +11,7 @@ interface EditorStore {
     // State
     editWebsite: EditWebsite | null;
     currentVersion: Version | null;
+    currentWidget: Widget | null;
     currentPage: string | null;
     currentSection: Section | null;
     selectedComponent: string | null;
@@ -19,6 +20,7 @@ interface EditorStore {
     currentHistoryIndex: number;
 
     // Actions
+    setCurrentWidget: (widget: Widget | null) => void;
     setEditWebsite: (website: EditWebsite) => void;
     setCurrentVersion: (version: Version) => void;
     setCurrentPage: (pageId: string | null) => void;
@@ -67,6 +69,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     // Initial state
     editWebsite: null,
     currentVersion: null,
+    currentWidget: null,
     currentPage: null,
     currentSection: null,
     selectedComponent: null,
@@ -77,6 +80,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
     // Basic actions
     setEditWebsite: (website) => set({ editWebsite: website }),
     setCurrentVersion: (version) => set({ currentVersion: version }),
+    setCurrentWidget: (widget) => set({ currentWidget: widget }),
     setCurrentPage: (pageId) => set({ currentPage: pageId }),
     setCurrentSection: (section) => set({ currentSection: section }),
     setSelectedComponent: (componentId) => set({ selectedComponent: componentId }),

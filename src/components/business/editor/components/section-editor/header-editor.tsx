@@ -7,6 +7,7 @@ import { createUniqueUUID } from '@/utils/public';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 import SectionWidgetEditor from '../widget-editor';
+import useEditorStore from '@/store/useEditorStore';
 
 interface HeaderEditorProps {
     section: Section;
@@ -24,7 +25,7 @@ const MENU_TYPES = {
 } as const;
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSection }) => {
-    const [showWidget, setShowWidget] = useState<Widget | null>(null);
+    const { setCurrentWidget, currentWidget } = useEditorStore();
     const [isLoading, setIsLoading] = useState(false);
 
     const getMenuItem = (index: number) => {
@@ -124,8 +125,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
         });
     };
 
-    if (showWidget) {
-        return <SectionWidgetEditor widget={showWidget} onBack={() => setShowWidget(null)} />;
+    if (currentWidget) {
+        return <SectionWidgetEditor widget={currentWidget} onBack={() => setCurrentWidget(null)} />;
     }
 
     const logoItem = getMenuItem(0);
@@ -175,7 +176,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
 
             {/* Nav Menu */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
-                <button onClick={() => setShowWidget(navItem)} className="w-full text-left">
+                <button onClick={() => setCurrentWidget(navItem)} className="w-full text-left">
                     <div className="text-[15px] font-medium text-black-purple">Nav Menu</div>
                     <div className="text-sm text-gray-500">Organize your site navigation</div>
                 </button>
