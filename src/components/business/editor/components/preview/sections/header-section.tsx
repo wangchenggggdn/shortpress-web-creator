@@ -7,7 +7,7 @@ import { IconSearch, IconUser } from '@tabler/icons-react';
 import vipIcon from '@/assets/images/preview/vip.webp';
 import { Burger, Divider } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { InlinedDrawer } from '../common/inlineDrawer'; // 导入我们自己的组件
+import { InlinedDrawer } from '../common/inlineDrawer'; 
 import useEditorStore from '@/store/useEditorStore';
 
 interface HeaderSectionProps {
@@ -56,7 +56,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                     >
                         <div className="p-4"> 
                             <ul className="flex flex-col gap-4 mt-4 text-white">
-                                    {nav?.widgets?.map((widget: any,index:number) => ( // 假设数据在 nav.items
+                                    {nav?.widgets?.slice(1)?.map((widget: any,index:number) => ( // 假设数据在 nav.items
                                         <div key={index}>{widget.label}</div>
                                     ))}
                             </ul>
