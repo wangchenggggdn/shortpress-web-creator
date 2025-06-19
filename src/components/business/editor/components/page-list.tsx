@@ -209,7 +209,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
                         <IconPlus size={18} />
                     </button>
                 </div>
-                <div className="max-h-[calc(100vh-64px)] overflow-y-auto">
+                <div className="max-h-[calc(100vh-64px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
                     {/* Custom Pages Section */}
                     <div className="px-4">
                         <div className="space-y-1">{currentVersion.pages.map((page: Page) => renderPageItem(page.id, page.name, true, page))}</div>

@@ -81,7 +81,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
         setShowPlaylistModal(false);
     };
 
-    const handleAddPageItem = (pageId: string, pageName: string) => {
+    const handleAddPageItem = (pageId: string, pageName: string,path:string) => {
         const items = getFooterItems();
         const newItem: PathWidget = {
             id: createUniqueUUID(items.map(item => item.id)),
@@ -89,7 +89,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
             content: 'page',
             visible: true,
             type: WidgetType.PATH,
-            path: pageId
+            path: path
         };
         
         const widgets = [...(section.params.extend.widgets || []), newItem];
@@ -245,10 +245,11 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
             handleMenuItemUpdate(itemToRename.id, { label: newName });
             setItemToRename(null);
         }
+        return true;
     };
 
     return (
-        <div className="p-4 bg-white h-full overflow-y-auto">
+        <div className="p-4 bg-white h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button onClick={onBack} className="text-gray-400">

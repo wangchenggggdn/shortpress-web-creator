@@ -137,7 +137,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
     const navItem = getMenuItem(5);
 
     return (
-        <div className="p-4 bg-white max-h-[calc(100vh-64px)] overflow-y-auto">
+        <div className="p-4 bg-white max-h-[calc(100vh-64px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
                 <button onClick={onBack} className="text-gray-400">

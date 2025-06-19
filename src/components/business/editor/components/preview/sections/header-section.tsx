@@ -18,13 +18,15 @@ interface HeaderSectionProps {
 const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
     const { currentWidget } = useEditorStore();
     const menus = section?.params?.extend?.widgets ?? [];
-    const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
     const icon = menus[0];
     const title = menus[1];
     const searc = menus[2];
     const account = menus[3];
     const vip = menus[4];
     const nav = menus[5];
+    const navIcon = nav?.widgets?.[0];
+
+    console.error('--------------menus',menus);
 
     return (
         <BaseSection section={section} pageId={pageId} isPreview={false}>
@@ -38,7 +40,8 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                         {searc?.visible && <IconSearch color='white' size={35} className="p-1.5 rounded-full text-gray-500" />}
                         {account?.visible && <IconUser size={16} className="w-6 h-6 p-1.5 rounded-full bg-white text-gray-500" />}
                         {vip?.visible && <img src={vipIcon.src} alt="vip" width={28} height={28} />}
-                        <Burger color='white' opened={drawerOpened} onClick={toggleDrawer} aria-label="Toggle navigation" />
+                        {navIcon?.visible&& !navIcon.image && <Burger color='white'  aria-label="Toggle navigation" />}
+                        {navIcon?.visible&& navIcon.image && <img src={navIcon.image} alt={navIcon.label} width={24} height={24} />}
                     </div>
                 </div>
             </div>
@@ -48,7 +51,6 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                         opened={true}
                         onClose={(e)=>{
                             e.stopPropagation();
-                            closeDrawer();
                         }}
                         title="Navigation"
                         size="80%"                        

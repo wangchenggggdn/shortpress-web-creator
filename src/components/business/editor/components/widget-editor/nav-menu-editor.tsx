@@ -129,7 +129,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         setShowPlaylistModal(false);
     };
 
-    const handleAddPageItem = (pageId: string, pageName: string) => {
+    const handleAddPageItem = (pageId: string, pageName: string,path:string) => {
         const items = getNavItems();
         const newItem: PathWidget = {
             id: createUniqueUUID(items.map(item => item.id)),
@@ -137,7 +137,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             content: MENU_TYPES.PAGE,
             visible: true,
             type: WidgetType.PATH,
-            path: pageId
+            path: path
         };
         
         updateWidgetData([...items, newItem]);
@@ -208,10 +208,11 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     };
 
     const handleRename = (newName: string) => {
-        if (!currentMenuItem) return;
+        if (!currentMenuItem) return false;
         handleMenuItemUpdate(currentMenuItem.id, { label: newName });
         setIsRenameModalOpen(false);
         setCurrentMenuItem(null);
+        return true;
     };
 
     if(getNavItems().length === 0){

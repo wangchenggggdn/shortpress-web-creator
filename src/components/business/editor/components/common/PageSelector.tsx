@@ -7,19 +7,20 @@ interface PageSelectorProps {
     open: boolean;
     onClose: () => void;
     pages: Page[];
-    onSelect: (pageId: string, pageName: string) => void;
+    onSelect: (pageId: string, pageName: string,path:string) => void;
 }
 
 const PageSelector: React.FC<PageSelectorProps> = ({ open, onClose, pages, onSelect }) => {
     const [selectedPage, setSelectedPage] = useState<string | null>(null);
 
+    console.error('--------------pages',pages);
     if (!open) return null;
 
     const handleSelect = () => {
         if (selectedPage) {
             const page = pages.find(p => p.id === selectedPage);
             if (page) {
-                onSelect(page.id, page.name);
+                onSelect(page.id, page.name,page.path);
                 onClose();
             }
         }
