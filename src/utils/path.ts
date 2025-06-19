@@ -21,11 +21,5 @@ export const formatPath = (pathname: string): string => {
 
 
 export const getWebsitePreviewUrl = (website: Website, sectionPath: string = '', isPreview: boolean = false): string => {
-    if (process.env.NEXT_PUBLIC_NODE_ENV === 'local_dev') {
-        return `${isPreview ? process.env.NEXT_PUBLIC_DOMAIN_CUSTOM_PREVIEW : process.env.NEXT_PUBLIC_DOMAIN_CUSTOM}/${website.path}${sectionPath}`;
-    }
-    if (website.domain) {
-        return `https://${website.domain}${sectionPath}`;
-    }
-    return `https://${website.officialDomain}/${website.path}${sectionPath}`;
+    return `${isPreview ? process.env.NEXT_PUBLIC_DOMAIN_CUSTOM_PREVIEW : process.env.NEXT_PUBLIC_DOMAIN_CUSTOM}/${website.path}${sectionPath}`;
 };
