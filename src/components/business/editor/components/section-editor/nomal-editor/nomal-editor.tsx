@@ -31,6 +31,11 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         setSectionTitle(section.title || '');
     }, [section.title]);
 
+
+    useEffect(() => {
+        setShowPlaylistData(section.params.extend.widgets&&section.params.extend.widgets.length>0&&section.params.extend.widgets[0].data&&section.params.extend.widgets[0].data.length>0&&section.params.extend.dataSourceType===DataSourceType.PLAYLIST);
+    }, [section.params.extend.widgets,section.params.extend.dataSourceType]);
+
     const getContentItem = (): Widget | undefined => {
         return section.params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
     };
@@ -51,6 +56,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                 type: WidgetType.DATA,
                 data: dataNew,
             });
+            setShowPlaylistAdd(true);
         }
 
         updateSection({
@@ -90,6 +96,9 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         if (contentItem) {
             contentItem.data = playlists;
         }
+        if(playlists.length>0){
+            setShowPlaylistData(true);
+        }
         updateSection({
             params: {
                 ...section.params,
@@ -115,7 +124,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
     return (
         <>
             <div className="p-4 h-full overflow-y-auto text-purple-black">
-                {!showPlaylistData && (
+                {(
                     <div>
                         {/* Header */}
                         <div className="flex items-center gap-3 mb-2">
@@ -170,39 +179,51 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                         {/* Content */}
                         <div className="mb-4">
                             <h3 className="text-xl text-[#94A3B8] mb-3">Content</h3>
-                            {contentItem ? (
-                                <div className="space-y-3 rounded-lg border border-gray-200 p-3">
-                                    {/* Content Type Display */}
-                                    <div className="bg-white flex items-center justify-between cursor-pointer" onClick={() => isPlaylistType && setShowPlaylistData(true)}>
-                                        <span className="text-base text-[#1E293B] lowercase first-letter:uppercase">{contentItem.label}</span>
-                                        {isPlaylistType && <IconChevronRight className="text-gray-400" size={20} />}
-                                    </div>
-
-                                    {/* Add Button */}
-                                    {isPlaylistType && (
-                                        <button
-                                            onClick={() => setShowPlaylistData(true)}
-                                            className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal"
-                                        >
-                                            Add Playlists
-                                        </button>
-                                    )}
-                                </div>
-                            ) : (
-                                <div>
-                                    <Menu>
-                                        <Menu.Target>
-                                            <button className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal">Add Content</button>
-                                        </Menu.Target>
-                                        <ContentTypeSelector sectionType={section.type} onSelect={handleContentTypeSelect} />
-                                    </Menu>
-                                </div>
+                        
+                             {contentItem ? (
+                                !showPlaylistData&& <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+                                     {/* Content Type Display */}
+                                     <div className="bg-white flex items-center justify-between cursor-pointer">
+                                         <span className="text-base text-[#1E293B] lowercase first-letter:uppercase">{contentItem.label}</span>
+                                     </div>
+ 
+                                     {/* Add Button */}
+                                     {isPlaylistType && (
+                                         <button
+                                             onClick={() =>  setShowPlaylistAdd(true)}
+                                             className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal"
+                                         >
+                                             Add Playlists
+                                         </button>
+                                     )}
+                                 </div>
+                             ) : (
+                                 <div>
+                                     <Menu>
+                                         <Menu.Target>
+                                             <button className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal">Add Content</button>
+                                         </Menu.Target>
+                                         <ContentTypeSelector sectionType={section.type} onSelect={handleContentTypeSelect} />
+                                     </Menu>
+                                 </div>
+                             )}
+                           
+                  
+                            {showPlaylistData && (
+                                <PlaylistData
+                                    widgets={section.params.extend.widgets || []}
+                                    onClose={() => setShowPlaylistData(false)}
+                                    addContent={() => {
+                                        setShowPlaylistAdd(true);
+                                    }}
+                                    updateWidgetDataToSection={updateWidgetDataToSection}
+                                />
                             )}
                         </div>
                     </div>
                 )}
                 {/* Playlist Data Modal */}
-                {showPlaylistData && (
+                {/* {showPlaylistData && (
                     <PlaylistData
                         widgets={section.params.extend.widgets || []}
                         onClose={() => setShowPlaylistData(false)}
@@ -211,7 +232,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                         }}
                         updateWidgetDataToSection={updateWidgetDataToSection}
                     />
-                )}
+                )} */}
             </div>
             <PlaylistSelector key={'normal-editor-playlist-selector'} open={showPlaylistAdd} isMultiSelect={true} onClose={() => setShowPlaylistAdd(false)} onSelect={handleAddPlaylistItem} />
         </>
