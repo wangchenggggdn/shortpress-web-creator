@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { use, useContext, useEffect, useState } from 'react';
 import { IconArrowLeft, IconDeviceMobile, IconShare, IconArrowBackUp, IconArrowForwardUp } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import useEditorStore from '@/store/useEditorStore';
@@ -28,6 +28,16 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
         redo,
     } = useEditorStore();
 
+    useEffect(() => {
+        if(website&&editWebsite){
+            editWebsite.name = website.name;
+        }
+    }, [website,editWebsite]);
+
+    useEffect(() => {
+      fetchWebsite();
+    }, []);
+
     const handleBack = () => {
         router.push(`/websites/${siteId}/preview`);
     };
@@ -50,6 +60,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
 
     const fetchWebsite = async () => {
         const res = await WebsiteApi.get(siteId as string);
+        setWebsite(res.data);
         return res.data;
     };
 
@@ -65,7 +76,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
                     </button>
 
                     {/* site name */}
-                    <span className="font-medium text-lg ml-4">Dramahub</span>
+                    <span className="font-medium text-lg ml-4">{editWebsite?.name}</span>
             </div>
           
             {/* mobile and share button */}
@@ -77,9 +88,8 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
                     variant="subtle"
                     size="sm"
                     className="px-2"
-                    onClick={async () => {
-                        const website = await fetchWebsite();
-                        const url = encodeURIComponent(getWebsitePreviewUrl(website,'',true));
+                    onClick={ () => {
+                        const url = encodeURIComponent(getWebsitePreviewUrl(website!,'',true));
                         window.open(`/preview?url=${url}`, '_blank');
                     }}
                 >
