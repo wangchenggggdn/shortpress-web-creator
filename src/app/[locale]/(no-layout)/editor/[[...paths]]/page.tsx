@@ -14,6 +14,7 @@ interface EditorSectionPageProps {
 
 const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) => {
     const { paths} = params;
+    console.error('------------initialData0:',params);
     let siteId = paths?.[0];
     let pageId = paths?.[1];
     let sectionId = paths?.[2];
@@ -29,11 +30,13 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
         versions: [INITIAL_VERSION],
         currentVersion: INITIAL_VERSION.id
     };
-
+    console.error('------------initialData1:',initialData);
     const res = await WebsiteApi.editGet(siteId);
     if(res.code === 0){
         initialData = res.data.site_data;
     }
+
+    console.error('------------initialData2:',initialData);
 
     if(!pageId){
         pageId = initialData.versions[0].pages[0].id;

@@ -196,7 +196,8 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     }
 
     const currentPageData = currentVersion.pages.find(page => page.id === currentPage);
-
+    
+    console.error('------------initialData3:',currentPageData);
     return (
         <div className="flex flex-col h-screen">
             {/* Header */}
