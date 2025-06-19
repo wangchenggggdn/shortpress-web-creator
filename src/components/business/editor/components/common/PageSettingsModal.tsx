@@ -40,7 +40,7 @@ const PageSettingsModal: React.FC<PageSettingsModalProps> = ({ open, onClose, pa
         }
 
        const isExist = currentVersion?.pages.find(p => p.path === path);
-       if(isExist){
+       if(isExist&&isExist.id!==page.id){
         toast.error('Path already exists');
         return;
        }
