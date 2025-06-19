@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { TextInput } from '@mantine/core';
 import { IconArrowLeft } from '@tabler/icons-react';
+import { toast } from 'sonner';
+import { isValidHttpUrl } from '@/utils/public';
 
 interface UrlInputSelectorProps {
     open: boolean;
@@ -14,11 +16,15 @@ const UrlInputSelector: React.FC<UrlInputSelectorProps> = ({ open, onClose, onSe
     if (!open) return null;
 
     const handleSelect = () => {
-        if (urlInput && urlInput !== '/') {
-            onSelect(urlInput);
-            setUrlInput('');
-            onClose();
+       
+        if(!isValidHttpUrl(urlInput)){
+            toast.error('Please enter a valid URL, must start with http or https');
+            return false;
         }
+    
+        onSelect(urlInput);
+        setUrlInput('');
+        onClose();
     };
 
     return (

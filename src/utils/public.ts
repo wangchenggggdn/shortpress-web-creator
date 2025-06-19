@@ -19,3 +19,12 @@ export function createUniqueUUID(
 
     return newId;
 }
+
+export function isValidHttpUrl(urlString: string) {
+    try {
+        const url = new URL(urlString);
+        return url.protocol === "http:" || url.protocol === "https:";
+    } catch (_) {
+        return false;
+    }
+}

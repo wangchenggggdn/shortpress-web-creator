@@ -55,7 +55,7 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                 <button onClick={() => onToggleVisibility(item.id)} className="hover:bg-gray-100 p-1 rounded">
                     {(item.visible === undefined ? true : item.visible) ? <IconEye size={16} /> : <IconEyeOff size={16} className="text-gray-400" />}
                 </button>
-                <span className={clsx('ml-2', (item.visible === undefined ? true : item.visible) ? 'text-black-purple' : 'text-gray-400')}>{item.label}</span>
+                <span className={clsx('ml-2 max-w-[100px] truncate', (item.visible === undefined ? true : item.visible) ? 'text-black-purple' : 'text-gray-400')}>{item.label}</span>
             </div>
 
             <Menu position="bottom-end" offset={4} withArrow>
