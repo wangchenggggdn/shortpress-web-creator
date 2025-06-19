@@ -55,9 +55,9 @@ const CustomPage = () => {
     };
 
     return (
-        <div className="h-full w-full flex justify-center items-center">
+        <div className=" w-full flex justify-center items-center ">
             <div 
-                className="max-h-[calc(100vh-64px)] overflow-auto  bg-black"
+                className="h-[calc(100vh-64px)] overflow-auto bg-black"
                 style={{ 
                     width: `${previewWidth}px`,
                 }}

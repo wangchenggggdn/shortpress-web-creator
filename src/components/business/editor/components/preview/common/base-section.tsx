@@ -18,12 +18,10 @@ const BaseSection: React.FC<BaseSectionProps> = ({ section, pageId, isPreview = 
     const router = useRouter();
 
     const handleClick = () => {
-        if (!isPreview) {
-            setCurrentSection(section);
-            handleSectionChange(section.id);
-        }
+        setCurrentSection(section);
+        handleSectionChange(section.id);
     };
-
+    
         // Handle section change
         const handleSectionChange = (newSectionId: string | null) => {
             let page = currentVersion?.pages.find(p => p.id === currentPage);
