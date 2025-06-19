@@ -11,6 +11,7 @@ import EditorHeader from '@/components/business/editor/components/common/EditorH
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
 import { toast } from 'sonner';
+import LoadingData from '@/components/common/loading-data';
 
 interface EditorLayoutProps {
     siteId: string;
@@ -189,7 +190,9 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     }, [undo, redo]);
 
     if (!editWebsite || !currentVersion) {
-        return <div>Loading...</div>;
+        return <div className="w-screen h-screen flex justify-center items-center">
+                <div className='flex flex-col items-center gap-2'><LoadingData/><div className='text-sm font-medium text-purple-black'>Loading Editor...</div></div>
+            </div>;
     }
 
     const currentPageData = currentVersion.pages.find(page => page.id === currentPage);

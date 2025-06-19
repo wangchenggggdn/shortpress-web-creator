@@ -32,7 +32,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                 <div className="flex flex-row justify-between w-full space-x-4">
                     <div className="flex items-center space-x-2">
                         {icon?.visible && icon?.image && <img src={icon.image} alt={icon.label} width={24} height={24} />}
-                        {title?.visible && <span className="text-white text-xl font-bold">{title.label}</span>}
+                        {title?.visible && <span className="text-white text-xl font-bold">{title.data||'Dramahub'}</span>}
                     </div>
                     <div className="flex items-center gap-4">
                         {searc?.visible && <IconSearch color='white' size={35} className="p-1.5 rounded-full text-gray-500" />}

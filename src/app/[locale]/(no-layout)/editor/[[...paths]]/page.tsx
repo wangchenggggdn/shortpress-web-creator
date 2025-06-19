@@ -31,7 +31,6 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
     };
 
     const res = await WebsiteApi.editGet(siteId);
-    console.error('res', res.data.site_data.versions[0].pages);
     if(res.code === 0){
         initialData = res.data.site_data;
     }

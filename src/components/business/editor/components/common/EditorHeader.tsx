@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { IconArrowLeft, IconDeviceMobile, IconShare, IconArrowBackUp, IconArrowForwardUp } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import useEditorStore from '@/store/useEditorStore';
@@ -8,6 +8,8 @@ import WebsiteApi from '@/api/website';
 import { EditWebsite } from '@/types/editor';
 import { Button, Select } from '@mantine/core';
 import { toast } from 'sonner';
+import { Website } from '@/types/website';
+import { getWebsitePreviewUrl } from '@/utils/path';
 
 interface EditorHeaderProps {
     siteId: string;
@@ -15,6 +17,7 @@ interface EditorHeaderProps {
 }
 
 const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
+    const [website, setWebsite] = useState<Website | null>(null);
     const router = useRouter();
     const {
         editWebsite,
@@ -45,6 +48,11 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
         }
     };
 
+    const fetchWebsite = async () => {
+        const res = await WebsiteApi.get(siteId as string);
+        return res.data;
+    };
+
     return (
         <div className="min-h-[68px] border-b flex items-center bg-white">
             <div className="w-64 border-r border-gray-200 flex items-center">
@@ -63,15 +71,20 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
             {/* mobile and share button */}
             <div className=" flex items-center gap-2">
              
-                <IconDeviceMobile size={20} className="ml-4 mr-4" />
+                <IconDeviceMobile size={20} className="ml-4 text-primary" />
                
-                {/* <Button
+                <Button
                     variant="subtle"
                     size="sm"
                     className="px-2"
+                    onClick={async () => {
+                        const website = await fetchWebsite();
+                        const url = encodeURIComponent(getWebsitePreviewUrl(website,'',true));
+                        window.open(`/preview?url=${url}`, '_blank');
+                    }}
                 >
                     <IconShare size={20} />
-                </Button> */}
+                </Button>
             </div>
 
             {/* page switch - center */}
