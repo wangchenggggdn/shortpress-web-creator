@@ -39,7 +39,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
             <div className="bg-black text-gray-400 p-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     {footerItems.map((item: any) => (
-                        <div className="hover:text-gray-300 text-center" key={item.id}>{item.label}</div>
+                       item.visible && <div className="hover:text-gray-300 text-center" key={item.id}>{item.label}</div>
                     ))}
                 </div>
                 <div className="text-center text-sm text-gray-400">

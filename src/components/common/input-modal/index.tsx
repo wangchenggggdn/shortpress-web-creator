@@ -33,6 +33,7 @@ const InputModal: React.FC<InputModalProps> = ({
         const success = onSubmit(value.trim());
         if (success) {
            setValue('');
+           onClose();
         }
     };
 
