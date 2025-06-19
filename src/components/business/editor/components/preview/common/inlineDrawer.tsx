@@ -27,7 +27,7 @@ export const InlinedDrawer: React.FC<InlinedDrawerProps> = ({
                 transform transition-transform duration-300 ease-in-out
                 ${opened ? 'translate-x-0' : 'translate-x-full'}
             `}
-            style={{ width: size, zIndex: 50 }} 
+            style={{ width: size }} 
         >
                 <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0 ">
                     <Title order={4} c="white">{title}</Title>
