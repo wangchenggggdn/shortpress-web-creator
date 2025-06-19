@@ -57,18 +57,14 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
                     </button>
 
                     {/* site name */}
-                    <span className="font-medium ml-4">Dramahub</span>
+                    <span className="font-medium text-lg ml-4">Dramahub</span>
             </div>
           
             {/* mobile and share button */}
             <div className=" flex items-center gap-2">
-                <Button
-                    variant="subtle"
-                    size="sm"
-                    className="px-2"
-                >
-                    <IconDeviceMobile size={20} />
-                </Button>
+             
+                <IconDeviceMobile size={20} className="ml-4 mr-4" />
+               
                 {/* <Button
                     variant="subtle"
                     size="sm"

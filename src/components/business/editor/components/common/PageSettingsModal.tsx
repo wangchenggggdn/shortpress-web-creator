@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Page } from '@/types/editor';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { TextInput, Textarea } from '@mantine/core';
+import { toast } from 'sonner';
+import useEditorStore from '@/store/useEditorStore';
 
 interface PageSettingsModalProps {
     open: boolean;
@@ -17,6 +19,7 @@ const PageSettingsModal: React.FC<PageSettingsModalProps> = ({ open, onClose, pa
     const [title, setTitle] = useState(seo.title || '');
     const [description, setDescription] = useState(seo.description || '');
     const [keywords, setKeywords] = useState(Array.isArray(seo.keywords) ? seo.keywords.join(', ') : seo.keywords || '');
+    const { currentVersion } = useEditorStore();
 
     useEffect(() => {
         const seo = page.metadata && typeof page.metadata === 'object' && 'seo' in page.metadata && page.metadata.seo ? page.metadata.seo : {};
@@ -30,6 +33,18 @@ const PageSettingsModal: React.FC<PageSettingsModalProps> = ({ open, onClose, pa
     if (!open) return null;
 
     const handleUpdate = () => {
+        const pathRegex = /^\/[a-zA-Z0-9-_]+$/;
+        if (!pathRegex.test(path)) {
+            toast.error('Invalid path format. Path should start with / and contain only letters, numbers, hyphens and underscores');
+            return;
+        }
+
+       const isExist = currentVersion?.pages.find(p => p.path === path);
+       if(isExist){
+        toast.error('Path already exists');
+        return;
+       }
+        
         onUpdate({
             ...page,
             name,

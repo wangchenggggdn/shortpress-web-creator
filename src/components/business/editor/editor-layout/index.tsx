@@ -7,7 +7,7 @@ import PageList from '@/components/business/editor/components/page-list';
 import SectionList from '@/components/business/editor/components/section-list';
 import SectionEditor from '@/components/business/editor/components/section-editor';
 import Preview from '@/components/business/editor/components/preview';
-import EditorHeader from '@/components/business/editor/components/editor-header';
+import EditorHeader from '@/components/business/editor/components/common/EditorHeader';
 import WebsiteApi from '@/api/website';
 import { EditWebsite, Version } from '@/types/editor';
 import { toast } from 'sonner';
