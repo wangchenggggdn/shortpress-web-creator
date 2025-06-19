@@ -31,9 +31,13 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
         currentVersion: INITIAL_VERSION.id
     };
     console.error('------------initialData1:',initialData);
-    const res = await WebsiteApi.editGet(siteId);
-    if(res.code === 0&&(res.data.site_data.versions!==undefined||res.data.site_data.versions!==null)){
-        initialData = res.data.site_data;
+    try{
+        const res = await WebsiteApi.editGet(siteId);
+        if(res.code === 0&&(res.data.site_data.versions!==undefined||res.data.site_data.versions!==null)){
+            initialData = res.data.site_data;
+        }
+    }catch(error){
+        console.error('------------initialData3:',error);
     }
 
     console.error('------------initialData2:',initialData);
