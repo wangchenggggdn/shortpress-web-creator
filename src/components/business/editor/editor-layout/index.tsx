@@ -127,13 +127,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         }
 
         if (newSectionId) {
-            let section = page.sections.find(s => s.id === newSectionId);
-            if (!section) {
-                section = currentVersion?.shareSections.find(s => s.id === newSectionId);
-            }
-            if (section) {
-                router.push(`/editor/${siteId}/${page.id}/${section.id}`);
-            }
+            router.push(`/editor/${siteId}/${page.id}/${newSectionId}`);
         } else {
             console.log('Navigating to page only:', page.name);
             router.push(`/editor/${siteId}/${page.id}`);

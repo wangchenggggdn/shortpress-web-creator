@@ -42,7 +42,10 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
     const handleAddSection = (type: SectionType) => {
         if (!currentPage) return;
-        addSection(currentPage, type);
+        const newSection = addSection(currentPage, type);
+        if (onSectionChange && newSection) {
+            onSectionChange(newSection.id);
+        }
     };
 
     const handleDeleteSection = (sectionId: string) => {
