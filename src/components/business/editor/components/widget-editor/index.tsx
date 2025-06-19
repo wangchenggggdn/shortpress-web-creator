@@ -41,8 +41,6 @@ const SectionWidgetEditor: React.FC<SectionEditorProps> = ({ widget, onBack }) =
             updateSection(currentPage, currentSection.id, currentSection);
         }
     };
-
-    console.log('-----------------widget', widget);
     
     switch (widget.type) {
         case WidgetType.NAV:

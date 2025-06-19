@@ -2,10 +2,11 @@ import React from 'react';
 import { Menu } from '@mantine/core';
 import { SectionType } from '@/types/editor';
 import section_feature from '@/assets/images/section/section_feature.webp';
-import section_carousel from '@/assets/images/section/section_carousel.webp';
-import section_scroll from '@/assets/images/section/section_scroll.webp';
-import section_grid from '@/assets/images/section/section_grid.webp';
-import section_list from '@/assets/images/section/section_list.webp';
+import section_carousel from '@/assets/images/section/section_list.webp';
+import section_scroll from '@/assets/images/section/section_carousel.webp';
+import section_grid  from '@/assets/images/section/section_scroll.webp';
+import section_list from '@/assets/images/section/section_grid.webp';
+
 
 interface SectionTypeSelectorProps {
     onSelect: (type: SectionType) => void;

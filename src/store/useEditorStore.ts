@@ -146,8 +146,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
         set((state) => {
             if (!state.currentVersion) return state;
 
-            // 确保 page.id 是唯一的
-            const pageId = generateUniqueId('page');
+            const pageId = page.id;
             const newPage = {
                 ...page,
                 id: pageId
@@ -158,7 +157,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                 pages: [...state.currentVersion.pages, newPage]
             };
             get().addToHistory(newVersion, 'add_page', `Added page: ${page.name}`);
-            return { currentVersion: newVersion };
+            return { currentVersion: newVersion, currentPage: pageId };
         }),
 
     updatePage: (pageId, updates) =>

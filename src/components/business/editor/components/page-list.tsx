@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconPlus, IconFile, IconHome, IconDots, IconTrash, IconSettings, IconCopy, IconPencil } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
 import { Page, Section } from '@/types/editor';
@@ -21,7 +21,6 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-    const [settingsPage, setSettingsPage] = useState<Page | null>(null);
 
     const handleAddPage = (pageName: string) => {
         if (!currentVersion) return false;
@@ -39,13 +38,11 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
             sections: [],
             metadata: {},
         };
-         
-        setIsAddModalOpen(false);
         addPage(newPage);
-        setCurrentPage(newPage.id);
         if (onPageChange) {
             onPageChange(newPage.id);
         }
+        setIsAddModalOpen(false);
         return true;
     };
 
@@ -54,10 +51,10 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
     };
 
     const handlePageClick = (pageId: string) => {
-        setCurrentPage(pageId);
         if (onPageChange) {
             onPageChange(pageId);
         }
+        setCurrentPage(pageId);
     };
 
     const handleSetAsHome = (page: Page) => {

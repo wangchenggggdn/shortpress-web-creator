@@ -26,8 +26,6 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
     const nav = menus[5];
     const navIcon = nav?.widgets?.[0];
 
-    console.error('--------------menus',menus);
-
     return (
         <BaseSection section={section} pageId={pageId} isPreview={false}>
             <div className="flex items-center justify-between px-4 bg-black">

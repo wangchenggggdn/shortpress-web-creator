@@ -115,10 +115,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
 
     // Handle page change
     const handlePageChange = (newPageId: string) => {
-        const page = currentVersion?.pages.find(p => p.id === newPageId);
-        if (page) {
-            router.push(`/editor/${siteId}/${page.id}`);
-        }
+        router.push(`/editor/${siteId}/${newPageId}`);
     };
 
     // Handle section change
@@ -196,8 +193,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     }
 
     const currentPageData = currentVersion.pages.find(page => page.id === currentPage);
-    
-    console.error('------------initialData3:',currentPageData);
     return (
         <div className="flex flex-col h-screen">
             {/* Header */}
