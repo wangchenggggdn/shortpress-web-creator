@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconArrowLeft, IconExclamationCircle, IconPlus, IconPlaylist, IconFile, IconLink } from '@tabler/icons-react';
 import { Section, Widget, WidgetType, PathWidget } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
@@ -37,7 +37,11 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [showPageModal, setShowPageModal] = useState(false);
     const [showUrlModal, setShowUrlModal] = useState(false);
-    const { currentVersion } = useEditorStore();
+    const { currentVersion,editWebsite } = useEditorStore();
+    const getMenuItem = (type: string): any | undefined => {
+        return section.params.extend.widgets?.find(item => item.type === type);
+    };
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -45,9 +49,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
         })
     );
 
-    const getMenuItem = (type: string): Widget | undefined => {
-        return section.params.extend.widgets?.find(item => item.type === type);
-    };
+
 
     const getFooterItems = (): Widget[] => {
         const items = section.params.extend.widgets || [];
@@ -56,6 +58,9 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
 
     const footerItems = getFooterItems();
     const footerText = getMenuItem(WidgetType.DATA);
+    if((footerText?.data??'').length === 0){
+        footerText.data = `© 2025 ${editWebsite?.domain??''}. All rights reserved.`;
+    }
     const shortPressLogo = getMenuItem(WidgetType.LOGO);
 
     const handleAddPlaylistItem = (playlists: any[]) => {

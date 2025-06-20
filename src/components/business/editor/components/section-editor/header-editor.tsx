@@ -27,16 +27,6 @@ const MENU_TYPES = {
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSection }) => {
     const { setCurrentWidget, currentWidget, editWebsite,currentVersion} = useEditorStore();
     const [isLoading, setIsLoading] = useState(false);
-    const [labelItem, setLabelItem] = useState<Widget>();
-
-    useEffect(() => {
-        const menuItem = getMenuItem(1);
-        if((menuItem?.data??'').length === 0){
-
-            menuItem.data = editWebsite?.name??'';
-        }
-        setLabelItem(menuItem);
-    }, [editWebsite,currentVersion]);
 
     const getMenuItem = (index: number) => {
         const menuItem = section.params.extend.widgets?.[index];
@@ -144,6 +134,10 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
     }
 
     const logoItem = getMenuItem(0);
+    const labelItem = getMenuItem(1);
+    if((labelItem?.data??'').length === 0){
+        labelItem.data = editWebsite?.name??'';
+    }
     const searchItem = getMenuItem(2);
     const accountItem = getMenuItem(3);
     const vipItem0 = getMenuItem(4);
