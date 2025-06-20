@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconArrowLeft, IconExclamationCircle } from '@tabler/icons-react';
 import { Section, Widget, WidgetType } from '@/types/editor';
 import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/common/menu-items';
@@ -25,11 +25,22 @@ const MENU_TYPES = {
 } as const;
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSection }) => {
-    const { setCurrentWidget, currentWidget, editWebsite} = useEditorStore();
+    const { setCurrentWidget, currentWidget, editWebsite,currentVersion} = useEditorStore();
     const [isLoading, setIsLoading] = useState(false);
+    const [labelItem, setLabelItem] = useState<Widget>();
+
+    useEffect(() => {
+        const menuItem = getMenuItem(1);
+        if((menuItem?.data??'').length === 0){
+
+            menuItem.data = editWebsite?.name??'';
+        }
+        setLabelItem(menuItem);
+    }, [editWebsite,currentVersion]);
 
     const getMenuItem = (index: number) => {
-        return section.params.extend.widgets?.[index];
+        const menuItem = section.params.extend.widgets?.[index];
+        return menuItem;
     };
 
     const handleToggle = (id: string, type: string) => {
@@ -104,6 +115,7 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
         const widgets = [...(section.params.extend.widgets || [])];
         const existingItem = widgets.find(item => item.id === id);
 
+        console.error('existingItem', existingItem);
         if (existingItem) {
             existingItem.data = value;
         } else {
@@ -115,6 +127,8 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
                 type: WidgetType.DEFAULT,
             });
         }
+
+        console.error('widgets---update:', widgets);
         updateSection({
             params: {
                 extend: {
@@ -130,7 +144,6 @@ const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSect
     }
 
     const logoItem = getMenuItem(0);
-    const labelItem = getMenuItem(1);
     const searchItem = getMenuItem(2);
     const accountItem = getMenuItem(3);
     const vipItem0 = getMenuItem(4);

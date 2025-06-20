@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { LabelMenuItemProps } from './types';
 
 const LabelMenuItem: React.FC<LabelMenuItemProps> = ({ title, widget, onToggle, onBlur }) => {
@@ -9,7 +9,7 @@ const LabelMenuItem: React.FC<LabelMenuItemProps> = ({ title, widget, onToggle, 
 
     useEffect(() => {
         setLocalValue(widget?.data || '');
-    }, [widget]);
+    }, [widget.data]);
 
     return (
         <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
