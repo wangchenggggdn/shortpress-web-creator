@@ -77,7 +77,6 @@ const UploadProgressModal: React.FC = () => {
 
     const handleUpload = async (itemToUpload: IUploadVideo, isRefresh: boolean = false) => { 
         const itemId = itemToUpload.vid;
-        console.log('-----------------itemToUpload:',itemToUpload.title);
         if (itemToUpload.file && (itemToUpload.uploadStatus === VideoUploadStatus.NULL || isRefresh)) {
             setUploadFileList((currentList: IUploadVideo[] | null) => 
                 (currentList ?? []).map(video => 

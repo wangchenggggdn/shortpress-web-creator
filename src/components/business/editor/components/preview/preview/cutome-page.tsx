@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType } from '@/types/editor';
 import { SectionComponents } from '../sections';
@@ -13,6 +13,7 @@ import SectionTypeSelector from '../../common/SectionTypeSelector';
 
 const CustomPage = () => {
     const { currentVersion, currentPage,addSection,currentSection } = useEditorStore();
+    const currentSectionRef = useRef<Section | null>(null);
     const [previewWidth, setPreviewWidth] = useState(0);
 
     // Calculate preview width based on height and iPhone 15's aspect ratio (19.5:9)
@@ -29,6 +30,24 @@ const CustomPage = () => {
         window.addEventListener('resize', updatePreviewWidth);
         return () => window.removeEventListener('resize', updatePreviewWidth);
     }, []);
+
+    useEffect(() => {
+        if(currentSection&&(currentSectionRef.current?.id!==currentSection.id)){
+            console.error('currentSection',currentSection,currentSectionRef.current,currentSectionRef.current?.id!==currentSection.id);
+            //scrollToTarget(currentSection.id);
+        }
+        currentSectionRef.current = currentSection;
+    }, [currentSection]);
+
+    const scrollToTarget = (id:string) => { 
+        const targetElement = document.getElementById(id);
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
 
     if (!currentVersion || !currentPage) {
         return <div className="p-4 text-center text-gray-500">Loading...</div>;
@@ -64,28 +83,29 @@ const CustomPage = () => {
             >
                 {/* Header */}
                 {headerSection&&!headerSection.isHidden && (
-                    <div className="bg-black sticky top-0 z-10">
+                    <div className="bg-black sticky top-0 z-10" id={`${headerSection.id}`}>
                         <HeaderSection section={headerSection!} pageId={currentPage} />
                     </div>
                 )}
+
                 {/* Sections */}
-                    {currentPageData.sections
+                {currentPageData.sections
                         .sort((a: Section, b: Section) => a.order - b.order)
                         .map((section: Section) => {
                             const SectionComponent = SectionComponents[section.type];
                             if (!SectionComponent) return null;
                             
                             return (
-                                <SectionComponent
-                                    key={section.id}
-                                    section={section}
-                                    pageId={currentPage}
-                                />
+                               <div id={`${section.id}`} key={section.id}>
+                                    <SectionComponent
+                                        section={section}
+                                        pageId={currentPage}
+                                    />
+                               </div>
                             );
                         })}
 
                     {/* Empty State */}
-                 
                     <div className={`flex justify-center items-center  ${currentPageData.sections.length === 0 ? 'h-full' : ''}`}>
                         <Menu>
                             <Menu.Target>
@@ -99,7 +119,7 @@ const CustomPage = () => {
 
                     {/* Footer */}
                     {footerSection&&!footerSection.isHidden && (
-                        <div className="bg-black sticky bottom-0 z-10">
+                        <div className="bg-black sticky bottom-0 z-10" id={`${footerSection.id}`}>
                             <FooterSection section={footerSection!} pageId={currentPage} />
                         </div>
                     )}

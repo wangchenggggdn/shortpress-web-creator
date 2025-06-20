@@ -35,7 +35,6 @@ const GridSection: React.FC<GridSectionProps> = ({ section, pageId }) => {
                 <h2 className="text-2xl font-bold text-white mb-4">{section.title}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {currentItems.map((item: any, index: number) => (
-                        console.log('-----------------item', item),
                         <div key={index}>
                             <div className="relative aspect-[2/3] bg-gray-500 rounded-lg overflow-hidden">
                                 {item.cover && <Image

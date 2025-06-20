@@ -56,7 +56,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                 type: WidgetType.DATA,
                 data: dataNew,
             });
-            setShowPlaylistAdd(true);
+            section.params.extend.dataSourceType === DataSourceType.PLAYLIST && setShowPlaylistAdd(true);
         }
 
         updateSection({
@@ -135,7 +135,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                         </div>
 
                         {/* Info Message */}
-                        <div className="mb-6 text-sm text-gray-500">
+                        <div className="mb-4 text-sm text-gray-500">
                             <p>{section.type+' Section'}</p>
                         </div>
 
@@ -178,8 +178,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
 
                         {/* Content */}
                         <div className="mb-4">
-                            <h3 className="text-xl text-[#94A3B8] mb-3">Content</h3>
-                        
+                            <div className="text-sm text-purple-black font-medium mb-3">Content</div>
                              {contentItem ? (
                                 !showPlaylistData&& <div className="space-y-3 rounded-lg border border-gray-200 p-3">
                                      {/* Content Type Display */}
