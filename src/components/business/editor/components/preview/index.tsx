@@ -25,6 +25,7 @@ export const PreviewComponents: Record<PreviewType, PreviewComponent> = {
 
 const Preview: React.FC<PreviewProps> = ({ page, isPreview = false }) => {
     const getPreviewType = (page: Page): PreviewType => {
+        console.error('page', page);
         if (page.type === 'playlist') {
             return PreviewType.PLAYLIST;
         }
