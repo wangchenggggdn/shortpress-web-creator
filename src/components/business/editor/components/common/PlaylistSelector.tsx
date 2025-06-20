@@ -134,7 +134,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
     };
     
     return (
-        <div className="fixed inset-0 z-10 flex">
+        <div className="fixed inset-0 z-50 flex">
             {/* 遮罩 */}
             <div className="flex-1 bg-black/30" onClick={handleClose}></div>
             {/* 侧边栏内容 */}
