@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import WebsiteApi from '@/api/website';
-import { Button, Select } from '@mantine/core';
-import { IconDeviceMobile, IconShare } from '@tabler/icons-react';
+import { Button, Group, Select, SelectProps } from '@mantine/core';
+import { IconCheck, IconDeviceMobile, IconHome, IconShare } from '@tabler/icons-react';
 import LoadingData from '@/components/common/loading-data';
 import { Website } from '@/types/website';
 import { useRouter } from 'next/navigation';
@@ -84,6 +84,21 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
         return <div className='w-full h-full flex justify-center items-center'>Website not found</div>;
     }
 
+    const iconProps = {
+        stroke: 1.5,
+        color: 'currentColor',
+        opacity: 0.6,
+        size: 18,
+      };
+
+    const renderSelectOption: SelectProps['renderOption'] = ({ option, checked }) => (
+        <Group flex="1" gap="xs">
+          {(option as any).icon}
+          {option.label}
+          {checked && <IconCheck style={{ marginInlineStart: 'auto' }} {...iconProps} />}
+        </Group>
+      );
+
     return (
         <div className="min-h-screen">
             {/* top toolbar */}
@@ -110,10 +125,12 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
                     }}
                     data={currentVersion?.pages.map(page => ({
                         value: page.path,
-                        label: page.name
+                        label: page.name,
+                        icon: page.isHome ? <IconHome size={18} className={`mr-2`} /> : null
                     })) || []}
                     placeholder="Select a page"
                     className="w-64"
+                    renderOption={renderSelectOption}
                 />
             </div>
                 <Button

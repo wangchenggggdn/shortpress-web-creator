@@ -1,12 +1,12 @@
 'use client';
 
 import React, { use, useContext, useEffect, useState } from 'react';
-import { IconArrowLeft, IconDeviceMobile, IconShare, IconArrowBackUp, IconArrowForwardUp } from '@tabler/icons-react';
+import { IconArrowLeft, IconDeviceMobile, IconShare, IconArrowBackUp, IconArrowForwardUp, IconCheck, IconHome } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import useEditorStore from '@/store/useEditorStore';
 import WebsiteApi from '@/api/website';
-import { EditWebsite } from '@/types/editor';
-import { Button, Select } from '@mantine/core';
+import { EditWebsite, Page } from '@/types/editor';
+import { Button, Group, Select, SelectProps } from '@mantine/core';
 import { toast } from 'sonner';
 import { Website } from '@/types/website';
 import { getWebsitePreviewUrl } from '@/utils/path';
@@ -64,6 +64,22 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
         return res.data;
     };
 
+    const iconProps = {
+        stroke: 1.5,
+        color: 'currentColor',
+        opacity: 0.6,
+        size: 18,
+      };
+      
+
+    const renderSelectOption: SelectProps['renderOption'] = ({ option, checked }) => (
+        <Group flex="1" gap="xs">
+          {(option as any).icon}
+          {option.label}
+          {checked && <IconCheck style={{ marginInlineStart: 'auto' }} {...iconProps} />}
+        </Group>
+      );
+
     return (
         <div className="min-h-[68px] border-b flex items-center bg-white">
             <div className="w-64 border-r border-gray-200 flex items-center">
@@ -108,10 +124,12 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({ siteId, onSave }) => {
                     }}
                     data={currentVersion?.pages.map(page => ({
                         value: page.id,
-                        label: page.name
+                        label: page.name,
+                        icon: page.isHome ? <IconHome size={18} className={`mr-2`} /> : null
                     })) || []}
                     placeholder="Select a page"
                     className="w-64"
+                    renderOption={renderSelectOption}
                 />
             </div>
 
