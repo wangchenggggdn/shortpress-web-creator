@@ -7,6 +7,7 @@ import { Playlist } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
 import LoadingData from '@/components/common/loading-data';
 import { useRouter } from 'next/navigation';
+import { Checkbox } from '@mantine/core';
 /**
  * Props interface for AddContentModal component
  */
@@ -67,11 +68,9 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
 
     const handleSelectAll = () => {
         if (isAllSelected()) {
-            // 取消当前页面所有选中的播放列表
             const currentPagePlaylistIds = playlists.map(playlist => playlist.playlistId);
             setSelectedItems(selectedItems.filter(id => !currentPagePlaylistIds.includes(id)));
         } else {
-            // 选中当前页面所有未选中的播放列表
             const newSelectedItems = new Set([...selectedItems, ...playlists.map(playlist => playlist.playlistId)]);
             setSelectedItems(Array.from(newSelectedItems));
         }
@@ -140,19 +139,9 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                                             setSelectedItems([...selectedItems, item.playlistId]);
                                         }}
                                     >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedItems.includes(item.playlistId)}
-                                            onChange={e => {
-                                                e.stopPropagation();
-                                                if (e.target.checked) {
-                                                    setSelectedItems([...selectedItems, item.playlistId]);
-                                                } else {
-                                                    setSelectedItems(selectedItems.filter(id => id !== item.playlistId));
-                                                }
-                                            }}
-                                            className="absolute top-2 left-2 z-10"
-                                        />
+                                        <div className="absolute top-2 left-2 z-10"> 
+                                            <Checkbox checked={selectedItems.includes(item.playlistId)}/>
+                                        </div>
                                         <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
                                             {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
                                         </div>

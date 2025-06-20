@@ -31,7 +31,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ open, onClose, pages, onSel
             {/* 遮罩 */}
             <div className="flex-1 bg-black/30" onClick={onClose}></div>
             {/* 侧边栏内容 */}
-            <div className="w-[400px] h-full bg-white shadow-xl flex flex-col">
+            <div className="w-[480px] h-full bg-white shadow-xl flex flex-col">
                 {/* 顶部 */}
                 <div className="flex items-center gap-2 px-4 py-4 border-b">
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded">

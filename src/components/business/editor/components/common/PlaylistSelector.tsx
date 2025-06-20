@@ -138,7 +138,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
             {/* 遮罩 */}
             <div className="flex-1 bg-black/30" onClick={handleClose}></div>
             {/* 侧边栏内容 */}
-            <div className="w-[400px] h-full bg-white shadow-xl flex flex-col">
+            <div className="w-[480px] h-full bg-white shadow-xl flex flex-col">
                 {/* 顶部 */}
                 <div className="flex items-center gap-2 px-4 py-4 border-b">
                     <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded">
@@ -161,37 +161,25 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                 />
                 {/* 内容 */}
                 <div className="flex-1 overflow-y-auto px-4 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         {playlists.map(playlist => (
                             <div
                                 key={playlist.playlistId}
-                                className={`relative cursor-pointer rounded-lg overflow-hidden border ${
-                                    selectedPlaylist.map(p => p.playlistId).includes(playlist.playlistId) ? 'border-primary' : 'border-gray-200'
-                                }`}
+                                className={`relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md cursor-pointer`}
                                 onClick={() => handleClickPlaylist(playlist)}
                             >
-                                <div className="absolute top-2 right-2 z-10">
+                                <div className="absolute top-2 left-2 z-10">
                                     <Checkbox
                                         checked={selectedPlaylist.map(p => p.playlistId).includes(playlist.playlistId)}
                                     />
                                 </div>
-                                <div className="aspect-video bg-gray-100">
-                                    {playlist.cover && (
-                                        <img
-                                            src={playlist.cover}
-                                            alt={playlist.title}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    )}
-                                </div>
-                                <div className="p-2">
-                                    <div className="text-sm font-medium text-gray-900 truncate">
-                                        {playlist.title}
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                        {playlist.videoCount} videos
-                                    </div>
-                                </div>
+                                <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
+                                            {playlist.cover && <img src={playlist.cover} alt={playlist.title} className="w-full h-full object-cover" loading="lazy" />}
+                                        </div>
+                                        <div className="absolute text-sm bottom-8 left-0 right-0 p-2">{playlist.videoCount} videos</div>
+                                        <div className="absolute text-sm bottom-0 left-0 right-0 bg-white p-2 rounded-b-md">
+                                            <div className="text-black-purple line-clamp-1 text-ellipsis">{playlist.title}</div>
+                                        </div>
                             </div>
                         ))}
 
