@@ -32,8 +32,13 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
     };
     try{
         const res = await WebsiteApi.editGet(siteId);
+        const resSite = await WebsiteApi.get(siteId);
         if(res.code === 0&&res.data.site_data.versions!==undefined&&res.data.site_data.versions!==null){
             initialData = res.data.site_data;
+        }
+        if(resSite.code === 0&&resSite.data){
+            initialData.name = resSite.data.name;
+            initialData.domain = resSite.data.domain||resSite.data.officialDomain;
         }
     }catch(error){
 

@@ -58,14 +58,14 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ section, pageId }) => {
                                 />
                             )}
                             <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
-                                <h3 className="text-white text-sm font-bold truncate">
+                                <h3 className="text-white text-sm font-bold line-clamp-2">
                                     {item.title || 'Coming Soon'}
                                 </h3>
-                                {item.description && (
+                                {/* {item.description && (
                                     <p className="text-gray-200 mt-1 text-sm line-clamp-2">
                                         {item.description}
                                     </p>
-                                )}
+                                )} */}
                                 <button className="w-full mt-2 px-4 py-1.5 bg-[#6366F1] text-white text-sm rounded-lg hover:bg-[#4F46E5]">
                                     Watch Now
                                 </button>

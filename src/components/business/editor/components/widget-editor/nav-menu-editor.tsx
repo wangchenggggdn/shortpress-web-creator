@@ -53,7 +53,8 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     const [showPageModal, setShowPageModal] = useState(false);
     const [showUrlModal, setShowUrlModal] = useState(false);
     const [urlInput, setUrlInput] = useState('');
-    const { currentVersion } = useEditorStore();
+    const { currentVersion, currentPage } = useEditorStore();
+    const homePage = currentVersion?.pages.find(page => page.isHome);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -62,7 +63,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         })
     );
 
-    const getNavItems = (): Widget[] => {
+    const getNavItems = (): any[] => {
         const items = (currentSection?.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[];
         return items;
     };
@@ -311,6 +312,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
                             <WidgetPageItem
                                 key={item.id}
                                 item={item}
+                                canHidden={homePage?.path !== item.path}
                                 onToggleVisibility={handleToggle}
                                 onDuplicate={handleMenuItemDuplicate}
                                 onDelete={handleMenuItemDelete}

@@ -8,6 +8,7 @@ import clsx from 'clsx';
 
 interface WidgetPageItemProps {
     item: Widget;
+    canHidden?: boolean;
     onToggleVisibility: (id: string) => void;
     onDuplicate: (id: string) => void;
     onDelete: (id: string) => void;
@@ -15,7 +16,7 @@ interface WidgetPageItemProps {
     variant?: 'full' | 'simple';
 }
 
-const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibility, onDuplicate, onDelete, onRename, variant = 'full' }) => {
+const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibility, onDuplicate, onDelete, onRename, variant = 'full',canHidden = true }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
     const style = {
@@ -29,7 +30,9 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                 <button className="cursor-grab hover:bg-gray-100 p-1 rounded text-gray-400" {...attributes} {...listeners}>
                     <IconGripVertical size={16} />
                 </button>
-                <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0" />
+                <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0">
+                    <img src={item.image??''} alt={item.label} width={48} height={48} />
+                </div>
                 <span className="flex-1 text-[#1E293B]">{item.label}</span>
                 <button onClick={() => onDelete(item.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">
                     <IconTrash size={16} />
@@ -52,9 +55,9 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                 <button className="cursor-grab hover:bg-gray-100 p-1 rounded" {...attributes} {...listeners}>
                     <IconGripVertical size={16} />
                 </button>
-                <button onClick={() => onToggleVisibility(item.id)} className="hover:bg-gray-100 p-1 rounded">
+                {canHidden && <button onClick={() => onToggleVisibility(item.id)} className="hover:bg-gray-100 p-1 rounded">
                     {(item.visible === undefined ? true : item.visible) ? <IconEye size={16} /> : <IconEyeOff size={16} className="text-gray-400" />}
-                </button>
+                </button>}
                 <span className={clsx('ml-2 max-w-[100px] truncate', (item.visible === undefined ? true : item.visible) ? 'text-black-purple' : 'text-gray-400')}>{item.label}</span>
             </div>
 
@@ -65,7 +68,7 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                     </button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                    <Menu.Item onClick={() => onToggleVisibility(item.id)}>{(item.visible === undefined ? true : item.visible) ? 'Hide in Menu' : 'Show in Menu'}</Menu.Item>
+                    {canHidden && <Menu.Item onClick={() => onToggleVisibility(item.id)}>{(item.visible === undefined ? true : item.visible) ? 'Hide in Menu' : 'Show in Menu'}</Menu.Item>}
                     <Menu.Item onClick={() => onDuplicate(item.id)}>Duplicate</Menu.Item>
                     <Menu.Item onClick={() => onRename(item)}>Rename</Menu.Item>
                     <Menu.Divider />

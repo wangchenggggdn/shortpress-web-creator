@@ -127,7 +127,7 @@ export const INITIAL_VERSION: Version = {
                         {
                             id: generateId(),
                             label: 'Footer Text',
-                            content: '© 2025 Dramahub.tv. All Rights reserved',
+                            content: '',
                             visible: true,
                             type: WidgetType.DATA
                         },

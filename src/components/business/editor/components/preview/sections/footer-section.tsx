@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Section, Widget, WidgetType } from '@/types/editor';
 import BaseSection from '../common/base-section';
+import useEditorStore from '@/store/useEditorStore';
 
 interface FooterSectionProps {
     section: Section;
@@ -10,6 +11,7 @@ interface FooterSectionProps {
 }
 
 const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
+    const { editWebsite } = useEditorStore();
     const [currentItem, setCurrentItem] = useState<any>([]);
 
     useEffect(() => {
@@ -43,8 +45,8 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
                     ))}
                 </div>
                 <div className="text-center text-sm text-gray-400">
-                    {footerText&&footerText.visible && <p>{footerText?.data??'© 2025 Dramahub.tv. All Rights reserved'}</p>}
-                    {shortPressLogo&&shortPressLogo.visible && <p>{shortPressLogo?.data??'Powered by ShortPress.com'}</p>}
+                    {footerText&&footerText.visible && <p>{footerText?.data||`© 2025 ${editWebsite?.domain||editWebsite?.name}. All Rights reserved`}</p>}
+                    {shortPressLogo&&shortPressLogo.visible && <p>{shortPressLogo?.data||'Powered by ShortPress.com'}</p>}
                 </div>
             </div>
         </BaseSection>

@@ -54,9 +54,9 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
                         size="80%"                        
                     >
                         <div className="p-4"> 
-                            <ul className="flex flex-col gap-4 mt-4 text-white">
-                                    {nav.widgets?.slice(1)?.map((widget: any,index:number) => ( // 假设数据在 nav.items
-                                       widget.visible ? <div key={index}>{widget.label}</div> : null
+                            <ul className="flex flex-col gap-4 mt-2 text-white">
+                                    {nav.widgets?.slice(1)?.map((widget: any,index:number) => (
+                                       widget.visible ? <div key={index} className='text-white text-lg font-medium'>{widget.label}</div> : null
                                     ))}
                             </ul>
                          </div>       

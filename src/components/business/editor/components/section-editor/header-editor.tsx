@@ -25,7 +25,7 @@ const MENU_TYPES = {
 } as const;
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSection }) => {
-    const { setCurrentWidget, currentWidget } = useEditorStore();
+    const { setCurrentWidget, currentWidget, editWebsite} = useEditorStore();
     const [isLoading, setIsLoading] = useState(false);
 
     const getMenuItem = (index: number) => {

@@ -34,7 +34,6 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
                 if (res.code === 0 && res.data) {
                     const currentVersion = res.data.site_data.versions[0];
                     const currentPage = currentVersion.pages.find(page => page.isHome === true);
-                    console.log('------1-----currentPage', currentPage);
                     setCurrentPage(currentPage?.path || '');
                     setCurrentVersion(currentVersion);
                     setEditWebsite(res.data.site_data);

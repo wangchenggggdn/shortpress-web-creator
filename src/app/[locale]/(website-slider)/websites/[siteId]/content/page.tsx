@@ -171,7 +171,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
      * Copy website URL to clipboard
      */
     const handleCopy = useCallback(() => {
-        navigator.clipboard.writeText(`${website?.domain}/${website?.path}`);
+        navigator.clipboard.writeText(website?.domain ? `https://${website?.domain}` : `https://${website?.officialDomain}/${website?.path}`);
         toast.success('Copy success');
     }, [website]);
 

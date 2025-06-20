@@ -30,7 +30,7 @@ export const InlinedDrawer: React.FC<InlinedDrawerProps> = ({
             style={{ width: size }} 
         >
                 <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0 ">
-                    <Title order={4} c="white">{title}</Title>
+                    <Title className='text-2xl font-medium' order={4} c="white">{title}</Title>
                     <CloseButton disabled={true} title="Close drawer" onClick={onClose} c="white" />
                 </div>
                 {children}

@@ -75,12 +75,16 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
                 maxHeight: '100vh'
             }}
         >
-                <div className="bg-black">
-                    <HeaderSection section={headerSection!} pageId={currentPage} />
-                </div>
-                <div className="h-full">
-                    <SwiperPlaylist playlist={playlist} />
-                </div>
+           
+           <div className='relative w-full h-full'>
+                    <div className="absolute top-0 left-0 w-full z-10">
+                        <HeaderSection section={headerSection!} pageId={currentPage} />
+                    </div>
+                    <div className="h-full">
+                        <SwiperPlaylist playlist={playlist} />
+                    </div>
+              </div>
+      
         </div>
         </div>
     );

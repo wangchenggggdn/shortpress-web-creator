@@ -48,7 +48,7 @@ const ListSection: React.FC<ListSectionProps> = ({ section, pageId }) => {
                                 <div>
                                     <h3 className="text-white font-medium">{item.title}</h3>
                                     {item.description && (
-                                        <p className="text-gray-400 mt-2">{item.description}</p>
+                                        <p className="text-gray-400 mt-2 line-clamp-3">{item.description}</p>
                                     )}
                                 </div>
                                 <button className="mt-4 px-6 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#4F46E5]">

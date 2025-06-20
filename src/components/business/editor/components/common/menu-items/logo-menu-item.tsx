@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { IconPlus } from '@tabler/icons-react';
 import { LogoMenuItemProps } from './types';
-import { Button } from '@mantine/core';
+import { Burger, Button } from '@mantine/core';
 
-const LogoMenuItem: React.FC<LogoMenuItemProps> = ({ isLoading, title, widget, icon = <IconPlus size={32} />, onToggle, onUpload }) => {
+const LogoMenuItem: React.FC<LogoMenuItemProps> = ({ isLoading, title, widget, icon = <Burger color='black'  aria-label="Toggle navigation" size={32} />, onToggle, onUpload }) => {
     const [image, setImage] = useState<File | null>(null);
     const handleUpload = () => {
         const input = document.createElement('input');
@@ -35,7 +35,7 @@ const LogoMenuItem: React.FC<LogoMenuItemProps> = ({ isLoading, title, widget, i
                     ) : (
                         <>
                             {icon}
-                            <span className="text-sm text-gray-500">Add your logo</span>
+                            <span className="text-sm text-gray-500">Update your logo</span>
                         </>
                     )}
                 </div>

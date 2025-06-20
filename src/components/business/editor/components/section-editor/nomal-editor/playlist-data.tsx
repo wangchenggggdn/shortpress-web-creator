@@ -21,6 +21,7 @@ const PlaylistData: React.FC<PlaylistDataProps> = ({ widgets, onClose, addConten
             playlists.map(playlist => ({
                 id: playlist.playlistId,
                 label: playlist.title,
+                image: playlist.cover,
                 type: WidgetType.DATA,
                 visible: true,
                 data: playlist,
@@ -95,11 +96,11 @@ const PlaylistData: React.FC<PlaylistDataProps> = ({ widgets, onClose, addConten
             </div>
 
             {/* Footer */}
-            {/* <div className="p-4 border-t border-gray-200">
+            <div className="p-4 border-t border-gray-200">
                 <button className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base" onClick={addContent}>
-                    Add Content
+                    Add Playlist
                 </button>
-            </div> */}
+            </div>
         </div>
     );
 };
