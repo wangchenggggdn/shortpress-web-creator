@@ -10,6 +10,7 @@ import { Box ,Button,Center, Collapse, Divider, Drawer,Menu,ScrollArea, ThemeIco
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconPlusEqual } from '@tabler/icons-react';
 import SectionTypeSelector from '../../common/SectionTypeSelector';
+import SwiperPlaylist from '../swiper-playlist';
 
 const CustomPage = () => {
     const { currentVersion, currentPage,addSection,currentSection } = useEditorStore();
@@ -81,14 +82,17 @@ const CustomPage = () => {
                     width: `${previewWidth}px`,
                 }}
             >
-                {/* Header */}
-                {headerSection&&!headerSection.isHidden && (
-                    <div className="bg-black sticky top-0 z-10" id={`${headerSection.id}`}>
-                        <HeaderSection section={headerSection!} pageId={currentPage} />
+            <div className='relative w-full h-full'>
+                    <div className="absolute top-0 left-0 w-full z-10">
+                         {/* Header */}
+                        {headerSection&&!headerSection.isHidden && (
+                            <div className="bg-black sticky top-0 z-10" id={`${headerSection.id}`}>
+                                <HeaderSection section={headerSection!} pageId={currentPage} />
+                            </div>
+                        )}
                     </div>
-                )}
-
-                {/* Sections */}
+                    <div className="h-full">
+                 {/* Sections */}
                 {currentPageData.sections
                         .sort((a: Section, b: Section) => a.order - b.order)
                         .map((section: Section) => {
@@ -123,8 +127,9 @@ const CustomPage = () => {
                             <FooterSection section={footerSection!} pageId={currentPage} />
                         </div>
                     )}
+                </div>
+              </div>
              </div>
-             
         </div>
     );
 };

@@ -39,16 +39,14 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({ section, pageId }) => {
         <div className="relative bg-black overflow-hidden">
             <Swiper
                     key={createUniqueUUID([])}
-                    // === 关键参数 ===
                     loop={true}
                     centeredSlides={true}
-                    slidesPerView={'auto'} // <-- 回到 3！这保证了三列布局。
-                    grabCursor={true}
-                    className="mySimpleSwiper"      
+                    slidesPerView={'auto'}
+                    grabCursor={true}      
             >
                 {currentItem.map((item: any, index: number) => (
                     <SwiperSlide key={index}>
-                        <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-500">
+                        <div className="relative h-[50vh] overflow-hidden bg-gray-500">
                             {item.cover && (
                                 <Image
                                     src={item.cover}

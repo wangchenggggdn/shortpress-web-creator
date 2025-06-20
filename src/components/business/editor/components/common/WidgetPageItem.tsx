@@ -30,8 +30,8 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                 <button className="cursor-grab hover:bg-gray-100 p-1 rounded text-gray-400" {...attributes} {...listeners}>
                     <IconGripVertical size={16} />
                 </button>
-                <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0">
-                    <img src={item.image??''} alt={item.label} width={48} height={48} />
+                <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
+                    <img src={item.image??''} alt={item.label} width={48} height={48} className='object-cover' />
                 </div>
                 <span className="flex-1 text-[#1E293B]">{item.label}</span>
                 <button onClick={() => onDelete(item.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">

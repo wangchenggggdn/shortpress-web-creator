@@ -35,7 +35,7 @@ const ScrollSection: React.FC<ScrollSectionProps> = ({ section, pageId }) => {
                 <h2 className="text-2xl font-bold text-white mb-4">{section.title || 'Scroll Section'}</h2>
                 <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
                     {currentItem.map((item: any, index: number) => (
-                        <div key={index} className="flex-none w-[100px]">
+                        <div key={index} className="flex-none w-[16vh]">
                             <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-500">
                                 {item.cover && (
                                     <Image

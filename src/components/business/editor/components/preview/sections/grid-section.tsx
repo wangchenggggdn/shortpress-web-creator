@@ -33,7 +33,7 @@ const GridSection: React.FC<GridSectionProps> = ({ section, pageId }) => {
         <BaseSection section={section} pageId={pageId}>
             <div className="px-4 pb-4">
                 <h2 className="text-2xl font-bold text-white mb-4">{section.title}</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                     {currentItems.map((item: any, index: number) => (
                         <div key={index}>
                             <div className="relative aspect-[2/3] bg-gray-500 rounded-lg overflow-hidden">

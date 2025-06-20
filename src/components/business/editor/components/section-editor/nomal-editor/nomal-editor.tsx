@@ -56,7 +56,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                 type: WidgetType.DATA,
                 data: dataNew,
             });
-            section.params.extend.dataSourceType === DataSourceType.PLAYLIST && setShowPlaylistAdd(true);
+            type === DataSourceType.PLAYLIST && setShowPlaylistAdd(true);
         }
 
         updateSection({

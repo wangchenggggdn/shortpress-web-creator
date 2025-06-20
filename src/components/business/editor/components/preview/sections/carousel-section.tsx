@@ -41,10 +41,9 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ section, pageId }) =>
             <div className="relative bg-black overflow-hidden">
                 <Swiper
                         key={createUniqueUUID([])}
-                        // === 关键参数 ===
                         loop={true}
                         centeredSlides={true}
-                        slidesPerView={3} // <-- 回到 3！这保证了三列布局。
+                        slidesPerView={3}
                         grabCursor={true}
                         className="mySimpleSwiper"      
                 >
