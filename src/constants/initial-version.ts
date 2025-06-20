@@ -1,10 +1,8 @@
 import { Version, Page, SectionType, WidgetType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 
-// 创建一个存储所有已使用ID的Set
 const usedIds = new Set<string>();
 
-// 生成唯一ID的辅助函数
 const generateId = () => {
     const newId = createUniqueUUID(usedIds);
     usedIds.add(newId);
@@ -16,16 +14,9 @@ export const INITIAL_VERSION: Version = {
     pages: [
         {
             id: generateId(),
-            path: '/home',
-            name: 'Home',
+            path: '/for-you',
+            name: 'For You',
             isHome: true,
-            metadata: {
-                seo: {
-                    title: 'Home',
-                    description: 'Home page',
-                    keywords: "home,page"
-                }
-            },
             type: 'playlist',
             sections: [],
         },
@@ -83,9 +74,9 @@ export const INITIAL_VERSION: Version = {
                             widgets: [
                                 {
                                     id: generateId(),
-                                    label: 'Home',
+                                    label: 'For You',
                                     type: WidgetType.PATH,
-                                    path: '/home',
+                                    path: '/for-you',
                                     visible: true
                                 },
                                 {
@@ -139,7 +130,7 @@ export const INITIAL_VERSION: Version = {
                             type: WidgetType.LOGO
                         }
                     ],
-                    notSharePages: ['/home']
+                    notSharePages: ['/for-you']
                 },
             }
         }
