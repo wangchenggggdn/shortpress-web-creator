@@ -144,7 +144,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                     <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded">
                         <IconArrowLeft size={20} />
                     </button>
-                    <h2 className="text-lg font-semibold">Add Playlist to Menu</h2>
+                    <h2 className="text-lg font-semibold">Add Playlist to Section</h2>
                     <div className="ml-auto text-sm text-gray-500">
                         {selectedPlaylist.length}/{playlists.length}
                     </div>
@@ -220,7 +220,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                         onClick={handleSelect}
                         disabled={selectedPlaylist.length === 0}
                     >
-                        Add to Menu
+                        Add to Section
                     </button>
                 </div>
             </div>
