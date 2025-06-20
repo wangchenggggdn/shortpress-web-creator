@@ -45,7 +45,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
                     ))}
                 </div>
                 <div className="text-center text-sm text-gray-400">
-                    {footerText&&footerText.visible && <p>{footerText?.data||`© 2025 ${editWebsite?.domain||editWebsite?.name}. All Rights reserved`}</p>}
+                    {footerText&&footerText.visible && <p>{footerText?.data||`© 2025 ${editWebsite?.name}. All Rights reserved`}</p>}
                     {shortPressLogo&&shortPressLogo.visible && <p>{shortPressLogo?.data||'Powered by ShortPress.com'}</p>}
                 </div>
             </div>
