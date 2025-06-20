@@ -27,6 +27,7 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
         id: siteId,
         name: 'New Website',
         description: 'A new website',
+        path: '',
         versions: [INITIAL_VERSION],
         currentVersion: INITIAL_VERSION.id
     };
@@ -39,6 +40,7 @@ const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) =
         if(resSite.code === 0&&resSite.data){
             initialData.name = resSite.data.name;
             initialData.domain = resSite.data.domain||resSite.data.officialDomain;
+            initialData.path = resSite.data.path;
         }
     }catch(error){
 

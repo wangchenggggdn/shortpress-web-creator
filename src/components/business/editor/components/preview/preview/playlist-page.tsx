@@ -17,7 +17,7 @@ interface PlaylistPageProps {
 const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) => {
     const [playlist, setPlaylist] = useState<IVideo[]>([]);
     const [previewWidth, setPreviewWidth] = useState(0);
-    const { currentVersion, currentPage } = useEditorStore();
+    const { currentVersion, currentPage,editWebsite } = useEditorStore();
 
     // Calculate preview width based on height and iPhone 15's aspect ratio (19.5:9)
     useEffect(() => {
@@ -36,7 +36,7 @@ const PlaylistPage: React.FC<PlaylistPageProps> = ({ page, isPreview = false }) 
 
 
     useEffect(() => {
-        fetchPlaylistFeed(1, page.path).then(res => {
+        fetchPlaylistFeed(1,editWebsite?.path??'').then(res => {
             setPlaylist(res?.items??[]);
         });
     }, [page]);

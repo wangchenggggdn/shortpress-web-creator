@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { TextInput } from '@mantine/core';
+import { TextInput, Checkbox } from '@mantine/core';
 import { IconSearch, IconArrowLeft } from '@tabler/icons-react';
 import { Playlist } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
@@ -13,12 +13,13 @@ import { useDebouncedValue } from '@mantine/hooks';
 interface PlaylistSelectorProps {
     open: boolean;
     isMultiSelect?: boolean;
+    selectedPlaylistOld?: Playlist[];
     onClose: () => void;
     onSelect: (playlists: Playlist[]) => void;
 }
 
-const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect = false, onClose, onSelect }) => {
-    const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist[]>([]);
+const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect = false, selectedPlaylistOld, onClose, onSelect }) => {
+    const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist[]>(selectedPlaylistOld || []);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loadingData, setLoadingData] = useState(false);
     const [page, setPage] = useState(1);
@@ -27,6 +28,11 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch] = useDebouncedValue(searchQuery, 500);
     const { editWebsite } = useEditorStore();
+
+    useEffect(() => {
+        setSelectedPlaylist(selectedPlaylistOld || []);
+    }, [selectedPlaylistOld]);
+
     const handleSelect = () => {
         if (selectedPlaylist.length > 0) {
             onSelect(selectedPlaylist);
@@ -107,6 +113,25 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
         }
     };
     if (!open) return null;
+
+    const handleClickPlaylist = (playlist: Playlist) => {
+        setSelectedPlaylist(prev => {
+            const isAlreadySelected = prev.some(p => p.playlistId === playlist.playlistId);
+            if (isMultiSelect) {
+                if (isAlreadySelected) {
+                    return prev.filter(p => p.playlistId !== playlist.playlistId);
+                } else {
+                    return [...prev, playlist];
+                }
+            } else {
+                if (isAlreadySelected) {
+                    return [];
+                } else {
+                    return [playlist];
+                }
+            }
+        });
+    };
     
     return (
         <div className="fixed inset-0 z-10 flex">
@@ -120,6 +145,9 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                         <IconArrowLeft size={20} />
                     </button>
                     <h2 className="text-lg font-semibold">Add Playlist to Menu</h2>
+                    <div className="ml-auto text-sm text-gray-500">
+                        {selectedPlaylist.length}/{playlists.length}
+                    </div>
                 </div>
                 <TextInput
                         className="p-4"
@@ -137,23 +165,16 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect
                         {playlists.map(playlist => (
                             <div
                                 key={playlist.playlistId}
-                                className={`cursor-pointer rounded-lg overflow-hidden border ${
-                                    selectedPlaylist.includes(playlist) ? 'border-primary' : 'border-gray-200'
+                                className={`relative cursor-pointer rounded-lg overflow-hidden border ${
+                                    selectedPlaylist.map(p => p.playlistId).includes(playlist.playlistId) ? 'border-primary' : 'border-gray-200'
                                 }`}
-                                onClick={() => {
-                                    if (isMultiSelect) {
-                                        setSelectedPlaylist(prev => 
-                                            prev.includes(playlist)
-                                                ? prev.filter(p => p.playlistId !== playlist.playlistId)
-                                                : [...prev, playlist]
-                                        );
-                                    } else {
-                                        setSelectedPlaylist(prev =>
-                                            prev.includes(playlist) ? [] : [playlist]
-                                        );
-                                    }
-                                }}
+                                onClick={() => handleClickPlaylist(playlist)}
                             >
+                                <div className="absolute top-2 right-2 z-10">
+                                    <Checkbox
+                                        checked={selectedPlaylist.map(p => p.playlistId).includes(playlist.playlistId)}
+                                    />
+                                </div>
                                 <div className="aspect-video bg-gray-100">
                                     {playlist.cover && (
                                         <img

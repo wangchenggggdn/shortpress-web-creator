@@ -115,6 +115,7 @@ export interface EditWebsite {
     name: string;
     description?: string;
     domain?: string;
+    path?: string;
     versions: Version[];
     currentVersion: string;
     status?: number; // 0: 未发布, 1: 已发布

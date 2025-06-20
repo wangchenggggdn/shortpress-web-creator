@@ -31,7 +31,6 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         setSectionTitle(section.title || '');
     }, [section.title]);
 
-
     useEffect(() => {
         setShowPlaylistData(section.params.extend.widgets&&section.params.extend.widgets.length>0&&section.params.extend.widgets[0].data&&section.params.extend.widgets[0].data.length>0&&section.params.extend.dataSourceType===DataSourceType.PLAYLIST);
     }, [section.params.extend.widgets,section.params.extend.dataSourceType]);
@@ -233,7 +232,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                     />
                 )} */}
             </div>
-            <PlaylistSelector key={'normal-editor-playlist-selector'} open={showPlaylistAdd} isMultiSelect={true} onClose={() => setShowPlaylistAdd(false)} onSelect={handleAddPlaylistItem} />
+            <PlaylistSelector key={'normal-editor-playlist-selector'} open={showPlaylistAdd} isMultiSelect={true} onClose={() => setShowPlaylistAdd(false)} onSelect={handleAddPlaylistItem} selectedPlaylistOld={section.params.extend.widgets?.[0]?.data} />
         </>
     );
 };
