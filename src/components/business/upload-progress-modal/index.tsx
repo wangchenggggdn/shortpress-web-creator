@@ -51,11 +51,11 @@ const UploadProgressModal: React.FC = () => {
 
     const checkUpload = () => {
         if(uploadFileList){
-            const waitingIndex = uploadFileList?.findIndex(item => (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED||item.uploadStatus === VideoUploadStatus.NULL))??0;
+            const waitingIndex = uploadFileList?.findIndex(item => (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED||item.uploadStatus === VideoUploadStatus.NULL||item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED))??0;
             const uploadingCount = uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length ?? 0;
             const uploadingItem = uploadFileList[waitingIndex];
             if(uploadingCount<MAX_UPLOAD_COUNT&&uploadingItem){
-                handleUpload(uploadingItem);
+                handleUpload(uploadingItem,false);
             }
         }
     }
@@ -207,7 +207,12 @@ const UploadProgressModal: React.FC = () => {
                         <div className="max-h-[30vh] overflow-y-auto scrollbar-hide">
                         {(uploadFileList ?? [])
                             .map((item, index) => (
-                                <UploadProgressItem key={index} index={index} item={item} handleUpload={checkUpload} handleDelectUploadFile={handleDelectUploadFile} />
+                                <UploadProgressItem key={index} index={index} item={item} handleUpload={(item,isRefresh)=>{
+                                    const uploadingCount = uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length ?? 0;
+                                    if(uploadingCount<MAX_UPLOAD_COUNT&&item){
+                                        handleUpload(item,isRefresh);
+                                    }
+                                }} handleDelectUploadFile={handleDelectUploadFile} />
                             ))}
                         </div>
                     </div>
