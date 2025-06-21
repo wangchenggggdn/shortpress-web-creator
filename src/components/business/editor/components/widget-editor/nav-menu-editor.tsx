@@ -6,7 +6,7 @@ import { createUniqueUUID } from '@/utils/public';
 import { LogoMenuItem } from '../common/menu-items';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
-import { Menu, Modal, TextInput, Select } from '@mantine/core';
+import { Menu, Modal, TextInput, Select, Burger } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import WidgetPageItem from '../common/WidgetPageItem';
 
@@ -250,7 +250,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             </div>
 
             {/* Nav Icon */}
-            <LogoMenuItem isLoading={isLoading} widget={navIcon} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id)}} title={'Nav Icon'}/>
+            <LogoMenuItem isLoading={isLoading} widget={navIcon} icon={<Burger color='black'  aria-label="Toggle navigation" size={32} />} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id)}} title={'Nav Icon'}/>
 
             {/* Menu Items */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl max-h-[400px] overflow-y-auto">

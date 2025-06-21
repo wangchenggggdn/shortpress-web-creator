@@ -3,7 +3,7 @@ import { IconPlus } from '@tabler/icons-react';
 import { LogoMenuItemProps } from './types';
 import { Burger, Button } from '@mantine/core';
 
-const LogoMenuItem: React.FC<LogoMenuItemProps> = ({ isLoading, title, widget, icon = <Burger color='black'  aria-label="Toggle navigation" size={32} />, onToggle, onUpload }) => {
+const LogoMenuItem: React.FC<LogoMenuItemProps> = ({ isLoading, title, widget, icon = <IconPlus size={32}/>, onToggle, onUpload }) => {
     const [image, setImage] = useState<File | null>(null);
     const handleUpload = () => {
         const input = document.createElement('input');
