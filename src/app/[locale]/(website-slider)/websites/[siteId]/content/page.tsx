@@ -76,7 +76,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
             page,
             pageSize,
             siteId: params.siteId as string,
-            orderType: 1,
+            orderType: 0,
             status: 2,
         });
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
@@ -134,7 +134,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
             page,
             pageSize,
             siteId: params.siteId as string,
-            orderType: 1,
+            orderType: 0,
             status: 2,
             keyword: searchQuery,
         });
