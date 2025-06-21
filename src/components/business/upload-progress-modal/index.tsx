@@ -46,6 +46,10 @@ const UploadProgressModal: React.FC = () => {
     }, [uploadFileList]);
 
     useEffect(() => {
+        checkUpload();
+    }, [uploadFileList]);
+
+    const checkUpload = () => {
         if(uploadFileList){
             const waitingIndex = uploadFileList?.findIndex(item => (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED||item.uploadStatus === VideoUploadStatus.NULL))??0;
             const uploadingCount = uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length ?? 0;
@@ -54,7 +58,7 @@ const UploadProgressModal: React.FC = () => {
                 handleUpload(uploadingItem);
             }
         }
-    }, [uploadFileList]);
+    }
 
     useEffect(() => {
         const allSuccess = uploadFileList?.map(item => item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS).every(item => item);
@@ -128,18 +132,7 @@ const UploadProgressModal: React.FC = () => {
                     );
                 } else {
                     const vidFromServer = res.data.vids[0]; 
-                    
-                    // setSuccessedFiles((currentList: IVideo[]|null) =>   
-                    //     (currentList ?? []).concat({
-                    //         ...item,
-                    //         vid: vidFromServer,
-                    //         uploadStatus: VideoUploadStatus.UPLOAD_SUCCESS,
-                    //         progress: 100,
-                    //     })
-                    // );
-
                     profileEventBus.emit(EventName.UploadVideoSuccess);
-
                     setUploadFileList((currentList: IUploadVideo[]|null) => 
                         (currentList ?? []).map(video =>
                             video.vid === itemId
@@ -214,7 +207,7 @@ const UploadProgressModal: React.FC = () => {
                         <div className="max-h-[30vh] overflow-y-auto scrollbar-hide">
                         {(uploadFileList ?? [])
                             .map((item, index) => (
-                                <UploadProgressItem key={index} index={index} item={item} handleUpload={handleUpload} handleDelectUploadFile={handleDelectUploadFile} />
+                                <UploadProgressItem key={index} index={index} item={item} handleUpload={checkUpload} handleDelectUploadFile={handleDelectUploadFile} />
                             ))}
                         </div>
                     </div>

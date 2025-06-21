@@ -19,14 +19,14 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item, handleUpload, handl
                     <span className="text-sm truncate pr-8 max-w-sm">{item.title}</span>
                     <span className="text-sm">
                         {/* Upload Status UPLOADING */}
-                        {item.uploadStatus === VideoUploadStatus.UPLOADING && item.progress!==100 && (
+                        {item.uploadStatus === VideoUploadStatus.UPLOADING && (
                             <div className="flex flex-row gap-2">
                                 <div>{item.progress ?? 0}%</div>
                                 <IconX className="text-red-500" size={18} onClick={() => handleDelectUploadFile(item)}></IconX>
                             </div>
                         )}
                         {/* Upload Status UPLOAD_SUCCESS */}
-                        {(item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS || item.progress===100) && <IconCheck className="text-green-500" size={18} />}
+                        {(item.uploadStatus === VideoUploadStatus.UPLOAD_SUCCESS||((item?.progress??0)===100&&item.uploadStatus !== VideoUploadStatus.UPLOAD_FAILED)) && <IconCheck className="text-green-500" size={18} />}
 
                         {/* Upload Status UPLOAD_FAILED */}
                         {item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED && (
@@ -40,7 +40,7 @@ const UploadProgressItem: React.FC<IProps> = ({ index, item, handleUpload, handl
                         )}
 
                         {/* Upload Status NOT_UPLOADED */}
-                        {(item?.progress??0) === 0 && <span className="text-gray-400">Waiting...</span>}
+                        {(item?.progress??0) === 0&&item.uploadStatus !== VideoUploadStatus.UPLOAD_FAILED && <span className="text-gray-400">Waiting...</span>}
                     </span>
                 </div>
                 {/* Progress Bar */}
