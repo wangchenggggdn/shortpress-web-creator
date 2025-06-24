@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { IconArrowLeft, IconExclamationCircle } from '@tabler/icons-react';
 import { Section, Widget, WidgetType } from '@/types/editor';
 import { LogoMenuItem, LabelMenuItem, IconMenuItem } from '@/components/business/editor/components/common/menu-items';
-import NavMenuEditor from '../widget-editor/nav-menu-editor';
 import { createUniqueUUID } from '@/utils/public';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
@@ -25,7 +24,7 @@ const MENU_TYPES = {
 } as const;
 
 const HeaderEditor: React.FC<HeaderEditorProps> = ({ section, onBack, updateSection }) => {
-    const { setCurrentWidget, currentWidget, editWebsite,currentVersion} = useEditorStore();
+    const { setCurrentWidget, currentWidget, editWebsite ,currentVersion} = useEditorStore();
     const [isLoading, setIsLoading] = useState(false);
 
     const getMenuItem = (index: number) => {

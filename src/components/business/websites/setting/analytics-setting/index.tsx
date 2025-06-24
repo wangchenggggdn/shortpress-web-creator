@@ -30,17 +30,17 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
     }, [website.siteId]);
 
     const handleSubmit = async () => {
-        const trimmedId = googleAnalyticsId.trim();
-        if (!trimmedId) {
-            toast.error('Google Analytics ID cannot be empty');
-            return;
-        }
+         const trimmedId = googleAnalyticsId.trim();
+        // if (!trimmedId) {
+        //     toast.error('Google Analytics ID cannot be empty');
+        //     return;
+        // }
 
-        const trimmedFacebookPixelId = facebookPixelId.trim();
-        if (!trimmedFacebookPixelId) {
-            toast.error('Facebook Pixel ID cannot be empty');
-            return;
-        }
+         const trimmedFacebookPixelId = facebookPixelId.trim();
+        // if (!trimmedFacebookPixelId) {
+        //     toast.error('Facebook Pixel ID cannot be empty');
+        //     return;
+        // }
 
         try {
             setLoading(true);

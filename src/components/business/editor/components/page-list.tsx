@@ -16,11 +16,17 @@ interface PageListProps {
 }
 
 const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
-    const { currentVersion, currentPage, setCurrentPage, addPage, deletePage, updatePage } = useEditorStore();
+    const { currentVersion, currentPage, setCurrentPage,setCurrentWidget, addPage, deletePage, updatePage } = useEditorStore();
     const [currentOperatePage, setCurrentOperatePage] = useState<Page | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (currentPage) {
+            setCurrentWidget(null);
+        }
+    }, [currentPage]);
 
     const handleAddPage = (pageName: string) => {
         if (!currentVersion) return false;
