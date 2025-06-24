@@ -14,8 +14,10 @@ interface WebsitePreviewPageProps {
 const CustomPreviewPage: React.FC<WebsitePreviewPageProps> = ({ searchParams }) => {
     const url = decodeURIComponent(searchParams.url);
     return (
-        <div className='h-screen'>
-            <IframePage url={url} />
+        <div className='h-full w-full flex justify-center items-center bg-black'>
+             <div className='h-screen w-full xl:max-w-[375px]'>
+                <IframePage url={url} />
+            </div>
         </div>
     );
 };

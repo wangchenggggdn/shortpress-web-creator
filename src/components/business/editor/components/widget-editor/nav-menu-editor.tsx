@@ -52,7 +52,6 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [showPageModal, setShowPageModal] = useState(false);
     const [showUrlModal, setShowUrlModal] = useState(false);
-    const [urlInput, setUrlInput] = useState('');
     const { currentVersion,editWebsite, currentPage } = useEditorStore();
     const homePage = currentVersion?.pages.find(page => page.isHome);
 

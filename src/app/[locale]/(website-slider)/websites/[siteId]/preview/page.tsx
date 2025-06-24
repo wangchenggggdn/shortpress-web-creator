@@ -11,6 +11,7 @@ import { getWebsitePreviewUrl } from '@/utils/path';
 import { EditWebsite, Version } from '@/types/editor';
 import { toast } from 'sonner';
 import { INITIAL_VERSION } from '@/constants/initial-version';
+import IframePage from '@/components/business/editor/components/preview/preview/iframe-page';
 
 interface WebsitePreviewPageProps {
     params: {
@@ -180,10 +181,7 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
                     </div>
                 
                     <div className="relative h-full">
-                        <iframe
-                            src={`/preview?url=${encodeURIComponent(getWebsitePreviewUrl(website, currentPage || '',true))}`}
-                            className="w-full h-full"
-                        />
+                        <IframePage url={`${getWebsitePreviewUrl(website, currentPage || '',true)}`} />
                     </div>
                 </div>
             </div>

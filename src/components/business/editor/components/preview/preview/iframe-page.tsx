@@ -27,15 +27,7 @@ const IframePage: React.FC<IframePageProps> = ({ url }) => {
 
     return (
         <div className="h-full w-full flex justify-center items-center bg-black">
-            <div 
-                className="h-full overflow-auto  bg-black"
-                style={{ 
-                    width: `${previewWidth}px`,
-                    maxHeight: '100vh'
-                }}
-            >
-                 <iframe src={url} className="w-full h-full" />
-             </div>
+            <iframe src={url} className="w-full h-full" />
        </div>
     );
 };

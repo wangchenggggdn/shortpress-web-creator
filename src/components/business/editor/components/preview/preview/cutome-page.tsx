@@ -6,11 +6,9 @@ import { Section, SectionType } from '@/types/editor';
 import { SectionComponents } from '../sections';
 import HeaderSection from '../sections/header-section';
 import FooterSection from '../sections/footer-section';
-import { Box ,Button,Center, Collapse, Divider, Drawer,Menu,ScrollArea, ThemeIcon, UnstyledButton } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { IconPlus, IconPlusEqual } from '@tabler/icons-react';
+import { Button,Menu } from '@mantine/core';
+import { IconPlus} from '@tabler/icons-react';
 import SectionTypeSelector from '../../common/SectionTypeSelector';
-import SwiperPlaylist from '../swiper-playlist';
 
 const CustomPage = () => {
     const { currentVersion, currentPage,addSection,currentSection } = useEditorStore();
@@ -76,22 +74,23 @@ const CustomPage = () => {
 
     return (
         <div className=" w-full flex justify-center items-center ">
+            <div className='relative h-full'>
+                <div className="absolute top-0 left-0 z-30">
+                         {/* Header */}
+                         {headerSection&&!headerSection.isHidden && (
+                            <div className="bg-black sticky top-0 z-10" id={`${headerSection.id}`}>
+                                <HeaderSection section={headerSection!} pageId={currentPage} />
+                            </div>
+                        )}
+                    </div>
+               <div className="h-full">
             <div 
                 className="h-[calc(100vh-64px)] overflow-auto bg-black"
                 style={{ 
                     width: `${previewWidth}px`,
                 }}
             >
-            <div className='relative w-full h-full'>
-                    <div className="absolute top-0 left-0 w-full z-10">
-                         {/* Header */}
-                        {headerSection&&!headerSection.isHidden && (
-                            <div className="bg-black sticky top-0 z-10" id={`${headerSection.id}`}>
-                                <HeaderSection section={headerSection!} pageId={currentPage} />
-                            </div>
-                        )}
-                    </div>
-                    <div className="h-full">
+
                  {/* Sections */}
                 {currentPageData.sections
                         .sort((a: Section, b: Section) => a.order - b.order)
