@@ -31,7 +31,7 @@ const ContentTypeSelector: React.FC<ContentTypeSelectorProps> = ({ sectionType, 
     ];
 
     // Scroll section doesn't have Continue Watching option
-    const filteredTypes = sectionType === SectionType.SCROLL ? contentTypes.filter(type => type.type !== DataSourceType.CONTINUE_WATCHING) : contentTypes;
+    const filteredTypes = sectionType === SectionType.SCROLL ?contentTypes: contentTypes.filter(type => type.type !== DataSourceType.CONTINUE_WATCHING) ;
 
     return (
         <Menu.Dropdown>
