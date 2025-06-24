@@ -10,7 +10,7 @@ const nextConfig = {
     compress: true,
     compiler: {
         removeConsole: {
-            exclude: process.env.NEXT_PUBLIC_NODE_ENV === 'dev' ? ['log', 'warn', 'error'] : ['warn', 'error'],
+            exclude: (process.env.NEXT_PUBLIC_NODE_ENV === 'dev' || process.env.NEXT_PUBLIC_NODE_ENV === 'local_dev') ? ['log', 'warn', 'error'] : ['warn', 'error'],
         },
     },
     eslint: {

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { getWebsitePreviewUrl } from '@/utils/path';
 import { EditWebsite, Version } from '@/types/editor';
 import { toast } from 'sonner';
+import { INITIAL_VERSION } from '@/constants/initial-version';
 
 interface WebsitePreviewPageProps {
     params: {
@@ -30,17 +31,33 @@ const WebsitePreviewPage: React.FC<WebsitePreviewPageProps> = ({ params }) => {
     useEffect(() => {
         const fetchEditWebsite = async () => {
             try {
-                const res = await WebsiteApi.editGet(params.siteId as string);
-                if (res.code === 0 && res.data) {
-                    const currentVersion = res.data.site_data.versions[0];
+                let initialData:EditWebsite = {
+                    id: params.siteId,
+                    name: 'New Website',
+                    description: 'A new website',
+                    path: '',
+                    versions: [INITIAL_VERSION],
+                    currentVersion: INITIAL_VERSION.id
+                };
+      
+                    const res = await WebsiteApi.editGet(params.siteId);
+                    const resSite = await WebsiteApi.get(params.siteId);
+                    if(res.code === 0&&res.data.site_data.versions!==undefined&&res.data.site_data.versions!==null){
+                        initialData = res.data.site_data;
+                    }
+                    if(resSite.code === 0&&resSite.data){
+                        initialData.name = resSite.data.name;
+                        initialData.domain = resSite.data.domain||resSite.data.officialDomain;
+                        initialData.path = resSite.data.path;
+                    }
+ 
+                    const currentVersion = initialData.versions[0];
                     const currentPage = currentVersion.pages.find(page => page.isHome === true);
                     setCurrentPage(currentPage?.path || '');
                     setCurrentVersion(currentVersion);
-                    setEditWebsite(res.data.site_data);
-                    setVersionNumber(res.data.version_number);
-                    setLastVersionNumber(res.data.last_published_version);
-                    console.log('data', res.data);
-                }
+                    setEditWebsite(initialData);
+                    setVersionNumber(res.data.version_number??0);
+                    setLastVersionNumber(res.data.last_published_version??0);
             } catch (error) {
                 console.error('Failed to fetch website:', error);
             } finally {

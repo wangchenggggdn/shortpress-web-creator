@@ -14,7 +14,6 @@ interface EditorSectionPageProps {
 
 const EditorSectionPage: React.FC<EditorSectionPageProps> = async ({ params }) => {
     const { paths} = params;
-    console.error('------------initialData0:',params);
     let siteId = paths?.[0];
     let pageId = paths?.[1];
     let sectionId = paths?.[2];
