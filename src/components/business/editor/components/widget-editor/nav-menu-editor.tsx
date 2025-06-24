@@ -53,7 +53,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     const [showPageModal, setShowPageModal] = useState(false);
     const [showUrlModal, setShowUrlModal] = useState(false);
     const [urlInput, setUrlInput] = useState('');
-    const { currentVersion, currentPage } = useEditorStore();
+    const { currentVersion,editWebsite, currentPage } = useEditorStore();
     const homePage = currentVersion?.pages.find(page => page.isHome);
 
     const sensors = useSensors(
@@ -342,9 +342,10 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             {/* Playlist Selection Modal */}
             <PlaylistSelector
                 key={'nav-menu-playlist-selector'}
-                open={showPlaylistModal}
+                isOpen={showPlaylistModal}
                 onClose={() => setShowPlaylistModal(false)}
-                onSelect={handleAddPlaylistItem}
+                onAdd={handleAddPlaylistItem}
+                siteId={editWebsite?.id as string}
             />
 
             {/* Page Selection Modal */}

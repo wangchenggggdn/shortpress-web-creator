@@ -232,7 +232,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                     />
                 )} */}
             </div>
-            <PlaylistSelector key={'normal-editor-playlist-selector'} open={showPlaylistAdd} isMultiSelect={true} onClose={() => setShowPlaylistAdd(false)} onSelect={handleAddPlaylistItem} selectedPlaylistOld={section.params.extend.widgets?.[0]?.data} />
+            <PlaylistSelector key={'normal-editor-playlist-selector'} isOpen={showPlaylistAdd} onClose={() => setShowPlaylistAdd(false)} onAdd={handleAddPlaylistItem} siteId={editWebsite?.id as string} />
         </>
     );
 };

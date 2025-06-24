@@ -1,218 +1,189 @@
-'use client';
-
-import React, { useEffect, useState, useCallback } from 'react';
-import { TextInput, Checkbox } from '@mantine/core';
-import { IconSearch, IconArrowLeft } from '@tabler/icons-react';
+import React, { useEffect } from 'react';
+import Image from 'next/image';
+import { Button, Pagination } from '@mantine/core';
+import Search from '@/components/common/search';
+import { IconX } from '@tabler/icons-react';
 import { Playlist } from '@/types/playlist';
 import PlaylistApi from '@/api/playlist';
-import useEditorStore from '@/store/useEditorStore';
-import { InView } from 'react-intersection-observer';
 import LoadingData from '@/components/common/loading-data';
-import { useDebouncedValue } from '@mantine/hooks';
-
+import { useRouter } from 'next/navigation';
+import { Checkbox } from '@mantine/core';
+/**
+ * Props interface for PlaylistSelector component
+ */
 interface PlaylistSelectorProps {
-    open: boolean;
-    isMultiSelect?: boolean;
-    selectedPlaylistOld?: Playlist[];
+    /** Whether the modal is open */
+    isOpen: boolean;
+    /** Callback function when modal is closed */
     onClose: () => void;
-    onSelect: (playlists: Playlist[]) => void;
+    /** Callback function when playlists are added to site */
+    onAdd: (selectedItems: Playlist[]) => void;
+    siteId: string;
 }
 
-const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ open, isMultiSelect = false, selectedPlaylistOld, onClose, onSelect }) => {
-    const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist[]>(selectedPlaylistOld || []);
-    const [playlists, setPlaylists] = useState<Playlist[]>([]);
-    const [loadingData, setLoadingData] = useState(false);
-    const [page, setPage] = useState(1);
-    const [pageSize] = useState(10);
-    const [hasMore, setHasMore] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [debouncedSearch] = useDebouncedValue(searchQuery, 500);
-    const { editWebsite } = useEditorStore();
+/**
+ * Modal component for adding playlists to a website
+ * Provides search, selection, and pagination functionality
+ * @returns React component with playlist selection interface
+ */
+const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ isOpen, onClose, onAdd, siteId }) => {
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [selectedItems, setSelectedItems] = React.useState<Playlist[]>([]);
+    const [playlists, setPlaylists] = React.useState<Playlist[]>([]);
+    const [activePage, setActivePage] = React.useState(1);
+    const [pageSize, setPageSize] = React.useState(9);
+    const [orderType, setOrderType] = React.useState(1);
+    const [loading, setLoading] = React.useState(false);
+    const [total, setTotal] = React.useState(0);
+    const router = useRouter();
 
+    // Fetch playlists when search parameters change
     useEffect(() => {
-        setSelectedPlaylist(selectedPlaylistOld || []);
-    }, [selectedPlaylistOld]);
+        searcRequest();
+    }, [searchQuery, activePage, orderType, isOpen]);
 
-    const handleSelect = () => {
-        if (selectedPlaylist.length > 0) {
-            onSelect(selectedPlaylist);
-            handleClose();
-        }
-    };
-
-    useEffect(() => {
-        if (open) {
-            setPage(1);
-            setHasMore(true);
-            fetchPlaylistsBySearch(1);
-        }
-    }, [debouncedSearch, open]);
-
-    const handleClose = () => {
-        setPage(1);
+    const searcRequest = async () => {
+        setLoading(true);
         setPlaylists([]);
-        setHasMore(true);
-        setSearchQuery('');
-        setSelectedPlaylist([]);
-        onClose();
+        const res = await PlaylistApi.search({
+            page: activePage,
+            pageSize: pageSize,
+            orderType: orderType,
+            keyword: searchQuery,
+            status: 2,
+            siteId: siteId,
+        });
+        console.log('res',res); 
+        setLoading(false);
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
+        setTotal(res.data.total);
+        const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+        setLoading(true);
+        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
+        setPlaylists(resD.data.items);
+        setLoading(false);
     };
 
-    // 加载更多数据
-    const loadMore = () => {
-        if (!loadingData && hasMore) {
-            fetchPlaylistsBySearch(page + 1);
+    const isAllSelected = () => {
+        return playlists.every(playlist => selectedItems.find(item => item.playlistId === playlist.playlistId));
+    };
+
+    const handleSelectAll = () => {
+        if (isAllSelected()) {
+            const currentPagePlaylistIds = playlists.map(playlist => playlist.playlistId);
+            setSelectedItems(selectedItems.filter(item => !currentPagePlaylistIds.includes(item.playlistId)));
+        } else {
+            const newSelectedItems = new Set([...selectedItems, ...playlists]);
+            setSelectedItems(Array.from(newSelectedItems));
         }
     };
 
     /**
-     * Search playlists based on query
+     * Handle search input changes
+     * @param value Search query string
      */
-    const fetchPlaylistsBySearch = async (currentPage: number) => {
-        if (loadingData) return;
-        
-        setLoadingData(true);
-        try {
-            const res = await PlaylistApi.search({
-                page: currentPage,
-                pageSize,
-                siteId: editWebsite?.id as string,
-                orderType: 1,
-                status: 2,
-                keyword: debouncedSearch, // 使用 debouncedSearch 而不是 searchQuery
-            });
-
-            if (res.code !== 0) {
-                setHasMore(false);
-                return;
-            }
-
-            const playlistIds = res.data.items || [];
-            if (playlistIds.length === 0) {
-                setHasMore(false);
-                return;
-            }
-
-            const resD = await PlaylistApi.batchGet(playlistIds.join(','));
-            if (resD.code !== 0) {
-                setHasMore(false);
-                return;
-            }
-
-            const newPlaylists = playlistIds.map((id: string) => {
-                return resD.data.items.find((item: any) => item.playlistId === id)!;
-            }).filter(Boolean);
-
-            setPlaylists(prev => currentPage === 1 ? newPlaylists : [...prev, ...newPlaylists]);
-            setPage(currentPage);
-            setHasMore(res.data.hasMore);
-        } catch (error) {
-            console.error('Failed to fetch playlists:', error);
-            setHasMore(false);
-        } finally {
-            setLoadingData(false);
-        }
+    const handleSearch = (value: string) => {
+        setSearchQuery(value);
     };
-    if (!open) return null;
 
-    const handleClickPlaylist = (playlist: Playlist) => {
-        setSelectedPlaylist(prev => {
-            const isAlreadySelected = prev.some(p => p.playlistId === playlist.playlistId);
-            if (isMultiSelect) {
-                if (isAlreadySelected) {
-                    return prev.filter(p => p.playlistId !== playlist.playlistId);
-                } else {
-                    return [...prev, playlist];
-                }
-            } else {
-                if (isAlreadySelected) {
-                    return [];
-                } else {
-                    return [playlist];
-                }
-            }
-        });
-    };
-    
+    if (!isOpen) return null;
+
     return (
-        <div className="fixed inset-0 z-50 flex">
-            {/* 遮罩 */}
-            <div className="flex-1 bg-black/30" onClick={handleClose}></div>
-            {/* 侧边栏内容 */}
-            <div className="w-[480px] h-full bg-white shadow-xl flex flex-col">
-                {/* 顶部 */}
-                <div className="flex items-center gap-2 px-4 py-4 border-b">
-                    <button onClick={handleClose} className="p-2 hover:bg-gray-100 rounded">
-                        <IconArrowLeft size={20} />
-                    </button>
-                    <h2 className="text-lg font-semibold">Add Playlist to Section</h2>
-                    <div className="ml-auto text-sm text-gray-500">
-                        {selectedPlaylist.length}/{playlists.length}
-                    </div>
-                </div>
-                <TextInput
-                        className="p-4"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                        }}
-                        placeholder="Search playlist"
-                        leftSection={<IconSearch size={16} />}
-                        variant="filled"
-                />
-                {/* 内容 */}
-                <div className="flex-1 overflow-y-auto px-4 space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                        {playlists.map(playlist => (
-                            <div
-                                key={playlist.playlistId}
-                                className={`relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md cursor-pointer`}
-                                onClick={() => handleClickPlaylist(playlist)}
-                            >
-                                <div className="absolute top-2 left-2 z-10">
-                                    <Checkbox
-                                        checked={selectedPlaylist.map(p => p.playlistId).includes(playlist.playlistId)}
-                                    />
-                                </div>
-                                <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
-                                            {playlist.cover && <img src={playlist.cover} alt={playlist.title} className="w-full h-full object-cover" loading="lazy" />}
-                                        </div>
-                                        <div className="absolute text-sm bottom-8 left-0 right-0 p-2">{playlist.videoCount} videos</div>
-                                        <div className="absolute text-sm bottom-0 left-0 right-0 bg-white p-2 rounded-b-md">
-                                            <div className="text-black-purple line-clamp-1 text-ellipsis">{playlist.title}</div>
-                                        </div>
-                            </div>
-                        ))}
+        <>
+            {/* Modal Overlay */}
+            <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
 
-                        {/* InView 组件用于检测滚动到底部 */}
-                        <InView
-                            as="div"
-                            onChange={(inView) => {
-                                if (inView) {
-                                    loadMore();
-                                }
-                            }}
-                            className="col-span-2 h-10 flex justify-center"
-                        >
-                            {loadingData && <LoadingData className="w-10 h-10" />}
-                        </InView>
+            {/* Modal Content */}
+            <div className="fixed right-0 top-0 h-full w-[480px] bg-white shadow-lg z-50 animate-in slide-in-from-right duration-300">
+                <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-6 px-4">
+                        <h2 className="text-xl font-semibold">Add playlists to site</h2>
+                        <Button variant="subtle" color="gray" onClick={onClose} className="hover:bg-gray-100">
+                            <IconX size={20} />
+                        </Button>
                     </div>
-                </div>
-                {/* 底部按钮 */}
-                <div className="p-6 border-t">
-                    <button
-                        className={`w-full py-2 rounded transition-colors ${
-                            selectedPlaylist.length > 0
-                                ? 'bg-primary text-white hover:bg-primary-hover'
-                                : 'bg-gray-100 text-gray-400'
-                        }`}
-                        onClick={handleSelect}
-                        disabled={selectedPlaylist.length === 0}
-                    >
-                        Add to Section
-                    </button>
+
+                    {/* Search Bar */}
+                    <div className="mb-6 px-4 flex flex-row items-center gap-4">
+                        <div className="flex-1">
+                            <Search value={searchQuery} onChange={handleSearch} placeholder="Search Playlists" className="w-full" />
+                        </div>
+                    </div>
+
+                    {/* Playlist Grid */}
+
+                    <div className="flex-1 overflow-y-auto">
+                        {loading ? (
+                            <LoadingData className="w-10 h-10" />
+                        ) : playlists.length === 0 ? (
+                            <div className="flex flex-col justify-center items-center h-full gap-4">
+                                <div className="text-sm font-medium text-gray-500">No content found</div>
+                                <Button
+                                    onClick={() => {
+                                        router.push('/playlists');
+                                    }}
+                                >
+                                    Add Playlist
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-4">
+                                {playlists.map(item => (
+                                    <div
+                                        key={item.playlistId}
+                                        className="relative bg-gray-50 rounded-lg p-2 h-[200px] shadow-md"
+                                        onClick={() => {
+                                            if (selectedItems.find(i => i.playlistId === item.playlistId)) {
+                                                setSelectedItems(selectedItems.filter(i => i.playlistId !== item.playlistId));
+                                                return;
+                                            }
+                                            setSelectedItems([...selectedItems, item]);
+                                        }}
+                                    >
+                                        <div className="absolute top-2 left-2 z-10"> 
+                                            <Checkbox checked={!!selectedItems.find(i => i.playlistId === item.playlistId)}/>
+                                        </div>
+                                        <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
+                                            {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
+                                        </div>
+                                        <div className="absolute text-sm bottom-8 left-0 right-0 p-2">{item.videoCount} videos</div>
+                                        <div className="absolute text-sm bottom-0 left-0 right-0 bg-white p-2 rounded-b-md">
+                                            <div className="text-black-purple line-clamp-1 text-ellipsis">{item.title}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Pagination */}
+                    {playlists.length > 0 && (
+                        <div className="py-4">
+                            <Pagination value={activePage} onChange={setActivePage} total={Math.ceil(total / 9)} color="primary" radius="xl" className="flex justify-center" />
+                        </div>
+                    )}
+
+                    {/* Footer Actions */}
+                    <div className=" bg-white border-t p-4">
+                        <div className="flex justify-between items-center">
+                            <div className="flex flex-row items-center">
+                                <div className="text-sm font-medium text-gray-500">{selectedItems.length + ' Selected'}</div>
+                                <Button variant="subtle" onClick={handleSelectAll}>
+                                    {isAllSelected() ? 'Unselect All' : 'Select All'}
+                                </Button>
+                            </div>
+                            <Button variant="filled" onClick={() => {
+                                onClose();
+                                onAdd(selectedItems);
+                            }}>
+                                Add to site
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

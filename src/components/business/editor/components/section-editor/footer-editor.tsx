@@ -354,9 +354,10 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
             {/* Selection Modals */}
             <PlaylistSelector
                 key={'footer-playlist-selector'}
-                open={showPlaylistModal}
+                isOpen={showPlaylistModal}
                 onClose={() => setShowPlaylistModal(false)}
-                onSelect={handleAddPlaylistItem}
+                onAdd={handleAddPlaylistItem}
+                siteId={editWebsite?.id as string}
             />
 
             <PageSelector
