@@ -59,7 +59,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
     const footerItems = getFooterItems();
     const footerText = getMenuItem(WidgetType.DATA);
     if((footerText?.data??'').length === 0){
-        footerText.data = `© 2025 ${editWebsite?.domain??''}. All rights reserved.`;
+        footerText.data = `© 2025 ${editWebsite?.name??''}. All rights reserved.`;
     }
     const shortPressLogo = getMenuItem(WidgetType.LOGO);
 
