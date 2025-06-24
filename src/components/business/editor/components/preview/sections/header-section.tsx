@@ -28,7 +28,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ section, pageId }) => {
 
     return (
         <BaseSection section={section} pageId={pageId} isPreview={false}>
-            <div className="flex items-center justify-between px-4 bg-black">
+            <div className="flex items-center justify-between px-4 bg-gradient-to-b from-black to-transparent">
                 <div className="flex flex-row justify-between w-full space-x-4">
                     <div className="flex items-center space-x-2">
                         {icon?.visible && icon?.image && <img src={icon.image} alt={icon.label} width={24} height={24} />}
