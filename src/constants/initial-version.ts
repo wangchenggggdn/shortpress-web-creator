@@ -34,7 +34,7 @@ export const INITIAL_VERSION: Version = {
                             id: generateId(),
                             label: 'Logo',
                             content: '',
-                            visible: true,
+                            visible: false,
                             type: WidgetType.LOGO
                         },
                         {
@@ -62,7 +62,7 @@ export const INITIAL_VERSION: Version = {
                             id: generateId(),
                             label: 'Vip',
                             content: '',
-                            visible: true,
+                            visible: false,
                             type: WidgetType.PATH
                         },
                         {
@@ -79,13 +79,6 @@ export const INITIAL_VERSION: Version = {
                                     path: '/for-you',
                                     visible: true
                                 },
-                                {
-                                    id: generateId(),
-                                    label: 'Explore',
-                                    type: WidgetType.PATH,
-                                    path: '/explore',
-                                    visible: true
-                                }
                             ]
                         }
                     ]
