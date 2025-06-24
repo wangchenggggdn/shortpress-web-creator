@@ -100,7 +100,7 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
                                     placeholder="Enter your Stripe Secret key"
                                     variant="filled"
                                     type="password"
-                                    autoComplete="off"
+                                    autoComplete="new-password"
                                 />
                             </div>
 

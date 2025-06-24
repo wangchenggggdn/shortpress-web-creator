@@ -91,7 +91,7 @@ const DomainSetting: React.FC<DomainSettingProps> = ({ website, onSuccess }) => 
             <div className="space-y-4">
                 <TextInput
                     label="Enter Domain"
-                    placeholder={`${process.env.NEXT_PUBLIC_DOMAIN_C}`}
+                    placeholder={`yourdomain.com`}
                     value={domain.includes(process.env.NEXT_PUBLIC_DOMAIN_C ?? '') ? '' :domain}
                     onChange={handleDomainChange}
                     error={error}
