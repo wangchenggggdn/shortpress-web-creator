@@ -75,7 +75,7 @@ const CustomPage = () => {
     return (
         <div className=" w-full flex justify-center items-center ">
             <div className='relative h-full'>
-                <div className="absolute top-0 left-0 z-30">
+                <div className="absolute top-0 left-0 w-full z-30">
                          {/* Header */}
                          {headerSection&&!headerSection.isHidden && (
                             <div className="bg-black sticky top-0 z-10" id={`${headerSection.id}`}>
