@@ -101,7 +101,7 @@ const WebsiteCard: React.FC<WebsiteCardProps> = ({ siteId, name, domain, officia
 
             {/* Info Section */}
             <div className="mt-2">
-                <div className="mt-1 text-xs text-gray-500 overflow-hidden">{domain ? domain :( (officialDomain??'') + '/' + path)}</div>
+                <div className="mt-1 text-xs text-gray-500 overflow-hidden">{domain ? domain :( (officialDomain??''))}</div>
                 <h2 className="font-medium text-lg line-clamp-2" title={name}>
                     {name}
                 </h2>

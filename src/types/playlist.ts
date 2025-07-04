@@ -39,6 +39,8 @@ export interface Playlist {
     singleVideoPrice: number;
     /** Free videos */
     freeVideos: number;
+    /** Slug */
+    slug: string;
 }
 
 /**

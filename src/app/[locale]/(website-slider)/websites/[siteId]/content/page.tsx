@@ -171,7 +171,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
      * Copy website URL to clipboard
      */
     const handleCopy = useCallback(() => {
-        navigator.clipboard.writeText(website?.domain ? `https://${website?.domain}` : `https://${website?.officialDomain}/${website?.path}`);
+        navigator.clipboard.writeText(website?.domain ? `https://${website?.domain}` : `https://${website?.officialDomain}`);
         toast.success('Copy success');
     }, [website]);
 
@@ -273,10 +273,10 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                                         if (website?.domain) {
                                             window.open(`https://${website?.domain}`, '_blank');
                                         } else {
-                                            window.open(`https://${website?.officialDomain}/${website?.path}`, '_blank');
+                                            window.open(`https://${website?.officialDomain}`, '_blank');
                                         }
                                     }}
-                                >{website?.domain ? `https://${website?.domain}` : `https://${website?.officialDomain}/${website?.path}`}</div>
+                                >{website?.domain ? `https://${website?.domain}` : `https://${website?.officialDomain}`}</div>
                             )}
                             <Button variant="subtle" size="sm" onClick={handleCopy} leftSection={<IconCopy size={16} />} className="border border-primary">
                                 Copy
