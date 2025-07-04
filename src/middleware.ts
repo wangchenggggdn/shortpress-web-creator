@@ -17,8 +17,6 @@ export default async function middleware(request: NextRequest) {
     if (authResponse.status !== 200) {
         return authResponse;
     }
-
-
     return intlMiddleware(request);
 }
 
