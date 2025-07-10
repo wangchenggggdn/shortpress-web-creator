@@ -56,6 +56,7 @@ export namespace WebsiteArgs {
         };
         googleAnalyticsId?: string;
         facebookPixelId?: string;
+        thinkingdataAppId?: string;
     }
 
     /**

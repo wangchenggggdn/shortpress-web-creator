@@ -13,6 +13,8 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
     const [loading, setLoading] = useState(false);
     const [googleAnalyticsId, setGoogleAnalyticsId] = useState('');
     const [facebookPixelId, setFacebookPixelId] = useState('');
+    const [thinkingdataAppId, setThinkingdataAppId] = useState('');
+
     useEffect(() => {
         const fetchSiteDetails = async () => {
             try {
@@ -20,6 +22,7 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
                 if (res.code === 0 && res.data) {
                     setGoogleAnalyticsId(res.data.googleAnalyticsId || '');
                     setFacebookPixelId(res.data.facebookPixelId || '');
+                    setThinkingdataAppId(res.data.thinkingdataAppId || '');
                 }
             } catch (error) {
                 toast.error('Failed to fetch site details');
@@ -30,17 +33,9 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
     }, [website.siteId]);
 
     const handleSubmit = async () => {
-         const trimmedId = googleAnalyticsId.trim();
-        // if (!trimmedId) {
-        //     toast.error('Google Analytics ID cannot be empty');
-        //     return;
-        // }
-
-         const trimmedFacebookPixelId = facebookPixelId.trim();
-        // if (!trimmedFacebookPixelId) {
-        //     toast.error('Facebook Pixel ID cannot be empty');
-        //     return;
-        // }
+        const trimmedId = googleAnalyticsId.trim();
+        const trimmedFacebookPixelId = facebookPixelId.trim();
+        const trimmedThinkingdataAppId = thinkingdataAppId.trim();
 
         try {
             setLoading(true);
@@ -48,9 +43,10 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
                 siteId: website.siteId,
                 googleAnalyticsId: trimmedId,
                 facebookPixelId: trimmedFacebookPixelId,
+                thinkingdataAppId: trimmedThinkingdataAppId,
             });
             if (res.code === 0) {
-                toast.success('Google Analytics ID updated successfully');
+                toast.success('updated successfully');
                 onSuccess?.();
             } else {
                 toast.error(res.info || 'Update failed');
@@ -84,6 +80,14 @@ const AnalyticsSetting: React.FC<AnalyticsSettingProps> = ({ website, onSuccess 
                     value={facebookPixelId}
                     onChange={e => setFacebookPixelId(e.target.value)}
                     description="Enter your Facebook Pixel ID (e.g., 1234567890)"
+                />
+
+                <TextInput
+                    label="ThinkingData AppId"
+                    placeholder="Enter ThinkingData AppId"
+                    value={thinkingdataAppId}
+                    onChange={e => setThinkingdataAppId(e.target.value)}
+                    description="Enter your ThinkingData AppId (e.g., b3bf631b0...8e7fbc8d1)"
                 />
 
                 <div className="flex justify-end">

@@ -18,6 +18,8 @@ export interface Website {
     googleAnalyticsId?: string;
     /** Facebook Pixel ID */
     facebookPixelId?: string;
+    /** ThinkingData App ID */
+    thinkingdataAppId?: string;
     /** SEO information */
     seo?: {
         /** SEO title */
