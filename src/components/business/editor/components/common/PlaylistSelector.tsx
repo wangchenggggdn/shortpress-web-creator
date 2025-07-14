@@ -60,7 +60,10 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ isOpen, onClose, on
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         setLoading(true);
         if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
-        setPlaylists(resD.data.items);
+        const newPlaylists = res.data.items
+        .map(item => resD.data.items.find(i => i.playlistId === item))
+        .filter((item): item is Playlist => item !== null && item !== undefined);
+        setPlaylists(newPlaylists);
         setLoading(false);
     };
 

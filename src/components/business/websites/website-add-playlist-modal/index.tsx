@@ -57,8 +57,12 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         setTotal(res.data.total);
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         setLoading(true);
-        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return;
-        setPlaylists(resD.data.items);
+        if (resD.code !== 0 || !resD.data?.items?.length) return;
+        const newPlaylists = res.data.items
+            .map(item => resD.data.items.find(i => i.playlistId === item))
+            .filter((item): item is Playlist => item !== null && item !== undefined);
+            
+        setPlaylists(newPlaylists);
         setLoading(false);
     };
 
