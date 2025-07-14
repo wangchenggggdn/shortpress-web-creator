@@ -48,7 +48,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         const targetElement = document.getElementById(id);
         if (targetElement) {
             targetElement.scrollIntoView({
-                behavior: 'smooth',
+                behavior: 'auto',
                 block: 'center'
             });
         }
