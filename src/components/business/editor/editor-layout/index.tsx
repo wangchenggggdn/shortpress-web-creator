@@ -39,10 +39,10 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     } = useEditorStore();
 
     useEffect(() => {
-        if(currentSection){
-            scrollToTarget(currentSection.id);
+        if(sectionId&&currentSection&&currentSection.id!==sectionId){
+            scrollToTarget(sectionId);
         }
-    }, [currentSection]);
+    }, [currentSection,sectionId]);
 
     const scrollToTarget = (id:string) => { 
         const targetElement = document.getElementById(id);
