@@ -9,7 +9,7 @@ import SectionEditor from '@/components/business/editor/components/section-edito
 import Preview from '@/components/business/editor/components/preview';
 import EditorHeader from '@/components/business/editor/components/common/EditorHeader';
 import WebsiteApi from '@/api/website';
-import { DataSourceType, EditWebsite, Page, Version } from '@/types/editor';
+import { DataSourceType, EditWebsite, Page, SectionType, Version } from '@/types/editor';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
 
@@ -39,7 +39,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     } = useEditorStore();
 
     useEffect(() => {
-        if(sectionId&&currentSection&&currentSection.id!==sectionId){
+        if(sectionId&&currentSection&&currentSection.id==sectionId&&currentSection.type!==SectionType.HEADER&&currentSection.type!==SectionType.FOOTER){
             scrollToTarget(sectionId);
         }
     }, [currentSection,sectionId]);
