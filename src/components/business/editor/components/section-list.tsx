@@ -61,21 +61,12 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
     const handleSectionClick = (section: Section) => {
         setCurrentSection(section);
-        scrollToTarget(section.id);
         if (onSectionChange) {
             onSectionChange(section.id);
         }
     };
 
-    const scrollToTarget = (id:string) => { 
-        const targetElement = document.getElementById(id);
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }
-    }
+
 
     const handleToggleVisibility = (e: React.MouseEvent, section: Section) => {
         e.stopPropagation();
