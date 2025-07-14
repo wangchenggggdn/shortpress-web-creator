@@ -9,6 +9,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import 'swiper/css';
 import './ant-styles/swiper-carousel-style.css';
+import { Autoplay } from 'swiper/modules';
 import { createUniqueUUID } from '@/utils/public';
 
 interface CarouselSectionProps {
@@ -41,8 +42,12 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ section, pageId }) =>
             <div className="relative bg-black overflow-hidden">
                 <Swiper
                         key={createUniqueUUID([])}
-                        autoplay={true}
-                        speed={5000}
+                        modules={[Autoplay]} 
+                        autoplay={{
+                            delay: 5000,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true
+                        }}
                         loop={true}
                         centeredSlides={true}
                         slidesPerView={3}
