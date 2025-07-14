@@ -31,22 +31,13 @@ const CustomPage = () => {
     }, []);
 
     useEffect(() => {
-        if(currentSection&&(currentSectionRef.current?.id!==currentSection.id)){
-            console.error('currentSection',currentSection,currentSectionRef.current,currentSectionRef.current?.id!==currentSection.id);
-            //scrollToTarget(currentSection.id);
-        }
+        // if(currentSection&&(currentSectionRef.current?.id!==currentSection.id)){
+        //     scrollToTarget(currentSection.id);
+        // }
         currentSectionRef.current = currentSection;
     }, [currentSection]);
 
-    const scrollToTarget = (id:string) => { 
-        const targetElement = document.getElementById(id);
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    }
+
 
     if (!currentVersion || !currentPage) {
         return <div className="p-4 text-center text-gray-500">Loading...</div>;
@@ -73,7 +64,7 @@ const CustomPage = () => {
     };
 
     return (
-        <div className=" w-full flex justify-center items-center ">
+        <div className="w-full flex justify-center items-center ">
             <div className='relative h-full'>
                 <div className="absolute top-0 left-0 w-full z-30">
                          {/* Header */}

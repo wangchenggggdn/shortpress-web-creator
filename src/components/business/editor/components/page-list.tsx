@@ -3,20 +3,22 @@
 import React, { useEffect, useState } from 'react';
 import { IconPlus, IconFile, IconHome, IconDots, IconTrash, IconSettings, IconCopy, IconPencil } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Page, Section } from '@/types/editor';
+import { DataSourceType, Page, Section } from '@/types/editor';
 import { DEFAULT_PAGES } from '@/constants/initial-version';
 import { Menu } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import { createUniqueUUID } from '@/utils/public';
 import PageSettingsModal from './common/PageSettingsModal';
 import { toast } from 'sonner';
+import WebsiteApi from '@/api/website';
 
 interface PageListProps {
     onPageChange?: (pageId: string) => void;
+    siteId: string;
 }
 
-const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
-    const { currentVersion, currentPage, setCurrentPage,setCurrentWidget, addPage, deletePage, updatePage } = useEditorStore();
+const PageList: React.FC<PageListProps> = ({ onPageChange,siteId }) => {
+    const { currentVersion, currentPage,updateSection, setCurrentPage,setCurrentWidget, addPage, deletePage, updatePage } = useEditorStore();
     const [currentOperatePage, setCurrentOperatePage] = useState<Page | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -56,12 +58,46 @@ const PageList: React.FC<PageListProps> = ({ onPageChange }) => {
         deletePage(pageId);
     };
 
-    const handlePageClick = (pageId: string) => {
+    const handlePageClick = async (pageId: string) => {
         if (onPageChange) {
             onPageChange(pageId);
         }
+        const page = currentVersion?.pages.find(p => p.id === pageId);
+
+        //update new release data when click page
+        const isHaveNewRelease = page?.sections.some(s => s.params.extend.dataSourceType === DataSourceType.NEW_RELEASE);
+        if(page&&isHaveNewRelease){
+            const updatedPage = await updateSectionData(page,siteId);
+            updateSection(pageId,updatedPage.sections[0].id,updatedPage.sections[0],false);
+        }
         setCurrentPage(pageId);
     };
+
+
+    const updateSectionData = async (currentPage: Page, siteId: string) => {
+        if (!currentPage?.sections) return currentPage;
+        const updatedSections = await Promise.all(currentPage.sections.map(async (section: any) => {
+            const dataSourceType = section.params.extend.dataSourceType;
+            if (dataSourceType === DataSourceType.NEW_RELEASE) {
+                try {
+                    const response = await WebsiteApi.getNewRelease(siteId);
+                    if (response) {
+                        section.params.extend.widgets[0].data = response.data;
+                        return section;
+                    }
+                } catch (error) {
+                    console.error('Error fetching new release data:', error);
+                }
+            }
+            return section;
+        }));
+    
+        return {
+            ...currentPage,
+            sections: updatedSections
+        };
+    }
+    
 
     const handleSetAsHome = (page: Page) => {
         if (!currentVersion) return;

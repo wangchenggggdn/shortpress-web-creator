@@ -32,7 +32,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ isOpen, onClose, on
     const [playlists, setPlaylists] = React.useState<Playlist[]>([]);
     const [activePage, setActivePage] = React.useState(1);
     const [pageSize, setPageSize] = React.useState(9);
-    const [orderType, setOrderType] = React.useState(1);
+    const [orderType, setOrderType] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
     const [total, setTotal] = React.useState(0);
     const router = useRouter();
@@ -53,7 +53,7 @@ const PlaylistSelector: React.FC<PlaylistSelectorProps> = ({ isOpen, onClose, on
             status: 2,
             siteId: siteId,
         });
-        console.log('res',res); 
+
         setLoading(false);
         if (res.code !== 0 || (res.data.items ?? []).length === 0) return;
         setTotal(res.data.total);

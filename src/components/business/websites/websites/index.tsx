@@ -24,7 +24,6 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
     const route = useRouter();
     const [createModalOpened, setCreateModalOpened] = useState(false);
 
-    console.log('websites:', websites);
     /**
      * Handle website creation action
      */

@@ -31,7 +31,7 @@ const ScrollSection: React.FC<ScrollSectionProps> = ({ section, pageId }) => {
 
     return (
         <BaseSection section={section} pageId={pageId}>
-            <div className="px-4 pb-4">
+            <div className="pl-4 pb-4">
                 <h2 className="text-2xl font-bold text-white mb-4">{section.title || 'Scroll Section'}</h2>
                 <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
                     {currentItem.map((item: any, index: number) => (

@@ -41,7 +41,7 @@ interface EditorStore {
 
     // Section actions
     addSection: (pageId: string, sectionType: SectionType) => Section | null;
-    updateSection: (pageId: string, sectionId: string, updates: Partial<Section>) => void;
+    updateSection: (pageId: string, sectionId: string, updates: Partial<Section>, isAddToHistory?: boolean) => void;
     updateShareSection: (sectionId: string, updates: Partial<Section>) => void;
     deleteSection: (pageId: string, sectionId: string) => void;
     reorderSections: (pageId: string, sectionIds: string[]) => void;
@@ -239,7 +239,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
         return newSection;
     },
 
-    updateSection: (pageId, sectionId, updates) =>
+    updateSection: (pageId, sectionId, updates, isAddToHistory = true) =>
         set((state) => {
             if (!state.currentVersion) return state;
             const newVersion = {
@@ -257,7 +257,7 @@ const useEditorStore = create<EditorStore>((set, get) => ({
                         : page
                 )
             };
-            get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
+            isAddToHistory && get().addToHistory(newVersion, 'update_section', `Updated section: ${updates.type || sectionId}`);
             return { currentVersion: newVersion, currentSection: state.currentSection?.id === sectionId ? { ...state.currentSection, ...updates } : state.currentSection };
         }),
 

@@ -41,6 +41,8 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ section, pageId }) =>
             <div className="relative bg-black overflow-hidden">
                 <Swiper
                         key={createUniqueUUID([])}
+                        autoplay={true}
+                        speed={5000}
                         loop={true}
                         centeredSlides={true}
                         slidesPerView={3}

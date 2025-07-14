@@ -9,7 +9,7 @@ import SectionEditor from '@/components/business/editor/components/section-edito
 import Preview from '@/components/business/editor/components/preview';
 import EditorHeader from '@/components/business/editor/components/common/EditorHeader';
 import WebsiteApi from '@/api/website';
-import { EditWebsite, Version } from '@/types/editor';
+import { DataSourceType, EditWebsite, Page, Version } from '@/types/editor';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
 
@@ -54,19 +54,6 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     useEffect(() => {
         if (!editWebsite && initialData) {
             let nowData = initialData;
-            // const initialDataLocal = localStorage.getItem('initialData');
-            // const initialDataLocalObj = JSON.parse(initialDataLocal!);
-            // console.error('initialDataLocalObj', initialDataLocalObj);
-            // console.error('initialData', initialData);
-            // if (initialDataLocal) {
-            //     if(initialData.currentVersion=== initialDataLocalObj.currentVersion){
-            //         nowData = initialDataLocalObj;
-            //     }else{
-
-            //     }
-            // } else {
-            //     localStorage.setItem('initialData', JSON.stringify(nowData));
-            // }
             setEditWebsite(nowData);
             console.log('editWebsite', nowData);
             const version = nowData.versions.find((v: Version) => v.id === nowData.currentVersion);
@@ -197,6 +184,7 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
                 {/* Left Sidebar - Pages */}
                 <div className="w-64 bg-gray-100 border-r">
                     <PageList
+                        siteId={siteId}
                         onPageChange={newPageId => {
                             handlePageChange(newPageId);
                         }}

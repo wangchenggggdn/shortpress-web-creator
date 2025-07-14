@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Section } from '@/types/editor';
 import BaseSection from '../common/base-section';
 import Image from 'next/image';
+import CacheLazyImage from '@/components/common/cache-lazy-image';
 
 interface GridSectionProps {
     section: Section;
@@ -36,13 +37,19 @@ const GridSection: React.FC<GridSectionProps> = ({ section, pageId }) => {
                 <div className="grid grid-cols-3 gap-2">
                     {currentItems.map((item: any, index: number) => (
                         <div key={index}>
+                          <div >
                             <div className="relative aspect-[2/3] bg-gray-500 rounded-lg overflow-hidden">
-                                {item.cover && <Image
+                                {item.cover && <CacheLazyImage
                                     src={item.cover || '/placeholder.png'}
                                     alt={item.title || 'Grid item'}
-                                    fill
-                                    className="object-cover"
+                                    className="w-full h-full object-cover"
                                 />}
+                            </div>
+                            <div className="pt-1">
+                                    <h3 className="text-gray-400 text-sm line-clamp-2 break-words">
+                                        {item.title || 'Coming Soon'}
+                                    </h3>
+                                </div>
                             </div>
                         </div>
                     ))}
