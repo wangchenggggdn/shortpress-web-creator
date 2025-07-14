@@ -38,6 +38,22 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
         initializeHistory,
     } = useEditorStore();
 
+    useEffect(() => {
+        if(currentSection){
+            scrollToTarget(currentSection.id);
+        }
+    }, [currentSection]);
+
+    const scrollToTarget = (id:string) => { 
+        const targetElement = document.getElementById(id);
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }
+
     useEffect(() => {   
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {  
              e.returnValue = 'refresh will lost your changes, please save first'; 
