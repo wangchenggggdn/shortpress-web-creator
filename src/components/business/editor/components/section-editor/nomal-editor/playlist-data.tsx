@@ -74,7 +74,7 @@ const PlaylistData: React.FC<PlaylistDataProps> = ({ widgets, onClose, addConten
             </div> */}
 
             {/* Content */}
-            <div className="flex-1 overflow-auto">
+            <div className="max-h-[calc(100vh-420px)] overflow-auto">
                 {/* <h3 className="text-lg text-[#94A3B8] mb-4">Data</h3> */}
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={items} strategy={verticalListSortingStrategy}>
