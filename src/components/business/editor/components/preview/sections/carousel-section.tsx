@@ -65,7 +65,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ section, pageId }) =>
                                         className="object-cover"
                                     />
                                 )}
-                                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
+                                {/* <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
                                     <h3 className="text-white text-sm font-bold truncate">
                                         {item.title || 'Coming Soon'}
                                     </h3>
@@ -74,10 +74,10 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ section, pageId }) =>
                                             {item.description}
                                         </p>
                                     )}
-                                    {/* <button className="w-full mt-2 px-4 py-1.5 bg-[#6366F1] text-white text-sm rounded-lg hover:bg-[#4F46E5]">
+                                    <button className="w-full mt-2 px-4 py-1.5 bg-[#6366F1] text-white text-sm rounded-lg hover:bg-[#4F46E5]">
                                         Watch Now
-                                    </button> */}
-                                </div>
+                                    </button>
+                                </div> */}
                             </div>
                         </SwiperSlide>
                     ))}
