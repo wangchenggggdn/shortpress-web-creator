@@ -47,7 +47,7 @@ const ScrollSection: React.FC<ScrollSectionProps> = ({ section, pageId }) => {
                                 )}
                             </div>
                             <div className="pt-1">
-                                    <h3 className="text-white text-sm font-bold truncate">
+                                    <h3 className="text-gray-400 text-sm font-bold truncate">
                                         {item.title || 'Coming Soon'}
                                     </h3>
                                 </div>
