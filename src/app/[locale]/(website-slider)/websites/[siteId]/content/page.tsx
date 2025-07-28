@@ -300,7 +300,7 @@ const WebsiteDetailPage: React.FC<WebsiteDetailPageProps> = () => {
                 <div className="flex-1 px-6">
                     {/* Title Area */}
 
-                    <div className="py-4 px-11 flex items-center justify-between">
+                    <div className="py-4 px-0 flex items-center justify-between">
                         <h2 className="text-lg font-medium text-black-purple">{total + ' Playlists'}</h2>
                         <Button leftSection={<IconPlus size={16} />} variant="filled" color="primary" onClick={() => setIsAddContentOpen(true)} className="border border-primary">
                             Add Content
