@@ -148,7 +148,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange,siteId }) => {
 
     const renderPageItem = (id: string, name: string, isCustom: boolean = false, page?: Page) => {
         const isHome = page?.isHome;
-
+        console.log('--------------isHome:',isHome);
         return (
             <div
                 key={id}
@@ -221,7 +221,7 @@ const PageList: React.FC<PageListProps> = ({ onPageChange,siteId }) => {
                                     Duplicate
                                 </Menu.Item>
                                 <Menu.Divider />
-                                {page?.id !== currentVersion.pages[0].id && <Menu.Item
+                                {page?.id !== currentVersion.pages[0].id&& !page?.isHome && <Menu.Item
                                     leftSection={<IconTrash size={16} />}
                                     color="red"
                                     onClick={e => {

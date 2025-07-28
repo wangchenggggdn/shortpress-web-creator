@@ -78,7 +78,7 @@ const PageSettingsModal: React.FC<PageSettingsModalProps> = ({ open, onClose, pa
                     </div>
                     <div>
                         <h3 className="text-sm font-medium mb-2">URL</h3>
-                        <TextInput value={path} onChange={e => setPath(e.target.value)} placeholder="/your-path" variant="filled" />
+                        <TextInput disabled={page.path === '/for-you'} value={path} onChange={e => setPath(e.target.value)} placeholder="/your-path" variant="filled" />
                     </div>
                     <div>
                         <h3 className="text-sm font-medium mb-2">SEO</h3>
