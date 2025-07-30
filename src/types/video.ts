@@ -77,6 +77,13 @@ export interface IVideo {
     playlistId?: string;
     /** Video episode */
     episode?: number;
+    /** Video subtitles */
+    subtitles?: {
+        [key: string]: {
+            path: string;
+            desc: string;
+        };
+    };
 }
 
 export interface IUploadVideo extends IVideo {

@@ -315,26 +315,21 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 </div>
             </div>
 
-            {editingVideo && (
-                <>
-                    <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
-                    <div className="fixed top-0 right-0 flex h-screen z-50">
-                        <VideoDetailEdit
-                            playlistId={playlistId}
-                            isReplace={replaceLoading}
-                            video={editingVideo}
-                            onClose={() => setEditingVideo(null)}
-                            onSave={handleSave}
-                            onDelete={video => {
-                                handleDeleteClick(video.vid);
-                            }}
-                            deleteString={playlistId ? 'Remove from playlist' : 'Delete'}
-                            onReplace={handleReplace}
-                            isUploading={saveLoading}
-                        />
-                    </div>
-                </>
-            )}
+
+            <VideoDetailEdit
+                    playlistId={playlistId}
+                    isReplace={replaceLoading}
+                    video={editingVideo}
+                    onClose={() => setEditingVideo(null)}
+                    onSave={handleSave}
+                    onDelete={video => {
+                        handleDeleteClick(video.vid);
+                    }}
+                    isOpen={editingVideo !== null}
+                    deleteString={playlistId ? 'Remove from playlist' : 'Delete'}
+                    onReplace={handleReplace}
+                    isUploading={saveLoading}
+            />
 
             <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} />
 

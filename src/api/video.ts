@@ -30,6 +30,10 @@ export default class VideoApi {
         return fetch.upload<{ vids: string[] }>('/api/video/upload', formData, params, onProgress, xhrRef);
     }
 
+    static uploadSubtitle(args: FormData, vid: string) {
+        return fetch.upload<string>('/api/video/upload-subtitle', args, { vid });
+    }
+
     /**
      * Get video information by ID
      * @param vid Video ID

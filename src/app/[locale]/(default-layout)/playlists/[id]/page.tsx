@@ -21,7 +21,7 @@ import AddVideoButton from '@/components/business/add-video-button';
 import UploadVideoModal from '@/components/business/upload-video-modal';
 import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loading-data';
-import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
+import VideoDetailEdit from '@/components/business/videos/video-detail-edit/detail-edit';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { useRouter } from 'next/navigation';
 import profileEventBus from '@/utils/profileEventBus';
