@@ -21,7 +21,7 @@ import AddVideoButton from '@/components/business/add-video-button';
 import UploadVideoModal from '@/components/business/upload-video-modal';
 import fileUploadStore from '@/store/useFileUploadStore';
 import LoadingData from '@/components/common/loading-data';
-import VideoDetailEdit from '@/components/business/videos/video-detail-edit/detail-edit';
+import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { useRouter } from 'next/navigation';
 import profileEventBus from '@/utils/profileEventBus';
@@ -411,11 +411,10 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 </>
             )}
-            {editingVideo && (
-                <>
-                    <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
-                    <div className="fixed top-0 right-0 z-50">
-                        <VideoDetailEdit
+
+
+            <VideoDetailEdit
+                            isOpen={editingVideo !== null}
                             playlistId={playlist?.playlistId}
                             isReplace={replaceLoading}
                             video={editingVideo}
@@ -429,9 +428,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                             onReplace={() => {}}
                             isUploading={saveLoading}
                         />
-                    </div>
-                </>
-            )}
+
             <ConfirmDialog
                 opened={confirmSaveOrderOpen}
                 onClose={() => setConfirmSaveOrderOpen(false)}
