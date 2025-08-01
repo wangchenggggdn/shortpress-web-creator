@@ -3,28 +3,25 @@
 import React, { useState } from 'react';
 import { Button, Select } from '@mantine/core';
 import { IconX, IconUpload, IconArrowLeft, IconTrash } from '@tabler/icons-react';
+import { IVideo } from '@/types/video';
 
 interface ChangeSubtitleProps {
-    videoId: string;
-    videoTitle: string;
+    video:IVideo;
     isOpen: boolean;
     onClose: () => void;
-    onSave: (languageCode: string, file: File) => void;
+    onSave: (languageCode: string, file: File) => Promise<boolean>;
     onBackToSubtitles: () => void;
 }
 
 const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({ 
-    videoId, 
-    videoTitle, 
+    video,
     isOpen, 
     onClose, 
     onSave,
     onBackToSubtitles
 }) => {
-    const [selectedLanguage, setSelectedLanguage] = useState('en');
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [isUploading, setIsUploading] = useState(false);
-
+    // Filter out languages that are already added in subtitles
+    const existingLanguages = video.subtitles ? Object.keys(video.subtitles) : [];
     const languages = [
         { value: 'en', label: 'English' },
         { value: 'zh', label: 'Chinese' },
@@ -33,7 +30,11 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
         { value: 'de', label: 'German' },
         { value: 'ja', label: 'Japanese' },
         { value: 'ko', label: 'Korean' },
-    ];
+    ].filter(lang => !existingLanguages.includes(lang.value));
+
+    const [selectedLanguage, setSelectedLanguage] = useState(languages.length > 0 ? languages[0].value : 'en');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleFileSelect = () => {
         const fileInput = document.createElement('input');
@@ -71,16 +72,9 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
 
     const handleSave = async () => {
         if (!selectedFile) return;
-        
         setIsUploading(true);
-        try {
-            await onSave(selectedLanguage, selectedFile);
-            onClose();
-        } catch (error) {
-            console.error('Upload failed:', error);
-        } finally {
-            setIsUploading(false);
-        }
+        await onSave(selectedLanguage, selectedFile) && onClose();;
+        setIsUploading(false);
     };
 
     const handleBack = () => {
@@ -103,7 +97,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                     </Button>
                     <div>
                         <h2 className="text-lg font-medium text-gray-900">Add Subtitle</h2>
-                        <p className="text-sm">Episode 1 - {videoTitle}</p>
+                        <p className="w-52 text-sm line-clamp-1 break-words">{video.title}</p>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { VideoArgs } from '@/api/args';
 import VideoDetailEditOther from './detail-edit';
 import ChangeSubtitle from './change-subtitle';
 import VideoApi from '@/api/video';
+import { toast } from 'sonner';
 
 /**
  * Props interface for VideoDetailEdit component
@@ -48,6 +49,11 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
         const formData = new FormData();
         formData.append('file', file);
         const res = await VideoApi.uploadSubtitle(formData, video!.vid);
+        if(res.code !== 0){
+            toast.error(`Upload failed:${res.info}`);
+            return false;
+        } 
+
         const uploadedPath = res.data;
         
         setVideoEdit(prev => ({
@@ -61,6 +67,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
             },
         }));
         setShowChangeSubtitleModal(false);
+        return true;
     };
 
     useEffect(() => {
@@ -101,8 +108,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
             {/* change subtitle */}
             {showChangeSubtitleModal && videoEdit && (
                 <ChangeSubtitle
-                    videoId={videoEdit.vid}
-                    videoTitle={videoEdit.title}
+                    video={videoEdit}
                     isOpen={showChangeSubtitleModal}
                     onClose={() => {
                         setShowChangeSubtitleModal(false);

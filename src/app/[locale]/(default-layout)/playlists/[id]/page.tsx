@@ -273,6 +273,8 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                         : v
                 )
             );
+        }else{
+            toast.error(`Save failed, ${res.info}`);
         }
         setEditingVideo(null);
         setSaveLoading(false);
