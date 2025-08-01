@@ -273,6 +273,8 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                         : v
                 )
             );
+        }else{
+            toast.error(`Save failed, ${res.info}`);
         }
         setEditingVideo(null);
         setSaveLoading(false);
@@ -411,11 +413,10 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                     </div>
                 </>
             )}
-            {editingVideo && (
-                <>
-                    <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setEditingVideo(null)} />
-                    <div className="fixed top-0 right-0 z-50">
-                        <VideoDetailEdit
+
+
+            <VideoDetailEdit
+                            isOpen={editingVideo !== null}
                             playlistId={playlist?.playlistId}
                             isReplace={replaceLoading}
                             video={editingVideo}
@@ -429,9 +430,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                             onReplace={() => {}}
                             isUploading={saveLoading}
                         />
-                    </div>
-                </>
-            )}
+
             <ConfirmDialog
                 opened={confirmSaveOrderOpen}
                 onClose={() => setConfirmSaveOrderOpen(false)}
