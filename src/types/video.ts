@@ -97,8 +97,6 @@ export interface IUploadVideo extends IVideo {
     file?: File;
     /** Current playlist id */
     playlistId?: string;
-    /** Current xhrRef */
-    xhrRef?: XMLHttpRequest | null;
 }
 
 /**

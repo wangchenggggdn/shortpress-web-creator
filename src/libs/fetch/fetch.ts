@@ -261,15 +261,16 @@ class Fetch {
                 try {
                     const result = JSON.parse(xhr.responseText);
                     if (result.code !== undefined && typeof result.code === 'number') {
-                        if (xhr.status === 401) {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            return resolve(result);
+                        } else {
+                            // 对于所有非成功的状态码，统一作为错误处理
                             return resolve({
-                                code: 401,
-                                info: result.info,
-                                data: result.data,
+                                code: xhr.status,
+                                info: result.info || xhr.statusText, // 优先使用后端返回的 info
+                                data: result.data || JSON.parse('{}'),
                             });
-
                         }
-                        return resolve(result);
                     }
                     return resolve({
                         code: xhr.status,
@@ -280,7 +281,7 @@ class Fetch {
                     return resolve({
                         code: -1,
                         info: String(error),
-                        data: JSON.parse('{}'),
+                        data: {} as T,
                     });
                 }
             };
@@ -289,7 +290,7 @@ class Fetch {
                 return resolve({
                     code: -1,
                     info: 'network error',
-                    data: JSON.parse('{}'),
+                    data: {} as T,
                 });
             };
 
