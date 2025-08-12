@@ -23,9 +23,11 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video, playlistId, deleteSt
                     key={video instanceof File ? video.name : video.videoSourceUrl}
                     videoClassName="rounded-lg"
                     src={video instanceof File ? URL.createObjectURL(video) : (video.videoSourceUrl ?? '')}
+                    coverUrl={video instanceof File ? URL.createObjectURL(video) : (video.cover ?? '')}
                     isPlaying={isPlaying}
                     onEnded={() => setIsPlaying(false)}
                     onPlayPause={setIsPlaying}
+                    title={video instanceof File ? video.name : video.title}
                 />
             </div>
             <div className="mt-4 space-y-2">

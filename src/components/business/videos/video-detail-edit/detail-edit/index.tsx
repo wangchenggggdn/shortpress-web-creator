@@ -25,7 +25,7 @@ interface VideoDetailEditOtherProps {
     /** Callback function when modal is closed */
     onClose: () => void;
     /** Callback function when form is submitted */
-    onSave: (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => void;
+    onSave: (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => Promise<boolean>;
     /** Callback function when video is replaced */
     onReplace: (videoFile: File | undefined) => void;
     /** Callback function when video is deleted */
@@ -52,14 +52,22 @@ const VideoDetailEditOther: React.FC<VideoDetailEditOtherProps> = ({ editVideo, 
             ...editVideo,
             ...videoData,
         };
-        onSave(
-            {
-                vid: editVideo.vid,
-                ...videoData,
-            },
-            coverFile,
-            videoFile
-        );
+        
+        try {
+            // Call onSave and wait for the result
+            await onSave(
+                {
+                    vid: editVideo.vid,
+                    ...videoData,
+                },
+                coverFile,
+                videoFile
+            );
+        } catch (error) {
+            // If save fails, don't close the modal
+            console.error('Save failed:', error);
+            return;
+        }
     };
 
     /**

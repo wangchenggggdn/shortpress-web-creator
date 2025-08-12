@@ -26,7 +26,7 @@ interface VideoDetailEditProps {
     /** Callback function when modal is closed */
     onClose: () => void;
     /** Callback function when form is submitted */
-    onSave: (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => void;
+    onSave: (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => Promise<boolean>;
     /** Callback function when video is replaced */
     onReplace: (videoFile: File | undefined) => void;
     /** Callback function when video is deleted */
@@ -48,7 +48,7 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
        
         const formData = new FormData();
         formData.append('file', file);
-        const res = await VideoApi.uploadSubtitle(formData, video!.vid);
+        const res = await VideoApi.uploadSubtitle(formData, video?.vid ?? '');
         if(res.code !== 0){
             toast.error(`Upload failed:${res.info}`);
             return false;
@@ -96,9 +96,20 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, 
 
             {/* edit video */}
             {isVideoEditOpen &&videoEdit && (
-                <VideoDetailEditOther editVideo={videoEdit} deleteString={deleteString} isUploading={isUploading} isReplace={isReplace} playlistId={playlistId} onClose={handleClose} onSave={()=>{
-                    handleClose();
-                    onSave(videoEdit);
+                <VideoDetailEditOther editVideo={videoEdit} deleteString={deleteString} isUploading={isUploading} isReplace={isReplace} playlistId={playlistId} onClose={handleClose}                 onSave={async (videoData, coverFile, videoFile) => {
+                    try {
+                        // Call the parent onSave and wait for result
+                        const result = await onSave(videoEdit);
+                        if (result) {
+                            // Only close if save was successful
+                            handleClose();
+                        }
+                        return result;
+                    } catch (error) {
+                        // If save fails, don't close the modal
+                        console.error('Save failed:', error);
+                        return false;
+                    }
                 }} onReplace={onReplace} onDelete={onDelete} onOpenSubtitlesModal={() => {
                     setShowChangeSubtitleModal(true);
                     setIsVideoEditOpen(false);

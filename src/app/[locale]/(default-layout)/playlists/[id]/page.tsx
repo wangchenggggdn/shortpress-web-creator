@@ -233,51 +233,59 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
         setConfirmSaveOrderOpen(false);
     };
 
-    const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => {
+    const handleSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File): Promise<boolean> => {
         setSaveLoading(true);
-        if (coverFile) {
-            const formData = new FormData();
-            formData.append('file', coverFile);
-            const res = await CreatorApi.uploadFile(formData);
+        try {
+            if (coverFile) {
+                const formData = new FormData();
+                formData.append('file', coverFile);
+                const res = await CreatorApi.uploadFile(formData);
+                if (res.code === 0) {
+                    videoData.cover = res.data ?? '';
+                } else {
+                    toast.error('Failed to upload cover image');
+                    setSaveLoading(false);
+                    return false;
+                }
+            }
+            if (videoFile) {
+                const formData = new FormData();
+                formData.append('file', videoFile);
+                const replaceRes = await VideoApi.replace({ vid: editingVideo?.vid ?? '', formData });
+                if (replaceRes.code === 0) {
+                    videoData.videoPath = replaceRes.data.videoSourceUrl ?? '';
+                    videoData.videoSourceUrl = replaceRes.data.videoSourceUrl ?? '';
+                } else {
+                    toast.error('Failed to replace video');
+                    setSaveLoading(false);
+                    return false;
+                }
+            }
+            const res = await VideoApi.modify(videoData);
             if (res.code === 0) {
-                videoData.cover = res.data ?? '';
-            } else {
-                toast.error('Failed to upload cover image');
+                toast.success('Video saved successfully');
+                setVideos(
+                    videos.map(v =>
+                        v.vid === videoData.vid
+                            ? {
+                                  ...v,
+                                  ...videoData,
+                              }
+                            : v
+                    )
+                );
                 setSaveLoading(false);
-                return;
-            }
-        }
-        if (videoFile) {
-            const formData = new FormData();
-            formData.append('file', videoFile);
-            const replaceRes = await VideoApi.replace({ vid: editingVideo?.vid ?? '', formData });
-            if (replaceRes.code === 0) {
-                videoData.videoPath = replaceRes.data.videoSourceUrl ?? '';
-                videoData.videoSourceUrl = replaceRes.data.videoSourceUrl ?? '';
+                return true; // 保存成功
             } else {
-                toast.error('Failed to replace video');
+                toast.error(`Save failed, ${res.info}`);
                 setSaveLoading(false);
-                return;
+                return false; // 保存失败
             }
+        } catch (error) {
+            toast.error('Save failed due to an error');
+            setSaveLoading(false);
+            return false; // 保存异常
         }
-        const res = await VideoApi.modify(videoData);
-        if (res.code === 0) {
-            toast.success('Video saved successfully');
-            setVideos(
-                videos.map(v =>
-                    v.vid === videoData.vid
-                        ? {
-                              ...v,
-                              ...videoData,
-                          }
-                        : v
-                )
-            );
-        }else{
-            toast.error(`Save failed, ${res.info}`);
-        }
-        setEditingVideo(null);
-        setSaveLoading(false);
     };
 
     const addButton = () => {
