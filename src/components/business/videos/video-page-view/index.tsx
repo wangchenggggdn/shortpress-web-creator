@@ -345,7 +345,6 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                     }}
                     isOpen={editingVideo !== null}
                     deleteString={playlistId ? 'Remove from playlist' : 'Delete'}
-                    onReplace={handleReplace}
                     isUploading={saveLoading}
             />
 

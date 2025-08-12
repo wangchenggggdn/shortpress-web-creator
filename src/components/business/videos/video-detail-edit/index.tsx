@@ -8,130 +8,134 @@ import ChangeSubtitle from './change-subtitle';
 import VideoApi from '@/api/video';
 import { toast } from 'sonner';
 
-/**
- * Props interface for VideoDetailEdit component
- */
 interface VideoDetailEditProps {
     isOpen: boolean;
-    /** Video data to edit */
     video: IVideo | null | undefined;
-    /** Custom text for delete button */
     deleteString?: string;
-    /** Whether the video is being uploaded */
     isUploading: boolean;
-    /** Whether the video is being replaced */
     isReplace: boolean;
-    /** Playlist ID */
     playlistId?: string;
-    /** Callback function when modal is closed */
     onClose: () => void;
-    /** Callback function when form is submitted */
     onSave: (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => Promise<boolean>;
-    /** Callback function when video is replaced */
-    onReplace: (videoFile: File | undefined) => void;
-    /** Callback function when video is deleted */
     onDelete: (video: IVideo) => void;
 }
 
-/**
- * Video detail edit component
- * Provides form for editing video details including title, description, cover, and SEO settings
- * @returns React component with video editing interface
- */
-const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({ video, deleteString, isUploading, isReplace, playlistId, isOpen, onClose, onSave, onReplace, onDelete }) => {
+const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({
+    video,
+    deleteString,
+    isUploading,
+    isReplace,
+    playlistId,
+    isOpen,
+    onClose,
+    onSave,
+    onDelete
+}) => {
     const [showChangeSubtitleModal, setShowChangeSubtitleModal] = useState(false);
-    const [isVideoEditOpen, setIsVideoEditOpen] = useState(isOpen);
-    const [videoEdit, setVideoEdit] = useState<IVideo>(JSON.parse(JSON.stringify(video!)));
+    const [isVideoEditOpen, setIsVideoEditOpen] = useState(false);
+    const [videoEdit, setVideoEdit] = useState<IVideo | null>(null);
+
+    useEffect(() => {
+        if (isOpen && video) {
+            setIsVideoEditOpen(true);
+            setVideoEdit(JSON.parse(JSON.stringify(video)));
+        } else {
+            setIsVideoEditOpen(false);
+        }
+    }, [isOpen, video]);
+
+    const handleClose = () => {
+        setIsVideoEditOpen(false);
+        setVideoEdit(null);
+        onClose();
+    };
+
+    const handleTriggerSave = async (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File): Promise<boolean> => {
+        if (!videoEdit) return false;
+        try {
+            const result = await onSave(videoData, coverFile, videoFile);
+            if (result) {
+                handleClose();
+            }
+            return result;
+        } catch (error) {
+            console.error('Save failed:', error);
+            return false;
+        }
+    };
 
     const handleChangeSubtitleSave = async (languageCode: string, file: File) => {
-        // 这里应该调用上传API
-       
+        if (!videoEdit) return false;
+
         const formData = new FormData();
         formData.append('file', file);
-        const res = await VideoApi.uploadSubtitle(formData, video?.vid ?? '');
-        if(res.code !== 0){
+        const res = await VideoApi.uploadSubtitle(formData, videoEdit.vid ?? '');
+        if (res.code !== 0) {
             toast.error(`Upload failed:${res.info}`);
             return false;
-        } 
+        }
 
         const uploadedPath = res.data;
         
-        setVideoEdit(prev => ({
+        setVideoEdit(prev => prev ? {
             ...prev,
             subtitles: {
-                ...videoEdit.subtitles,
+                ...(prev.subtitles ?? {}),
                 [languageCode]: {
                     path: uploadedPath,
                     desc: file.name,
                 },
             },
-        }));
+        } : null);
         setShowChangeSubtitleModal(false);
+        setIsVideoEditOpen(true);
         return true;
     };
 
-    useEffect(() => {
-        if(isOpen){
-            setIsVideoEditOpen(true);
-            setVideoEdit(JSON.parse(JSON.stringify(video!)));
-        }
-    }, [isOpen]);
-
-    const handleClose = () => {
-        setIsVideoEditOpen(false);
-        onClose();
-    }
-
     return (
-        (isVideoEditOpen || showChangeSubtitleModal) &&  <div className='fixed inset-0 bg-black/20 z-50' onClick={()=>{
-            if(showChangeSubtitleModal){
+        (isVideoEditOpen || showChangeSubtitleModal) && <div className='fixed inset-0 bg-black/20 z-50' onClick={() => {
+            if (showChangeSubtitleModal) {
                 setShowChangeSubtitleModal(false);
-            }else{
+                setIsVideoEditOpen(true);
+            } else {
                 handleClose();
             }
         }}>
-            <div onClick={(e)=>{
-                e.stopPropagation();
-            }}>
+            <div onClick={(e) => e.stopPropagation()}>
 
-            {/* edit video */}
-            {isVideoEditOpen &&videoEdit && (
-                <VideoDetailEditOther editVideo={videoEdit} deleteString={deleteString} isUploading={isUploading} isReplace={isReplace} playlistId={playlistId} onClose={handleClose}                 onSave={async (videoData, coverFile, videoFile) => {
-                    try {
-                        // Call the parent onSave and wait for result
-                        const result = await onSave(videoEdit);
-                        if (result) {
-                            // Only close if save was successful
-                            handleClose();
-                        }
-                        return result;
-                    } catch (error) {
-                        // If save fails, don't close the modal
-                        console.error('Save failed:', error);
-                        return false;
-                    }
-                }} onReplace={onReplace} onDelete={onDelete} onOpenSubtitlesModal={() => {
-                    setShowChangeSubtitleModal(true);
-                    setIsVideoEditOpen(false);
-                }} setEditVideo={setVideoEdit} />
-            )}
+                {isVideoEditOpen && videoEdit && (
+                    <VideoDetailEditOther
+                        editVideo={videoEdit}
+                        onVideoChange={setVideoEdit}
+                        onSave={handleTriggerSave}
+                        deleteString={deleteString}
+                        isUploading={isUploading}
+                        isReplace={isReplace}
+                        playlistId={playlistId}
+                        onClose={handleClose}
+                        onDelete={onDelete}
+                        onOpenSubtitlesModal={() => {
+                            setShowChangeSubtitleModal(true);
+                            setIsVideoEditOpen(false);
+                        }}
+                    />
+                )}
 
-            {/* change subtitle */}
-            {showChangeSubtitleModal && videoEdit && (
-                <ChangeSubtitle
-                    video={videoEdit}
-                    isOpen={showChangeSubtitleModal}
-                    onClose={() => {
-                        setShowChangeSubtitleModal(false);
-                        setIsVideoEditOpen(true);
-                    }}
-                    onSave={handleChangeSubtitleSave}
-                    onBackToSubtitles={() => {
-                        setShowChangeSubtitleModal(false);
-                        setIsVideoEditOpen(true);
-                    }}
-                />
-            )}
+                {showChangeSubtitleModal && videoEdit && (
+                    <ChangeSubtitle
+                        video={videoEdit}
+                        isOpen={showChangeSubtitleModal}
+                        onClose={() => {
+                            setShowChangeSubtitleModal(false);
+                            setIsVideoEditOpen(true);
+                        }}
+                        onSave={handleChangeSubtitleSave}
+                        onBackToSubtitles={() => {
+                            setShowChangeSubtitleModal(false);
+                            setIsVideoEditOpen(true);
+                        }}
+                    />
+                )}
             
             </div>
         </div>

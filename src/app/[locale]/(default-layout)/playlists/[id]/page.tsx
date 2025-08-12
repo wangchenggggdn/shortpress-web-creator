@@ -449,7 +449,6 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                                 setEditingVideo(null);
                             }}
                             deleteString={playlist?.playlistId ? 'Remove from playlist' : 'Delete'}
-                            onReplace={() => {}}
                             isUploading={saveLoading}
                         />
 
