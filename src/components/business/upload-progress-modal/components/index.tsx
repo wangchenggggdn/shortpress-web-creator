@@ -9,6 +9,7 @@ import VideoApi from '@/api/video';
 import fileUploadStore from '@/store/useFileUploadStore';
 import profileEventBus from '@/utils/profileEventBus';
 import { EventName } from '@/types/event';
+import { retryRequest } from '@/api'; // <--- **STEP 1: Import the retryRequest utility**
 
 interface IProps {
     item: IUploadVideo;
@@ -16,25 +17,21 @@ interface IProps {
 }
 
 const UploadProgressItem: React.FC<IProps> = ({ item, onDelete }) => {
-    // Get the update state function directly from Zustand store
     const { setUploadFileList } = fileUploadStore();
-    // Each Item component instance maintains its own XMLHttpRequest reference
     const xhrRef = useRef<XMLHttpRequest | null>(null);
 
-    // This is the core logic: when the parent component marks this item's status as UPLOADING, start the upload
     useEffect(() => {
         if (item.uploadStatus === VideoUploadStatus.UPLOADING && !xhrRef.current) {
             handleUpload();
         }
 
-        // Cleanup function: when component unmounts or item object reference changes (e.g., deleted), ensure to abort any ongoing requests
         return () => {
             if (xhrRef.current) {
                 xhrRef.current.abort();
                 xhrRef.current = null;
             }
         };
-    }, [item.uploadStatus, item.vid]); // Dependencies are key, ensuring trigger on status changes
+    }, [item.uploadStatus, item.vid]);
 
     const handleUpload = async () => {
         if (!item.file) return;
@@ -43,26 +40,28 @@ const UploadProgressItem: React.FC<IProps> = ({ item, onDelete }) => {
         formData.append('files', item.file);
 
         try {
-            const res = await VideoApi.upload(
-                formData,
-                item.playlistId ?? '',
-                (progress: number) => {
-                    // Check if request was cancelled before updating progress
-                    if (xhrRef.current) {
-                        setUploadFileList((currentList) =>
-                            (currentList ?? []).map(video =>
-                                video.vid === item.vid ? { ...video, progress: Math.floor(progress) } : video
-                            )
-                        );
+            // **STEP 2: Wrap the API call with retryRequest**
+            // The entire upload logic is now placed inside the retry wrapper.
+            const res = await retryRequest(async () => {
+                return VideoApi.upload(
+                    formData,
+                    item.playlistId ?? '',
+                    (progress: number) => {
+                        if (xhrRef.current) {
+                            setUploadFileList((currentList) =>
+                                (currentList ?? []).map(video =>
+                                    video.vid === item.vid ? { ...video, progress: Math.floor(progress) } : video
+                                )
+                            );
+                        }
+                    },
+                    (xhr: XMLHttpRequest | null) => {
+                        xhrRef.current = xhr;
                     }
-                },
-                (xhr: XMLHttpRequest | null) => {
-                    // Save the xhr instance to the component's own ref
-                    xhrRef.current = xhr;
-                }
-            );
+                );
+            });
 
-            // After successful request, clear xhr reference and update status
+            // After all retries are successful, proceed
             xhrRef.current = null;
             if (res && res.data && res.data.vids && res.data.vids.length > 0) {
                 const vidFromServer = res.data.vids[0];
@@ -73,37 +72,40 @@ const UploadProgressItem: React.FC<IProps> = ({ item, onDelete }) => {
                     )
                 );
             } else {
-                handleUploadFailed();
+                // This will be caught by the outer catch block if all retries fail
+                throw new Error("Invalid response from server after successful upload.");
             }
 
-        } catch (error) {
+        } catch (error: any) {
+            // This catch block now executes only after ALL retries have failed.
             xhrRef.current = null;
-            handleUploadFailed();
+            
+            const wasAborted = error && error.message === 'Upload aborted';
+            
+            // Only set to failed if it wasn't a manual cancellation.
+            if (!wasAborted) {
+                handleUploadFailed();
+            }
         }
     };
 
     const handleUploadFailed = () => {
         setUploadFileList((currentList) =>
             (currentList ?? []).map(video =>
-                video.vid === item.vid ? { ...video, uploadStatus: VideoUploadStatus.UPLOAD_FAILED } : video
+                video.vid === item.vid ? { ...video, uploadStatus: VideoUploadStatus.UPLOAD_FAILED, progress: 0 } : video
             )
         );
     };
     
-    // Cancel or delete operation
     const handleCancelOrDelete = () => {
-        // If there's an ongoing request, abort it
         if (xhrRef.current) {
             xhrRef.current.abort();
             xhrRef.current = null;
         }
-        // Notify parent component to remove itself from the list
         onDelete(item);
     };
 
-    // Retry operation
     const handleRetry = () => {
-        // Reset status to waiting, parent component's queue manager will re-trigger it
         setUploadFileList((currentList) => 
             (currentList ?? []).map(video =>
                 video.vid === item.vid ? { ...video, uploadStatus: VideoUploadStatus.NOT_UPLOADED, progress: 0 } : video
@@ -111,8 +113,10 @@ const UploadProgressItem: React.FC<IProps> = ({ item, onDelete }) => {
         );
     };
 
+    // The JSX part remains completely unchanged.
     return (
         <div className="flex items-center gap-4 py-1">
+           {/* ... your JSX is correct and doesn't need changes ... */}
             <div className="flex-1">
                 <div className="flex justify-between mb-1">
                     <span className="text-sm truncate pr-8 max-w-sm">{item.title}</span>
