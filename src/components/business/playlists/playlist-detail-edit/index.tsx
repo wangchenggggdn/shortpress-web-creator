@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { TextInput, Textarea, Button, Select } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import { Playlist, PlaylistStatus } from '@/types/playlist';
@@ -8,74 +8,85 @@ import { PlaylistArgs } from '@/api/args';
 import PlaylistApi from '@/api/playlist';
 import userStore from '@/store/useUserStore';
 
-/**
- * Props interface for PlaylistDetailEdit component
- */
 interface PlaylistDetailEditProps {
-    /** Existing playlist data for editing */
     playlistOld?: Playlist;
-    /** Loading state for save button */
     isLoading?: boolean;
-    /** Callback function when modal is closed */
     onClose: () => void;
-    /** Callback function when form is submitted */
-    onSave: (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File) => void;
+    onSave: (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File) => Promise<boolean>;
 }
 
-/**
- * Modal component for creating or editing a playlist
- * Provides form fields for playlist details and SEO settings
- * @returns React component with playlist creation/editing interface
- */
 const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = { status: 2 } as Playlist, onClose, onSave, isLoading = false }) => {
     const [coverFile, setCoverFile] = useState<File>();
-    const isEdit = !!playlistOld.playlistId;
     const [playlist, setPlaylist] = useState<Playlist>(playlistOld);
     const { userInfo } = userStore();
+    const isEdit = !!playlistOld.playlistId;
 
-    // Fetch playlist data when editing
     useEffect(() => {
-        if (playlist.playlistId) {
-            PlaylistApi.get(playlist.playlistId).then(res => {
-                setPlaylist(res.data);
+        if (isEdit && playlistOld.playlistId) {
+            PlaylistApi.get(playlistOld.playlistId).then(res => {
+                setPlaylist(prevPlaylist => ({
+                    ...prevPlaylist,  
+                    ...res.data,      
+                    seo: {
+                        ...(prevPlaylist.seo ?? {}),  
+                        ...(res.data.seo ?? {}),     
+                    }
+                }));
             });
         }
-    }, [playlistOld.playlistId]);
+    }, [playlistOld.playlistId, isEdit]);
 
-    /**
-     * Handle form submission
-     * @param playlistData Playlist data to submit
-     * @param coverFile Optional cover image file
-     */
-    const handleSave = (playlistData: Partial<Playlist>, coverFile?: File) => {
-        onSave(
-            {
-                ...playlistData,
-                playlistId: playlistData?.playlistId ?? '',
+    const handleInputChange = useCallback((field: keyof Playlist, value: any) => {
+        setPlaylist(prevPlaylist => ({
+            ...prevPlaylist,
+            [field]: value,
+        }));
+    }, []);
+
+    const handleSeoChange = useCallback((field: 'title' | 'description' | 'keywords', value: string) => {
+        setPlaylist(prevPlaylist => ({
+            ...prevPlaylist,
+            seo: {
+                ...(prevPlaylist.seo ?? {}),
+                [field]: value,
             },
-            userInfo?.website?.siteId ?? undefined,
-            coverFile
-        );
-        onClose();
+        }));
+    }, []);
+
+    const handleSave = async () => {
+        try {
+            const result = await onSave(
+                {
+                    ...playlist,
+                    playlistId: playlist?.playlistId ?? '',
+                },
+                userInfo?.website?.siteId ?? undefined,
+                coverFile
+            );
+            
+            if (result) {
+                onClose();
+            }
+        } catch (error) {
+            console.error('Save failed:', error);
+        }
     };
 
-    /**
-     * Handle cover image upload
-     */
     const handleUploadImage = () => {
-        const file = document.createElement('input');
-        file.type = 'file';
-        file.accept = 'image/*';
-        file.onchange = (e: any) => {
-            setCoverFile(e.target.files[0]);
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.onchange = (e: any) => {
+            if (e.target.files && e.target.files.length > 0) {
+                setCoverFile(e.target.files[0]);
+            }
         };
-        file.click();
+        fileInput.click();
     };
 
     return (
         <div className="fixed top-0 right-0 h-screen shadow-lg">
             <div className="w-[480px] bg-layout h-full flex flex-col">
-                {/* Header */}
                 <div className="flex items-center justify-between px-6 h-16 border-b">
                     <h2 className="text-lg font-medium">{!isEdit ? 'Create playlist' : 'Playlist details'}</h2>
                     <Button variant="subtle" color="gray" onClick={onClose} className="hover:bg-gray-100">
@@ -83,20 +94,16 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                     </Button>
                 </div>
 
-                {/* Content Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {/* Basic Information */}
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-2">
                                 Title <span className="text-red-500">*</span>
                             </label>
                             <TextInput
-                                defaultValue={playlist?.title}
+                                value={playlist?.title ?? ''}
                                 placeholder="Enter playlist title"
-                                onChange={e => {
-                                    playlist.title = e.target.value;
-                                }}
+                                onChange={e => handleInputChange('title', e.target.value)}
                                 variant="filled"
                                 required
                             />
@@ -105,12 +112,10 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                         <div>
                             <label className="block text-sm font-medium mb-2">Description</label>
                             <Textarea
+                                value={playlist?.description ?? ''}
                                 placeholder="Add some description"
                                 minRows={4}
-                                defaultValue={playlist?.description}
-                                onChange={e => {
-                                    playlist.description = e.target.value;
-                                }}
+                                onChange={e => handleInputChange('description', e.target.value)}
                                 variant="filled"
                             />
                         </div>
@@ -118,107 +123,77 @@ const PlaylistDetailEdit: React.FC<PlaylistDetailEditProps> = ({ playlistOld = {
                         <div>
                             <label className="block text-sm font-medium mb-2">Tags</label>
                             <TextInput
+                                value={playlist?.tags ?? ''}
                                 placeholder="Add tags"
-                                defaultValue={playlist?.tags}
-                                onChange={e => {
-                                    playlist.tags = e.target.value;
-                                }}
+                                onChange={e => handleInputChange('tags', e.target.value)}
                                 variant="filled"
                             />
                         </div>
                     </div>
 
-                    {/* Cover Image */}
-                    {true && (
-                        <div>
-                            <h3 className="text-lg font-medium mb-4">Cover</h3>
-                            <div className="flex items-center gap-4">
-                                <div className="w-32 h-32 bg-[#F4F4F7] rounded-lg flex items-center justify-center">
-                                    {playlist.cover && playlist.cover.length > 0 && !coverFile && (
-                                        <img src={playlist.cover} alt="logo" className="w-full h-full object-cover rounded-lg" />
-                                    )}
-                                    {coverFile && <img src={URL.createObjectURL(coverFile)} alt="logo" className="w-full h-full object-cover rounded-lg" />}
-                                </div>
-                                <Button variant="filled" color="primary" size="md" onClick={() => handleUploadImage()}>
-                                    Upload Image
-                                </Button>
+                    <div>
+                        <h3 className="text-lg font-medium mb-4">Cover</h3>
+                        <div className="flex items-center gap-4">
+                            <div className="w-32 h-32 bg-[#F4F4F7] rounded-lg flex items-center justify-center overflow-hidden">
+                                {coverFile 
+                                    ? <img src={URL.createObjectURL(coverFile)} alt="Preview" className="w-full h-full object-cover" />
+                                    : playlist.cover && <img src={playlist.cover} alt="Cover" className="w-full h-full object-cover" />
+                                }
                             </div>
+                            <Button variant="filled" color="primary" size="md" onClick={handleUploadImage}>
+                                Upload Image
+                            </Button>
                         </div>
-                    )}
+                    </div>
 
-                    {/* Status */}
                     <div>
                         <label className="block text-sm font-medium mb-2">Status</label>
                         <Select
-                            defaultValue={playlist?.status?.toString() ?? '2'}
+                            value={playlist?.status?.toString() ?? '2'}
                             data={[
                                 { value: PlaylistStatus.PUBLISHED.toString(), label: 'Published' },
                                 { value: PlaylistStatus.UNPUBLISHED.toString(), label: 'Unpublished' },
                             ]}
-                            onChange={e => {
-                                playlist.status = Number(e);
-                            }}
+                            onChange={value => handleInputChange('status', Number(value))}
                             variant="filled"
                         />
                     </div>
 
-                    {/* SEO Settings */}
-                    {true && (
-                        <div className="space-y-4">
-                            <h3 className="text-base font-medium">SEO</h3>
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Title</label>
-                                <TextInput
-                                    defaultValue={playlist?.seo?.title}
-                                    placeholder="SEO title"
-                                    onChange={e => {
-                                        playlist.seo = {
-                                            title: e.target.value,
-                                            description: playlist.seo?.description ?? '',
-                                            keywords: playlist.seo?.keywords ?? '',
-                                        };
-                                    }}
-                                    variant="filled"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Description</label>
-                                <Textarea
-                                    placeholder="Add description"
-                                    minRows={3}
-                                    defaultValue={playlist?.seo?.description}
-                                    onChange={e => {
-                                        playlist.seo = {
-                                            title: playlist.seo?.title ?? '',
-                                            description: e.target.value,
-                                            keywords: playlist.seo?.keywords ?? '',
-                                        };
-                                    }}
-                                    variant="filled"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Keywords</label>
-                                <TextInput
-                                    placeholder="Add keywords, comma separated"
-                                    defaultValue={playlist?.seo?.keywords}
-                                    onChange={e => {
-                                        playlist.seo = {
-                                            title: playlist.seo?.title ?? '',
-                                            description: playlist.seo?.description ?? '',
-                                            keywords: e.target.value,
-                                        };
-                                    }}
-                                    variant="filled"
-                                />
-                            </div>
+                    <div className="space-y-4">
+                        <h3 className="text-base font-medium">SEO</h3>
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Title</label>
+                            <TextInput
+                                value={playlist?.seo?.title ?? ''}
+                                placeholder="SEO title"
+                                onChange={e => handleSeoChange('title', e.target.value)}
+                                variant="filled"
+                            />
                         </div>
-                    )}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Description</label>
+                            <Textarea
+                                value={playlist?.seo?.description ?? ''}
+                                placeholder="Add description"
+                                minRows={3}
+                                onChange={e => handleSeoChange('description', e.target.value)}
+                                variant="filled"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2">Keywords</label>
+                            <TextInput
+                                value={playlist?.seo?.keywords ?? ''}
+                                placeholder="Add keywords, comma separated"
+                                onChange={e => handleSeoChange('keywords', e.target.value)}
+                                variant="filled"
+                            />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Footer Actions */}
                 <div className="px-6 py-4 bg-white">
-                    <Button loading={isLoading} fullWidth color="primary" onClick={() => handleSave(playlist, coverFile)}>
+                    <Button loading={isLoading} fullWidth color="primary" onClick={handleSave}>
                         {!isEdit ? 'Create Playlist' : 'Save Changes'}
                     </Button>
                 </div>

@@ -32,6 +32,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     const [orderType, setOrderType] = useState<number>(0);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(false);
     const [editingPlaylist, setEditingPlaylist] = useState<Playlist | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [activePage, setActivePage] = useState(1);
@@ -179,38 +180,57 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
      * @param playlistData Playlist data to save
      * @param coverFile Optional cover image file
      */
-    const handleSave = useCallback(async (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File) => {
-        setLoading(true);
-
-        if (coverFile) {
-            const formData = new FormData();
-            formData.append('file', coverFile);
-            const res = await CreatorApi.uploadFile(formData);
-            if (res.code === 0) {
-                playlistData.cover = res.data ?? '';
-            }
-        }
-        if (playlistData.playlistId) {
-            const res = await PlaylistApi.modify(playlistData);
-            if (res.code === 0) {
-                saveSuccess();
-            } else {
-                toast.error(res.info);
-            }
-        } else {
-            const res = await PlaylistApi.create({ ...playlistData, title: playlistData.title ?? '' });
-            if (res.code === 0) {
-                if (userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status !== 1) {
-                    CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
+    const handleSave = useCallback(async (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File): Promise<boolean> => {
+        setSaveLoading(true);
+        try {
+            if (coverFile) {
+                const formData = new FormData();
+                formData.append('file', coverFile);
+                const res = await CreatorApi.uploadFile(formData);
+                if (res.code === 0) {
+                    playlistData.cover = res.data ?? '';
+                } else {
+                    toast.error('Failed to upload cover image');
+                    setSaveLoading(false);
+                    return false;
                 }
-                saveSuccess();
-            } else {
-                toast.error(res.info);
             }
-            websiteId && (await WebsiteApi.addPlaylists(websiteId, [res.data]));
-        }
+            if (playlistData.playlistId) {
+                const res = await PlaylistApi.modify(playlistData);
+                if (res.code === 0) {
+                    toast.success('Playlist updated successfully');
+                    saveSuccess();
+                    setSaveLoading(false);
+                    return true; // 保存成功
+                } else {
+                    toast.error(res.info);
+                    setSaveLoading(false);
+                    return false; // 保存失败
+                }
+            } else {
+                const res = await PlaylistApi.create({ ...playlistData, title: playlistData.title ?? '' });
+                if (res.code === 0) {
+                    if (userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status !== 1) {
+                        CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
+                    }
+                    toast.success('Playlist created successfully');
+                    saveSuccess();
+                    setSaveLoading(false);
+                    websiteId && (await WebsiteApi.addPlaylists(websiteId, [res.data]));
+                    return true; // 保存成功
+                } else {
+                    toast.error(res.info);
+                    setSaveLoading(false);
+                    return false; // 保存失败
+                }
 
-        setLoading(false);
+            }
+        } catch (error) {
+            console.error('Save failed:', error);
+            toast.error('Save failed due to an error');
+            setSaveLoading(false);
+            return false; // 保存异常
+        }
     }, []);
 
     /**
@@ -354,6 +374,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                     <div className="fixed top-0 right-0 z-50">
                         <PlaylistDetailEdit
                             playlistOld={editingPlaylist ?? undefined}
+                            isLoading={saveLoading}
                             onClose={() => {
                                 setEditingPlaylist(null);
                                 setIsCreating(false);

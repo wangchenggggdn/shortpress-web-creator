@@ -132,25 +132,39 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
         setPlaylist(res.data);
     };
 
-    const handleSavePlaylist = async (playlistData: PlaylistArgs.Modify, website?: string, coverFile?: File) => {
+    const handleSavePlaylist = async (playlistData: PlaylistArgs.Modify, website?: string, coverFile?: File): Promise<boolean> => {
         setIsSaving(true);
-        if (coverFile) {
-            const formData = new FormData();
-            formData.append('file', coverFile ?? '');
-            const res = await CreatorApi.uploadFile(formData);
-            if (res.code === 0) {
-                playlistData.cover = res.data;
+        try {
+            if (coverFile) {
+                const formData = new FormData();
+                formData.append('file', coverFile ?? '');
+                const res = await CreatorApi.uploadFile(formData);
+                if (res.code === 0) {
+                    playlistData.cover = res.data;
+                } else {
+                    toast.error('Failed to upload cover image');
+                    setIsSaving(false);
+                    return false;
+                }
             }
-        }
 
-        PlaylistApi.modify(playlistData).then(res => {
+            const res = await PlaylistApi.modify(playlistData);
             if (res.code === 0) {
                 toast.success('Playlist updated successfully');
                 playlistFetch();
-                setIsEditing(false);
+                setIsSaving(false);
+                return true; // 保存成功
+            } else {
+                toast.error(`Save failed: ${res.info}`);
+                setIsSaving(false);
+                return false; // 保存失败
             }
-        });
-        setIsSaving(false);
+        } catch (error) {
+            console.error('Save failed:', error);
+            toast.error('Save failed due to an error');
+            setIsSaving(false);
+            return false; // 保存异常
+        }
     };
 
     const handleAddContent = async (selectedItems: string[]) => {
