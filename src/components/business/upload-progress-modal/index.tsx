@@ -49,13 +49,34 @@ const UploadProgressModal: React.FC = () => {
         checkUpload();
     }, [uploadFileList]);
 
+    /**
+     * Check and start uploads to maintain maximum concurrent upload count
+     * This function ensures that we always try to have MAX_UPLOAD_COUNT videos uploading
+     * It will automatically start new uploads when slots become available
+     */
     const checkUpload = () => {
         if(uploadFileList){
-            const waitingIndex = uploadFileList?.findIndex(item => (item.uploadStatus === VideoUploadStatus.NOT_UPLOADED||item.uploadStatus === VideoUploadStatus.NULL||item.uploadStatus === VideoUploadStatus.UPLOAD_FAILED))??0;
             const uploadingCount = uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length ?? 0;
-            const uploadingItem = uploadFileList[waitingIndex];
-            if(uploadingCount<MAX_UPLOAD_COUNT&&uploadingItem){
-                handleUpload(uploadingItem,false);
+            
+            // If current upload count is less than maximum, try to start more uploads
+            if(uploadingCount < MAX_UPLOAD_COUNT) {
+                // Find all waiting items (not uploaded or initial status)
+                // Failed items are excluded as they have already been processed
+                const waitingItems = uploadFileList?.filter(item => 
+                    item.uploadStatus === VideoUploadStatus.NOT_UPLOADED ||
+                    item.uploadStatus === VideoUploadStatus.NULL
+                ) ?? [];
+                
+                // Calculate how many uploads we can start
+                const canStartCount = MAX_UPLOAD_COUNT - uploadingCount;
+                const itemsToStart = waitingItems.slice(0, canStartCount);
+                
+                // Start uploads for waiting items
+                itemsToStart.forEach(item => {
+                    if (item.file) {
+                        handleUpload(item, false);
+                    }
+                });
             }
         }
     }
@@ -79,9 +100,16 @@ const UploadProgressModal: React.FC = () => {
         window.location.reload();
     };
 
+    /**
+     * Handle individual video upload
+     * @param itemToUpload Video item to upload
+     * @param isRefresh Whether this is a retry of a failed upload
+     */
     const handleUpload = async (itemToUpload: IUploadVideo, isRefresh: boolean = false) => { 
         const itemId = itemToUpload.vid;
         if (itemToUpload.file && (itemToUpload.uploadStatus === VideoUploadStatus.NULL || isRefresh)) {
+            // Update status to NOT_UPLOADED to indicate this item is ready for upload
+            // This will trigger useEffect which calls checkUpload to maintain queue
             setUploadFileList((currentList: IUploadVideo[] | null) => 
                 (currentList ?? []).map(video => 
                     video.vid === itemId
@@ -208,8 +236,9 @@ const UploadProgressModal: React.FC = () => {
                         {(uploadFileList ?? [])
                             .map((item, index) => (
                                 <UploadProgressItem key={index} index={index} item={item} handleUpload={(item,isRefresh)=>{
-                                    const uploadingCount = uploadFileList?.filter(item => item.uploadStatus === VideoUploadStatus.UPLOADING).length ?? 0;
-                                    if(uploadingCount<MAX_UPLOAD_COUNT&&item){
+                                    // 重试时直接调用handleUpload，不需要检查数量限制
+                                    // 因为handleUpload内部会更新状态，然后触发useEffect调用checkUpload
+                                    if(item){
                                         handleUpload(item,isRefresh);
                                     }
                                 }} handleDelectUploadFile={handleDelectUploadFile} />
