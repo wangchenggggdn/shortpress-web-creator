@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react';
 import { Button } from '@mantine/core';
 import { IVideo } from '@/types/video';
 import VideoPlayer from '@/components/common/video-player';
+import LocalVideoPlayer from '@/components/common/local-video-player';
 
 interface VideoPreviewProps {
     video: IVideo | File;
@@ -19,16 +20,26 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ video, playlistId, deleteSt
     return (
         <div className="w-full bg-layout flex flex-col">
             <div className="aspect-[9/16] bg-gray-100 rounded-lg flex flex-col items-center justify-center">
-                <VideoPlayer
-                    key={video instanceof File ? video.name : video.videoSourceUrl}
-                    videoClassName="rounded-lg"
-                    src={video instanceof File ? URL.createObjectURL(video) : (video.videoSourceUrl ?? '')}
-                    coverUrl={video instanceof File ? URL.createObjectURL(video) : (video.cover ?? '')}
-                    isPlaying={isPlaying}
-                    onEnded={() => setIsPlaying(false)}
-                    onPlayPause={setIsPlaying}
-                    title={video instanceof File ? video.name : video.title}
-                />
+                {video instanceof File ? (
+                    <LocalVideoPlayer
+                        file={video}
+                        className="rounded-lg"
+                        isPlaying={isPlaying}
+                        onEnded={() => setIsPlaying(false)}
+                        onPlayPause={setIsPlaying}
+                    />
+                ) : (
+                    <VideoPlayer
+                        key={video.videoSourceUrl}
+                        videoClassName="rounded-lg"
+                        src={video.videoSourceUrl ?? ''}
+                        coverUrl={video.cover ?? ''}
+                        isPlaying={isPlaying}
+                        onEnded={() => setIsPlaying(false)}
+                        onPlayPause={setIsPlaying}
+                        title={video.title}
+                    />
+                )}
             </div>
             <div className="mt-4 space-y-2">
                 {!playlistId && (
