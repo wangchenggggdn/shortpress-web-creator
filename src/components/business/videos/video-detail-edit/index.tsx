@@ -34,6 +34,8 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({
     const [showChangeSubtitleModal, setShowChangeSubtitleModal] = useState(false);
     const [isVideoEditOpen, setIsVideoEditOpen] = useState(false);
     const [videoEdit, setVideoEdit] = useState<IVideo | null>(null);
+    const [coverFile, setCoverFile] = useState<File>();
+    const [videoFile, setVideoFile] = useState<File>();
 
     useEffect(() => {
         if (isOpen && video) {
@@ -47,6 +49,8 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({
     const handleClose = () => {
         setIsVideoEditOpen(false);
         setVideoEdit(null);
+        setCoverFile(undefined);
+        setVideoFile(undefined);
         onClose();
     };
 
@@ -107,6 +111,10 @@ const VideoDetailEdit: React.FC<VideoDetailEditProps> = ({
                     <VideoDetailEditOther
                         editVideo={videoEdit}
                         onVideoChange={setVideoEdit}
+                        coverFile={coverFile}
+                        videoFile={videoFile}
+                        onCoverFileChange={setCoverFile}
+                        onVideoFileChange={setVideoFile}
                         onSave={handleTriggerSave}
                         deleteString={deleteString}
                         isUploading={isUploading}

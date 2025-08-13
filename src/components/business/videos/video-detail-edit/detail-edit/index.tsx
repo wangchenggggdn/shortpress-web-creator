@@ -14,6 +14,10 @@ interface VideoDetailEditOtherProps {
     isUploading: boolean;
     isReplace: boolean;
     playlistId?: string;
+    coverFile?: File;
+    videoFile?: File;
+    onCoverFileChange: (file: File | undefined) => void;
+    onVideoFileChange: (file: File | undefined) => void;
     onClose: () => void;
     onSave: (videoData: VideoArgs.Modify, coverFile?: File, videoFile?: File) => Promise<boolean>;
     onDelete: (video: IVideo) => void;
@@ -27,14 +31,17 @@ const VideoDetailEditOther: React.FC<VideoDetailEditOtherProps> = ({
     isUploading,
     isReplace,
     playlistId,
+    coverFile,
+    videoFile,
+    onCoverFileChange,
+    onVideoFileChange,
     onClose,
     onSave,
     onDelete,
     onOpenSubtitlesModal,
     onVideoChange,
 }) => {
-    const [coverFile, setCoverFile] = useState<File>();
-    const [videoFile, setVideoFile] = useState<File>();
+
 
     const handleInputChange = useCallback((field: keyof IVideo, value: any) => {
         onVideoChange(prevVideo => {
@@ -81,7 +88,7 @@ const VideoDetailEditOther: React.FC<VideoDetailEditOtherProps> = ({
         fileInput.accept = 'image/*';
         fileInput.onchange = e => {
             const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) setCoverFile(file);
+            if (file) onCoverFileChange(file);
         };
         fileInput.click();
     };
@@ -93,7 +100,7 @@ const VideoDetailEditOther: React.FC<VideoDetailEditOtherProps> = ({
         fileInput.onchange = e => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (file) {
-                setVideoFile(file);
+                onVideoFileChange(file);
             }
         };
         fileInput.click();
