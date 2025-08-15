@@ -158,15 +158,14 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
     };
 
     /**
-     * 处理文件上传
+     * 处理文件选择
      */
-    const handleFileUpload = useCallback((files: FileList) => {
+    const handleFileSelection = useCallback((files: FileList) => {
         const newFiles: ISubtitleFile[] = [];
         
         Array.from(files).forEach(file => {
-            // Check if file already exists
             if (isFileAlreadyAdded(file)) {
-                return; // Skip duplicate file
+                return; // Skip files with duplicate names
             }
 
             const filename = file.name;
@@ -195,7 +194,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
         if (newFiles.length > 0) {
             setUploadedFiles(prev => [...prev, ...newFiles]);
         }
-    }, [languageOptions]);
+    }, [languageOptions, uploadedFiles]);
 
     /**
      * 处理拖拽上传
@@ -203,8 +202,8 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
     const handleDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         setIsDragOver(false);
-        handleFileUpload(e.dataTransfer.files);
-    }, [handleFileUpload]);
+        handleFileSelection(e.dataTransfer.files);
+    }, [handleFileSelection]);
 
     /**
      * 处理拖拽悬停
@@ -233,11 +232,11 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
         input.onchange = (e) => {
             const target = e.target as HTMLInputElement;
             if (target.files) {
-                handleFileUpload(target.files);
+                handleFileSelection(target.files);
             }
         };
         input.click();
-    }, [handleFileUpload]);
+    }, [handleFileSelection]);
 
     /**
      * 更新文件语言选择
