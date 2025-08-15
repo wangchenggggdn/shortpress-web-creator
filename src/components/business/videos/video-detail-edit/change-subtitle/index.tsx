@@ -16,6 +16,7 @@ interface ISubtitleFile {
     format: string;
     isFormatValid: boolean;
     isLanguageSelected: boolean;
+    isLanguageAlreadyExists?: boolean;
     status: 'pending' | 'processing' | 'ready' | 'error';
 }
 
@@ -185,6 +186,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                 format,
                 isFormatValid,
                 isLanguageSelected: !!availableLanguage,
+                isLanguageAlreadyExists: availableLanguage ? !!(video.subtitles && video.subtitles[availableLanguage]) : false,
                 status: 'pending'
             });
         });
@@ -242,7 +244,12 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
     const handleLanguageChange = (fileIndex: number, languageCode: string) => {
         setUploadedFiles(prev => prev.map((file, index) => 
             index === fileIndex 
-                ? { ...file, selectedLanguage: languageCode, isLanguageSelected: true }
+                ? { 
+                    ...file, 
+                    selectedLanguage: languageCode, 
+                    isLanguageSelected: true,
+                    isLanguageAlreadyExists: !!(video.subtitles && video.subtitles[languageCode])
+                }
                 : file
         ));
     };
@@ -265,9 +272,9 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
      * 保存所有字幕文件
      */
     const handleSaveAll = async () => {
-        // Filter out valid files (correct format and language selected)
+        // Filter out valid files (correct format, language selected, and language not already exists)
         const validFiles = uploadedFiles.filter(file => 
-            file.isFormatValid && file.isLanguageSelected && file.selectedLanguage
+            file.isFormatValid && file.isLanguageSelected && file.selectedLanguage && !file.isLanguageAlreadyExists
         );
 
         if (validFiles.length === 0) {
@@ -297,7 +304,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
      * 检查是否可以保存
      */
     const canSave = uploadedFiles.some(file => 
-        file.isFormatValid && file.isLanguageSelected
+        file.isFormatValid && file.isLanguageSelected && !file.isLanguageAlreadyExists
     );
 
     /**
@@ -311,6 +318,11 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
      * 获取格式错误的文件数量
      */
     const filesWithInvalidFormat = uploadedFiles.filter(file => !file.isFormatValid).length;
+
+    /**
+     * 获取语言已存在的文件数量
+     */
+    const filesWithExistingLanguage = uploadedFiles.filter(file => file.isLanguageAlreadyExists).length;
 
     const handleBack = () => {
         onBackToSubtitles();
@@ -336,7 +348,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
             </div>
 
             {/* Content */}
-            <div className="w-96 bg-layout flex flex-col h-[calc(100vh-4rem)]">
+            <div className="w-[460px] bg-layout flex flex-col h-[calc(100vh-4rem)]">
                 <div className="flex-1 overflow-y-auto">
                     <div className="p-6 space-y-6">
                         {/* File Upload Area */}
@@ -373,10 +385,10 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                 <div className="border rounded-lg overflow-hidden">
                                     <div className="bg-gray-50 px-4 py-3 border-b">
                                         <div className="grid grid-cols-12 gap-3 text-xs font-medium text-gray-700">
-                                            <div className="col-span-5">Filename</div>
-                                            <div className="col-span-4">Language</div>
-                                            <div className="col-span-2">Status</div>
-                                            <div className="col-span-1">Action</div>
+                                            <div className="col-span-4">Filename</div>
+                                            <div className="col-span-3 text-center">Language</div>
+                                            <div className="col-span-3 text-center">Status</div>
+                                            <div className="col-span-2 text-center">Action</div>
                                         </div>
                                     </div>
                                     
@@ -385,14 +397,14 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                             <div key={index} className="px-4 py-3 hover:bg-gray-50">
                                                 <div className="grid grid-cols-12 gap-3 items-center">
                                                     {/* Filename */}
-                                                    <div className="col-span-5">
+                                                    <div className="col-span-4">
                                                         <Text size="xs" className="truncate" title={file.filename}>
                                                             {file.filename}
                                                         </Text>
                                                     </div>
                                                     
                                                     {/* Language Selection */}
-                                                    <div className="col-span-4">
+                                                    <div className="col-span-3">
                                                         {file.isFormatValid ? (
                                                             <Select
                                                                 data={languageOptions}
@@ -417,8 +429,8 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                                     </div>
                                                     
                                                     {/* Status/Format */}
-                                                    <div className="col-span-2">
-                                                        <div className="flex items-center gap-1">
+                                                    <div className="col-span-3">
+                                                        <div className="flex items-center justify-center gap-1">
                                                             {file.isFormatValid ? (
                                                                 <>
                                                                     <IconCheck size={12} className="text-green-500" />
@@ -434,37 +446,51 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                                     </div>
                                                     
                                                     {/* Actions */}
-                                                    <div className="col-span-1">
-                                                        <ActionIcon
-                                                            onClick={() => handleRemoveFile(index)}
-                                                            color="red"
-                                                            variant="subtle"
-                                                            size="xs"
-                                                            title="Remove file"
-                                                        >
-                                                            <IconX size={12} />
-                                                        </ActionIcon>
+                                                    <div className="col-span-2">
+                                                        <div className="flex items-center justify-center">
+                                                            <ActionIcon
+                                                                onClick={() => handleRemoveFile(index)}
+                                                                color="red"
+                                                                variant="subtle"
+                                                                size="xs"
+                                                                title="Remove file"
+                                                            >
+                                                                <IconX size={12} />
+                                                            </ActionIcon>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                
+                                                {/* Language Already Exists Warning - Full Width */}
+                                                {file.isLanguageAlreadyExists && (
+                                                    <div className="mt-2 pt-2 border-t border-gray-200 flex items-center gap-2 text-xs text-red-500">
+                                                        <IconAlertCircle size={14} />
+                                                        <span> Language already exists. Please delete existing subtitle first.</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* Status Notifications */}
-                                <div className="space-y-2">
-                                    {filesNeedingLanguage > 0 && (
-                                        <div className="flex items-center gap-2 text-xs text-orange-600">
-                                            <IconAlertCircle size={14} />
-                                            <span>{filesNeedingLanguage} files need language selection</span>
-                                        </div>
-                                    )}
-                                    {filesWithInvalidFormat > 0 && (
-                                        <div className="flex items-center gap-2 text-xs text-red-600">
+                                {/* Status Notifications - Show only one priority message */}
+                                <div>
+                                    {filesWithInvalidFormat > 0 ? (
+                                        <div className="flex items-center gap-2 text-xs text-red-500">
                                             <IconAlertCircle size={14} />
                                             <span>{filesWithInvalidFormat} files have invalid format</span>
                                         </div>
-                                    )}
+                                    ) : filesWithExistingLanguage > 0 ? (
+                                        <div className="flex items-center gap-2 text-xs text-red-500">
+                                            <IconAlertCircle size={14} />
+                                            <span>{filesWithExistingLanguage} files have existing language - delete existing subtitle first</span>
+                                        </div>
+                                    ) : filesNeedingLanguage > 0 ? (
+                                        <div className="flex items-center gap-2 text-xs text-red-500">
+                                            <IconAlertCircle size={14} />
+                                            <span>{filesNeedingLanguage} files need language selection</span>
+                                        </div>
+                                    ) : null}
                                 </div>
                             </div>
                         )}
@@ -485,7 +511,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                             </Button>
                             
                             <Text size="xs" c="dimmed">
-                                {uploadedFiles.filter(f => f.isFormatValid && f.isLanguageSelected).length} files ready to upload
+                                {uploadedFiles.filter(f => f.isFormatValid && f.isLanguageSelected && !f.isLanguageAlreadyExists).length} files ready to upload
                             </Text>
                         </div>
                     )}
@@ -499,8 +525,8 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                         leftSection={<IconCheck size={16} />}
                     >
                         {canSave 
-                            ? `Confirm Add ${uploadedFiles.filter(f => f.isFormatValid && f.isLanguageSelected).length} Subtitles`
-                            : 'Please select language for all files'
+                            ? `Confirm Add ${uploadedFiles.filter(f => f.isFormatValid && f.isLanguageSelected && !f.isLanguageAlreadyExists).length} Subtitles`
+                            : 'Please select language for all files or delete existing subtitles'
                         }
                     </Button>
                 </div>
