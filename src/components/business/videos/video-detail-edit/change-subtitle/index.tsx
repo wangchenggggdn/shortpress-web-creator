@@ -43,7 +43,6 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
     onSave,
     onBackToSubtitles
 }) => {
-    // 语言选项列表 - 显示英文，过滤掉已有字幕的语言
     const languageOptions: ILanguageOption[] = useMemo(() => {
         const existingLanguages = video.subtitles ? Object.keys(video.subtitles) : [];
         
@@ -64,16 +63,28 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
             { value: 'hi', label: 'Hindi', nativeName: 'हिन्दी' },
             { value: 'th', label: 'Thai', nativeName: 'ไทย' },
             { value: 'vi', label: 'Vietnamese', nativeName: 'Tiếng Việt' },
+            { value: 'tr', label: 'Turkish', nativeName: 'Türkçe' },
+            { value: 'uk', label: 'Ukrainian', nativeName: 'Українська' },
+            { value: 'pl', label: 'Polish', nativeName: 'Polski' },
+            { value: 'cs', label: 'Czech', nativeName: 'Čeština' },
+            { value: 'nl', label: 'Dutch', nativeName: 'Nederlands' },
+            { value: 'fil', label: 'Filipino', nativeName: 'Filipino' },
+            { value: 'fi', label: 'Finnish', nativeName: 'Suomi' },
+            { value: 'he', label: 'Hebrew', nativeName: 'עברית' },
+            { value: 'id', label: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+            { value: 'no', label: 'Norwegian', nativeName: 'Norsk' },
+            { value: 'ro', label: 'Romanian', nativeName: 'Română' },
+            { value: 'sk', label: 'Slovak', nativeName: 'Slovenčina' },
         ];
 
-        // 过滤掉已有字幕的语言
-        return allLanguages.filter(lang => !existingLanguages.includes(lang.value));
+        // Filter out existing subtitle languages
+        return allLanguages;
     }, [video.subtitles]);
 
-    // 支持的字幕文件格式
+    // Supported subtitle file formats
     const supportedFormats = ['.srt', '.vtt', '.ass', '.ssa', '.sub'];
 
-    // 状态管理
+    // State management
     const [uploadedFiles, setUploadedFiles] = useState<ISubtitleFile[]>([]);
     const [isDragOver, setIsDragOver] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -84,7 +95,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
     const detectLanguageFromFilename = (filename: string): string | undefined => {
         const name = filename.toLowerCase();
         
-        // 常见的语言代码模式
+        // Common language code patterns
         const languagePatterns = [
             { pattern: /\.(en|eng|english)\./i, code: 'en' },
             { pattern: /\.(zh|chinese|cn)\./i, code: 'zh' },
@@ -102,6 +113,18 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
             { pattern: /\.(hi|hindi|in)\./i, code: 'hi' },
             { pattern: /\.(th|thai|th)\./i, code: 'th' },
             { pattern: /\.(vi|vietnamese|vn)\./i, code: 'vi' },
+            { pattern: /\.(tr|turkish|tr)\./i, code: 'tr' },
+            { pattern: /\.(uk|ukrainian|ua)\./i, code: 'uk' },
+            { pattern: /\.(pl|polish|pl)\./i, code: 'pl' },
+            { pattern: /\.(cs|czech|cz)\./i, code: 'cs' },
+            { pattern: /\.(nl|dutch|nl)\./i, code: 'nl' },
+            { pattern: /\.(fil|filipino|ph)\./i, code: 'fil' },
+            { pattern: /\.(fi|finnish|fi)\./i, code: 'fi' },
+            { pattern: /\.(he|hebrew|il)\./i, code: 'he' },
+            { pattern: /\.(id|indonesian|id)\./i, code: 'id' },
+            { pattern: /\.(no|norwegian|no)\./i, code: 'no' },
+            { pattern: /\.(ro|romanian|ro)\./i, code: 'ro' },
+            { pattern: /\.(sk|slovak|sk)\./i, code: 'sk' },
         ];
 
         for (const { pattern, code } of languagePatterns) {
@@ -139,9 +162,9 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
         const newFiles: ISubtitleFile[] = [];
         
         Array.from(files).forEach(file => {
-            // 检查文件是否已存在
+            // Check if file already exists
             if (isFileAlreadyAdded(file)) {
-                return; // 跳过重复文件
+                return; // Skip duplicate file
             }
 
             const filename = file.name;
@@ -149,7 +172,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
             const format = filename.substring(filename.lastIndexOf('.')).toLowerCase();
             const isFormatValid = validateFileFormat(filename);
             
-            // 检查检测到的语言是否在可用选项中
+            // Check if detected language is in available options
             const availableLanguage = detectedLanguage && languageOptions.some(opt => opt.value === detectedLanguage) 
                 ? detectedLanguage 
                 : undefined;
@@ -242,7 +265,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
      * 保存所有字幕文件
      */
     const handleSaveAll = async () => {
-        // 过滤出有效的文件（格式正确且已选择语言）
+        // Filter out valid files (correct format and language selected)
         const validFiles = uploadedFiles.filter(file => 
             file.isFormatValid && file.isLanguageSelected && file.selectedLanguage
         );
@@ -254,14 +277,14 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
         setIsUploading(true);
         
         try {
-            // 逐个上传文件
+            // Upload files one by one
             for (const file of validFiles) {
                 if (file.selectedLanguage) {
                     await onSave(file.selectedLanguage, file.file);
                 }
             }
             
-            // 上传成功后关闭模态框
+            // Close modal after successful upload
             onClose();
         } catch (error) {
             console.error('上传字幕文件失败:', error);
@@ -316,11 +339,11 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
             <div className="w-96 bg-layout flex flex-col h-[calc(100vh-4rem)]">
                 <div className="flex-1 overflow-y-auto">
                     <div className="p-6 space-y-6">
-                        {/* 文件上传区域 */}
+                        {/* File Upload Area */}
                         <div>
                             <label className="block text-sm font-medium mb-2">Subtitle Files</label>
                             
-                            {/* 拖拽上传区域 */}
+                            {/* Drag & Drop Upload Area */}
                             <div
                                 className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
                                     isDragOver 
@@ -342,7 +365,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                             </div>
                         </div>
 
-                        {/* 文件处理列表 */}
+                        {/* File Processing List */}
                         {uploadedFiles.length > 0 && (
                             <div className="space-y-4">
                                 <Text size="sm" fw={500} c="dimmed">File Processing List</Text>
@@ -361,14 +384,14 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                         {uploadedFiles.map((file, index) => (
                                             <div key={index} className="px-4 py-3 hover:bg-gray-50">
                                                 <div className="grid grid-cols-12 gap-3 items-center">
-                                                    {/* 文件名 */}
+                                                    {/* Filename */}
                                                     <div className="col-span-5">
                                                         <Text size="xs" className="truncate" title={file.filename}>
                                                             {file.filename}
                                                         </Text>
                                                     </div>
                                                     
-                                                    {/* 语言选择 */}
+                                                    {/* Language Selection */}
                                                     <div className="col-span-4">
                                                         {file.isFormatValid ? (
                                                             <Select
@@ -393,7 +416,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                                         )}
                                                     </div>
                                                     
-                                                    {/* 状态/格式 */}
+                                                    {/* Status/Format */}
                                                     <div className="col-span-2">
                                                         <div className="flex items-center gap-1">
                                                             {file.isFormatValid ? (
@@ -410,7 +433,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                                         </div>
                                                     </div>
                                                     
-                                                    {/* 操作 */}
+                                                    {/* Actions */}
                                                     <div className="col-span-1">
                                                         <ActionIcon
                                                             onClick={() => handleRemoveFile(index)}
@@ -428,7 +451,7 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                     </div>
                                 </div>
 
-                                {/* 状态提示 */}
+                                {/* Status Notifications */}
                                 <div className="space-y-2">
                                     {filesNeedingLanguage > 0 && (
                                         <div className="flex items-center gap-2 text-xs text-orange-600">
