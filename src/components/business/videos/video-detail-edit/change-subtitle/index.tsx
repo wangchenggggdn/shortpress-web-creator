@@ -83,7 +83,8 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
     }, [video.subtitles]);
 
     // Supported subtitle file formats
-    const supportedFormats = ['.srt', '.vtt', '.ass', '.ssa', '.sub'];
+    //const supportedFormats = ['.srt', '.vtt', '.ass', '.ssa', '.sub'];
+    const supportedFormats = ['.srt', '.vtt'];
 
     // State management
     const [uploadedFiles, setUploadedFiles] = useState<ISubtitleFile[]>([]);
