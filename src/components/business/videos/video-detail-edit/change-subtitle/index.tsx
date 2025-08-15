@@ -371,9 +371,12 @@ const ChangeSubtitle: React.FC<ChangeSubtitleProps> = ({
                                 <Text size="sm" fw={500} mb={1}>
                                     Click to select or drag subtitle files here
                                 </Text>
-                                <Text size="xs" c="dimmed">
+                                <Text size="xs" c="dimmed" mb={1}>
                                     Supported formats: {supportedFormats.join(', ')}
                                 </Text>
+                                <div className="text-xs font-medium text-primary">
+                                    💡 Tip: Use format like "Episode 1.en.srt" for automatic language detection
+                                </div>
                             </div>
                         </div>
 
