@@ -239,7 +239,7 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     const saveSuccess = () => {
         setEditingPlaylist(null);
         setIsCreating(false);
-        searchPlaylists(activePageRef.current, searchQuery, Number(status), orderType);
+        //searchPlaylists(activePageRef.current, searchQuery, Number(status), orderType);
     };
 
     /**
