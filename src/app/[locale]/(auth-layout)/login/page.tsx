@@ -23,8 +23,8 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 
         const res = await CreatorApi.login({email,password});
         if (res.code === 0 && res.data) {
-            // Set user state in cookie
-            Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
+            // Set user state in cookie ,now server setCookie
+            //Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
             window.location.href = '/';
         } else {
             toast.error('Login failed: email or password is incorrect');

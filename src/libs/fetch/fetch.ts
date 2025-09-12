@@ -80,6 +80,7 @@ class Fetch {
         const siteId = await this.getSiteId();
         const config: any = {
             method: 'GET',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...this.publicHeaders,
@@ -132,6 +133,7 @@ class Fetch {
 
         const config: any = {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...this.publicHeaders,
@@ -184,6 +186,7 @@ class Fetch {
 
         const config: any = {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 ...this.publicHeaders,
                 ...token,

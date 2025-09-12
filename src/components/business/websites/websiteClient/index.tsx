@@ -17,12 +17,12 @@ interface WebsiteClientProps {
 const WebsiteClient: React.FC<WebsiteClientProps> = ({ params, children }) => {
     const [collapsed, setCollapsed] = useState(false);
     const oldUseState = Cookies.get(cookieMap.UserState);
-    if (oldUseState) {
-        console.log('oldUseState:', oldUseState);
-        const oldUseStateObj = JSON.parse(decodeURIComponent(oldUseState));
-        oldUseStateObj.siteId = params.siteId;
-        Cookies.set(cookieMap.UserState, encodeURIComponent(JSON.stringify(oldUseStateObj)));
-    }
+    // if (oldUseState) {
+    //     console.log('oldUseState:', oldUseState);
+    //     const oldUseStateObj = JSON.parse(decodeURIComponent(oldUseState));
+    //     oldUseStateObj.siteId = params.siteId;
+    //     Cookies.set(cookieMap.UserState, encodeURIComponent(JSON.stringify(oldUseStateObj)));
+    // }
 
     return (
         <SiteContext.Provider value={{ params }}>
