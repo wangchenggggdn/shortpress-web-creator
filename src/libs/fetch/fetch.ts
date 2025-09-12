@@ -2,7 +2,6 @@ import CookieMap from '@/config/cookie-map';
 import qs from 'query-string';
 import { getCookie } from './fetchCookie/getCookie';
 import { IResponse } from '@/types/public';
-import { cookies } from 'next/headers';
 
 /**
  * Fetch class for handling HTTP requests
@@ -79,7 +78,15 @@ class Fetch {
     public async get<T>(url: string, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
         const siteId = await this.getSiteId();
-        const cookieStore = cookies();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
+
         const config: any = {
             method: 'GET',
             credentials: 'include',
@@ -88,7 +95,7 @@ class Fetch {
                 ...this.publicHeaders,
                 ...token,
                 ...siteId,
-                Cookie: cookieStore.toString(),
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
         };
 
@@ -133,7 +140,14 @@ class Fetch {
     public async post<T>(url: string, data: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
         const siteId = await this.getSiteId();
-        const cookieStore = cookies();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
 
         const config: any = {
             method: 'POST',
@@ -143,7 +157,7 @@ class Fetch {
                 ...this.publicHeaders,
                 ...token,
                 ...siteId,
-                Cookie: cookieStore.toString(),
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
             body: JSON.stringify(data),
         };
@@ -188,7 +202,14 @@ class Fetch {
      */
     public async upload0<T>(url: string, data: FormData, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
-        const cookieStore = cookies();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
 
         const config: any = {
             method: 'POST',
@@ -196,7 +217,7 @@ class Fetch {
             headers: {
                 ...this.publicHeaders,
                 ...token,
-                Cookie: cookieStore.toString(),
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
             body: data,
         };
