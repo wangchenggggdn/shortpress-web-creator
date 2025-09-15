@@ -1,0 +1,107 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# API Design Patterns and Usage Guide
+
+## Overview
+
+This document outlines the API design patterns and usage guidelines for the application. The API layer follows a structured approach with clear separation of concerns between request arguments, responses, and implementation.
+
+## Core Components
+
+### 1. Request Arguments (`args.ts`)
+
+Request arguments are defined using TypeScript namespaces and interfaces. Each domain has its own namespace containing related request interfaces.
+
+Example:
+```typescript
+export namespace CreatorArgs {
+    export interface Login {
+        email: string;
+        password: string;
+    }
+}
+```
+
+### 2. Response Types (`responses.ts`)
+
+Response types are defined using TypeScript namespaces and interfaces. Each domain has its own namespace containing related response interfaces.
+
+Example:
+```typescript
+export namespace UserResponse {
+    export interface UserCoinsResponse {
+        balance: number;
+        totalEarned: number;
+        totalSpent: number;
+        totalRealMoneySpent: number;
+        totalTransactions: number;
+    }
+}
+```
+
+### 3. API Implementation
+
+API implementations are organized by domain and use the Fetch utility class for making HTTP requests.
+
+Example:
+```typescript
+class UserApi {
+    public static async login(email: string, password: string): Promise<IResponse<any>> {
+        return fetch.post('/api/creator/login', { email, password });
+    }
+}
+```
+
+## Common Response Interface
+
+All API responses follow a standard interface:
+
+```typescript
+interface IResponse<T = any> {
+    code: number;    // Response status code
+    info: string;    // Response message
+    data: T;         // Response data
+}
+```
+
+## Usage Example
+
+Here's a complete example of how to use the API:
+
+```typescript
+// 1. Import necessary types and API
+import { CreatorArgs } from '@/api/args';
+import { UserResponse } from '@/api/respones';
+import UserApi from '@/api/user';
+
+// 2. Make API call
+const handleLogin = async (email: string, password: string) => {
+    const res = await UserApi.login(email, password);
+    if (res.code === 0 && res.data) {
+        // Handle successful login
+        return res.data;
+    } else {
+        // Handle error
+        throw new Error(res.info);
+    }
+};
+```
+
+## Best Practices
+
+1. **Type Safety**: Always use the defined interfaces for request arguments and responses
+2. **Error Handling**: Check response code and handle errors appropriately
+3. **Domain Organization**: Keep related API calls within their respective domain namespaces
+4. **Response Validation**: Validate response data before using it in the application
+
+## Common Response Codes
+
+- `0`: Success
+- `-1`: Network error
+- `401`: Unauthorized
+- `400`: Bad request
+- `404`: Not found
+- `500`: Internal server error

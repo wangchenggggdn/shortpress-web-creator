@@ -14,6 +14,12 @@ export interface Website {
     logo?: string;
     /** Website status */
     status: number;
+    /** Google Analytics ID */
+    googleAnalyticsId?: string;
+    /** Facebook Pixel ID */
+    facebookPixelId?: string;
+    /** ThinkingData App ID */
+    thinkingdataAppId?: string;
     /** SEO information */
     seo?: {
         /** SEO title */
@@ -23,4 +29,6 @@ export interface Website {
         /** SEO keywords */
         keywords?: string;
     };
+    /** Official domain */
+    officialDomain?: string;
 } 

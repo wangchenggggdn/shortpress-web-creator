@@ -70,4 +70,14 @@ export default class CreatorApi {
     static stats() {
         return fetch.get<IUserStats>('/api/creator/stats');
     }
+
+    /**
+     * Complete creator guides
+     * @param args Complete guides parameters
+     * @returns Promise
+     */
+    static completeGuides(args: CreatorArgs.CompleteGuides) {
+        return fetch.post('/api/creator/complete-guides', args);
+    }
+
 } 

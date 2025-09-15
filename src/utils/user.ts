@@ -17,8 +17,8 @@ export const refreshUserInfo = (
         loadUserInfo: false
     });
 
-    // Clear user login cache if no profile information exists
-    if (!profile && Cookies.get(CookieMap.UserState)) {
-        Cookies.remove(CookieMap.UserState);
-    }
+    // Clear user login cache if no profile information exists  ,now server setCookie
+    // if (!profile && Cookies.get(CookieMap.UserState)) {
+    //     Cookies.remove(CookieMap.UserState);
+    // }
 }; 

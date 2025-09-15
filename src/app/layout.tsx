@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const RootLayout: React.FC<IProps> = ({ children }) => {
-    const path = pathname(); // url 地址
+    const path = pathname();
     let lang = path.split('/')[1];
     if (!lang || !appConfig.locales.includes(lang)) {
         lang = appConfig.defaultLocale;
@@ -30,7 +30,7 @@ const RootLayout: React.FC<IProps> = ({ children }) => {
                 <ColorSchemeScript defaultColorScheme={appConfig.colorScheme} />
             </head>
 
-            <body className="bg-back">
+            <body className="bg-back text-black-purple">
                 <Toaster position="top-center" richColors />
                 <NextTopLoader color={appConfig.subjectColor} showSpinner={false} />
 

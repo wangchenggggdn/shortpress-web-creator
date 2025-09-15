@@ -3,6 +3,8 @@ import { Website } from '@/types/website';
 import { IPaginationResponse } from '@/types/public';
 import { WebsiteArgs } from './args';
 import { Playlist } from '@/types/playlist';
+import { Version, Page, EditWebsite } from '@/types/editor';
+import { IResponse } from '@/types/public';
 
 /**
  * API class for website related operations
@@ -13,7 +15,16 @@ export default class WebsiteApi {
      * @returns Promise with array of Website objects
      */
     static list() {
-        return fetch.get<Website[]>('/api/site/list');
+        return fetch.get<IPaginationResponse<string>>('/api/site/list');
+    }
+
+    /**
+     * Get website list
+     * @param args Website list parameters
+     * @returns Promise with paginated Website list
+     */
+    static batchGet(siteIds: string) {
+        return fetch.get<IPaginationResponse<Website>>('/api/site/batch-get', { siteIds });
     }
 
     /**
@@ -95,4 +106,66 @@ export default class WebsiteApi {
     static search(args: WebsiteArgs.Search) {
         return fetch.get<IPaginationResponse<Website>>('/api/site/search', args);
     }
+
+    /**
+     * Fetch websites from API and update local storage
+     */
+    static fetchWebsites = async (): Promise<Website[]> => {
+        const res = await WebsiteApi.list();
+        if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
+        const resD = await WebsiteApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 && (resD.data?.items ?? []).length === 0) return [];
+        return resD.data.items;
+    };
+
+    /**
+     * Check if a site path already exists
+     * @param path Site path to check
+     * @returns Promise with boolean indicating if path exists
+     */
+    static checkPathExists(path: string) {
+        return fetch.get('/api/site/path/valid', { path });
+    }
+
+    // Editor-specific API methods
+    /**
+     * Get website information for editor
+     * @param siteId Website ID
+     * @returns Promise with Website object including versions
+     */
+    static editGet(siteId: string) {
+        return fetch.get<{
+            version_number: number;
+            last_published_version: number;
+            site_data: EditWebsite;
+            code: number;
+        }>(`/api/pages-builder/info`, {
+            siteId
+        });
+    }
+
+    /**
+     * Update website information in editor
+     * @param website Website update data
+     * @returns Promise
+     */
+    static editModify(siteId: string, editWebsite: Partial<EditWebsite>) {
+        return fetch.post(`/api/pages-builder/save`, {
+            siteId,
+            siteData: editWebsite
+        });
+    }
+
+    static editPublish(siteId: string) {
+        return fetch.post(`/api/pages-builder/publish`, {
+            siteId
+        });
+    }
+
+    static getNewRelease(siteId: string) {
+        return fetch.get<Playlist[]>(`/api/client/site/new-release`, {
+            siteId
+        });
+    }
+
 }

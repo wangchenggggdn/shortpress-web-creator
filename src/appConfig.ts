@@ -46,8 +46,8 @@ export const theme: MantineThemeOverride = {
 };
 
 const appConfig: IConfig = {
-    appName: 'SpeedScribe',
-    baseDomain: process.env.NEXT_PUBLIC_DOMAIN!,
+    appName: 'ShorPress',
+    baseDomain: process.env.NEXT_PUBLIC_DOMAIN || '',
     locales: ['en', 'zh'],
     defaultLocale: 'en',
     colorScheme: 'light',

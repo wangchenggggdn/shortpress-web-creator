@@ -1,0 +1,48 @@
+/* swiper-style.css */
+
+/* 
+  给 Swiper 容器本身一个垂直 padding，让卡片有上下空间。
+  这是你之前在 JSX 的 div 上设置的 py-8，移到这里更好。
+*/
+.mySimpleSwiper {
+  padding: 16px 0;
+  /* 32px 约等于 Tailwind 的 py-8 */
+}
+
+/* 
+  关键：让 Swiper 的轨道使用 Flexbox 垂直居中！
+  这是解决垂直对齐问题的核心。
+*/
+.mySimpleSwiper .swiper-wrapper {
+  align-items: center;
+}
+
+
+/* 
+  因为 slidesPerView='auto'，我们现在需要给 .swiper-slide 一个固定的宽度。
+  这个宽度应该是你希望“中间大卡片”最终呈现的宽度。
+*/
+.mySimpleSwiper .swiper-slide {
+  width: 250px;
+  /* <--- 关键：设置一个基础宽度，例如 250px */
+  height: auto;
+  /* 高度可以自适应，由内部内容撑开 */
+
+  /* 默认状态 (两边的卡片): 缩小 */
+  transform: scale(1);
+  /* 可以微调缩放比例，比如 0.85 */
+  transition: transform 0.4s ease-in-out;
+  opacity: 0.7;
+}
+
+.mySimpleSwiper .swiper-slide-active {
+  /* 激活状态 (中间的卡片): 恢复正常大小 */
+  transform: scale(1);
+  opacity: 1;
+  z-index: 1;
+}
+
+/* 
+  你卡片内部的 div 使用了 aspect-ratio，这很好，
+  所以我们不需要再给 .swiper-slide 设置固定 height。
+*/

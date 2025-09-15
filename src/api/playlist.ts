@@ -1,8 +1,9 @@
 import fetch from '@/libs/fetch/fetch';
-import { Playlist } from '@/types/playlist';
+import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
 import { IVideo } from '@/types/video';
-import { IPaginationResponse } from '@/types/public';
-import { PlaylistArgs } from './args';
+import { IPaginationResponse, IResponse } from '@/types/public';
+import { PlaylistArgs, VideoArgs } from './args';
+import VideoApi from './video';
 
 /**
  * API class for playlist related operations
@@ -14,7 +15,7 @@ export default class PlaylistApi {
      * @returns Promise with created Playlist object
      */
     static create(args: PlaylistArgs.Create) {
-        return fetch.post<Playlist>('/api/playlist/create', args);
+        return fetch.post<string>('/api/playlist/create', args);
     }
 
     /**
@@ -23,7 +24,7 @@ export default class PlaylistApi {
      * @returns Promise with paginated Playlist objects
      */
     static list(args: PlaylistArgs.List) {
-        return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/list', args);
+        return fetch.get<IPaginationResponse<string>>('/api/playlist/list', args);
     }
 
     /**
@@ -79,7 +80,7 @@ export default class PlaylistApi {
      * @returns Promise with paginated Video objects
      */
     static getVideos(args: PlaylistArgs.GetVideos) {
-        return fetch.get<IPaginationResponse<IVideo>>('/api/playlist/videos', args);
+        return fetch.get<IPaginationResponse<string>>('/api/playlist/videos', args);
     }
 
     /**
@@ -88,6 +89,73 @@ export default class PlaylistApi {
      * @returns Promise with paginated Playlist objects
      */
     static search(args: PlaylistArgs.Search) {
-        return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/search', args);
+        return fetch.get<IPaginationResponse<string>>('/api/playlist/search', args);
     }
+
+    /**
+     * Batch get playlists
+     * @param playlistIds Array of playlist IDs
+     * @returns Promise with Playlist objects
+     */
+    static batchGet(playlistIds: string) {
+        return fetch.get<IPaginationResponse<Playlist>>('/api/playlist/batch-get', { playlistIds });
+    }
+
+    /**
+     * Get videos order
+     * @param playlistId Playlist ID
+     * @returns Promise with PlaylistVideoOrder object
+     */
+    static videoOrder(playlistId: string) {
+        return fetch.get<PlaylistVideoOrder>('/api/playlist/videos/order', { playlistId });
+    }
+
+    /**
+     * Update videos order
+     * @param args Videos order parameters
+     * @returns Promise
+     */
+    static updateVideosOrder(args: PlaylistVideoOrder) {
+        return fetch.post('/api/playlist/videos/update-order', args);
+    }
+
+    /**
+     * Change playlist access type (free, paid, member-only) and price settings
+     * @param args Access change parameters
+     * @returns API response
+     */
+    static changeAccessType(args: PlaylistArgs.AccessChange) {
+        return fetch.post('/api/playlist/change/access/type', args);
+    }
+
+
+
+    /**
+     * Search videos
+     * @param params Search parameters
+     * @returns Promise with API response
+     */
+    static searchVideosFetch = async (params: VideoArgs.Search) => {
+
+        // Search videos
+        const res = await VideoApi.search(params);
+        if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+
+        // Batch get videos
+        const resD = await VideoApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
+        // Map videos to IVideo[]
+        const items = res.data.items.map((item: string) => {
+            const video = resD.data.items.find((video: IVideo) => video.vid === item);
+            if (video) return video;
+        });
+        resD.data.items = items as IVideo[];
+        resD.data.total = res.data.total;
+        resD.data.page = res.data.page;
+        resD.data.pageSize = res.data.pageSize;
+        resD.data.hasMore = res.data.hasMore;
+        return resD;
+    };
+
 }

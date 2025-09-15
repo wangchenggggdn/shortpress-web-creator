@@ -2,17 +2,21 @@
 
 import React, { useState } from 'react';
 import { TextInput, PasswordInput, Button, Text, Tooltip } from '@mantine/core';
-import { IconUser, IconLock, IconMail, IconInfoCircle } from '@tabler/icons-react';
+import { IconUser, IconLock, IconMail, IconInfoCircle, IconEye, IconEyeOff } from '@tabler/icons-react';
 import Link from 'next/link';
 import CreatorApi from '@/api/creator';
 import { useRouter } from '@/libs/navigation';
 import { toast } from 'sonner';
 
-const RegisterPage = () => {
-    const [creatorName, setCreatorName] = useState('');
-    const [nickname, setNickname] = useState('');
+interface RegisterPageProps {}
+
+const RegisterPage: React.FC<RegisterPageProps> = () => {
+    // const [creatorName, setCreatorName] = useState('');
+    // const [nickname, setNickname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -22,17 +26,36 @@ const RegisterPage = () => {
             toast.error('Invalid email');
             return;
         }
-        const res = await CreatorApi.register({
-            creatorName,
-            nickname,
-            email,
-            password,
-        });
-        if (res.code === 0) {
-            router.push('/login');
-        } else {
-            toast.error(res.info);
+        setLoading(true);
+        try {
+            const res = await CreatorApi.register({
+                // creatorName,
+                // nickname,
+                email,
+                password,
+            });
+            if (res.code === 0) {
+                router.push('/login');
+            } else {
+                toast.error(res.info);
+            }
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            setEmailError('Email is required');
+            return false;
+        }
+        if (!emailRegex.test(email)) {
+            setEmailError('Please enter a valid email address');
+            return false;
+        }
+        setEmailError('');
+        return true;
     };
 
     return (
@@ -40,13 +63,13 @@ const RegisterPage = () => {
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-black-purple">Create an Account</h2>
                 <Text size="sm" c="dimmed">
-                    Join Shortify to start monetizing your content
+                    Join ShortPress to start monetizing your content
                 </Text>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* createName with tooltip */}
-                <div className="relative">
+                {/* <div className="relative">
                     <TextInput
                         value={creatorName}
                         onChange={e => setCreatorName(e.target.value)}
@@ -59,11 +82,33 @@ const RegisterPage = () => {
                         }
                         required
                     />
-                </div>
+                </div> */}
                 {/* nickname */}
-                <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required />
-                <TextInput value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" leftSection={<IconMail size={16} />} required />
-                <PasswordInput value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" leftSection={<IconLock size={16} />} required />
+                {/* <TextInput value={nickname} onChange={e => setNickname(e.target.value)} placeholder="Nickname" leftSection={<IconUser size={16} />} required /> */}
+                {/* Email input */}
+                <TextInput
+                    value={email}
+                    onChange={e => {
+                        setEmail(e.target.value);
+                        validateEmail(e.target.value);
+                    }}
+                    placeholder="Email"
+                    leftSection={<IconMail size={16} />}
+                    required
+                    error={emailError}
+                    onBlur={() => validateEmail(email)}
+                />
+                {/* Password input */}
+                <PasswordInput
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    leftSection={<IconLock size={16} />}
+                    visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
+                    required
+                />
+                
+                {/* Login link */}
                 <div className="flex flex-row w-full items-center justify-center">
                     <Text size="sm">
                         Already have an account?{' '}
@@ -72,11 +117,14 @@ const RegisterPage = () => {
                         </Link>
                     </Text>
                 </div>
-                <Button type="submit" fullWidth color="primary">
+
+                {/* Register button */}
+                <Button type="submit" fullWidth color="primary" loading={loading}>
                     Register
                 </Button>
             </form>
 
+            {/* Terms and Privacy */}
             <div className="mt-6 text-center">
                 <Text size="xs" c="dimmed" ta="center">
                     By signing up, you agree to our{' '}
@@ -84,7 +132,7 @@ const RegisterPage = () => {
                         Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/privacy" className="text-primary hover:underline">
+                    <Link href="/privancy" className="text-primary hover:underline">
                         Privacy Policy
                     </Link>
                 </Text>

@@ -1,34 +1,46 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Button, Select, Menu, Image, Pagination, Card } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { IconCheck, IconPlus, IconSelect } from '@tabler/icons-react';
 import Header from '@/components/system/header';
 import Search from '@/components/common/search';
-import PlaylistCard from '@/components/business/playlistCard';
+import PlaylistCard from '@/components/business/playlists/playlist-card';
 import PlaylistApi from '@/api/playlist';
 import { Playlist } from '@/types/playlist';
-import PlaylistDetailEdit from '@/components/business/playlistDetailEdit';
+import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';
 import orderImage from '@/assets/images/public/order.webp';
 import CreatorApi from '@/api/creator';
 import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
+import ConfirmDialog from '@/components/common/confirm-dialog';
+import LoadingData from '@/components/common/loading-data';
+import WebsiteApi from '@/api/website';
+import { GuideName } from '@/types/guide';
+import userStore from '@/store/useUserStore';
+
+interface PlaylistsPageProps {}
 
 /**
  * Playlists management page component
  * Handles playlist listing, creation, editing, and deletion with search and filtering capabilities
  * @returns React component with playlist management interface
  */
-const PlaylistsPage = () => {
+const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [status, setStatus] = useState<string | null>('-1');
     const [orderType, setOrderType] = useState<number>(0);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
     const [loading, setLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(false);
     const [editingPlaylist, setEditingPlaylist] = useState<Playlist | null>(null);
     const [isCreating, setIsCreating] = useState(false);
     const [activePage, setActivePage] = useState(1);
     const [total, setTotal] = useState(0);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const playlistToDeleteRef = useRef<string | null>(null);
+    const { userInfo } = userStore();
+    const activePageRef = useRef(1);
 
     /**
      * Calculate number of items to display per page based on screen width
@@ -55,15 +67,30 @@ const PlaylistsPage = () => {
      */
     const fetchPlaylists = async () => {
         setLoading(true);
+        setPlaylists([]);
         try {
             const res = await PlaylistApi.list({
-                page: activePage,
+                page: 1,
                 pageSize: getItemsPerPage(),
-                orderType: orderType,
-                status: Number(status),
+                orderType: 0,
+                status: Number('-1'),
             });
+            if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+
+            const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+            if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
+            const items = res.data.items.map((item: string) => {
+                const playlist = resD.data.items.find((playlist: Playlist) => playlist.playlistId === item);
+                if (playlist) return playlist;
+            });
+            resD.data.items = items as Playlist[]; // Type assertion to Playlist[] here to avoid type mismatches in the vide
+            resD.data.total = res.data.total;
+            resD.data.page = res.data.page;
+            resD.data.pageSize = res.data.pageSize;
+            resD.data.hasMore = res.data.hasMore;
             setTotal(res.data.total);
-            setPlaylists(res.data.items);
+            setPlaylists(resD.data.items ?? []);
         } catch (error) {
             console.error('Failed to fetch playlists:', error);
         } finally {
@@ -74,18 +101,32 @@ const PlaylistsPage = () => {
     /**
      * Search playlists based on current filters
      */
-    const searchPlaylists = async () => {
+    const searchPlaylists = async (page: number, keyword: string, status: number, orderType: number) => {
+        setPlaylists([]);
         setLoading(true);
         try {
             const res = await PlaylistApi.search({
-                keyword: searchQuery,
-                status: Number(status),
+                keyword: keyword,
+                status: status,
                 orderType: orderType,
-                page: activePage,
+                page: page,
                 pageSize: getItemsPerPage(),
             });
+            if (res.code !== 0 || (res.data.items ?? []).length === 0) return null;
+            const resD = await PlaylistApi.batchGet(res.data.items.join(','));
+            if (resD.code !== 0 || (resD.data.items ?? []).length === 0) return null;
+
+            const items = res.data.items.map((item: string) => {
+                const playlist = resD.data.items.find((playlist: Playlist) => playlist.playlistId === item);
+                if (playlist) return playlist;
+            });
+            resD.data.items = items as Playlist[];
+            resD.data.total = res.data.total;
+            resD.data.page = res.data.page;
+            resD.data.pageSize = res.data.pageSize;
+            resD.data.hasMore = res.data.hasMore;
             setTotal(res.data.total);
-            setPlaylists(res.data.items);
+            setPlaylists(resD.data.items);
         } catch (error) {
             console.error('Failed to search playlists:', error);
         } finally {
@@ -95,13 +136,15 @@ const PlaylistsPage = () => {
 
     // Fetch playlists when status or order type changes
     useEffect(() => {
-        searchPlaylists();
-    }, [status, orderType]);
+        setActivePage(1);
+        searchPlaylists(1, searchQuery, Number(status), orderType);
+    }, [status, orderType, searchQuery]);
 
     // Fetch playlists when search query or page changes
     useEffect(() => {
-        searchPlaylists();
-    }, [searchQuery, activePage]);
+        activePageRef.current = activePage;
+        searchPlaylists(activePage, searchQuery, Number(status), orderType);
+    }, [activePage]);
 
     /**
      * Handle search input changes
@@ -137,36 +180,57 @@ const PlaylistsPage = () => {
      * @param playlistData Playlist data to save
      * @param coverFile Optional cover image file
      */
-    const handleSave = useCallback(async (playlistData: PlaylistArgs.Modify, coverFile?: File) => {
-        setLoading(true);
-
-        if (coverFile) {
-            const formData = new FormData();
-            formData.append('file', coverFile);
-            const res = await CreatorApi.uploadFile(formData);
-            if (res.code === 0) {
-                playlistData.cover = res.data ?? '';
+    const handleSave = useCallback(async (playlistData: PlaylistArgs.Modify, websiteId?: string, coverFile?: File): Promise<boolean> => {
+        setSaveLoading(true);
+        try {
+            if (coverFile) {
+                const formData = new FormData();
+                formData.append('file', coverFile);
+                const res = await CreatorApi.uploadFile(formData);
+                if (res.code === 0) {
+                    playlistData.cover = res.data ?? '';
+                } else {
+                    toast.error('Failed to upload cover image');
+                    setSaveLoading(false);
+                    return false;
+                }
             }
-        }
-        if (playlistData.playlistId) {
-            PlaylistApi.modify(playlistData).then(res => {
+            if (playlistData.playlistId) {
+                const res = await PlaylistApi.modify(playlistData);
                 if (res.code === 0) {
+                    toast.success('Playlist updated successfully');
                     saveSuccess();
+                    setSaveLoading(false);
+                    return true; // 保存成功
                 } else {
                     toast.error(res.info);
+                    setSaveLoading(false);
+                    return false; // 保存失败
                 }
-            });
-        } else {
-            PlaylistApi.create({ ...playlistData, title: playlistData.title ?? '' }).then(res => {
+            } else {
+                const res = await PlaylistApi.create({ ...playlistData, title: playlistData.title ?? '' });
                 if (res.code === 0) {
+                    if (userInfo?.guides.find(item => item.name === GuideName.AddFirstPlaylist)?.status !== 1) {
+                        CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
+                    }
+                    toast.success('Playlist created successfully');
                     saveSuccess();
+                    setSaveLoading(false);
+                    websiteId && (await WebsiteApi.addPlaylists(websiteId, [res.data]));
+                    return true; // 保存成功
                 } else {
                     toast.error(res.info);
+                    setSaveLoading(false);
+                    return false; // 保存失败
                 }
-            });
-        }
 
-        setLoading(false);
+            }
+        } catch (error) {
+            console.error('Save failed:', error);
+            toast.error('Save failed due to an error');
+            setSaveLoading(false);
+            return false; // 保存异常
+        }
     }, []);
 
     /**
@@ -175,17 +239,30 @@ const PlaylistsPage = () => {
     const saveSuccess = () => {
         setEditingPlaylist(null);
         setIsCreating(false);
-        toast.success('save success');
-        fetchPlaylists();
+        //searchPlaylists(activePageRef.current, searchQuery, Number(status), orderType);
     };
 
     /**
-     * Handle playlist deletion
+     * Handle playlist deletion click
      * @param playlistId ID of playlist to delete
      */
-    const handleDelete = (playlistId: string) => {
+    const handleDeleteClick = (playlistId: string) => {
+        playlistToDeleteRef.current = playlistId;
+        setDeleteModalOpen(true);
+    };
+
+    /**
+     * Handle playlist deletion confirmation
+     */
+    const handleConfirmDelete = () => {
+        const playlistId = playlistToDeleteRef.current;
+        if (!playlistId) return;
+
         PlaylistApi.delete([playlistId]);
         setPlaylists(playlists.filter(item => item.playlistId !== playlistId));
+        setDeleteModalOpen(false);
+        playlistToDeleteRef.current = null;
+        toast.success('Playlist deleted successfully');
     };
 
     return (
@@ -199,7 +276,7 @@ const PlaylistsPage = () => {
             {/* Search Bar */}
             <div className="px-11 py-4 grid grid-cols-4">
                 <div className="flex items-center gap-4">
-                    <span className="text-gray-600">{playlists.length} playlist</span>
+                    <span className="text-gray-600">{total} playlists</span>
                 </div>
 
                 {/* Search Input */}
@@ -214,22 +291,26 @@ const PlaylistsPage = () => {
                         onChange={setStatus}
                         data={[
                             { value: '-1', label: 'All' },
-                            { value: '1', label: 'Published' },
-                            { value: '0', label: 'Unpublished' },
+                            { value: '2', label: 'Published' },
+                            { value: '1', label: 'Unpublished' },
                         ]}
                         placeholder="All"
                         className="w-36"
                         variant="filled"
                     />
 
-                    <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu shadow="md" width={160} position="bottom-end">
                         <Menu.Target>
                             <Image src={orderImage.src} alt="order" className="w-5 h-5" />
                         </Menu.Target>
 
                         <Menu.Dropdown>
-                            <Menu.Item onClick={() => setOrderType(1)}>Title</Menu.Item>
-                            <Menu.Item onClick={() => setOrderType(0)}>Created time</Menu.Item>
+                            <Menu.Item onClick={() => setOrderType(1)}>
+                                <div className="flex items-center gap-2">{orderType === 1 && <IconCheck size={20} />}Title</div>
+                            </Menu.Item>
+                            <Menu.Item onClick={() => setOrderType(0)}>
+                                <div className="flex items-center gap-2">{orderType === 0 && <IconCheck size={20} />}Created time</div>
+                            </Menu.Item>
                         </Menu.Dropdown>
                     </Menu>
                 </div>
@@ -241,15 +322,20 @@ const PlaylistsPage = () => {
                     <div className="flex-1 min-h-0 ">
                         {loading ? (
                             <div className="h-full flex items-center justify-center">
-                                <span>Loading...</span>
+                                <LoadingData />
                             </div>
                         ) : playlists.length > 0 ? (
                             <div className="h-full overflow-y-auto">
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 2xl:grid-cols-8 gap-4 p-4">
                                     {playlists.map(playlist => (
-                                        <PlaylistCard playlist={playlist} key={playlist.playlistId} onEdit={handleEdit} onDelete={handleDelete} />
+                                        <PlaylistCard playlist={playlist} key={playlist.playlistId} onEdit={handleEdit} onDelete={handleDeleteClick} />
                                     ))}
                                 </div>
+                            </div>
+                        ) : searchQuery.length > 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center text-center">
+                                <p className="text-black-purple text-lg mb-2">No playlists found</p>
+                                <p className="text-gray-500 text-sm">No playlists with filtered condition</p>
                             </div>
                         ) : (
                             <div className="h-full flex flex-col items-center justify-center text-center">
@@ -288,6 +374,7 @@ const PlaylistsPage = () => {
                     <div className="fixed top-0 right-0 z-50">
                         <PlaylistDetailEdit
                             playlistOld={editingPlaylist ?? undefined}
+                            isLoading={saveLoading}
                             onClose={() => {
                                 setEditingPlaylist(null);
                                 setIsCreating(false);
@@ -297,6 +384,17 @@ const PlaylistsPage = () => {
                     </div>
                 </>
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                opened={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Delete"
+                message="Are you sure you want to delete this playlist? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+            />
         </div>
     );
 };

@@ -30,21 +30,22 @@ const config: Config = {
             xl4: `${mediaMap.xl4}px`, // => @media (min-width: 3840) { ... }
             mxl4: { max: `${mediaMap.xl4 - 1}px` }, // => @media (max-width: 3839px) { ... }
         },
-        // colors: {
-        //     primary: '#70F8A6',
-        //     secondary: '#F7EA76',
-        //     back: '#171717',
-        //     backdrop: '#2e2e2e',
-        //     backdrop1: '#b00cb3',
-        //     backdrop2: '#550cb3',
-        //     border: '#424242',
-        //     warning: '#f7b750',
-        //     danger: '#f31260',
-        //     white: '#ffffff',
-        //     black: '#000000',
-        //     transparent: 'transparent',
-        // },
         extend: {
+            colors: {
+                primary: '#6355FF',
+                secondary: '#F7EA76',
+                back: '#171717',
+                backdrop: '#2e2e2e',
+                backdrop1: '#b00cb3',
+                backdrop2: '#550cb3',
+                border: '#424242',
+                warning: '#f7b750',
+                danger: '#f31260',
+                'black-purple': {
+                    DEFAULT: '#1F1A37',
+                    light: '#2F2955',
+                },
+            },
             fontFamily: {
                 poppins: ['Poppins', 'sans-self'],
                 coda: ['Coda', 'sans-self'],

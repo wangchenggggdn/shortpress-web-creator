@@ -1,0 +1,20 @@
+services:
+  shortpress-web:
+    build:
+      context: .
+      dockerfile: Dockerfile-pro
+    restart: unless-stopped
+    networks:
+      - wenuts-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shortpress-shortpress-web-creator.rule=Host(`admin.shortpress.com`)"
+      - "traefik.http.routers.shortpress-shortpress-web-creator.entrypoints=web,websecure"
+      - "traefik.http.routers.shortpress-shortpress-web-creator.priority=1"
+      - "traefik.http.services.shortpress-shortpress-web-creator.loadbalancer.server.port=3000"
+    environment:
+      - NODE_ENV=production
+
+networks:
+  wenuts-network:
+    external: true

@@ -8,13 +8,13 @@ import CookieMap from '@/config/cookie-map';
 import UserApi from '@/api/creator';
 import appConfig from '@/appConfig';
 import { initLangTags } from '@/libs/seo';
-
-import ClientLayout from '@/components/system/clientLayout';
+import WebsiteApi from '@/api/website';
+import ClientLayout from '@/components/system/client-layout';
 
 /**
  * Props interface for the LocaleLayout component
  */
-interface IProps {
+interface LocaleLayoutProps {
     children: React.ReactNode;
     params: { locale: string };
 }
@@ -24,21 +24,35 @@ interface IProps {
  * @param children Child components to be rendered
  * @returns React component with internationalization provider and client layout
  */
-const LocaleLayout: React.FC<IProps> = async ({ children }) => {
+const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) => {
     const messages = await getMessages();
     const cookieStore = cookies();
     const userState = cookieStore.get(CookieMap.UserState);
+    const userState0 = cookieStore.get(CookieMap.UserState0);
+    const userState1 = cookieStore.get(CookieMap.UserState1);
     let profile: null | IUserProfile = null;
 
-    if (userState) {
+    const fetchWebsites = async () => {
+        const res = await WebsiteApi.list();
+        if (res.code !== 0 && (res.data?.items ?? []).length === 0) return [];
+        const resD = await WebsiteApi.batchGet(res.data.items.join(','));
+        if (resD.code !== 0 && (resD.data?.items ?? []).length === 0) return [];
+        return resD.data.items;
+    };
+
+    if (userState || userState0 || userState1) {
         const res = await UserApi.profile();
         if (res.code === 0 && res.data) {
             profile = { ...res.data };
-            console.log('profile:', profile);
+            const resD = await fetchWebsites();
+            if (resD.length !== 0) {
+                profile.website = resD[0];
+            }
         } else {
             console.warn('profile-error:', res.info);
         }
     }
+
     console.log('profile:', profile);
     return (
         <NextIntlClientProvider messages={messages}>
@@ -54,7 +68,7 @@ export default LocaleLayout;
  * @param props Component props containing locale information
  * @returns Metadata object for SEO
  */
-export const generateMetadata: (props: IProps) => void = ({ params }) => {
+export const generateMetadata: (props: LocaleLayoutProps) => void = ({ params }) => {
     const path = pathname(); // Current URL path
 
     let lang = path.split('/')[1];

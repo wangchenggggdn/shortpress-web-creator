@@ -2,32 +2,34 @@
  * Enum for video upload status
  */
 export enum VideoUploadStatus {
+    NULL = 0,
     /** Video has not been uploaded yet */
-    NOT_UPLOADED = 0,
+    NOT_UPLOADED = 1,
     /** Video is currently being uploaded */
-    UPLOADING = 1,
+    UPLOADING = 2,
     /** Video upload failed */
-    UPLOAD_FAILED = 2,
+    UPLOAD_FAILED = 3,
     /** Video upload was cancelled */
-    UPLOAD_CANCELLED = 3,
+    UPLOAD_CANCELLED = 4,
     /** Video upload completed successfully */
-    UPLOAD_SUCCESS = 4
+    UPLOAD_SUCCESS = 5
 }
 
 /**
  * Enum for video status
  */
 export enum VideoStatus {
+    NULL = 0,
     /** Video is not published */
-    UNPUBLISHED = 0,
+    UNPUBLISHED = 1,
     /** Video is published */
-    PUBLISHED = 1,
+    PUBLISHED = 2,
     /** Video is disabled */
-    DISABLED = 2,
+    DISABLED = 3,
     /** Video is deleted */
-    DELETED = 3,
+    DELETED = 127,
     /** All video statuses */
-    ALL = 4
+    ALL = 128
 }
 
 /**
@@ -44,16 +46,10 @@ export interface IVideo {
     description?: string;
     /** Video cover image URL */
     cover?: string;
-    /** Current upload status */
-    uploadStatus: VideoUploadStatus;
     /** Current video status */
     status: VideoStatus;
-    /** Video source URL */
-    videoSourceUrl?: string;
     /** Video duration in seconds */
     duration?: number;
-    /** Video file size in bytes */
-    fileSize?: number;
     /** ID of the creator who uploaded the video */
     creatorId: string;
     /** Creation timestamp */
@@ -62,8 +58,6 @@ export interface IVideo {
     updatedAt: number;
     /** Number of views */
     views?: number;
-    /** Upload progress percentage */
-    progress?: number;
     /** SEO information */
     seo?: {
         /** SEO title */
@@ -73,6 +67,36 @@ export interface IVideo {
         /** SEO keywords */
         keywords?: string;
     };
+    /** Video source URL */
+    videoSourceUrl?: string;
+    /** Video playlist cover */
+    playlistCover?: string;
+    /** Video playlist title */
+    playlistTitle?: string;
+    /** Video playlist id */
+    playlistId?: string;
+    /** Video episode */
+    episode?: number;
+    /** Video subtitles */
+    subtitles?: {
+        [key: string]: {
+            path: string;
+            desc: string;
+        };
+    };
+}
+
+export interface IUploadVideo extends IVideo {
+    /** Upload progress percentage */
+    progress?: number;
+    /** Video file size in bytes */
+    fileSize?: number;
+    /** Current upload status */
+    uploadStatus: VideoUploadStatus;
+    /** Current video status */
+    file?: File;
+    /** Current playlist id */
+    playlistId?: string;
 }
 
 /**

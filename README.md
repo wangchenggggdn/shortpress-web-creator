@@ -67,7 +67,7 @@ export const config = {
 
 ```json
 {
-    "Welcome to Shortify": "Welcome to Shortify"
+    "Welcome to ShortPress": "Welcome to ShortPress"
 }
 ```
 
@@ -94,6 +94,6 @@ import { useTranslations } from 'next-intl';
 
 export default function Component() {
     const t = useTranslations();
-    return <h1>{t('Welcome to Shortify')}</h1>;
+    return <h1>{t('Welcome to ShortPress')}</h1>;
 }
 ```

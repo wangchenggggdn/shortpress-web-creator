@@ -48,6 +48,27 @@ class Fetch {
         }
     }
 
+    private async getSiteId() {
+        let siteId = '';
+
+        const userState = await getCookie(CookieMap.UserState);
+
+        try {
+            if (userState) {
+                siteId = JSON.parse(decodeURIComponent(userState)).siteId;
+            }
+        } catch (error) {
+            console.warn(String(error));
+        }
+        if (siteId) {
+            return {
+                'X-Site-Id': siteId,
+            };
+        } else {
+            return '';
+        }
+    }
+
     /**
      * Send GET request
      * @param url API endpoint URL
@@ -56,13 +77,25 @@ class Fetch {
      */
     public async get<T>(url: string, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
+        const siteId = await this.getSiteId();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
 
         const config: any = {
             method: 'GET',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...this.publicHeaders,
                 ...token,
+                ...siteId,
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
         };
 
@@ -91,10 +124,10 @@ class Fetch {
                 }
             })
             .catch(error => {
-                return {
+                return Promise.resolve({
                     code: -1,
                     info: String(error),
-                };
+                });
             });
     }
 
@@ -106,13 +139,25 @@ class Fetch {
      */
     public async post<T>(url: string, data: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
+        const siteId = await this.getSiteId();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
 
         const config: any = {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...this.publicHeaders,
                 ...token,
+                ...siteId,
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
             body: JSON.stringify(data),
         };
@@ -141,10 +186,10 @@ class Fetch {
                 }
             })
             .catch(error => {
-                return {
+                return Promise.resolve({
                     code: -1,
                     info: String(error),
-                };
+                });
             });
     }
 
@@ -155,26 +200,33 @@ class Fetch {
      * @param params Additional query parameters
      * @returns Promise with API response
      */
-    public async upload<T>(url: string, data: FormData, params: Record<string, any> = {}): Promise<IResponse<T>> {
+    public async upload0<T>(url: string, data: FormData, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
 
         const config: any = {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 ...this.publicHeaders,
                 ...token,
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
             body: data,
         };
 
         let qsUrl = `?${qs.stringify(params)}`;
-
         const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
-
         return fetch(fetchUrl, config)
             .then(async response => {
                 const result = await response.json();
-
                 if (result.code !== undefined && typeof result.code === 'number') {
                     if (response.status === 401) {
                         return Promise.resolve({
@@ -198,6 +250,86 @@ class Fetch {
                 };
             });
     }
+
+    public async upload<T>(
+        url: string,
+        data: FormData,
+        params: Record<string, any> = {},
+        onProgress?: (progress: number) => void,
+        xhrRef?: (xhr: XMLHttpRequest | null) => void
+    ): Promise<IResponse<T>> {
+        const token = await this.getToken();
+        let qsUrl = `?${qs.stringify(params)}`;
+        for (const key in params) {
+            if (params.hasOwnProperty(key)) {
+                data.append(key, params[key]);
+            }
+        }
+        const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
+
+        return new Promise((resolve) => {
+            const xhr = new XMLHttpRequest();
+            if (xhrRef) {
+                xhrRef(xhr);
+            }
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable && onProgress) {
+                    const progress = (event.loaded / event.total) * 100;
+                    onProgress(progress);
+                }
+            };
+
+            xhr.open('POST', fetchUrl);
+            // Ensure cookies are sent with the request when applicable
+            xhr.withCredentials = true;
+            // Set request headers
+            Object.entries({
+                ...this.publicHeaders,
+                ...token,
+            }).forEach(([key, value]) => {
+                xhr.setRequestHeader(key, value as string);
+            });
+
+            xhr.onload = () => {
+                try {
+                    const result = JSON.parse(xhr.responseText);
+                    if (result.code !== undefined && typeof result.code === 'number') {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            return resolve(result);
+                        } else {
+                            // 对于所有非成功的状态码，统一作为错误处理
+                            return resolve({
+                                code: xhr.status,
+                                info: result.info || xhr.statusText, // 优先使用后端返回的 info
+                                data: result.data || JSON.parse('{}'),
+                            });
+                        }
+                    }
+                    return resolve({
+                        code: xhr.status,
+                        info: xhr.statusText,
+                        data: result.data,
+                    });
+                } catch (error) {
+                    return resolve({
+                        code: -1,
+                        info: String(error),
+                        data: {} as T,
+                    });
+                }
+            };
+
+            xhr.onerror = () => {
+                return resolve({
+                    code: -1,
+                    info: 'network error',
+                    data: {} as T,
+                });
+            };
+
+            xhr.send(data);
+        });
+    };
 }
 
 export default new Fetch();

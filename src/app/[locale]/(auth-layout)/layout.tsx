@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <div className="w-full max-w-md px-8">
                 {/* Logo */}
                 <div className="mb-8 text-center">
-                    <h1 className="text-4xl font-bold text-primary mb-2">Shortify</h1>
+                    <h1 className="text-4xl font-bold text-primary mb-2">ShortPress</h1>
                 </div>
                 {children}
             </div>

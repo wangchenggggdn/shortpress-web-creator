@@ -2,48 +2,59 @@
 
 import React, { useState } from 'react';
 import { TextInput, PasswordInput, Button, Text } from '@mantine/core';
-import { IconUser, IconLock } from '@tabler/icons-react';
+import { IconUser, IconLock, IconEyeOff, IconEye } from '@tabler/icons-react';
 import Link from 'next/link';
-import { useRouter } from '@/libs/navigation';
 import CreatorApi from '@/api/creator';
 import CookieMap from '@/config/cookie-map';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
-const LoginPage = () => {
+interface LoginPageProps {}
+
+const LoginPage: React.FC<LoginPageProps> = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
+    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
 
-        const res = await CreatorApi.login({
-            email,
-            password,
-        });
-
+        const res = await CreatorApi.login({email,password});
         if (res.code === 0 && res.data) {
-            Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
+            // Set user state in cookie ,now server setCookie
+            //Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
             window.location.href = '/';
         } else {
             toast.error('Login failed: email or password is incorrect');
         }
+        setLoading(false);
+      
     };
 
     return (
         <div className="bg-white rounded-[32px] p-8 shadow-lg">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-black-purple">Welcome to Shortify</h2>
+                <h2 className="text-2xl font-bold text-black-purple">Welcome to ShortPress</h2>
                 <Text size="sm" c="dimmed">
                     All-in-One Platform to Monetize your short videos
                 </Text>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Email input */}
                 <TextInput value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" leftSection={<IconUser size={16} />} required />
 
-                <PasswordInput value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" leftSection={<IconLock size={16} />} required />
+                {/* Password input */}
+                <PasswordInput
+                    visibilityToggleIcon={({ reveal }) => (!reveal ? <IconEyeOff size={16} /> : <IconEye size={16} />)}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Password"
+                    leftSection={<IconLock size={16} />}
+                    required
+                />
 
                 {/* <div className="text-right">
                     <Link href="/forgot-password" className="text-sm text-primary hover:underline">
@@ -51,11 +62,13 @@ const LoginPage = () => {
                     </Link>
                 </div> */}
 
-                <Button type="submit" fullWidth color="primary">
+                {/* Sign in button */}
+                <Button type="submit" fullWidth color="primary" loading={loading}>
                     Sign in
                 </Button>
             </form>
 
+            {/* Register link */}
             <div className="mt-6 text-center">
                 <Text size="sm">
                     Don't have an account?{' '}

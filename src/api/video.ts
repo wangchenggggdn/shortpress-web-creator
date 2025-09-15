@@ -1,5 +1,5 @@
 import fetch from '@/libs/fetch/fetch';
-import { IVideo, VideoStatus } from '@/types/video';
+import { IPlaylist, IVideo, VideoStatus } from '@/types/video';
 import { IPaginationResponse } from '@/types/public';
 import { VideoArgs } from './args';
 
@@ -10,10 +10,28 @@ export default class VideoApi {
     /**
      * Upload a video
      * @param formData FormData containing video file and metadata
+     * @param playlistId Optional playlist ID to add video to
+     * @param onProgress Optional progress callback
+     * @param xhrRef Optional reference to store XMLHttpRequest instance
      * @returns Promise with array of video IDs
      */
-    static upload(formData: FormData) {
-        return fetch.upload<{ vids: string[] }>('/api/video/upload', formData);
+    static upload(
+        formData: FormData,
+        playlistId: string | null,
+        onProgress?: (progress: number) => void,
+        xhrRef?: (xhr: XMLHttpRequest | null) => void
+    ) {
+        let params = {};
+        if (playlistId) {
+            params = {
+                playlistId
+            }
+        }
+        return fetch.upload<{ vids: string[] }>('/api/video/upload', formData, params, onProgress, xhrRef);
+    }
+
+    static uploadSubtitle(args: FormData, vid: string) {
+        return fetch.upload<string>('/api/video/upload-subtitle', args, { vid });
     }
 
     /**
@@ -49,7 +67,7 @@ export default class VideoApi {
      * @returns Promise with paginated Video objects
      */
     static list(args: VideoArgs.List) {
-        return fetch.get<IPaginationResponse<IVideo>>('/api/video/list', args);
+        return fetch.get<IPaginationResponse<string>>('/api/video/list', args);
     }
 
     /**
@@ -58,7 +76,7 @@ export default class VideoApi {
      * @returns Promise with paginated Video objects
      */
     static search(args: VideoArgs.Search) {
-        return fetch.get<IPaginationResponse<IVideo>>('/api/video/search', args);
+        return fetch.get<IPaginationResponse<string>>('/api/video/search', args);
     }
 
     /**
@@ -77,5 +95,30 @@ export default class VideoApi {
      */
     static batchGet(vids: string) {
         return fetch.get<IPaginationResponse<IVideo>>('/api/video/batch-get', { vids });
+    }
+
+
+    /**
+    * Get playlist information for multiple playlists
+    * @param playlistIds Comma-separated string of playlist IDs
+    * @returns Promise with paginated Playlist objects
+    */
+    static playlistsInfoBatchGet(playlistIds: string) {
+        return fetch.get<IPaginationResponse<IPlaylist>>('/api/playlist/batch-get', { playlistIds });
+    }
+
+    /**
+     * Get video feed
+     * @param sitePath Website path
+     * @param page Page number
+     * @param pageSize Page size
+     * @returns Promise with paginated Video objects
+     */
+    static feed(sitePath: string, page: number = 1, pageSize: number = 4) {
+        return fetch.get<IPaginationResponse<{
+            videoId: string;
+            playlistId: string;
+            episode: number;
+        }>>('/api/client/feed', { sitePath, page, pageSize });
     }
 } 

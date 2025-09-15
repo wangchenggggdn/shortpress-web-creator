@@ -9,6 +9,7 @@ import useUserStore from '@/store/useUserStore';
 import Cookies from 'js-cookie';
 import { useRouter } from '@/libs/navigation';
 import CookieMap from '@/config/cookie-map';
+import CreatorApi from '@/api/creator';
 
 /**
  * Interface for menu item configuration
@@ -40,9 +41,6 @@ const menuItems: MenuItem[] = [
     { icon: <IconVideo size={20} />, label: 'Videos', path: '/videos' },
     { icon: <IconPlaylist size={20} />, label: 'Playlists', path: '/playlists' },
     { icon: <IconBrowser size={20} />, label: 'Websites', path: '/websites' },
-    { icon: <IconChartBar size={20} />, label: 'Analytics', path: '/analytics' },
-    { icon: <IconUsers size={20} />, label: 'Members', path: '/members' },
-    { icon: <IconCoin size={20} />, label: 'Monetize', path: '/monetize' },
 ];
 
 /**
@@ -52,7 +50,7 @@ const menuItems: MenuItem[] = [
  */
 const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
     const pathname = usePathname();
-    const { userInfo } = useUserStore();
+    const { userInfo, setUserInfo } = useUserStore();
     const router = useRouter();
 
     /**
@@ -73,8 +71,16 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
      */
     const handleLogout = () => {
         Cookies.remove(CookieMap.UserState);
+        Cookies.remove(CookieMap.UserState0);
+        Cookies.remove(CookieMap.UserState1);
         localStorage.removeItem('sites');
         router.push('/login');
+    };
+
+    const reloadUserInfo = async () => {
+        const res = await CreatorApi.profile();
+        console.log('resProfile', userInfo, res);
+        setUserInfo({ ...userInfo, ...res.data });
     };
 
     return (
@@ -89,34 +95,44 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                 {/* Logo Section */}
                 <div className="h-16 flex items-center px-4">
                     <Link href="/" className="text-primary text-2xl font-bold">
-                        {collapsed ? 'S' : 'Shortify'}
+                        {collapsed ? 'S' : 'ShortPress'}
                     </Link>
                 </div>
 
                 {/* Navigation Menu */}
                 <div className={`flex-1 ${collapsed ? 'pr-2' : 'pr-12'} py-4`}>
-                    {menuItems.map(item => (
-                        <Link
-                            key={item.path}
-                            href={item.path}
-                            className={`
-                                relative flex items-center gap-3 px-4 py-2 my-1
-                                ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
-                                ${!collapsed && 'pl-6'}
-                            `}
-                        >
+                    {menuItems.map((item, index) => {
+                        return (
                             <div
-                                className={`
-                                    absolute inset-y-0 left-0 w-full
-                                    bg-primary rounded-r-full
-                                    transition-transform duration-300 origin-left
-                                    ${isActive(item.path) ? 'scale-x-100' : 'scale-x-0'}
-                                `}
-                            />
-                            <span className="relative z-10 w-6">{item.icon}</span>
-                            {!collapsed && <span className="relative z-10 text-base">{item.label}</span>}
-                        </Link>
-                    ))}
+                                key={item.path + index}
+                                onClick={() => {
+                                    if (index === 0) {
+                                        reloadUserInfo();
+                                    }
+                                }}
+                            >
+                                <Link
+                                    href={item.path}
+                                    className={`
+                       relative flex items-center gap-3 px-4 py-2 my-1
+                       ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
+                       ${!collapsed && 'pl-6'}
+                   `}
+                                >
+                                    <div
+                                        className={`
+                           absolute inset-y-0 left-0 w-full
+                           bg-primary rounded-r-full
+                           transition-transform duration-300 origin-left
+                           ${isActive(item.path) ? 'scale-x-100' : 'scale-x-0'}
+                       `}
+                                    />
+                                    <span className="relative z-10 w-6">{item.icon}</span>
+                                    {!collapsed && <span className="relative z-10 text-base">{item.label}</span>}
+                                </Link>
+                            </div>
+                        );
+                    })}
                 </div>
 
                 {/* User Profile Section */}
@@ -128,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                                 {!collapsed && (
                                     <div className="ml-3 overflow-hidden">
                                         <Text size="sm" fw={500} truncate>
-                                            {userInfo?.nickname}
+                                            {userInfo?.email}
                                         </Text>
                                     </div>
                                 )}
@@ -139,11 +155,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
                             <div className="p-3 border-b">
                                 <div className="flex items-center">
                                     <Avatar src={userInfo?.avatarUrl} radius="xl" size={32} />
-                                    <div className="ml-3">
-                                        <Text size="sm" fw={500}>
+                                    <div className="ml-3 overflow-hidden">
+                                        <Text size="sm" fw={500} truncate>
                                             {userInfo?.nickname}
                                         </Text>
-                                        <Text size="xs" c="dimmed">
+                                        <Text size="xs" c="dimmed" truncate>
                                             {userInfo?.email}
                                         </Text>
                                     </div>

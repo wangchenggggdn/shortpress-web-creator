@@ -1,0 +1,188 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Business Design Patterns and Architecture Guide
+
+## Overview
+
+This document outlines the business design patterns and architecture of the application, focusing on the separation of server and client components, routing configuration, and business logic organization.
+
+## Architecture Pattern
+
+### 1. Server-Client Separation
+
+The application follows a clear separation between server and client components:
+
+#### Server Components (`app/` directory)
+- Located in the `app/` directory
+- Responsible for routing and layout configuration
+- Minimal business logic
+- Example:
+```typescript
+// src/app/[locale]/(auth-layout)/login/page.tsx
+import LoginPageClient from '@/components/business/login/login';
+
+const LoginPageServer: React.FC = () => {
+   return <LoginPageClient/>
+};
+
+export default LoginPageServer;
+```
+
+#### Client Components (`components/business/` directory)
+- Located in the `components/business/` directory
+- Contains all business logic and UI components
+- Handles state management and user interactions
+- Example:
+```typescript
+// src/components/business/login/login/index.tsx
+'use client';
+
+const LoginPageClient: React.FC = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        // Business logic implementation
+    };
+
+    return (
+        // UI implementation
+    );
+};
+```
+
+### 2. Directory Structure
+
+```
+src/
+├── app/                    # Server components and routing
+│   └── [locale]/          # Internationalization routes
+│       └── (auth-layout)/ # Authentication layout group
+│           └── login/     # Login page route
+│               └── page.tsx
+│
+└── components/            # Client components
+    └── business/         # Business logic components
+        └── login/        # Login related components
+            └── login/    # Login page component
+                └── index.tsx
+```
+
+### 3. Business Logic Organization
+
+1. **API Integration**
+   - API calls are centralized in the `api/` directory
+   - Each domain has its own API module
+   - Example:
+   ```typescript
+   import UserApi from '@/api/user';
+   
+   const handleSubmit = async () => {
+       const res = await UserApi.login(email, password);
+       // Handle response
+   };
+   ```
+
+2. **State Management**
+   - Local state managed using React hooks
+   - Global state (if needed) can be managed using context or state management libraries
+   - Example:
+   ```typescript
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
+   const [loading, setLoading] = useState(false);
+   ```
+
+3. **Error Handling**
+   - Consistent error handling using toast notifications
+   - API response validation
+   - Example:
+   ```typescript
+   if (res.code === 0 && res.data) {
+       // Success handling
+   } else {
+       toast.error('Login failed: email or password is incorrect');
+   }
+   ```
+
+## Best Practices
+
+1. **Server Components**
+   - Keep server components minimal
+   - Use for routing and layout only
+   - Avoid business logic in server components
+
+2. **Client Components**
+   - Mark with 'use client' directive
+   - Handle all user interactions
+   - Implement business logic
+   - Manage component state
+
+3. **Code Organization**
+   - Group related components in business directories
+   - Separate concerns between UI and business logic
+   - Use consistent naming conventions
+
+4. **State Management**
+   - Use appropriate state management solutions
+   - Keep state as local as possible
+   - Consider performance implications
+
+## Example Implementation
+
+Here's a complete example of the login flow:
+
+1. **Server Component (Route)**
+```typescript
+// src/app/[locale]/(auth-layout)/login/page.tsx
+import LoginPageClient from '@/components/business/login/login';
+
+const LoginPageServer: React.FC = () => {
+   return <LoginPageClient/>
+};
+
+export default LoginPageServer;
+```
+
+2. **Client Component (Business Logic)**
+```typescript
+// src/components/business/login/login/index.tsx
+'use client';
+
+const LoginPageClient: React.FC = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        const res = await UserApi.login(email, password);
+        if (res.code === 0 && res.data) {
+            Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
+            window.location.href = '/';
+        } else {
+            toast.error('Login failed: email or password is incorrect');
+        }
+        setLoading(false);
+    };
+
+    return (
+        // UI implementation
+    );
+};
+```
+
+####4
+English comments on the code
+Code copywriting citation
+
+####5
+The list/grid uses inview to implement pull-up loading. Items must be encapsulated as independent components.
+
+This architecture provides a clean separation of concerns, making the code more maintainable and easier to test.

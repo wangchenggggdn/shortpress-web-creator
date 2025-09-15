@@ -1,3 +1,6 @@
+import { Guide } from "./guide";
+import { Website } from "./website";
+
 /**
  * Interface for user login state
  */
@@ -77,6 +80,10 @@ export interface IUserProfile {
     updatedAt: string;
     /** Last login timestamp */
     lastLoginAt: string;
+    /** User's website */
+    website: Website;
+    /** todo Guides */
+    guides: Guide[];
 }
 
 // Verify token type enum
