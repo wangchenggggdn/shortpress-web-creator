@@ -17,11 +17,19 @@ export function authMiddleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const isPublicPath = publicPaths.some(path => pathname.endsWith(path));
     const isAuthenticated = request.cookies.has(CookieMap.UserState);
-    
+
     console.log('pathname:', pathname);
     // Redirect authenticated users away from public pages
     if (isAuthenticated && isPublicPath) {
         return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    if (!isAuthenticated) {
+        const isAuthenticated0 = request.cookies.has(CookieMap.UserState0);
+        const isAuthenticated1 = request.cookies.has(CookieMap.UserState1);
+        if (isAuthenticated0 || isAuthenticated1) {
+            return NextResponse.redirect(new URL('/', request.url));
+        }
     }
 
     // Redirect unauthenticated users to login page
