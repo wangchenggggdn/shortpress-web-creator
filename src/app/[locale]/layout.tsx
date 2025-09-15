@@ -28,6 +28,8 @@ const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) =
     const messages = await getMessages();
     const cookieStore = cookies();
     const userState = cookieStore.get(CookieMap.UserState);
+    const userState0 = cookieStore.get(CookieMap.UserState0);
+    const userState1 = cookieStore.get(CookieMap.UserState1);
     let profile: null | IUserProfile = null;
 
     const fetchWebsites = async () => {
@@ -38,7 +40,7 @@ const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) =
         return resD.data.items;
     };
 
-    if (userState) {
+    if (userState || userState0 || userState1) {
         const res = await UserApi.profile();
         if (res.code === 0 && res.data) {
             profile = { ...res.data };
