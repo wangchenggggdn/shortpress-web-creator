@@ -267,15 +267,6 @@ class Fetch {
         }
         const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
 
-        let cookieHeader = '';
-        const isBrowser = typeof window !== 'undefined';
-        if (!isBrowser) {
-            const { cookies } = await import('next/headers');
-            const cookieStore = cookies();
-            cookieHeader = cookieStore.toString();
-            data.append('Cookie', cookieHeader);
-        }
-
         return new Promise((resolve) => {
             const xhr = new XMLHttpRequest();
             if (xhrRef) {
@@ -289,6 +280,8 @@ class Fetch {
             };
 
             xhr.open('POST', fetchUrl);
+            // Ensure cookies are sent with the request when applicable
+            xhr.withCredentials = true;
             // Set request headers
             Object.entries({
                 ...this.publicHeaders,
