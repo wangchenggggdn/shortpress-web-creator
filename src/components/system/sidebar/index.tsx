@@ -71,6 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
      */
     const handleLogout = () => {
         Cookies.remove(CookieMap.UserState);
+        Cookies.remove(CookieMap.UserState0);
+        Cookies.remove(CookieMap.UserState1);
         localStorage.removeItem('sites');
         router.push('/login');
     };

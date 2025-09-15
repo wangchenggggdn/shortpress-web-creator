@@ -78,6 +78,15 @@ class Fetch {
     public async get<T>(url: string, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
         const siteId = await this.getSiteId();
+
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
+
         const config: any = {
             method: 'GET',
             credentials: 'include',
@@ -86,6 +95,7 @@ class Fetch {
                 ...this.publicHeaders,
                 ...token,
                 ...siteId,
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
         };
 
@@ -131,6 +141,14 @@ class Fetch {
         const token = await this.getToken();
         const siteId = await this.getSiteId();
 
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
+
         const config: any = {
             method: 'POST',
             credentials: 'include',
@@ -139,6 +157,7 @@ class Fetch {
                 ...this.publicHeaders,
                 ...token,
                 ...siteId,
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
             body: JSON.stringify(data),
         };
@@ -184,12 +203,21 @@ class Fetch {
     public async upload0<T>(url: string, data: FormData, params: Record<string, any> = {}): Promise<IResponse<T>> {
         const token = await this.getToken();
 
+        let cookieHeader = '';
+        const isBrowser = typeof window !== 'undefined';
+        if (!isBrowser) {
+            const { cookies } = await import('next/headers');
+            const cookieStore = cookies();
+            cookieHeader = cookieStore.toString();
+        }
+
         const config: any = {
             method: 'POST',
             credentials: 'include',
             headers: {
                 ...this.publicHeaders,
                 ...token,
+                ...(cookieHeader && { Cookie: cookieHeader }),
             },
             body: data,
         };
@@ -252,6 +280,8 @@ class Fetch {
             };
 
             xhr.open('POST', fetchUrl);
+            // Ensure cookies are sent with the request when applicable
+            xhr.withCredentials = true;
             // Set request headers
             Object.entries({
                 ...this.publicHeaders,
