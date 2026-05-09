@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import { TextInput, Button, LoadingOverlay } from '@mantine/core';
-import { IconX, IconCopy } from '@tabler/icons-react';
+import { TextInput, Button, Radio } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { PaymentAPI } from '@/api/payment';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
@@ -10,24 +10,29 @@ import { SiteContext } from '@/components/business/websites/useContext/site-cont
 interface PaypalConnectProps {
     opened: boolean;
     onClose: () => void;
-    onSubmit: (clientId: string, clientSecret: string) => Promise<void>;
+    onSubmit: (clientId: string, clientSecret: string, isSandbox: boolean) => Promise<void>;
 }
 
 const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit }) => {
     const [clientId, setClientId] = useState('');
     const [clientSecret, setClientSecret] = useState('');
+    const [environment, setEnvironment] = useState<'sandbox' | 'live'>('live');
     const [loading, setLoading] = useState(false);
     const { params } = useContext(SiteContext);
     const siteId = params?.siteId ?? '';
-    const webhookUrl = 'https://shortpress.com/addons/dramas/pay/notify_paypal/payment/paypal/sign/edum';
 
     useEffect(() => {
         if (opened && siteId) {
+            setClientId('');
+            setClientSecret('');
+            setEnvironment('live');
             setLoading(true);
             PaymentAPI.getConfig({ siteId })
                 .then(response => {
                     if (response.data?.paypal) {
                         setClientId(response.data.paypal.clientId || '');
+                        setClientSecret(response.data.paypal.clientSecret || '');
+                        setEnvironment(response.data.paypal.isSandbox ? 'sandbox' : 'live');
                     }
                 })
                 .catch(error => {
@@ -52,18 +57,13 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
 
         setLoading(true);
         try {
-            await onSubmit(clientId, clientSecret);
+            await onSubmit(clientId, clientSecret, environment === 'sandbox');
             onClose();
         } catch (error) {
             console.error('PayPal configuration error:', error);
         } finally {
             setLoading(false);
         }
-    };
-
-    const copyWebhookUrl = () => {
-        navigator.clipboard.writeText(webhookUrl);
-        toast.success('Webhook URL copied');
     };
 
     if (!opened) return null;
@@ -104,15 +104,15 @@ const PaypalConnect: React.FC<PaypalConnectProps> = ({ opened, onClose, onSubmit
                                 />
                             </div>
 
-                            {/* <div>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium">Webhook URL</span>
-                                    <Button variant="subtle" color="primary" onClick={copyWebhookUrl} leftSection={<IconCopy size={16} />}>
-                                        Copy
-                                    </Button>
-                                </div>
-                                <div className="p-3 bg-gray-50 rounded text-sm break-all">{webhookUrl}</div>
-                            </div> */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Environment*</label>
+                                <Radio.Group value={environment} onChange={value => setEnvironment(value as 'sandbox' | 'live')}>
+                                    <div className="flex gap-8">
+                                        <Radio value="live" label="Live" />
+                                        <Radio value="sandbox" label="Sandbox" />
+                                    </div>
+                                </Radio.Group>
+                            </div>
 
                             <div className="text-center">
                                 <a

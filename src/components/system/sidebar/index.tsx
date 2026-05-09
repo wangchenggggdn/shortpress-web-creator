@@ -69,10 +69,15 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse }) => {
      * Handle user logout
      * Clears user state and redirects to login page
      */
-    const handleLogout = () => {
-        Cookies.remove(CookieMap.UserState);
-        Cookies.remove(CookieMap.UserState0);
-        Cookies.remove(CookieMap.UserState1);
+    const handleLogout = async () => {
+        // Call server-side logout to clear httpOnly cookies as well
+        await fetch('/api/creator/logout', {
+            method: 'POST',
+            credentials: 'include',
+        });
+        Cookies.remove(CookieMap.UserState, { path: '/' });
+        Cookies.remove(CookieMap.UserState0, { path: '/' });
+        Cookies.remove(CookieMap.UserState1, { path: '/' });
         localStorage.removeItem('sites');
         router.push('/login');
     };

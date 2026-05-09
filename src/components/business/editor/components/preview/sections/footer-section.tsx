@@ -15,13 +15,12 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
     const [currentItem, setCurrentItem] = useState<any>([]);
 
     useEffect(() => {
-        if((section.params.extend.widgets || []).length > 0){
+        if ((section.params.extend.widgets || []).length > 0) {
             setCurrentItem(section.params.extend.widgets || []);
-        }else{
+        } else {
             setCurrentItem([]);
         }
     }, [section.params.extend.widgets]);
-
 
     const getMenuItem = (type: string): any | undefined => {
         return currentItem?.find((item: any) => item.type === type);
@@ -40,17 +39,22 @@ const FooterSection: React.FC<FooterSectionProps> = ({ section, pageId }) => {
         <BaseSection section={section} pageId={pageId}>
             <div className="bg-black text-gray-400 p-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    {footerItems.map((item: any) => (
-                       item.visible && <div className="hover:text-gray-300 text-center" key={item.id}>{item.label}</div>
-                    ))}
+                    {footerItems.map(
+                        (item: any) =>
+                            item.visible && (
+                                <div className="hover:text-gray-300 text-center" key={item.id}>
+                                    {item.label}
+                                </div>
+                            )
+                    )}
                 </div>
                 <div className="text-center text-sm text-gray-400">
-                    {footerText&&footerText.visible && <p>{footerText?.data||`© 2025 ${editWebsite?.name}. All Rights reserved`}</p>}
-                    {shortPressLogo&&shortPressLogo.visible && <p>{shortPressLogo?.data||'Powered by ShortPress.com'}</p>}
+                    {footerText && footerText.visible && <p>{footerText?.data || `© 2025 ${editWebsite?.name}. All Rights reserved`}</p>}
+                    {/* {shortPressLogo && shortPressLogo.visible && <p>{shortPressLogo?.data || 'Powered by ShortPress.com'}</p>} */}
                 </div>
             </div>
         </BaseSection>
     );
 };
 
-export default FooterSection; 
+export default FooterSection;

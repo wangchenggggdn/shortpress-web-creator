@@ -65,7 +65,7 @@ const SubscriptionView: React.FC = () => {
                 const updatedList = subscriptions.map(s => (s.packageId === sub.packageId ? sub : s));
                 setSubscriptions(updatedList);
                 toast.success('Subscription updated successfully');
-                PaymentAPI.modifySubscription({ siteId, packageId: sub.packageId??'', status: sub.status,name:sub.name,description:sub.description });
+                PaymentAPI.modifySubscription({ ...sub, siteId, packageId: sub.packageId??'' });
             } else {
                 const newSub = {
                     ...sub,

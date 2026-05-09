@@ -1,12 +1,10 @@
-import { IPaginationResponse, IResponse } from "@/types/public";
-import { PaymentArgs } from "./args";
-import { PaymentResponse, UserResponse } from "./respones";
+import { IPaginationResponse, IResponse } from '@/types/public';
+import { PaymentArgs } from './args';
+import { PaymentResponse, UserResponse } from './respones';
 import fetch from '@/libs/fetch/fetch';
-import { CoinPackage, CoinTransaction, VideoUnlockTransaction } from "@/types/payment";
+import { CoinPackage, CoinTransaction, VideoUnlockTransaction } from '@/types/payment';
 import { SubscriptionArgs } from './args';
 import { SubscriptionData } from '@/types/subscription';
-
-
 
 /**
  * Payment related API class
@@ -74,8 +72,6 @@ export class PaymentAPI {
     static getConfig(args: PaymentArgs.GetConfig) {
         return fetch.get<PaymentResponse.PaymentConfig>('/api/payment/conf/info', args);
     }
-
-
 
     /**
      * Create a payment order
@@ -149,5 +145,4 @@ export class PaymentAPI {
     static modifySubscription(args: SubscriptionArgs.Modify) {
         return fetch.post<{ packageId: string }>('/api/payment/subscription/modify', args);
     }
-
 }

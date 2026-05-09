@@ -1,6 +1,6 @@
 import fetch from '@/libs/fetch/fetch';
-import { IPlaylist, IVideo, VideoStatus } from '@/types/video';
 import { IPaginationResponse } from '@/types/public';
+import { IPlaylist, IVideo } from '@/types/video';
 import { VideoArgs } from './args';
 
 /**
@@ -15,17 +15,12 @@ export default class VideoApi {
      * @param xhrRef Optional reference to store XMLHttpRequest instance
      * @returns Promise with array of video IDs
      */
-    static upload(
-        formData: FormData,
-        playlistId: string | null,
-        onProgress?: (progress: number) => void,
-        xhrRef?: (xhr: XMLHttpRequest | null) => void
-    ) {
+    static upload(formData: FormData, playlistId: string | null, onProgress?: (progress: number) => void, xhrRef?: (xhr: XMLHttpRequest | null) => void) {
         let params = {};
         if (playlistId) {
             params = {
-                playlistId
-            }
+                playlistId,
+            };
         }
         return fetch.upload<{ vids: string[] }>('/api/video/upload', formData, params, onProgress, xhrRef);
     }
@@ -85,7 +80,7 @@ export default class VideoApi {
      * @returns Promise with updated video information
      */
     static replace(args: VideoArgs.Replace) {
-        return fetch.upload<{ vid: string, cover: string, videoSourceUrl: string }>('/api/video/replace', args.formData, { vid: args.vid });
+        return fetch.upload<{ vid: string; cover: string; videoSourceUrl: string }>('/api/video/replace', args.formData, { vid: args.vid });
     }
 
     /**
@@ -97,12 +92,11 @@ export default class VideoApi {
         return fetch.get<IPaginationResponse<IVideo>>('/api/video/batch-get', { vids });
     }
 
-
     /**
-    * Get playlist information for multiple playlists
-    * @param playlistIds Comma-separated string of playlist IDs
-    * @returns Promise with paginated Playlist objects
-    */
+     * Get playlist information for multiple playlists
+     * @param playlistIds Comma-separated string of playlist IDs
+     * @returns Promise with paginated Playlist objects
+     */
     static playlistsInfoBatchGet(playlistIds: string) {
         return fetch.get<IPaginationResponse<IPlaylist>>('/api/playlist/batch-get', { playlistIds });
     }
@@ -115,10 +109,12 @@ export default class VideoApi {
      * @returns Promise with paginated Video objects
      */
     static feed(sitePath: string, page: number = 1, pageSize: number = 4) {
-        return fetch.get<IPaginationResponse<{
-            videoId: string;
-            playlistId: string;
-            episode: number;
-        }>>('/api/client/feed', { sitePath, page, pageSize });
+        return fetch.get<
+            IPaginationResponse<{
+                videoId: string;
+                playlistId: string;
+                episode: number;
+            }>
+        >('/api/client/feed', { sitePath, page, pageSize });
     }
-} 
+}

@@ -1,5 +1,5 @@
-import { Metadata } from 'next/types';
 import appConfig from '@/appConfig';
+import { Metadata } from 'next/types';
 
 /**
  * Get language-specific URLs for a given path
@@ -81,14 +81,12 @@ const initLangTags: (path: string, lang: string) => Metadata = (path, lang) => {
 const initSEOTags: () => Metadata = () => {
     return {
         title: '',
-        description:
-            '',
-        keywords:
-            '',
+        description: '',
+        keywords: '',
         applicationName: appConfig.appName,
-        metadataBase: new URL(appConfig.baseDomain),
+        metadataBase: appConfig.baseDomain ? new URL(appConfig.baseDomain) : undefined,
         robots: { index: true, follow: true },
     };
 };
 
-export { getSEOTags, initSEOTags, initLangTags };
+export { getSEOTags, initLangTags, initSEOTags };

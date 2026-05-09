@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { IconEye, IconEyeOff, IconPlus } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconPlus, IconPlayerPlay } from '@tabler/icons-react';
 import { Menu } from '@mantine/core';
 import useEditorStore from '@/store/useEditorStore';
 import { Section, SectionType } from '@/types/editor';
@@ -9,27 +9,16 @@ import { createUniqueUUID } from '@/utils/public';
 import SectionTypeSelector from './common/SectionTypeSelector';
 import SectionItem from './common/SectionItem';
 import InputModal from '@/components/common/input-modal';
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-} from '@dnd-kit/core';
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 interface SectionListProps {
     onSectionChange?: (sectionId: string | null) => void;
 }
 
 const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
-    const { currentVersion, currentPage, currentSection, addSection, deleteSection, setCurrentSection, updateSection, updateShareSection, isSharedSectionFunc, updatePage } = useEditorStore();
+    const { currentVersion, currentPage, currentSection, addSection, deleteSection, setCurrentSection, updateSection, updateShareSection, isSharedSectionFunc, updatePage } =
+        useEditorStore();
     const currentPageData = currentVersion?.pages.find(page => page.id === currentPage);
     const [sectionToRename, setSectionToRename] = useState<Section | null>(null);
 
@@ -39,6 +28,15 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    useEffect(() => {
+        if (currentPageData?.type === 'playlist') {
+            const hasPlayer = currentPageData.sections.some(s => s.type === SectionType.PLAYER);
+            if (!hasPlayer && currentPage) {
+                addSection(currentPage, SectionType.PLAYER);
+            }
+        }
+    }, [currentPageData, currentPage, addSection]);
 
     const handleAddSection = (type: SectionType) => {
         if (!currentPage) return;
@@ -66,8 +64,6 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         }
     };
 
-
-
     const handleToggleVisibility = (e: React.MouseEvent, section: Section) => {
         e.stopPropagation();
         if (!currentPage) return;
@@ -79,7 +75,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
     const handleDuplicateSection = (sectionId: string) => {
         if (!currentPage || !currentPageData) return;
-        
+
         const sectionToDuplicate = currentPageData.sections.find(s => s.id === sectionId);
         if (!sectionToDuplicate) return;
 
@@ -88,7 +84,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
             handleUpdateSection({
                 ...newSection,
                 title: `${sectionToDuplicate.title} (Copy)`,
-                params: sectionToDuplicate.params
+                params: sectionToDuplicate.params,
             });
         }
     };
@@ -99,12 +95,12 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
     const handleRenameSectionConfirm = (newTitle: string) => {
         if (!sectionToRename || !currentPage) return false;
-        
+
         handleUpdateSection({
             ...sectionToRename,
-            title: newTitle
+            title: newTitle,
         });
-        
+
         setSectionToRename(null);
         return true;
     };
@@ -121,9 +117,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         const { active, over } = event;
         if (!active || !over || active.id === over.id || !currentPageData || !currentPage) return;
 
-        const regularSections = currentPageData.sections.filter(
-            section => section.type !== SectionType.HEADER && section.type !== SectionType.FOOTER
-        );
+        const regularSections = currentPageData.sections.filter(section => section.type !== SectionType.HEADER && section.type !== SectionType.FOOTER);
 
         const oldIndex = regularSections.findIndex(section => section.id === active.id);
         const newIndex = regularSections.findIndex(section => section.id === over.id);
@@ -133,18 +127,14 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
         const newRegularSections = arrayMove(regularSections, oldIndex, newIndex);
         const updatedRegularSections = newRegularSections.map((section, index) => ({
             ...section,
-            order: index
+            order: index,
         }));
 
         // Update the page with all sections (header, reordered regular sections, and footer)
         const headerSection = currentPageData.sections.find(s => s.type === SectionType.HEADER);
         const footerSection = currentPageData.sections.find(s => s.type === SectionType.FOOTER);
 
-        const allSections = [
-            ...(headerSection ? [headerSection] : []),
-            ...updatedRegularSections,
-            ...(footerSection ? [footerSection] : [])
-        ];
+        const allSections = [...(headerSection ? [headerSection] : []), ...updatedRegularSections, ...(footerSection ? [footerSection] : [])];
 
         updatePage(currentPage, { sections: allSections });
     };
@@ -162,13 +152,20 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
     const footerSection = currentPageData?.sections.find(s => s.type === SectionType.FOOTER);
     const shareHeaderSection = currentVersion?.shareSections.find(s => s.type === SectionType.HEADER);
     const shareFooterSection = currentVersion?.shareSections.find(s => s.type === SectionType.FOOTER);
+    const shareNavigationSection = currentVersion?.shareSections.find(s => s.type === SectionType.NAVIGATION);
 
     const isVisibleShareFooter = shareFooterSection && !shareFooterSection.params.extend.notSharePages?.includes(currentPageData?.path ?? '');
 
+    const navigationWidgets = shareNavigationSection?.params?.extend?.widgets || [];
+    const navigationPaths = navigationWidgets.filter((w: any) => w.visible && w.path).map((w: any) => w.path);
+
+    const isNavigationVisible = currentPageData && (currentPageData.isHome || (navigationPaths.length > 0 && navigationPaths.includes(currentPageData.path)));
+
     // Get regular sections for drag and drop
-    const regularSections = currentPageData?.sections
-        .filter(section => section.type !== SectionType.HEADER && section.type !== SectionType.FOOTER)
-        .sort((a, b) => a.order - b.order) || [];
+    const regularSections =
+        currentPageData?.sections
+            .filter(section => section.type !== SectionType.HEADER && section.type !== SectionType.FOOTER && section.type !== SectionType.PLAYER)
+            .sort((a, b) => a.order - b.order) || [];
 
     return (
         <div className="p-4 max-h-[calc(100vh-64px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
@@ -178,7 +175,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
 
             <div className="space-y-2">
                 {/* Header Section */}
-                {headerSection && (
+                {currentPageData?.isHome && headerSection && (
                     <div
                         className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
                             currentSection?.id === headerSection?.id ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]' : 'hover:bg-gray-50'
@@ -191,7 +188,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                         <span className="flex-1">Header</span>
                     </div>
                 )}
-                {!headerSection && shareHeaderSection && (
+                {currentPageData?.isHome && !headerSection && shareHeaderSection && (
                     <div
                         className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
                             currentSection?.id === shareHeaderSection?.id ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]' : 'hover:bg-gray-50'
@@ -205,16 +202,31 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                     </div>
                 )}
 
+                {/* Player Section for Playlist */}
+                {currentPageData?.type === 'playlist' && (
+                    <div className="space-y-2">
+                        {currentPageData.sections
+                            .filter(s => s.type === SectionType.PLAYER)
+                            .map(section => (
+                                <div
+                                    key={section.id}
+                                    className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
+                                        currentSection?.id === section.id ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]' : 'hover:bg-gray-50'
+                                    }`}
+                                    onClick={() => handleSectionClick(section)}
+                                >
+                                    <button className="mr-2 text-gray-500">
+                                        <IconPlayerPlay size={16} />
+                                    </button>
+                                    <span className="flex-1">{section.title || 'Player'}</span>
+                                </div>
+                            ))}
+                    </div>
+                )}
+
                 {/* Regular Sections */}
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                >
-                    <SortableContext
-                        items={regularSections}
-                        strategy={verticalListSortingStrategy}
-                    >
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={regularSections} strategy={verticalListSortingStrategy}>
                         {regularSections.map((section: Section) => (
                             <SectionItem
                                 key={section.id}
@@ -231,20 +243,22 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                 </DndContext>
 
                 {/* Add Section Button */}
-                {currentPageData?.type !== 'playlist' && <div className="relative">
-                    <Menu>
-                        <Menu.Target>
-                            <button className="w-full p-2 text-left hover:bg-gray-100 rounded-lg border border-gray-200 flex items-center">
-                                <IconPlus size={16} className="mr-2" />
-                                <span>Add Section</span>
-                            </button>
-                        </Menu.Target>
-                        <SectionTypeSelector onSelect={handleAddSection} />
-                    </Menu>
-                </div>}
+                {currentPageData?.type !== 'playlist' && (
+                    <div className="relative">
+                        <Menu>
+                            <Menu.Target>
+                                <button className="w-full p-2 text-left hover:bg-gray-100 rounded-lg border border-gray-200 flex items-center">
+                                    <IconPlus size={16} className="mr-2" />
+                                    <span>Add Section</span>
+                                </button>
+                            </Menu.Target>
+                            <SectionTypeSelector onSelect={handleAddSection} />
+                        </Menu>
+                    </div>
+                )}
 
                 {/* Footer Section */}
-                {footerSection && (
+                {currentPageData?.isHome && footerSection && (
                     <div
                         className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
                             currentSection?.id === footerSection?.id ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]' : 'hover:bg-gray-50'
@@ -258,7 +272,7 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                     </div>
                 )}
 
-                {!footerSection && isVisibleShareFooter && (
+                {currentPageData?.isHome && !footerSection && shareFooterSection && isVisibleShareFooter && (
                     <div
                         className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
                             currentSection?.id === shareFooterSection?.id ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]' : 'hover:bg-gray-50'
@@ -269,6 +283,21 @@ const SectionList: React.FC<SectionListProps> = ({ onSectionChange }) => {
                             {shareFooterSection.isHidden ? <IconEyeOff size={16} /> : <IconEye size={16} />}
                         </button>
                         <span className="flex-1">Footer</span>
+                    </div>
+                )}
+
+                {/* Navigation Section */}
+                {shareNavigationSection && isNavigationVisible && (
+                    <div
+                        className={`flex items-center p-2 rounded-lg border border-gray-200 cursor-pointer ${
+                            currentSection?.id === shareNavigationSection?.id ? 'bg-[#EEF2FF] text-[#6366F1] border-[#6366F1]' : 'hover:bg-gray-50'
+                        }`}
+                        onClick={() => shareNavigationSection && handleSectionClick(shareNavigationSection)}
+                    >
+                        <button onClick={e => handleToggleVisibility(e, shareNavigationSection)} className="mr-2 text-gray-500 hover:text-gray-700">
+                            {shareNavigationSection.isHidden ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+                        </button>
+                        <span className="flex-1">Navigation</span>
                     </div>
                 )}
             </div>

@@ -37,8 +37,8 @@ const VideosPage: React.FC<VideosPageProps> = () => {
      * @param id Video ID to delete
      * @returns Promise
      */
-    const deleteVideo = async (id: string) => {
-        VideoApi.delete([id]).then(() => {
+    const deleteVideo = async (ids: string[]) => {
+        VideoApi.delete(ids).then(() => {
             toast.success('Video deleted successfully');
         });
     };

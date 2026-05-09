@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
 import { IconPlayerPlay, IconVolume, IconVolumeOff } from '@tabler/icons-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 /**
  * Props interface for VideoPlayer component
@@ -34,6 +34,20 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, coverUrl, isPlaying, onE
     const [isMuted, setIsMuted] = useState(true);
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Reset video when src changes
+    useEffect(() => {
+        setIsVideoLoaded(false);
+        setProgress(0);
+        setDuration(0);
+        setIsLoading(false);
+
+        // Clear the video element src to force reload
+        if (videoRef.current) {
+            videoRef.current.src = '';
+            videoRef.current.load();
+        }
+    }, [src]);
 
     // Control video play/pause
     useEffect(() => {
@@ -107,16 +121,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, coverUrl, isPlaying, onE
             setIsLoading(true);
             // Set the src to trigger video loading
             if (videoRef.current) {
-                videoRef.current.src = src;
+                // Add cache busting parameter to avoid browser caching
+                const cacheBustedSrc = src.includes('?') ? `${src}&_t=${Date.now()}` : `${src}?_t=${Date.now()}`;
+                videoRef.current.src = cacheBustedSrc;
                 videoRef.current.load();
-                
+
                 // Listen for canplay event to know when video is ready
                 const handleCanPlay = () => {
                     setIsVideoLoaded(true);
                     setIsLoading(false);
                     onPlayPause?.(true);
                 };
-                
+
                 videoRef.current.addEventListener('canplay', handleCanPlay, { once: true });
             }
         } else {
@@ -125,7 +141,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, coverUrl, isPlaying, onE
     };
 
     console.log('image-src:', coverUrl);
-    
+
     return (
         <div className="relative w-full h-full">
             {/* Video element - only render when needed */}
@@ -149,16 +165,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, coverUrl, isPlaying, onE
                     <div className="absolute inset-0 bg-gray-100"></div>
 
                     {/* Cover Image */}
-                    <img 
-                        src={coverUrl} 
-                        alt={title || 'Video cover'} 
-                        className="absolute inset-0 w-full h-full object-cover z-10"
-                        onError={(e) => {
-                            // If cover image fails to load, fallback to default background
-                            e.currentTarget.style.display = 'none';
-                        }}
-                    />
-                    
+                    {coverUrl &&
+                        (coverUrl.toLowerCase().includes('.webm') ? (
+                            <video src={coverUrl} className="absolute inset-0 w-full h-full object-cover z-10" autoPlay muted loop playsInline />
+                        ) : (
+                            <img
+                                src={coverUrl}
+                                alt={title || 'Video cover'}
+                                className="absolute inset-0 w-full h-full object-cover z-10"
+                                onError={e => {
+                                    // If cover image fails to load, fallback to default background
+                                    e.currentTarget.style.display = 'none';
+                                }}
+                            />
+                        ))}
+
                     {/* Play Button Overlay */}
                     {isLoading ? (
                         <div className="relative z-10 bg-black/30 rounded-full p-4">

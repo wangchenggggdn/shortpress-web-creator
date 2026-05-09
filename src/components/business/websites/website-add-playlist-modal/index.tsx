@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
-import Image from 'next/image';
-import { Button, Pagination } from '@mantine/core';
-import Search from '@/components/common/search';
-import { IconX } from '@tabler/icons-react';
-import { Playlist } from '@/types/playlist';
+/* eslint-disable @next/next/no-img-element */
 import PlaylistApi from '@/api/playlist';
 import LoadingData from '@/components/common/loading-data';
+import Search from '@/components/common/search';
+import { Playlist } from '@/types/playlist';
+import { Button, Checkbox, Pagination } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
-import { Checkbox } from '@mantine/core';
+import React, { useEffect } from 'react';
 /**
  * Props interface for AddContentModal component
  */
@@ -58,10 +57,8 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
         const resD = await PlaylistApi.batchGet(res.data.items.join(','));
         setLoading(true);
         if (resD.code !== 0 || !resD.data?.items?.length) return;
-        const newPlaylists = res.data.items
-            .map(item => resD.data.items.find(i => i.playlistId === item))
-            .filter((item): item is Playlist => item !== null && item !== undefined);
-            
+        const newPlaylists = res.data.items.map(item => resD.data.items.find(i => i.playlistId === item)).filter((item): item is Playlist => item !== null && item !== undefined);
+
         setPlaylists(newPlaylists);
         setLoading(false);
     };
@@ -143,11 +140,16 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                                             setSelectedItems([...selectedItems, item.playlistId]);
                                         }}
                                     >
-                                        <div className="absolute top-2 left-2 z-10"> 
-                                            <Checkbox checked={selectedItems.includes(item.playlistId)}/>
+                                        <div className="absolute top-2 left-2 z-10">
+                                            <Checkbox checked={selectedItems.includes(item.playlistId)} />
                                         </div>
                                         <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
-                                            {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
+                                            {item.cover &&
+                                                (item.cover.toLowerCase().endsWith('.webm') ? (
+                                                    <video src={item.cover} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                                                ) : (
+                                                    <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
+                                                ))}
                                         </div>
                                         <div className="absolute text-sm bottom-8 left-0 right-0 p-2">{item.videoCount} videos</div>
                                         <div className="absolute text-sm bottom-0 left-0 right-0 bg-white p-2 rounded-b-md">

@@ -1,15 +1,16 @@
-import React from 'react';
+import UserApi from '@/api/creator';
+import WebsiteApi from '@/api/website';
+import appConfig from '@/appConfig';
+import ClientLayout from '@/components/system/client-layout';
+import CookieMap from '@/config/cookie-map';
+import { RuntimeConfig } from '@/context/config-context';
+import { initLangTags } from '@/libs/seo';
+import { IUserProfile } from '@/types/user';
+import { pathname } from 'next-extra/pathname';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { pathname } from 'next-extra/pathname';
-import { IUserProfile } from '@/types/user';
-import CookieMap from '@/config/cookie-map';
-import UserApi from '@/api/creator';
-import appConfig from '@/appConfig';
-import { initLangTags } from '@/libs/seo';
-import WebsiteApi from '@/api/website';
-import ClientLayout from '@/components/system/client-layout';
+import React from 'react';
 
 /**
  * Props interface for the LocaleLayout component
@@ -53,10 +54,20 @@ const LocaleLayout: React.FC<LocaleLayoutProps> = async ({ children, params }) =
         }
     }
 
+    // Build runtime configuration from environment variables
+    const runtimeConfig: RuntimeConfig = {
+        domain: process.env.NEXT_PUBLIC_DOMAIN || '',
+        baseUrl: process.env.NEXT_PUBLIC_BASE_URL || '',
+        imageDomain: process.env.IMAGE_DOMAIN || '',
+        videoDomain: process.env.VIDEO_DOMAIN || '',
+        nodeEnv: process.env.NEXT_PUBLIC_NODE_ENV || 'dev',
+        previewDomain: process.env.NEXT_PUBLIC_DOMAIN_PREVIEW || '',
+    };
+
     console.log('profile:', profile);
     return (
         <NextIntlClientProvider messages={messages}>
-            <ClientLayout children={children} profile={profile} />
+            <ClientLayout children={children} profile={profile} runtimeConfig={runtimeConfig} />
         </NextIntlClientProvider>
     );
 };

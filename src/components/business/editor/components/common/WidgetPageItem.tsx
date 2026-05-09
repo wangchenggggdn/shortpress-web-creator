@@ -16,7 +16,7 @@ interface WidgetPageItemProps {
     variant?: 'full' | 'simple';
 }
 
-const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibility, onDuplicate, onDelete, onRename, variant = 'full',canHidden = true }) => {
+const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibility, onDuplicate, onDelete, onRename, variant = 'full', canHidden = true }) => {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
 
     const style = {
@@ -31,7 +31,12 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                     <IconGripVertical size={16} />
                 </button>
                 <div className="w-12 h-12 bg-gray-200 rounded flex-shrink-0 overflow-hidden">
-                    <img src={item.image??''} alt={item.label} width={48} height={48} className='object-cover' />
+                    {item.image &&
+                        (item.image.toLowerCase().endsWith('.webm') ? (
+                            <video src={item.image} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                        ) : (
+                            <img src={item.image} alt={item.label} width={48} height={48} className="w-full h-full object-cover" />
+                        ))}
                 </div>
                 <span className="flex-1 text-[#1E293B]">{item.label}</span>
                 <button onClick={() => onDelete(item.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">
@@ -55,10 +60,14 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                 <button className="cursor-grab hover:bg-gray-100 p-1 rounded" {...attributes} {...listeners}>
                     <IconGripVertical size={16} />
                 </button>
-                {canHidden && <button onClick={() => onToggleVisibility(item.id)} className="hover:bg-gray-100 p-1 rounded">
-                    {(item.visible === undefined ? true : item.visible) ? <IconEye size={16} /> : <IconEyeOff size={16} className="text-gray-400" />}
-                </button>}
-                <span className={clsx('ml-2 max-w-[100px] truncate', (item.visible === undefined ? true : item.visible) ? 'text-black-purple' : 'text-gray-400')}>{item.label}</span>
+                {canHidden && (
+                    <button onClick={() => onToggleVisibility(item.id)} className="hover:bg-gray-100 p-1 rounded">
+                        {(item.visible === undefined ? true : item.visible) ? <IconEye size={16} /> : <IconEyeOff size={16} className="text-gray-400" />}
+                    </button>
+                )}
+                <span className={clsx('ml-2 max-w-[100px] truncate', (item.visible === undefined ? true : item.visible) ? 'text-black-purple' : 'text-gray-400')}>
+                    {item.label}
+                </span>
             </div>
 
             <Menu position="bottom-end" offset={4} withArrow>
@@ -68,7 +77,9 @@ const WidgetPageItem: React.FC<WidgetPageItemProps> = ({ item, onToggleVisibilit
                     </button>
                 </Menu.Target>
                 <Menu.Dropdown>
-                    {canHidden && <Menu.Item onClick={() => onToggleVisibility(item.id)}>{(item.visible === undefined ? true : item.visible) ? 'Hide in Menu' : 'Show in Menu'}</Menu.Item>}
+                    {canHidden && (
+                        <Menu.Item onClick={() => onToggleVisibility(item.id)}>{(item.visible === undefined ? true : item.visible) ? 'Hide in Menu' : 'Show in Menu'}</Menu.Item>
+                    )}
                     <Menu.Item onClick={() => onDuplicate(item.id)}>Duplicate</Menu.Item>
                     <Menu.Item onClick={() => onRename(item)}>Rename</Menu.Item>
                     <Menu.Divider />

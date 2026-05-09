@@ -1,15 +1,16 @@
 'use client';
-import React, { useState, useCallback } from 'react';
+import { WebsiteArgs } from '@/api/args';
+import CreatorApi from '@/api/creator';
+import WebsiteApi from '@/api/website';
+import WebsiteCard from '@/components/business/websites/website-card';
+import CreateSiteModal from '@/components/business/websites/website-create-modal';
+import Header from '@/components/system/header';
+import { useRouter } from '@/libs/navigation';
+import { Website } from '@/types/website';
 import { Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import Header from '@/components/system/header';
-import CreateSiteModal from '@/components/business/websites/website-create-modal';
-import WebsiteCard from '@/components/business/websites/website-card';
-import WebsiteApi from '@/api/website';
-import { Website } from '@/types/website';
+import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-import { WebsiteArgs } from '@/api/args';
-import { useRouter } from '@/libs/navigation';
 
 interface IProps {
     websites: Website[];
@@ -35,7 +36,16 @@ const WebsitesView: React.FC<IProps> = ({ websites }) => {
      * Handle website creation submission
      * @param siteData Website data to create
      */
-    const handleSubmit = async (siteData: WebsiteArgs.Modify) => {
+    const handleSubmit = async (siteData: WebsiteArgs.Modify, coverFile?: File) => {
+        if (coverFile) {
+            const formData = new FormData();
+            formData.append('file', coverFile);
+            const uploadRes = await CreatorApi.uploadFile(formData);
+            if (uploadRes.code === 0) {
+                siteData.logo = uploadRes.data;
+            }
+        }
+
         const res = await WebsiteApi.create(siteData);
         if (res.code === 0) {
             toast.success('Create website successfully');

@@ -9,19 +9,27 @@ import SectionEditor from '@/components/business/editor/components/section-edito
 import Preview from '@/components/business/editor/components/preview';
 import EditorHeader from '@/components/business/editor/components/common/EditorHeader';
 import WebsiteApi from '@/api/website';
-import { DataSourceType, EditWebsite, Page, SectionType, Version } from '@/types/editor';
+import { DataSourceType, EditWebsite, Page, Section, SectionType, Version } from '@/types/editor';
+import { Website } from '@/types/website';
+import { TranslationFieldType } from '@/types/translation';
+import { TranslationHelper } from '@/utils/translationHelper';
 import { toast } from 'sonner';
 import LoadingData from '@/components/common/loading-data';
+import useUserStore from '@/store/useUserStore';
 
 interface EditorLayoutProps {
     siteId: string;
     pageId: string;
     sectionId?: string;
     initialData: EditWebsite;
+    siteData?: Website;
 }
 
-const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, initialData }) => {
+const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, initialData, siteData }) => {
     const router = useRouter();
+    const [isSaving, setIsSaving] = React.useState(false);
+    const userInfo = useUserStore(state => state.userInfo);
+    const setUserInfo = useUserStore(state => state.setUserInfo);
     const {
         editWebsite,
         setEditWebsite,
@@ -39,25 +47,25 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     } = useEditorStore();
 
     useEffect(() => {
-        if(sectionId&&currentSection&&currentSection.id==sectionId&&currentSection.type!==SectionType.HEADER&&currentSection.type!==SectionType.FOOTER){
+        if (sectionId && currentSection && currentSection.id == sectionId && currentSection.type !== SectionType.HEADER && currentSection.type !== SectionType.FOOTER) {
             scrollToTarget(sectionId);
         }
-    }, [currentSection,sectionId]);
+    }, [currentSection, sectionId]);
 
-    const scrollToTarget = (id:string) => { 
+    const scrollToTarget = (id: string) => {
         const targetElement = document.getElementById(id);
         if (targetElement) {
             targetElement.scrollIntoView({
                 behavior: 'auto',
-                block: 'center'
+                block: 'center',
             });
         }
-    }
+    };
 
-    useEffect(() => {   
-        const handleBeforeUnload = (e: BeforeUnloadEvent) => {  
-             e.returnValue = 'refresh will lost your changes, please save first'; 
-             e.preventDefault();
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.returnValue = 'refresh will lost your changes, please save first';
+            e.preventDefault();
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
@@ -79,6 +87,13 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
             }
         }
     }, [initialData, editWebsite, setEditWebsite, setCurrentVersion, initializeHistory]);
+
+    // Sync siteData to userStore
+    useEffect(() => {
+        if (siteData && userInfo && (!userInfo.website || userInfo.website.siteId !== siteData.siteId)) {
+            setUserInfo({ ...userInfo, website: siteData });
+        }
+    }, [siteData, userInfo, setUserInfo]);
 
     // Sync route params with store
     useEffect(() => {
@@ -138,23 +153,109 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     };
 
     const handleSave = async () => {
-        if (!editWebsite || !isDirty || !currentVersion) return;
+        if (!editWebsite || !isDirty || !currentVersion || isSaving) return;
 
+        setIsSaving(true);
         try {
-                const websiteUpdate = {
-                    ...editWebsite,
-                    versions: [currentVersion],
-                    currentVersion: currentVersion.id,
-                };
+            toast.info('Translating sections...');
 
-                const updateRes = await WebsiteApi.editModify(editWebsite.id,websiteUpdate);
-                if (updateRes.code === 0) {
-                    toast.success('Save success');
-                    setEditWebsite(websiteUpdate);
-                    saveVersion();
+            // 收集所有需要翻译的 section titles
+            const translationItems = [];
+
+            // 遍历所有页面的 sections
+            for (const page of currentVersion.pages) {
+                if (page.sections && page.sections.length > 0) {
+                    for (const section of page.sections) {
+                        if (section.title && section.title.trim()) {
+                            translationItems.push({
+                                fieldType: TranslationFieldType.SECTION,
+                                texts: {
+                                    title: section.title.trim(),
+                                },
+                                context: {
+                                    versionId: currentVersion.id,
+                                    pageId: page.id,
+                                    sectionId: section.id,
+                                },
+                            });
+                        }
+                    }
                 }
+            }
+
+            // 遍历所有 shareSections
+            if (currentVersion.shareSections && currentVersion.shareSections.length > 0) {
+                for (const section of currentVersion.shareSections) {
+                    if (section.title && section.title.trim()) {
+                        translationItems.push({
+                            fieldType: TranslationFieldType.SECTION,
+                            texts: {
+                                title: section.title.trim(),
+                            },
+                            context: {
+                                versionId: currentVersion.id,
+                                sectionId: section.id,
+                            },
+                        });
+                    }
+                }
+            }
+
+            let updatedVersion = currentVersion;
+
+            // 如果有需要翻译的内容，执行翻译
+            if (translationItems.length > 0) {
+                try {
+                    const translationRequest = {
+                        items: translationItems,
+                    };
+
+                    const response = await WebsiteApi.translate(siteId, translationRequest);
+
+                    if (response.code === 0 && response.data && response.data.length > 0) {
+                        // 深拷贝当前版本
+                        updatedVersion = JSON.parse(JSON.stringify(currentVersion));
+
+                        // 创建临时网站对象用于应用翻译
+                        const tempWebsite = {
+                            id: editWebsite.id,
+                            name: editWebsite.name,
+                            versions: [updatedVersion],
+                            currentVersion: updatedVersion.id,
+                        };
+
+                        // 应用翻译结果
+                        const translatedWebsite = TranslationHelper.applyTranslationResults(tempWebsite, response.data);
+                        updatedVersion = translatedWebsite.versions[0];
+
+                        // 更新 store 中的版本
+                        setCurrentVersion(updatedVersion);
+
+                        toast.success('Sections translated successfully');
+                    }
+                } catch (translationError) {
+                    console.error('Translation error:', translationError);
+                    toast.warning('Translation failed, saving without translation');
+                }
+            }
+
+            const websiteUpdate = {
+                ...editWebsite,
+                versions: [updatedVersion],
+                currentVersion: updatedVersion.id,
+            };
+
+            const updateRes = await WebsiteApi.editModify(editWebsite.id, websiteUpdate);
+            if (updateRes.code === 0) {
+                toast.success('Save success');
+                setEditWebsite(websiteUpdate);
+                saveVersion();
+            }
         } catch (error) {
             console.error('Failed to save website:', error);
+            toast.error('Save failed');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -184,19 +285,24 @@ const EditorLayout: React.FC<EditorLayoutProps> = ({ siteId, pageId, sectionId, 
     }, [undo, redo]);
 
     if (!editWebsite || !currentVersion) {
-        return <div className="w-screen h-screen flex justify-center items-center">
-                <div className='flex flex-col items-center gap-2'><LoadingData/><div className='text-sm font-medium text-purple-black'>Loading Editor...</div></div>
-            </div>;
+        return (
+            <div className="w-screen h-screen flex justify-center items-center">
+                <div className="flex flex-col items-center gap-2">
+                    <LoadingData />
+                    <div className="text-sm font-medium text-purple-black">Loading Editor...</div>
+                </div>
+            </div>
+        );
     }
 
     const currentPageData = currentVersion.pages.find(page => page.id === currentPage);
     return (
         <div className="flex flex-col h-screen">
             {/* Header */}
-            <EditorHeader siteId={siteId} onSave={handleSave} />
+            <EditorHeader siteId={siteId} onSave={handleSave} isSaving={isSaving} />
 
             {/* Main Content */}
-            <div className="flex flex-1">
+            <div className="flex max-h-[calc(100vh-68px)] h-full">
                 {/* Left Sidebar - Pages */}
                 <div className="w-64 bg-gray-100 border-r">
                     <PageList

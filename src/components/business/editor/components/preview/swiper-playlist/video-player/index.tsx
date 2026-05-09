@@ -1,7 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { IconPlayerPlay } from '@tabler/icons-react';
+import { IconPlayerPlayFilled } from '@tabler/icons-react';
+import React from 'react';
 import VideoInfo from '../video-info';
-
 
 interface WebsiteVideoPlayerProps {
     poster?: string;
@@ -10,31 +9,31 @@ interface WebsiteVideoPlayerProps {
     cover?: string;
 }
 
-const WebsiteVideoPlayer: React.FC<WebsiteVideoPlayerProps> = ({
-    poster,
-    title,
-    description,
-    cover,
-}) => {
-    return <div className="relative w-full h-full">
-        <div className='absolute w-full h-full object-cover'>
-                <img className='w-full h-full object-cover' src={`${cover}?x-oss-process=image/resize,m-lfit,w_540/quality,q_60`} alt="cover" />
+const WebsiteVideoPlayer: React.FC<WebsiteVideoPlayerProps> = ({ poster, title, description, cover }) => {
+    return (
+        <div className="relative w-full h-full">
+            <div className="absolute w-full h-full flex items-center justify-center">
+                {cover &&
+                    (cover.toLowerCase().includes('.webm') ? (
+                        <video src={cover} className="max-w-full max-h-full object-cover" autoPlay muted loop playsInline />
+                    ) : (
+                        <img className="max-w-full max-h-full object-cover" src={`${cover}?x-oss-process=image/resize,m-lfit,w_540/quality,q_60`} alt="cover" />
+                    ))}
             </div>
-        <div className="absolute inset-0 flex items-center justify-center cursor-pointer">
-                <div className="bg-black/30 rounded-full p-4">
-                    <IconPlayerPlay size={48} className="text-white" />
+            <div className="absolute inset-0 flex items-center justify-center cursor-pointer">
+                <div className="backdrop-blur-md rounded-full gradient-icon-border bg-[rgba(240,240,240,0.3)] p-3">
+                    <IconPlayerPlayFilled size={56} className="text-[#22C58F]" />
                 </div>
-        </div>
+            </div>
 
-    
-        <VideoInfo
+            <VideoInfo
                 title={title}
                 description={description}
                 poster={`${poster}?x-oss-process=image/resize,m-lfit,w_160/quality,q_80`}
                 cover={`${cover}?x-oss-process=image/resize,m-lfit,w_540/quality,q_60`}
             />
-
-</div>
+        </div>
+    );
 };
 
 export default WebsiteVideoPlayer;

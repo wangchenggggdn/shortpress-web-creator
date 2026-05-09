@@ -1,7 +1,7 @@
 'use client';
 
 import { Website } from '@/types/website';
-import { Button, Select } from '@mantine/core';
+import { Button } from '@mantine/core';
 import payment_strpe from '@/assets/images/payment/payment_stripe.webp';
 import payment_paypal from '@/assets/images/payment/payment_paypal.webp';
 import { useState, useEffect } from 'react';
@@ -10,18 +10,17 @@ import StripeConnect from './stripe-connect';
 import { PaymentAPI } from '@/api/payment';
 import { toast } from 'sonner';
 import { PaymentArgs } from '@/api/args';
+import { resolveStripeSandbox } from './env';
 
 interface PaymentSettingProps {
     website: Website;
 }
 
 const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [paypalModalOpened, setPaypalModalOpened] = useState(false);
     const [stripeModalOpened, setStripeModalOpened] = useState(false);
     const [paypalStatus, setPaypalStatus] = useState<string>('Not connected');
     const [stripeStatus, setStripeStatus] = useState<string>('Not connected');
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         // Fetch payment account information
@@ -46,12 +45,7 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
         fetchPaymentAccountInfo();
     }, [website.siteId]);
 
-    const handleCurrencyChange = (value: string | null) => {
-        setSelectedCurrency(value ?? 'USD');
-    };
-
-    const handlePaypalConnect = async (clientId: string, clientSecret: string) => {
-        setLoading(true);
+    const handlePaypalConnect = async (clientId: string, clientSecret: string, isSandbox: boolean) => {
         try {
             const config: PaymentArgs.SaveConfig = {
                 provider: 'paypal',
@@ -59,46 +53,57 @@ const PaymentSetting: React.FC<PaymentSettingProps> = ({ website }) => {
                 paypalConf: {
                     clientId: clientId,
                     clientSecret: clientSecret,
+                    isSandbox,
                 },
             };
 
-            await PaymentAPI.saveConfig(config);
+            const res = await PaymentAPI.saveConfig(config);
+            if (res.code === 0) {
+                toast.success('PayPal connected successfully');
+            } else {
+                toast.error('Failed to connect PayPal');
+            }
             const response = await PaymentAPI.getAccountInfo({ provider: 'paypal', siteId: website.siteId });
             if (response.data) {
                 setPaypalStatus(response.data.email || 'Not connected');
-                toast.success('PayPal connected successfully');
             }
         } catch (error) {
             console.error('Failed to connect PayPal:', error);
             toast.error('Failed to connect PayPal');
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleStripeConnect = async (publicKey: string, secretKey: string) => {
-        setLoading(true);
         try {
+            const isSandbox = resolveStripeSandbox(publicKey, secretKey);
+            if (isSandbox === null) {
+                toast.error('Unable to determine Stripe environment from the keys');
+                return;
+            }
+
             const config: PaymentArgs.SaveConfig = {
                 provider: 'stripe',
                 siteId: website.siteId,
                 stripeConf: {
                     pk: publicKey,
                     sk: secretKey,
+                    isSandbox,
                 },
             };
 
-            await PaymentAPI.saveConfig(config);
+            const res = await PaymentAPI.saveConfig(config);
+            if (res.code === 0) {
+                toast.success('Stripe connected successfully');
+            } else {
+                toast.error('Failed to connect Stripe');
+            }
             const response = await PaymentAPI.getAccountInfo({ provider: 'stripe', siteId: website.siteId });
             if (response.data) {
                 setStripeStatus(response.data.email || 'Not connected');
-                toast.success('Stripe connected successfully');
             }
         } catch (error) {
             console.error('Failed to connect Stripe:', error);
             toast.error('Failed to connect Stripe');
-        } finally {
-            setLoading(false);
         }
     };
 

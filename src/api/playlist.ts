@@ -128,8 +128,6 @@ export default class PlaylistApi {
         return fetch.post('/api/playlist/change/access/type', args);
     }
 
-
-
     /**
      * Search videos
      * @param params Search parameters
@@ -157,5 +155,32 @@ export default class PlaylistApi {
         resD.data.hasMore = res.data.hasMore;
         return resD;
     };
+
+    /**
+     * Create i18n translations for a playlist
+     * @param playlistId Playlist ID
+     * @returns Promise with array of i18n items
+     */
+    static createI18n(playlistId: string) {
+        return fetch.post<PlaylistArgs.I18nItem[]>('/api/playlist/i18n/create', { playlistId });
+    }
+
+    /**
+     * Get i18n translations for a playlist
+     * @param playlistId Playlist ID
+     * @returns Promise with array of i18n items
+     */
+    static getI18n(playlistId: string) {
+        return fetch.get<PlaylistArgs.I18nItem[]>('/api/playlist/i18n', { playlistId });
+    }
+
+    /**
+     * Batch modify i18n translations
+     * @param data Array of i18n items to modify
+     * @returns Promise
+     */
+    static batchModifyI18n(data: PlaylistArgs.I18nItem[]) {
+        return fetch.post('/api/playlist/i18n/batch-modify', { data });
+    }
 
 }

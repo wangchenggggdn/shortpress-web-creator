@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import { TextInput, Button, LoadingOverlay } from '@mantine/core';
-import { IconX, IconCopy } from '@tabler/icons-react';
+import { TextInput, Button, Badge } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { PaymentAPI } from '@/api/payment';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
+import { getEnvironmentLabel, resolveStripeSandbox } from './env';
 
 interface StripeConnectProps {
     opened: boolean;
@@ -16,18 +17,23 @@ interface StripeConnectProps {
 const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit }) => {
     const [publicKey, setPublicKey] = useState('');
     const [secretKey, setSecretKey] = useState('');
+    const [isSandbox, setIsSandbox] = useState<boolean | null>(null);
     const [loading, setLoading] = useState(false);
     const { params } = useContext(SiteContext);
     const siteId = params?.siteId ?? '';
 
     useEffect(() => {
         if (opened && siteId) {
+            setPublicKey('');
+            setSecretKey('');
+            setIsSandbox(null);
             setLoading(true);
             PaymentAPI.getConfig({ siteId })
                 .then(response => {
                     if (response.data?.stripe) {
                         setPublicKey(response.data.stripe.pk || '');
                         setSecretKey(response.data.stripe.sk || '');
+                        setIsSandbox(response.data.stripe.isSandbox);
                     }
                 })
                 .catch(error => {
@@ -39,6 +45,10 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
                 });
         }
     }, [opened, siteId]);
+
+    useEffect(() => {
+        setIsSandbox(resolveStripeSandbox(publicKey, secretKey));
+    }, [publicKey, secretKey]);
 
     const handleSubmit = async () => {
         if (!publicKey) {
@@ -60,11 +70,6 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
             setLoading(false);
         }
     };
-
-    // const copyWebhookUrl = () => {
-    //     navigator.clipboard.writeText(webhookUrl);
-    //     toast.success('Webhook URL copied');
-    // };
 
     if (!opened) return null;
 
@@ -104,15 +109,14 @@ const StripeConnect: React.FC<StripeConnectProps> = ({ opened, onClose, onSubmit
                                 />
                             </div>
 
-                            {/* <div>
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium">Webhook URL</span>
-                                    <Button variant="subtle" color="primary" onClick={copyWebhookUrl} leftSection={<IconCopy size={16} />}>
-                                        Copy
-                                    </Button>
+                            <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="text-sm font-medium text-gray-900">Environment</div>
+                                    <Badge color={isSandbox === null ? 'gray' : isSandbox ? 'yellow' : 'green'} variant="light">
+                                        {getEnvironmentLabel(isSandbox)}
+                                    </Badge>
                                 </div>
-                                <div className="p-3 bg-gray-50 rounded text-sm break-all">{webhookUrl}</div>
-                            </div> */}
+                            </div>
 
                             <div className="text-center">
                                 <a href="https://stripe.com/docs/api" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">

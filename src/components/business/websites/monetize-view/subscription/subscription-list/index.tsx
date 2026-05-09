@@ -33,6 +33,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onEd
                             <Table.Th>Billing period</Table.Th>
                             <Table.Th>Price</Table.Th>
                             <Table.Th>Discount price</Table.Th>
+                            <Table.Th>Coins</Table.Th>
                             <Table.Th>Status</Table.Th>
                             <Table.Th>Actions</Table.Th>
                         </Table.Tr>
@@ -44,6 +45,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onEd
                                 <Table.Td>{sub.interval}</Table.Td>
                                 <Table.Td>${sub.originalPrice}</Table.Td>
                                 <Table.Td>${sub.price}</Table.Td>
+                                <Table.Td>{sub.coins || 0}</Table.Td>
                                 <Table.Td>
                                     <Badge color={getStatusColor(sub.status)}>{sub.status === 1 ? 'Active' : 'Paused'}</Badge>
                                 </Table.Td>

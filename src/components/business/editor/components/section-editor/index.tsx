@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { IconArrowLeft, IconPlus } from '@tabler/icons-react';
 import useEditorStore from '@/store/useEditorStore';
-import { Section, SectionType, DataSourceType } from '@/types/editor';
-import HeaderEditor from './header-editor';
-import FooterEditor from './footer-editor';
+import { DataSourceType, Section, SectionType } from '@/types/editor';
+import { IconArrowLeft, IconPlus } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
 import ContentTypeModal from './content-type-modal';
+import FooterEditor from './footer-editor';
+import HeaderEditor from './header-editor';
 import NormalEditor from './nomal-editor/nomal-editor';
+import NormalNavEditor from './nomal-nav-editor';
+import FooterNavigationEditor from './footer-navigation-editor';
 
 interface SectionEditorProps {
     sectionId: string;
@@ -41,8 +43,11 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
         if (pageSection) {
             setLocalSection(pageSection);
             setIsSharedSection(false);
+        } else {
+            // Section not found in shared or page sections, redirect back
+            onBack();
         }
-    }, [sectionId, currentPage, currentVersion]);
+    }, [sectionId, currentPage, currentVersion, onBack]);
 
     const updateSectionData = (updates: Partial<Section>) => {
         if (!localSection) return;
@@ -80,7 +85,7 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
     };
 
     if (!localSection) {
-       return null;
+        return null;
     }
 
     switch (localSection.type) {
@@ -88,12 +93,18 @@ const SectionEditor: React.FC<SectionEditorProps> = ({ sectionId, onBack }) => {
             return <HeaderEditor section={localSection} onBack={onBack} updateSection={updateSectionData} />;
         case SectionType.FOOTER:
             return <FooterEditor section={localSection} onBack={onBack} updateSection={updateSectionData} />;
-        case SectionType.CAROUSEL:
+        case SectionType.NAVIGATION:
+            return <FooterNavigationEditor section={localSection} onBack={onBack} updateSection={updateSectionData} />;
         case SectionType.SCROLL:
         case SectionType.GRID:
         case SectionType.LIST:
+            return <NormalNavEditor section={localSection} onBack={onBack} updateSection={updateSectionData} />;
+        case SectionType.CAROUSEL:
         case SectionType.COLUMN:
         case SectionType.FEATURE:
+        case SectionType.PLAYER:
+        case SectionType.TEMPLATE_CREATE:
+        case SectionType.CREATE:
             return <NormalEditor section={localSection} onBack={onBack} updateSection={updateSectionData} />;
         default:
             return (

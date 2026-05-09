@@ -1,8 +1,8 @@
-import React from 'react';
-import NextImage from 'next/image';
+/* eslint-disable @next/next/no-img-element */
+import type { Playlist } from '@/types/playlist';
 import { ActionIcon, Button } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
-import type { Playlist } from '@/types/playlist';
+import React from 'react';
 
 /**
  * Props interface for WebsitePlaylistItem component
@@ -32,11 +32,16 @@ const WebsitePlaylistItem: React.FC<WebsitePlaylistItemProps> = ({ playlist, che
         <div className="flex items-center bg-white hover:bg-gray-50 rounded-lg p-3 transition-colors cursor-pointer" onClick={onClick}>
             <div className="flex items-center flex-1">
                 {/* <input type="checkbox" className="mr-3 w-4 h-4 rounded border-gray-300 accent-primary" checked={checked} onChange={e => onCheck(e.target.checked)} /> */}
-                <div className="w-16 h-16 relative bg-gray-200 rounded overflow-hidden mr-3">
-                    {playlist.cover && <NextImage src={playlist.cover} alt={playlist.title} fill className="object-cover" unoptimized />}
+                <div className="w-16 h-16 relative bg-gray-200 rounded overflow-hidden mr-3 shrink-0">
+                    {playlist.cover &&
+                        (playlist.cover.toLowerCase().includes('.webm') ? (
+                            <video src={playlist.cover} className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline />
+                        ) : (
+                            <img src={playlist.cover} alt={playlist.title} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                        ))}
                 </div>
                 <div>
-                    <div className="text-black-purple text-sm">{playlist.title}</div>
+                    <div className="text-black-purple text-sm line-clamp-3">{playlist.title}</div>
                     <div className="text-xs text-gray-500">{playlist.videoCount} videos</div>
                 </div>
             </div>

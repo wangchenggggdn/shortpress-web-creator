@@ -1,10 +1,10 @@
 import fetch from '@/libs/fetch/fetch';
-import { Website } from '@/types/website';
-import { IPaginationResponse } from '@/types/public';
-import { WebsiteArgs } from './args';
+import { EditWebsite } from '@/types/editor';
 import { Playlist } from '@/types/playlist';
-import { Version, Page, EditWebsite } from '@/types/editor';
-import { IResponse } from '@/types/public';
+import { IPaginationResponse } from '@/types/public';
+import { Website } from '@/types/website';
+import { WebsiteArgs } from './args';
+import { TranslationRequest, TranslationResponse, TranslationResponseItem } from '@/types/translation';
 
 /**
  * API class for website related operations
@@ -85,7 +85,7 @@ export default class WebsiteApi {
         return fetch.get<IPaginationResponse<Playlist>>('/api/site/playlists', {
             siteId,
             page,
-            pageSize
+            pageSize,
         });
     }
 
@@ -140,7 +140,7 @@ export default class WebsiteApi {
             site_data: EditWebsite;
             code: number;
         }>(`/api/pages-builder/info`, {
-            siteId
+            siteId,
         });
     }
 
@@ -152,20 +152,36 @@ export default class WebsiteApi {
     static editModify(siteId: string, editWebsite: Partial<EditWebsite>) {
         return fetch.post(`/api/pages-builder/save`, {
             siteId,
-            siteData: editWebsite
+            siteData: editWebsite,
         });
     }
 
     static editPublish(siteId: string) {
         return fetch.post(`/api/pages-builder/publish`, {
-            siteId
+            siteId,
         });
     }
 
     static getNewRelease(siteId: string) {
         return fetch.get<Playlist[]>(`/api/client/site/new-release`, {
-            siteId
+            siteId,
         });
     }
 
+    /**
+     * 翻译接口
+     * @param siteId 网站 ID
+     * @param translationData 需要翻译的数据
+     * @returns Promise with translation results
+     * 
+     * 错误码说明:
+     * - 7001: 配置错误（翻译服务未配置或配置错误）
+     * - 7002: 翻译错误（翻译服务调用失败）
+     */
+    static translate(siteId: string, translationData: TranslationRequest) {
+        return fetch.post<TranslationResponseItem[]>(`/api/pages-builder/translate`, {
+            siteId,
+            ...translationData,
+        });
+    }
 }

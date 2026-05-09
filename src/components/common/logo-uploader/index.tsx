@@ -1,6 +1,7 @@
 import { Button } from '@mantine/core';
 import React from 'react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface LogoUploaderProps {
     logo?: string;
@@ -10,15 +11,45 @@ interface LogoUploaderProps {
 const LogoUploader: React.FC<LogoUploaderProps> = React.memo(({ logo, onFileSelect }) => {
     const [previewFile, setPreviewFile] = useState<File>();
 
+    const validateImage = (file: File): Promise<boolean> => {
+        return new Promise((resolve) => {
+            // Validate file format
+            if (file.type !== 'image/png') {
+                toast.warning('Please upload a PNG format image');
+                resolve(false);
+                return;
+            }
+
+            // Validate image dimensions
+            const img = new Image();
+            img.onload = () => {
+                if (img.width !== 512 || img.height !== 512) {
+                    toast.warning('Image dimensions must be 512x512 pixels');
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            };
+            img.onerror = () => {
+                toast.warning('Unable to read image file');
+                resolve(false);
+            };
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
     const handleUploadImage = () => {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
-        fileInput.accept = 'image/*';
+        fileInput.accept = 'image/png';
         fileInput.onchange = async e => {
             const file = (e.target as HTMLInputElement).files?.[0];
             if (file) {
-                setPreviewFile(file);
-                onFileSelect(file);
+                const isValid = await validateImage(file);
+                if (isValid) {
+                    setPreviewFile(file);
+                    onFileSelect(file);
+                }
             }
         };
         fileInput.click();
@@ -36,6 +67,7 @@ const LogoUploader: React.FC<LogoUploaderProps> = React.memo(({ logo, onFileSele
                     Upload Image
                 </Button>
             </div>
+            <p className="text-sm text-gray-500 mt-2">Please upload a 512x512 pixel PNG image</p>
         </div>
     );
 });

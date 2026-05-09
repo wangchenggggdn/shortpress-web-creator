@@ -9,6 +9,8 @@ import { PaymentAPI } from '@/api/payment';
 import { CoinPackage, PackageStatus } from '@/types/payment';
 import { SiteContext } from '../../useContext/site-context';
 import PaymentConfigAlertModal from './payment-alert/payment-config-alert-modal';
+import useUserStore from '@/store/useUserStore';
+import { WebTemplate } from '@/types/website';
 
 const PayPerView: React.FC = () => {
     const [plans, setPlans] = useState<CoinPackage[]>([]);
@@ -19,6 +21,8 @@ const PayPerView: React.FC = () => {
     const [hasPaymentConfig, setHasPaymentConfig] = useState(false);
     const { params } = useContext(SiteContext);
     const siteId = params.siteId;
+    const userInfo = useUserStore(state => state.userInfo);
+    const templateName = userInfo?.website?.templateName;
 
     useEffect(() => {
         loadPlans();
@@ -56,7 +60,7 @@ const PayPerView: React.FC = () => {
         toast.success(`Plan status updated to ${PackageStatus[status]}`);
         PaymentAPI.modifyCoinPackage({
             siteId: params.siteId,
-            packageId: plan.packageId??'',
+            packageId: plan.packageId ?? '',
             status,
         });
     };
@@ -70,7 +74,7 @@ const PayPerView: React.FC = () => {
                 toast.success('Plan updated successfully');
                 PaymentAPI.modifyCoinPackage({
                     siteId: params.siteId,
-                    packageId: plan.packageId??'',
+                    packageId: plan.packageId ?? '',
                     status: plan.status,
                     name: plan.name,
                     coinAmount: plan.coinAmount,
@@ -78,6 +82,7 @@ const PayPerView: React.FC = () => {
                     originalPrice: plan.originalPrice,
                     discountPercentage: plan.discountPercentage,
                     description: plan.description,
+                    features: plan.features,
                 });
             } else {
                 const response = await PaymentAPI.createCoinPackage({
@@ -88,6 +93,7 @@ const PayPerView: React.FC = () => {
                     originalPrice: plan.originalPrice,
                     discountPercentage: plan.discountPercentage,
                     description: plan.description,
+                    features: plan.features,
                 });
 
                 if (response.data?.packageId) {
@@ -112,7 +118,7 @@ const PayPerView: React.FC = () => {
     };
 
     const handleNewPlanClick = () => {
-        if (!hasPaymentConfig) {
+        if (!hasPaymentConfig && templateName !== WebTemplate.SORA_APP) {
             setPaymentConfigAlertOpened(true);
             return;
         }

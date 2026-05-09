@@ -1,5 +1,5 @@
 export default {
-    UserState: 'sb-vshbhaqcwulvbcneqvyd-auth-token',
-    UserState0: 'sb-vshbhaqcwulvbcneqvyd-auth-token.0',
-    UserState1: 'sb-vshbhaqcwulvbcneqvyd-auth-token.1',
+    UserState: process.env.NEXT_PUBLIC_COOKIES_STATUS ?? '',
+    UserState0: process.env.NEXT_PUBLIC_COOKIES_STATUS0 ?? '',
+    UserState1: process.env.NEXT_PUBLIC_COOKIES_STATUS1 ?? '',
 };

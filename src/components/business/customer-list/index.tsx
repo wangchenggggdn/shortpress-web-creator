@@ -119,7 +119,7 @@ const CustomerList: React.FC<CustomerListProps> = () => {
         const encodedEmail = btoa(customer.email);
         // Then make it URL safe
         const urlSafeEmail = encodeURIComponent(encodedEmail);
-        router.push(`${pathName}/${urlSafeEmail}`);
+        router.push(`${pathName}/${urlSafeEmail}?userId=${customer.userId}`);
     };
 
     return (
@@ -155,11 +155,11 @@ const CustomerList: React.FC<CustomerListProps> = () => {
                                         <Table.Tbody>
                                             {customers.map(customer => (
                                                 <Table.Tr
-                                                    key={customer.email}
+                                                    key={customer.email || customer.nickname}
                                                     className={`${customer.status !== 127 ? 'cursor-pointer hover:bg-gray-50' : 'opacity-50'}`}
                                                     onClick={() => customer.status !== 127 && handleViewDetail(customer)}
                                                 >
-                                                    <Table.Td className="text-black-purple/90">{customer.email}</Table.Td>
+                                                    <Table.Td className="text-black-purple/90">{customer.email || customer.nickname}</Table.Td>
                                                     <Table.Td className="text-black-purple/70">{dayjs(customer.createdAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
                                                     <Table.Td className="text-black-purple/70">
                                                         {customer.lastLoginAt ? dayjs(customer.lastLoginAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}

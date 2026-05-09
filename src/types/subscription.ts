@@ -25,5 +25,7 @@ export interface SubscriptionData {
     discountPercentage?: number;
     currency?: string;
     status: number;
+    coins?: number;
+    rights?: string[];
     createdAt?: number;
 } 

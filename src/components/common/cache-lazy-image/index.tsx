@@ -13,13 +13,7 @@ interface CacheLazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> 
     defaultImage?: string;
 }
 
-const CacheLazyImage: React.FC<CacheLazyImageProps> = ({
-    src,
-    alt,
-    className = '',
-    defaultImage,
-    ...props
-}) => {
+const CacheLazyImage: React.FC<CacheLazyImageProps> = ({ src, alt, className = '', defaultImage, ...props }) => {
     const [imageSrc, setImageSrc] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -32,6 +26,12 @@ const CacheLazyImage: React.FC<CacheLazyImageProps> = ({
         if (!inView) return;
 
         const loadImage = async () => {
+            if (src.toLowerCase().includes('.webm')) {
+                setImageSrc(src);
+                setIsLoading(false);
+                return;
+            }
+
             // 检查缓存中是否已有该图片
             if (imageCache.has(src)) {
                 setImageSrc(imageCache.get(src)!);
@@ -65,19 +65,16 @@ const CacheLazyImage: React.FC<CacheLazyImageProps> = ({
     return (
         <div ref={ref} className={className}>
             {isLoading ? (
-               <></>
+                <></>
             ) : error ? (
                 <></>
+            ) : imageSrc && imageSrc.toLowerCase().includes('.webm') ? (
+                <video src={imageSrc} className={className} autoPlay muted loop playsInline />
             ) : (
-                <img
-                    src={imageSrc}
-                    alt={alt}
-                    className={className}
-                    {...props}
-                />
+                <img src={imageSrc} alt={alt} className={className} {...props} />
             )}
         </div>
     );
 };
 
-export default CacheLazyImage; 
+export default CacheLazyImage;

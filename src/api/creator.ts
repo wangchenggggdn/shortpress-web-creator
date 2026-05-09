@@ -72,6 +72,13 @@ export default class CreatorApi {
     }
 
     /**
+     * Logout creator and clear auth cookies on server
+     */
+    static logout() {
+        return fetch.post('/api/creator/logout');
+    }
+
+    /**
      * Complete creator guides
      * @param args Complete guides parameters
      * @returns Promise

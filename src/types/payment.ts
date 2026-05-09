@@ -19,6 +19,7 @@ export interface CoinPackage {
     siteId: string;         // Site ID
     name: string;           // Package name
     description?: string;   // Package description
+    features?: string[];    // Package features
     coinAmount: number;     // Amount of coins
     price: number;         // Price
     originalPrice?: number; // Original price

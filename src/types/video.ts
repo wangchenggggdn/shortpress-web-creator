@@ -12,7 +12,7 @@ export enum VideoUploadStatus {
     /** Video upload was cancelled */
     UPLOAD_CANCELLED = 4,
     /** Video upload completed successfully */
-    UPLOAD_SUCCESS = 5
+    UPLOAD_SUCCESS = 5,
 }
 
 /**
@@ -29,7 +29,13 @@ export enum VideoStatus {
     /** Video is deleted */
     DELETED = 127,
     /** All video statuses */
-    ALL = 128
+    ALL = 128,
+}
+
+export enum VideoSourceType {
+    LOCAL = 1,
+    HTTP = 2,
+    EMBED = 3,
 }
 
 /**
@@ -67,8 +73,6 @@ export interface IVideo {
         /** SEO keywords */
         keywords?: string;
     };
-    /** Video source URL */
-    videoSourceUrl?: string;
     /** Video playlist cover */
     playlistCover?: string;
     /** Video playlist title */
@@ -77,6 +81,8 @@ export interface IVideo {
     playlistId?: string;
     /** Video episode */
     episode?: number;
+    /** Video sources */
+    sources?: IVideoSource[];
     /** Video subtitles */
     subtitles?: {
         [key: string]: {
@@ -84,6 +90,26 @@ export interface IVideo {
             desc: string;
         };
     };
+    /** Video config */
+    config?: {
+        coin?: number;
+        effectId?: string;
+        templateType?: CreateTemplateType;
+        [key: string]: any;
+    };
+}
+
+export enum CreateTemplateType {
+    vidu = 'vidu',
+    dance = 'dance',
+    spicy = 'spicy',
+    none = '',
+}
+
+export enum VideoUtmSource {
+    facebook = 'm1',
+    none = 'none',
+    all = ''
 }
 
 export interface IUploadVideo extends IVideo {
@@ -179,4 +205,26 @@ export interface IPlaylistVideo {
     createdAt: string;
     /** Last update timestamp */
     updatedAt: string;
+}
+
+/**
+ * Interface for video source information
+ */
+export interface IVideoSource {
+    /** Video duration in seconds */
+    duration?: number;
+    /** Video height in pixels */
+    height?: number;
+    /** Priority of the source */
+    priority: number;
+    /** Provider of the source */
+    provider: string;
+    /** Type of the source 1:local 2:http 3:Embed(iframe)*/
+    sourceType: VideoSourceType;
+    /** Upload status of the source */
+    uploadStatus?: VideoUploadStatus;
+    /** URL of the source */
+    url: string;
+    /** Video width in pixels */
+    width?: number;
 }

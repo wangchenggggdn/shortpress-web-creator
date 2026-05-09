@@ -12,6 +12,8 @@ export interface Playlist {
     description?: string;
     /** Playlist tags */
     tags?: string;
+    /** Playlist utm source */
+    utmSource?: string;
     /** Playlist cover image URL */
     cover?: string;
     /** Number of videos in playlist */

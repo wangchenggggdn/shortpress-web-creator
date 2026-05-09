@@ -32,3 +32,107 @@ img {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+.gradient-button{
+  background: #22C58F;
+  color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+
+.gradient-icon-border{
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.gradient-icon-border::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: 50px;
+  background: linear-gradient(
+  58deg,
+  rgba(255, 255, 255) 0%,
+  rgba(240,240,240,0.3) 25%,
+  rgba(255, 255, 255) 50%,
+  rgba(240,240,240,0.3) 75%,
+  rgba(255, 255, 255) 100%
+  );
+  -webkit-mask:
+  linear-gradient(#fff 0 0) content-box,
+  linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Legal Document Nested Numbering Style (1.1.1) */
+.legal-content .ProseMirror ol {
+    list-style-type: none !important;
+    counter-reset: legal-counter;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.legal-content .ProseMirror ol > li {
+    display: block;
+    counter-increment: legal-counter;
+    margin-bottom: 0.5em;
+    position: relative;
+    padding-left: 3.5em; /* Space for numbers like 1.1.1. */
+}
+
+.legal-content .ProseMirror ol > li::before {
+    content: counters(legal-counter, ".") ".";
+    position: absolute;
+    left: 0.5em;
+    top: 0;
+    font-weight: 600;
+    color: inherit;
+}
+
+/* Ensure bullet lists work too */
+.legal-content .ProseMirror ul {
+    list-style-type: disc;
+    padding-left: 1.5em;
+}
+
+/* Active toolbar button style */
+.mantine-RichTextEditor-control[data-active] {
+    background-color: #e0e7ff !important; /* Indigo-100 */
+    color: #4338ca !important; /* Indigo-700 */
+    border: 1px solid #c7d2fe !important; /* Indigo-200 */
+}
+
+/* Tippy box (used by Tiptap Bubble/Floating Menu) z-index override to show above Modals */
+.tippy-box {
+    z-index: 10000 !important;
+}
+
+/* Parenthesized List Style (1) */
+.legal-content .ProseMirror ol[data-list-style="parens"] {
+    list-style-type: none !important;
+    counter-reset: parens-counter;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.legal-content .ProseMirror ol[data-list-style="parens"] > li {
+    counter-increment: parens-counter;
+    display: block;
+    margin-bottom: 0.5em;
+    position: relative;
+    padding-left: 3.5em; /* Match space */
+}
+
+.legal-content .ProseMirror ol[data-list-style="parens"] > li::before {
+    content: "(" counter(parens-counter) ")";
+    position: absolute;
+    left: 0.5em;
+    top: 0;
+    font-weight: 600;
+    color: inherit;
+}

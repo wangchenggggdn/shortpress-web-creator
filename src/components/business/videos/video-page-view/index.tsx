@@ -1,32 +1,32 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Select, Menu, Image, Pagination } from '@mantine/core';
+import VideoApi from '@/api/video';
+import orderImage from '@/assets/images/public/order.webp';
+import UploadVideoModal from '@/components/business/upload-video-modal';
 import VideoCard from '@/components/business/videos/video-card';
+import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
 import Search from '@/components/common/search';
 import UploadButton from '@/components/common/upload-button';
-import VideoApi from '@/api/video';
-import { IVideo } from '@/types/video';
-import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
-import UploadVideoModal from '@/components/business/upload-video-modal';
-import orderImage from '@/assets/images/public/order.webp';
+import { IVideo, VideoSourceType } from '@/types/video';
+import { Button, Image, Menu, Select } from '@mantine/core';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { toast } from 'sonner';
 import { VideoArgs } from '@/api/args';
-import { IPaginationResponse, IResponse } from '@/types/public';
+import CreatorApi from '@/api/creator';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import LoadingData from '@/components/common/loading-data';
-import CreatorApi from '@/api/creator';
-import { IconCheck } from '@tabler/icons-react';
-import { useInView } from 'react-intersection-observer';
-import { EventName } from '@/types/event';
-import profileEventBus from '@/utils/profileEventBus';
 import userStore from '@/store/useUserStore';
+import { EventName } from '@/types/event';
 import { GuideName } from '@/types/guide';
+import { IPaginationResponse, IResponse } from '@/types/public';
+import profileEventBus from '@/utils/profileEventBus';
+import { IconCheck, IconTrash } from '@tabler/icons-react';
+import { useInView } from 'react-intersection-observer';
+import { toast } from 'sonner';
 
 interface VideosPageViewProps {
     searchFetch: (params: VideoArgs.Search) => Promise<IResponse<IPaginationResponse<IVideo>> | null>;
-    deleteVideo: (id: string) => void;
+    deleteVideo: (ids: string[]) => void;
     setUploadModalOpened: (opened: boolean) => void;
     setEditingVideo: (video: IVideo | null) => void;
     uploadModalOpened?: boolean;
@@ -46,6 +46,9 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
     const [hasMore, setHasMore] = useState(true);
     const [total, setTotal] = useState(0);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
+    const [selectionMode, setSelectionMode] = useState(false);
+    const [selectedVideos, setSelectedVideos] = useState<Set<string>>(new Set());
     const videoToDeleteRef = useRef<string | null>(null);
     const { userInfo } = userStore();
 
@@ -63,7 +66,6 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
             profileEventBus.off(EventName.UploadVideoSuccess, handleUploadVideoSuccess);
         };
     }, []);
-    
 
     useEffect(() => {
         if (inView && hasMore && !loading) {
@@ -154,8 +156,11 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 formData.append('file', videoFile);
                 const replaceRes = await VideoApi.replace({ vid: editingVideo?.vid ?? '', formData });
                 if (replaceRes.code === 0) {
-                    videoData.videoPath = replaceRes.data.videoSourceUrl ?? '';
-                    videoData.videoSourceUrl = replaceRes.data.videoSourceUrl ?? '';
+                    videoData.sources?.forEach(source => {
+                        if (source.sourceType === VideoSourceType.LOCAL) {
+                            source.url = replaceRes.data.videoSourceUrl ?? '';
+                        }
+                    });
                 } else {
                     toast.error('Failed to replace video');
                     setSaveLoading(false);
@@ -171,10 +176,10 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                             ? {
                                   ...v,
                                   ...videoData,
-                          }
-                        : v
-                )
-            );
+                              }
+                            : v
+                    )
+                );
                 setSaveLoading(false);
                 return true; // 保存成功
             } else {
@@ -216,16 +221,23 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
         setDeleteModalOpen(true);
     };
 
-    const handleConfirmDelete = () => {
+    const handleConfirmDelete = async () => {
         const id = videoToDeleteRef.current;
         if (!id) return;
 
         const video = videos.find(v => v.vid === id);
         if (video) {
-            setVideos(videos.filter(v => v.vid !== id));
-            deleteVideo(id);
+            const newVideos = videos.filter(v => v.vid !== id);
+            setVideos(newVideos);
+            deleteVideo([id]);
             setEditingVideo(null);
             setTotal(prev => prev - 1);
+
+            // If all videos on current page are deleted and there are more videos, reload from page 1
+            if (newVideos.length === 0 && hasMore) {
+                setPage(1);
+                await fetchVideos(1);
+            }
         }
         setDeleteModalOpen(false);
         videoToDeleteRef.current = null;
@@ -234,8 +246,56 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
     const handleCopyLink = (id: string) => {
         const video = videos.find(v => v.vid === id);
         if (video) {
-            navigator.clipboard.writeText(video.videoSourceUrl ?? '');
+            navigator.clipboard.writeText(video.sources?.find(source => source.sourceType === VideoSourceType.LOCAL)?.url ?? '');
             toast.success('Link copied to clipboard');
+        }
+    };
+
+    const handleToggleSelectionMode = () => {
+        setSelectionMode(!selectionMode);
+        setSelectedVideos(new Set());
+    };
+
+    const handleSelectionChange = (id: string, selected: boolean) => {
+        const newSelected = new Set(selectedVideos);
+        if (selected) {
+            newSelected.add(id);
+        } else {
+            newSelected.delete(id);
+        }
+        setSelectedVideos(newSelected);
+    };
+
+    const handleSelectAll = () => {
+        if (selectedVideos.size === videos.length) {
+            setSelectedVideos(new Set());
+        } else {
+            setSelectedVideos(new Set(videos.map(v => v.vid)));
+        }
+    };
+
+    const handleBatchDelete = () => {
+        if (selectedVideos.size === 0) {
+            toast.warning('Please select videos to delete');
+            return;
+        }
+        setBatchDeleteModalOpen(true);
+    };
+
+    const handleConfirmBatchDelete = async () => {
+        deleteVideo(Array.from(selectedVideos));
+        const newVideos = videos.filter(v => !selectedVideos.has(v.vid));
+        setVideos(newVideos);
+        setTotal(prev => prev - selectedVideos.size);
+        setSelectedVideos(new Set());
+        setSelectionMode(false);
+        setBatchDeleteModalOpen(false);
+        toast.success(`${selectedVideos.size} video(s) deleted successfully`);
+
+        // If all videos on current page are deleted and there are more videos, reload from page 1
+        if (newVideos.length === 0 && hasMore) {
+            setPage(1);
+            await fetchVideos(1);
         }
     };
 
@@ -243,7 +303,16 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
         <>
             <div className="px-11 py-4 grid grid-cols-4">
                 <div className="flex items-center gap-4">
-                    <span className="text-gray-600">{total} videos</span>
+                    {selectionMode ? (
+                        <>
+                            <Button variant="subtle" onClick={handleSelectAll} className="hover:text-primary-dark font-medium text-sm">
+                                {selectedVideos.size === videos.length ? 'Deselect All' : 'Select All'}
+                            </Button>
+                            <span className="text-gray-600">{selectedVideos.size} selected</span>
+                        </>
+                    ) : (
+                        <span className="text-gray-600">{total} videos</span>
+                    )}
                 </div>
 
                 <div className="col-span-2 flex justify-center items-center">
@@ -251,33 +320,56 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 </div>
 
                 <div className="flex items-center justify-end gap-4">
-                    <Select
-                        value={status}
-                        onChange={setStatus}
-                        data={[
-                            { value: '-1', label: 'All' },
-                            { value: '2', label: 'Published' },
-                            { value: '1', label: 'Unpublished' },
-                        ]}
-                        placeholder="All"
-                        className="w-36"
-                        variant="filled"
-                    />
+                    {selectionMode ? (
+                        <>
+                            <Button
+                                onClick={handleBatchDelete}
+                                disabled={selectedVideos.size === 0}
+                                className="flex items-center gap-2 !bg-red-500 text-white rounded-lg hover:!bg-red-600 disabled:!bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <IconTrash size={16} />
+                                Delete ({selectedVideos.size})
+                            </Button>
+                            <Button variant="subtle" onClick={handleToggleSelectionMode} className="border border-gray-300 rounded-lg transition-colors">
+                                Cancel
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            {videos.length > 0 && (
+                                <Button variant="subtle" onClick={handleToggleSelectionMode} className="border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                    Select
+                                </Button>
+                            )}
+                            <Select
+                                value={status}
+                                onChange={setStatus}
+                                data={[
+                                    { value: '-1', label: 'All' },
+                                    { value: '2', label: 'Published' },
+                                    { value: '1', label: 'Unpublished' },
+                                ]}
+                                placeholder="All"
+                                className="w-36"
+                                variant="filled"
+                            />
 
-                    <Menu shadow="md" width={200} position="bottom-end">
-                        <Menu.Target>
-                            <Image src={orderImage.src} alt="order" className="w-5 h-5" />
-                        </Menu.Target>
+                            <Menu shadow="md" width={200} position="bottom-end">
+                                <Menu.Target>
+                                    <Image src={orderImage.src} alt="order" className="w-5 h-5" />
+                                </Menu.Target>
 
-                        <Menu.Dropdown>
-                            <Menu.Item onClick={() => setSortType(1)}>
-                                <div className="flex items-center gap-2">{sortType === 1 && <IconCheck size={20} />}Title</div>
-                            </Menu.Item>
-                            <Menu.Item onClick={() => setSortType(0)}>
-                                <div className="flex items-center gap-2">{sortType === 0 && <IconCheck size={20} />}Created time</div>
-                            </Menu.Item>
-                        </Menu.Dropdown>
-                    </Menu>
+                                <Menu.Dropdown>
+                                    <Menu.Item onClick={() => setSortType(1)}>
+                                        <div className="flex items-center gap-2">{sortType === 1 && <IconCheck size={20} />}Title</div>
+                                    </Menu.Item>
+                                    <Menu.Item onClick={() => setSortType(0)}>
+                                        <div className="flex items-center gap-2">{sortType === 0 && <IconCheck size={20} />}Created time</div>
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -294,8 +386,11 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                                     {videos.map((video, index) => (
                                         <VideoCard
                                             deleteString={playlistId ? 'Remove' : 'Delete'}
-                                            key={video.vid + index}
+                                            key={video.vid}
                                             {...video}
+                                            selectionMode={selectionMode}
+                                            isSelected={selectedVideos.has(video.vid)}
+                                            onSelectionChange={handleSelectionChange}
                                             onEdit={handleEdit}
                                             onDelete={handleDeleteClick}
                                             onCopyLink={handleCopyLink}
@@ -333,19 +428,18 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 </div>
             </div>
 
-
             <VideoDetailEdit
-                    playlistId={playlistId}
-                    isReplace={replaceLoading}
-                    video={editingVideo}
-                    onClose={() => setEditingVideo(null)}
-                    onSave={handleSave}
-                    onDelete={video => {
-                        handleDeleteClick(video.vid);
-                    }}
-                    isOpen={editingVideo !== null}
-                    deleteString={playlistId ? 'Remove from playlist' : 'Delete'}
-                    isUploading={saveLoading}
+                playlistId={playlistId}
+                isReplace={replaceLoading}
+                video={editingVideo}
+                onClose={() => setEditingVideo(null)}
+                onSave={handleSave}
+                onDelete={video => {
+                    handleDeleteClick(video.vid);
+                }}
+                isOpen={editingVideo !== null}
+                deleteString={playlistId ? 'Remove from playlist' : 'Delete'}
+                isUploading={saveLoading}
             />
 
             <UploadVideoModal opened={uploadModalOpened} onClose={() => setUploadModalOpened(false)} />
@@ -357,6 +451,16 @@ const VideosPageView = ({ uploadModalOpened = false, editingVideo, playlistId, s
                 title="Confirm Delete"
                 message="Are you sure you want to delete this video? This action cannot be undone."
                 confirmText="Delete"
+                cancelText="Cancel"
+            />
+
+            <ConfirmDialog
+                opened={batchDeleteModalOpen}
+                onClose={() => setBatchDeleteModalOpen(false)}
+                onConfirm={handleConfirmBatchDelete}
+                title="Confirm Batch Delete"
+                message={`Are you sure you want to delete ${selectedVideos.size} video(s)? This action cannot be undone.`}
+                confirmText="Delete All"
                 cancelText="Cancel"
             />
         </>

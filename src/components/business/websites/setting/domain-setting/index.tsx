@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { TextInput, Button } from '@mantine/core';
-import { toast } from 'sonner';
 import WebsiteApi from '@/api/website';
 import { Website } from '@/types/website';
+import { getCachedConfig } from '@/utils/config';
+import { ActionIcon, Button, CopyButton, TextInput, Tooltip } from '@mantine/core';
+import { IconCheck, IconCopy } from '@tabler/icons-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { parse } from 'tldts';
 
 interface DomainSettingProps {
     website: Website;
@@ -13,6 +16,18 @@ const DomainSetting: React.FC<DomainSettingProps> = ({ website, onSuccess }) => 
     const [loading, setLoading] = useState(false);
     const [domain, setDomain] = useState('');
     const [error, setError] = useState('');
+    const cached = getCachedConfig();
+
+    const rootDomain = useMemo(() => {
+        const sanitizedInput = domain.trim().replace(/^\.|\.$/g, '');
+        const parsed = parse(sanitizedInput);
+        if (!parsed.domain) return '';
+        return parsed.domain;
+    }, [domain]);
+
+    const showTips = useMemo(() => {
+        return cached?.nodeEnv === 'production' && rootDomain && !error;
+    }, [cached?.nodeEnv, rootDomain, error]);
 
     useEffect(() => {
         const fetchSiteDetails = async () => {
@@ -92,13 +107,30 @@ const DomainSetting: React.FC<DomainSettingProps> = ({ website, onSuccess }) => 
                 <TextInput
                     label="Enter Domain"
                     placeholder={`yourdomain.com`}
-                    value={domain.includes(process.env.NEXT_PUBLIC_DOMAIN_C ?? '') ? '' :domain}
+                    value={domain}
                     onChange={handleDomainChange}
                     error={error}
                     description="Enter your domain without http:// or https://, subdomain is allowed"
                 />
 
-                <div className="flex justify-end">
+                <div className={`flex items-center gap-4 ${showTips ? 'justify-between' : 'justify-end'}`}>
+                    {showTips && (
+                        <div className="flex gap-1 flex-col text-sm text-gray-500 max-w-[80%] ">
+                            <p className="truncate"> You need to rerun the script in order to update your domain configuration:</p>
+                            <div className="flex items-center gap-2">
+                                <p className="truncate">{`sh ./deploy.sh --domain ${rootDomain}`}</p>
+                                <CopyButton value={'sh ./deploy.sh --domain ' + rootDomain} timeout={2000}>
+                                    {({ copied, copy }) => (
+                                        <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position="left">
+                                            <ActionIcon size="md" color={copied ? 'teal' : ''} variant="filled" onClick={copy}>
+                                                {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                                            </ActionIcon>
+                                        </Tooltip>
+                                    )}
+                                </CopyButton>
+                            </div>
+                        </div>
+                    )}
                     <Button color="primary" loading={loading} onClick={handleSubmit} disabled={!!error}>
                         Update
                     </Button>

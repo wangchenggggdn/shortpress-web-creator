@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { TextInput, NumberInput, Select, Button } from '@mantine/core';
+import { TextInput, NumberInput, Select, Button, Textarea, ActionIcon } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconX } from '@tabler/icons-react';
+import { IconX, IconPlus, IconTrash, IconArrowUp, IconArrowDown } from '@tabler/icons-react';
 import { CoinPackage, PackageStatus } from '@/types/payment';
 import { toast } from 'sonner';
 
@@ -21,6 +21,7 @@ interface FormValues {
     discountPrice: number | null;
     discountPercentage: number;
     description: string;
+    features: string[];
     status: PackageStatus;
 }
 
@@ -34,6 +35,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
             discountPrice: planOld?.price || null,
             discountPercentage: planOld?.discountPercentage || 0,
             description: planOld?.description || '',
+            features: planOld?.features || [],
             status: status,
         },
         validate: {
@@ -51,7 +53,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
 
     const handleSubmit = (values: FormValues) => {
         console.log(values);
-        if(values.discountPrice === 0){
+        if (values.discountPrice === 0) {
             toast.error('Discount price cannot be 0');
             return;
         }
@@ -62,6 +64,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
             originalPrice: values.originalPrice,
             discountPercentage: values.discountPercentage,
             description: values.description,
+            features: values.features,
             packageId: planOld?.packageId || '',
             siteId: planOld?.siteId || '',
             status: status,
@@ -157,6 +160,48 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                 variant="filled"
                             />
                             <TextInput label="Description" placeholder="Enter description" {...form.getInputProps('description')} variant="filled" />
+                            <div>
+                                <label className="block text-sm font-medium mb-2 text-black-purple/90">Features</label>
+                                <div className="space-y-2">
+                                    {form.values.features.map((feature, index) => (
+                                        <div key={index} className="flex gap-2">
+                                            <TextInput className="flex-1" placeholder="Enter feature" {...form.getInputProps(`features.${index}`)} variant="filled" />
+                                            <div className="flex gap-1 items-center">
+                                                <ActionIcon
+                                                    variant="light"
+                                                    color="gray"
+                                                    disabled={index === 0}
+                                                    onClick={() => {
+                                                        const newList = [...form.values.features];
+                                                        [newList[index - 1], newList[index]] = [newList[index], newList[index - 1]];
+                                                        form.setFieldValue('features', newList);
+                                                    }}
+                                                >
+                                                    <IconArrowUp size={16} />
+                                                </ActionIcon>
+                                                <ActionIcon
+                                                    variant="light"
+                                                    color="gray"
+                                                    disabled={index === form.values.features.length - 1}
+                                                    onClick={() => {
+                                                        const newList = [...form.values.features];
+                                                        [newList[index + 1], newList[index]] = [newList[index], newList[index + 1]];
+                                                        form.setFieldValue('features', newList);
+                                                    }}
+                                                >
+                                                    <IconArrowDown size={16} />
+                                                </ActionIcon>
+                                                <ActionIcon variant="light" color="red" onClick={() => form.removeListItem('features', index)}>
+                                                    <IconTrash size={16} />
+                                                </ActionIcon>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <Button variant="light" leftSection={<IconPlus size={16} />} fullWidth onClick={() => form.insertListItem('features', '')}>
+                                        Add Feature
+                                    </Button>
+                                </div>
+                            </div>
                             <Select
                                 label="Status"
                                 value={status.toString()}

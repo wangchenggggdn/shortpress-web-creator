@@ -1,23 +1,23 @@
 'use client';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Button, Select, Menu, Image, Pagination, Card } from '@mantine/core';
-import { IconCheck, IconPlus, IconSelect } from '@tabler/icons-react';
-import Header from '@/components/system/header';
-import Search from '@/components/common/search';
-import PlaylistCard from '@/components/business/playlists/playlist-card';
-import PlaylistApi from '@/api/playlist';
-import { Playlist } from '@/types/playlist';
-import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';
-import orderImage from '@/assets/images/public/order.webp';
-import CreatorApi from '@/api/creator';
-import { toast } from 'sonner';
 import { PlaylistArgs } from '@/api/args';
+import CreatorApi from '@/api/creator';
+import PlaylistApi from '@/api/playlist';
+import WebsiteApi from '@/api/website';
+import orderImage from '@/assets/images/public/order.webp';
+import PlaylistCard from '@/components/business/playlists/playlist-card';
+import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import LoadingData from '@/components/common/loading-data';
-import WebsiteApi from '@/api/website';
-import { GuideName } from '@/types/guide';
+import Search from '@/components/common/search';
+import Header from '@/components/system/header';
 import userStore from '@/store/useUserStore';
+import { GuideName } from '@/types/guide';
+import { Playlist } from '@/types/playlist';
+import { Button, Image, Menu, Pagination, Select } from '@mantine/core';
+import { IconCheck, IconPlus } from '@tabler/icons-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface PlaylistsPageProps {}
 
@@ -199,7 +199,9 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                 const res = await PlaylistApi.modify(playlistData);
                 if (res.code === 0) {
                     toast.success('Playlist updated successfully');
-                    saveSuccess();
+                    PlaylistApi.get(playlistData.playlistId).then(res => {
+                        setPlaylists(prevPlaylists => prevPlaylists.map(item => (item.playlistId === playlistData.playlistId ? res.data : item)));
+                    });
                     setSaveLoading(false);
                     return true; // 保存成功
                 } else {
@@ -214,6 +216,9 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                         CreatorApi.completeGuides({ guides: [GuideName.AddFirstPlaylist] });
                     }
                     toast.success('Playlist created successfully');
+                    PlaylistApi.get(res.data).then(res => {
+                        setPlaylists(prevPlaylists => [res.data, ...prevPlaylists]);
+                    });
                     saveSuccess();
                     setSaveLoading(false);
                     websiteId && (await WebsiteApi.addPlaylists(websiteId, [res.data]));
@@ -223,7 +228,6 @@ const PlaylistsPage: React.FC<PlaylistsPageProps> = () => {
                     setSaveLoading(false);
                     return false; // 保存失败
                 }
-
             }
         } catch (error) {
             console.error('Save failed:', error);

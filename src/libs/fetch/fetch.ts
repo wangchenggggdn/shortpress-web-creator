@@ -1,15 +1,14 @@
 import CookieMap from '@/config/cookie-map';
+import { IResponse } from '@/types/public';
+import { getBaseUrl } from '@/utils/config';
 import qs from 'query-string';
 import { getCookie } from './fetchCookie/getCookie';
-import { IResponse } from '@/types/public';
 
 /**
  * Fetch class for handling HTTP requests
  * Provides methods for GET, POST and file upload operations
  */
 class Fetch {
-    /** Base URL for API requests */
-    private baseUrl: string;
     /** Common headers for all requests */
     private publicHeaders: any = {
         'X-App-Name': '',
@@ -17,10 +16,13 @@ class Fetch {
     };
 
     /**
-     * Initialize Fetch instance with base URL
+     * Get base URL for API requests
+     * Server-side: uses fixed URL http://shortpress-server:8000
+     * Client-side: uses dynamic URL from runtime config
+     * @returns Base URL string
      */
-    constructor() {
-        this.baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? '';
+    private getBaseUrl(): string {
+        return getBaseUrl();
     }
 
     /**
@@ -101,7 +103,7 @@ class Fetch {
 
         let qsUrl = `?${qs.stringify(params)}`;
 
-        const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
+        const fetchUrl = `${this.getBaseUrl()}${url}${qsUrl}`;
         console.log('fetchUrl:', fetchUrl);
         return fetch(fetchUrl, config)
             .then(async response => {
@@ -162,7 +164,7 @@ class Fetch {
             body: JSON.stringify(data),
         };
 
-        const fetchUrl = `${this.baseUrl}${url}`;
+        const fetchUrl = `${this.getBaseUrl()}${url}`;
         console.log('fetchUrl:', fetchUrl);
         console.log('config:', config);
         return fetch(fetchUrl, config)
@@ -223,7 +225,7 @@ class Fetch {
         };
 
         let qsUrl = `?${qs.stringify(params)}`;
-        const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
+        const fetchUrl = `${this.getBaseUrl()}${url}${qsUrl}`;
         return fetch(fetchUrl, config)
             .then(async response => {
                 const result = await response.json();
@@ -265,14 +267,14 @@ class Fetch {
                 data.append(key, params[key]);
             }
         }
-        const fetchUrl = `${this.baseUrl}${url}${qsUrl}`;
+        const fetchUrl = `${this.getBaseUrl()}${url}${qsUrl}`;
 
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const xhr = new XMLHttpRequest();
             if (xhrRef) {
                 xhrRef(xhr);
             }
-            xhr.upload.onprogress = (event) => {
+            xhr.upload.onprogress = event => {
                 if (event.lengthComputable && onProgress) {
                     const progress = (event.loaded / event.total) * 100;
                     onProgress(progress);
@@ -329,7 +331,7 @@ class Fetch {
 
             xhr.send(data);
         });
-    };
+    }
 }
 
 export default new Fetch();

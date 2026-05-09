@@ -1,4 +1,6 @@
-import { IPaginationParams } from "@/types/public";
+import { IPaginationParams } from '@/types/public';
+import { MultiLanguageSEO, MultiLanguageSite } from '@/types/translation';
+import { IVideoSource } from '@/types/video';
 
 /**
  * Request parameters for Creator related operations
@@ -49,6 +51,7 @@ export namespace WebsiteArgs {
         path?: string;
         logo?: string;
         status?: number;
+        templateId?: string;
         seo?: {
             title?: string;
             description?: string;
@@ -57,6 +60,10 @@ export namespace WebsiteArgs {
         googleAnalyticsId?: string;
         facebookPixelId?: string;
         thinkingdataAppId?: string;
+        seoMultiLang?: MultiLanguageSEO;
+        siteMultiLang?: MultiLanguageSite;
+        /** Visitor accent palette index (0–7), persisted on `sites.theme` */
+        theme?: number;
     }
 
     /**
@@ -80,10 +87,10 @@ export namespace WebsiteArgs {
      * Website search request parameters
      */
     export interface Search {
-        keyword: string;    // Search keyword
-        page?: number;      // Page number, default 1
-        pageSize?: number;  // Items per page, default 10
-        status?: number;    // Website status
+        keyword: string; // Search keyword
+        page?: number; // Page number, default 1
+        pageSize?: number; // Items per page, default 10
+        status?: number; // Website status
     }
 }
 
@@ -99,6 +106,7 @@ export namespace PlaylistArgs {
         description?: string;
         cover?: string;
         tags?: string;
+        utmSource?: string;
     }
 
     /**
@@ -110,6 +118,7 @@ export namespace PlaylistArgs {
         description?: string;
         cover?: string;
         tags?: string;
+        utmSource?: string;
     }
 
     /**
@@ -145,13 +154,13 @@ export namespace PlaylistArgs {
      * Search playlists request parameters
      */
     export interface Search {
-        orderType?: number;  // Sort method (0: creation time desc, 1: name asc)
-        siteId?: string;    // Site ID
+        orderType?: number; // Sort method (0: creation time desc, 1: name asc)
+        siteId?: string; // Site ID
         excludeSiteId?: string;
-        status?: number;    // Playlist status
-        page?: number;      // Page number, default 1
-        pageSize?: number;  // Items per page, default 10
-        keyword: string;    // Search keyword
+        status?: number; // Playlist status
+        page?: number; // Page number, default 1
+        pageSize?: number; // Items per page, default 10
+        keyword: string; // Search keyword
     }
 
     /**
@@ -166,6 +175,41 @@ export namespace PlaylistArgs {
         freeVideos?: number;
         /** Cost in coins to unlock a single video */
         singleVideoPrice?: number;
+    }
+
+    /**
+     * Playlist i18n data item
+     */
+    export interface I18nItem {
+        playlistId: string;
+        language: string;
+        title: string;
+        description: string;
+        tags: string;
+        seoTitle: string;
+        seoDescription: string;
+        seoKeywords: string;
+    }
+
+    /**
+     * Create i18n translations request parameters
+     */
+    export interface CreateI18n {
+        playlistId: string;
+    }
+
+    /**
+     * Get i18n translations request parameters
+     */
+    export interface GetI18n {
+        playlistId: string;
+    }
+
+    /**
+     * Batch modify i18n translations request parameters
+     */
+    export interface BatchModifyI18n {
+        data: I18nItem[];
     }
 }
 
@@ -186,9 +230,12 @@ export namespace VideoArgs {
             keywords?: string;
         };
         cover?: string;
-        videoPath?: string;
-        videoSourceUrl?: string;
         tags?: string;
+        sources?: IVideoSource[];
+        config?: {
+            coin?: number;
+            [key: string]: any;
+        };
     }
 
     /**
@@ -250,12 +297,12 @@ export namespace AdsArgs {
     /**
      * Create ad unit request parameters
      */
-    export interface Create extends AdUnit { }
+    export interface Create extends AdUnit {}
 
     /**
      * Modify ad unit request parameters
      */
-    export interface Modify extends AdUnit { }
+    export interface Modify extends AdUnit {}
 
     /**
      * Get ad units list request parameters
@@ -276,12 +323,13 @@ export namespace CustomerArgs {
     export interface ChangeStatus {
         email: string;
         siteId: string;
-        status: number;  // 2=activate, 3=forbidden, 127=delete
+        status: number; // 2=activate, 3=forbidden, 127=delete
     }
 
     export interface GetInfo {
         email: string;
         siteId: string;
+        userId: string;
     }
 
     /**
@@ -309,36 +357,38 @@ export namespace PaymentArgs {
      * Get payment account information parameters
      */
     export interface GetAccountInfo {
-        provider: string;  // Payment service provider (e.g., stripe)
-        siteId: string;   // Site ID
+        provider: string; // Payment service provider (e.g., stripe)
+        siteId: string; // Site ID
     }
 
     /**
      * Create coin package parameters
      */
     export interface CreateCoinPackage {
-        siteId: string;           // Required: Site ID
-        name: string;             // Required: Package name
-        coinAmount: number;       // Required: Amount of coins, minimum: 1
-        price: number;            // Required: Price, minimum: 0.01
-        description?: string;     // Optional: Package description
+        siteId: string; // Required: Site ID
+        name: string; // Required: Package name
+        coinAmount: number; // Required: Amount of coins, minimum: 1
+        price: number; // Required: Price, minimum: 0.01
+        description?: string; // Optional: Package description
         discountPercentage?: number; // Optional: Discount percentage
-        originalPrice?: number;   // Optional: Original price before discount
+        originalPrice?: number; // Optional: Original price before discount
+        features?: string[]; // Optional: Package features
     }
 
     /**
      * Modify coin package parameters
      */
     export interface ModifyCoinPackage {
-        packageId: string;        // Required: Package ID
-        siteId: string;          // Required: Site ID
-        name?: string;           // Optional: Package name
-        coinAmount?: number;     // Optional: Amount of coins
-        price?: number;          // Optional: Price
-        description?: string;    // Optional: Package description
+        packageId: string; // Required: Package ID
+        siteId: string; // Required: Site ID
+        name?: string; // Optional: Package name
+        coinAmount?: number; // Optional: Amount of coins
+        price?: number; // Optional: Price
+        description?: string; // Optional: Package description
         discountPercentage?: number; // Optional: Discount percentage
-        originalPrice?: number;  // Optional: Original price before discount
-        status?: number;         // Optional: Package status
+        originalPrice?: number; // Optional: Original price before discount
+        status?: number; // Optional: Package status
+        features?: string[]; // Optional: Package features
     }
 
     /**
@@ -352,15 +402,19 @@ export namespace PaymentArgs {
      * Save payment configuration parameters
      */
     export interface SaveConfig {
-        provider: string;         // Required: Payment provider name
-        siteId: string;          // Required: Site ID
-        stripeConf?: {           // Optional: Stripe configuration
-            pk: string;          // Publishable key
-            sk: string;          // Secret key
+        provider: string; // Required: Payment provider name
+        siteId: string; // Required: Site ID
+        stripeConf?: {
+            // Optional: Stripe configuration
+            pk: string; // Publishable key
+            sk: string; // Secret key
+            isSandbox: boolean; // Stripe sandbox mode
         };
-        paypalConf?: {           // Optional: PayPal configuration
+        paypalConf?: {
+            // Optional: PayPal configuration
             clientId: string;
             clientSecret: string;
+            isSandbox: boolean; // PayPal sandbox mode
         };
     }
 
@@ -375,12 +429,12 @@ export namespace PaymentArgs {
      * Create order parameters
      */
     export interface CreateOrder {
-        siteId: string;          // Required: Site ID
-        packageId: string;       // Required: ID of the coin package or subscription package
+        siteId: string; // Required: Site ID
+        packageId: string; // Required: ID of the coin package or subscription package
         orderType: 'coin' | 'sub'; // Required: Order type
-        currency?: string;       // Optional: Override for currency
-        returnUrl?: string;      // Optional: URL to redirect after payment
-        cancelUrl?: string;      // Optional: URL to redirect if canceled
+        currency?: string; // Optional: Override for currency
+        returnUrl?: string; // Optional: URL to redirect after payment
+        cancelUrl?: string; // Optional: URL to redirect if canceled
     }
 
     export interface CoinTransactions {
@@ -401,7 +455,7 @@ export namespace PaymentArgs {
      * Get payment configuration parameters
      */
     export interface GetConfig {
-        siteId: string;           // Required: Site ID
+        siteId: string; // Required: Site ID
     }
 
     export interface GrantCoins {
@@ -415,8 +469,8 @@ export namespace PaymentArgs {
      * Get user's coin balance request parameters
      */
     export interface GetUserCoinsBalance {
-        userEmail: string;  // User's email address
-        siteId: string;     // Site ID
+        userEmail: string; // User's email address
+        siteId: string; // Site ID
     }
 }
 
@@ -429,8 +483,8 @@ export namespace AnalyticsArgs {
      */
     export interface IncomeStatistics {
         siteId: string;
-        startTime: number;  // Unix timestamp in milliseconds
-        endTime: number;    // Unix timestamp in milliseconds
+        startTime: number; // Unix timestamp in milliseconds
+        endTime: number; // Unix timestamp in milliseconds
     }
 
     /**
@@ -438,10 +492,10 @@ export namespace AnalyticsArgs {
      */
     export interface IncomeTransactions {
         siteId: string;
-        startTime?: number;  // Unix timestamp in milliseconds
-        endTime?: number;    // Unix timestamp in milliseconds
-        page?: number;      // Page number, default 1
-        pageSize?: number;  // Items per page, default 10
+        startTime?: number; // Unix timestamp in milliseconds
+        endTime?: number; // Unix timestamp in milliseconds
+        page?: number; // Page number, default 1
+        pageSize?: number; // Items per page, default 10
         userEmail?: string;
     }
 
@@ -467,6 +521,8 @@ export namespace SubscriptionArgs {
         discountPercentage?: number;
         currency?: string;
         status?: number; // 1启用 2禁用
+        coins?: number;
+        rights?: string[];
     }
 
     /**
@@ -483,6 +539,8 @@ export namespace SubscriptionArgs {
         discountPercentage?: number;
         currency?: string;
         status?: number;
+        coins?: number;
+        rights?: string[];
     }
 
     /**
@@ -501,4 +559,3 @@ export namespace SubscriptionArgs {
         status?: number; // -1全部 1启用 2禁用
     }
 }
-

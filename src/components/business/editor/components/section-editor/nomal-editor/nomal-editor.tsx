@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { IconX, IconChevronRight, IconArrowLeft } from '@tabler/icons-react';
+import { IconX, IconChevronRight, IconArrowLeft, IconFile, IconLink, IconTrash, IconPlus, IconPhoto, IconLoader } from '@tabler/icons-react';
 import { Section, DataSourceType, Widget, WidgetType, DataWidget, SectionType } from '@/types/editor';
 import { createUniqueUUID } from '@/utils/public';
 import ContentTypeSelector from '../../common/ContentTypeSelector';
-import { Menu, TextInput } from '@mantine/core';
+import { Menu, TextInput, ActionIcon, LoadingOverlay, Switch } from '@mantine/core';
 import PlaylistData from './playlist-data';
 import PlaylistSelector from '../../common/PlaylistSelector';
+import PageSelector from '../../common/PageSelector';
+import UrlInputSelector from '../../common/UrlInputSelector';
 import { Playlist } from '@/types/playlist';
 import useEditorStore from '@/store/useEditorStore';
 import WebsiteApi from '@/api/website';
+import CreatorApi from '@/api/creator';
+import { toast } from 'sonner';
 
 interface NormalEditorProps {
     section: Section;
@@ -25,15 +29,31 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
     const [showPlaylistData, setShowPlaylistData] = useState(false);
     const [showPlaylistAdd, setShowPlaylistAdd] = useState(false);
     const [sectionTitle, setSectionTitle] = useState(section.title || '');
-    const { currentSection,editWebsite } = useEditorStore();
+    const { currentSection, editWebsite, currentVersion } = useEditorStore();
+
+    // Cover jump path states
+    const [showCoverAddTypeMenu, setShowCoverAddTypeMenu] = useState(false);
+    const [showCoverPageModal, setShowCoverPageModal] = useState(false);
+    const [showCoverUrlModal, setShowCoverUrlModal] = useState(false);
+
+    // Link path states (for Player)
+    const [showLinkAddTypeMenu, setShowLinkAddTypeMenu] = useState(false);
+    const [showLinkPageModal, setShowLinkPageModal] = useState(false);
+    const [showLinkUrlModal, setShowLinkUrlModal] = useState(false);
 
     useEffect(() => {
         setSectionTitle(section.title || '');
     }, [section.title]);
 
     useEffect(() => {
-        setShowPlaylistData(section.params.extend.widgets&&section.params.extend.widgets.length>0&&section.params.extend.widgets[0].data&&section.params.extend.widgets[0].data.length>0&&section.params.extend.dataSourceType===DataSourceType.PLAYLIST);
-    }, [section.params.extend.widgets,section.params.extend.dataSourceType]);
+        setShowPlaylistData(
+            section.params.extend.widgets &&
+                section.params.extend.widgets.length > 0 &&
+                section.params.extend.widgets[0].data &&
+                section.params.extend.widgets[0].data.length > 0 &&
+                section.params.extend.dataSourceType === DataSourceType.PLAYLIST
+        );
+    }, [section.params.extend.widgets, section.params.extend.dataSourceType]);
 
     const getContentItem = (): Widget | undefined => {
         return section.params.extend.widgets?.find(item => item.content === MENU_TYPES.CONTENT);
@@ -72,18 +92,18 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
     };
 
     const getDataSourceData = async (type: DataSourceType) => {
-        switch(type){
+        switch (type) {
             case DataSourceType.NEW_RELEASE:
                 return await getNewRelease();
             default:
                 return [];
         }
-    }
+    };
 
     const getNewRelease = async () => {
         const res = await WebsiteApi.getNewRelease(editWebsite?.id as string);
-        return res?.data??[];
-    }
+        return res?.data ?? [];
+    };
 
     const handleAddPlaylistItem = (playlists: Playlist[]) => {
         updateWidgetDataToSection(playlists);
@@ -93,9 +113,10 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         const widgets = [...(section.params.extend.widgets || [])];
         const contentItem = widgets[0];
         if (contentItem) {
+            // 直接替换数据
             contentItem.data = playlists;
         }
-        if(playlists.length>0){
+        if (playlists.length > 0) {
             setShowPlaylistData(true);
         }
         updateSection({
@@ -117,13 +138,134 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
         });
     };
 
+    // Cover jump path handlers
+    const handleAddCoverPageItem = (pageId: string, pageName: string, path: string) => {
+        updateSection({
+            coverLink: {
+                id: createUniqueUUID([]),
+                label: pageName,
+                content: 'page',
+                type: WidgetType.PATH,
+                path: path,
+            },
+        });
+        setShowCoverPageModal(false);
+    };
+
+    const handleAddCoverUrlItem = (url: string) => {
+        updateSection({
+            coverLink: {
+                id: createUniqueUUID([]),
+                label: url,
+                content: 'url',
+                type: WidgetType.PATH,
+                path: url,
+            },
+        });
+        setShowCoverUrlModal(false);
+    };
+
+    // Link path handlers
+    const handleAddLinkPageItem = (pageId: string, pageName: string, path: string) => {
+        updateSection({
+            link: {
+                id: createUniqueUUID([]),
+                label: pageName,
+                content: 'page',
+                type: WidgetType.PATH,
+                path: path,
+            },
+        });
+        setShowLinkPageModal(false);
+    };
+
+    const handleAddLinkUrlItem = (url: string) => {
+        updateSection({
+            link: {
+                id: createUniqueUUID([]),
+                label: url,
+                content: 'url',
+                type: WidgetType.PATH,
+                path: url,
+            },
+        });
+        setShowLinkUrlModal(false);
+    };
+
+    // Example Images Upload Logic for Template Create
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+    const [activeUploadIndex, setActiveUploadIndex] = useState<number | null>(null);
+
+    const handleExampleImageClick = (index: number) => {
+        setActiveUploadIndex(index);
+        fileInputRef.current?.click();
+    };
+
+    const handleExampleImageFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || activeUploadIndex === null) return;
+
+        setUploadingIndex(activeUploadIndex);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await CreatorApi.uploadFile(formData);
+            if (res.code === 0 && res.data) {
+                const imageUrl = res.data;
+                const newImages = [...(section.params.extend.exampleImages || [])];
+                // Ensure array has enough slots
+                while (newImages.length <= activeUploadIndex) {
+                    newImages.push('');
+                }
+                newImages[activeUploadIndex] = imageUrl;
+
+                updateSection({
+                    params: {
+                        ...section.params,
+                        extend: {
+                            ...section.params.extend,
+                            exampleImages: newImages,
+                        },
+                    },
+                });
+            } else {
+                toast.error('Upload failed');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            toast.error('Upload error');
+        } finally {
+            setUploadingIndex(null);
+            setActiveUploadIndex(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
+    const handleDeleteExampleImage = (index: number) => {
+        const newImages = [...(section.params.extend.exampleImages || [])];
+        newImages.splice(index, 1);
+        // Clean up empty strings at the end if strict list is needed, but here we just remove the item
+
+        updateSection({
+            params: {
+                ...section.params,
+                extend: {
+                    ...section.params.extend,
+                    exampleImages: newImages,
+                },
+            },
+        });
+    };
+
     const contentItem = getContentItem();
     const isPlaylistType = section.params.extend.dataSourceType === DataSourceType.PLAYLIST;
 
     return (
         <>
             <div className="p-4 h-full overflow-y-auto text-purple-black">
-                {(
+                {
                     <div>
                         {/* Header */}
                         <div className="flex items-center gap-3 mb-2">
@@ -135,7 +277,7 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
 
                         {/* Info Message */}
                         <div className="mb-4 text-sm text-gray-500">
-                            <p>{section.type+' Section'}</p>
+                            <p>{section.type + ' Section'}</p>
                         </div>
 
                         {/* Section Title */}
@@ -175,51 +317,211 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                             </div>
                         )}
 
+                        {/* Example Images for Template Create */}
+                        {(section.type === SectionType.TEMPLATE_CREATE || section.type === SectionType.CREATE) && (
+                            <div className="mb-4">
+                                <div className="text-sm font-medium text-black-purple mb-2">Example Images (Max 4)</div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {(section.params.extend.exampleImages || []).map((img, index) => (
+                                        <div key={index} className="aspect-square relative rounded-lg overflow-hidden border border-gray-200 group bg-gray-50">
+                                            {img &&
+                                                (img.toLowerCase().includes('.webm') ? (
+                                                    <video src={img} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                                                ) : (
+                                                    <img src={img} alt={`Example ${index}`} className="w-full h-full object-cover" />
+                                                ))}
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                                <button
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                        handleDeleteExampleImage(index);
+                                                    }}
+                                                    className="p-1 bg-white rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-50"
+                                                >
+                                                    <IconTrash size={14} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {(!section.params.extend.exampleImages || section.params.extend.exampleImages.length < 4) && (
+                                        <button
+                                            onClick={() => handleExampleImageClick((section.params.extend.exampleImages || []).length)}
+                                            disabled={uploadingIndex !== null}
+                                            className="aspect-square flex items-center justify-center rounded-lg border border-dashed border-gray-300 hover:bg-gray-50 transition-colors relative bg-white"
+                                        >
+                                            {uploadingIndex === (section.params.extend.exampleImages || []).length ? (
+                                                <IconLoader className="animate-spin text-gray-400" size={20} />
+                                            ) : (
+                                                <IconPlus className="text-gray-400" size={24} />
+                                            )}
+                                        </button>
+                                    )}
+                                </div>
+                                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleExampleImageFileChange} />
+                            </div>
+                        )}
+
+                        {/* Cover jump path */}
+                        {section.type !== SectionType.TEMPLATE_CREATE && section.type !== SectionType.CREATE && section.type !== SectionType.PLAYER && (
+                            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-[15px] font-medium text-black-purple">Cover jump path</h3>
+                                    {!section.coverLink && (
+                                        <Menu opened={showCoverAddTypeMenu} onChange={setShowCoverAddTypeMenu}>
+                                            <Menu.Target>
+                                                <button className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">Add Path</button>
+                                            </Menu.Target>
+                                            <Menu.Dropdown>
+                                                <Menu.Item
+                                                    leftSection={<IconFile size={16} />}
+                                                    onClick={() => {
+                                                        setShowCoverAddTypeMenu(false);
+                                                        setShowCoverPageModal(true);
+                                                    }}
+                                                >
+                                                    Page
+                                                    <div className="text-xs text-gray-500">Link directly to another page</div>
+                                                </Menu.Item>
+                                                <Menu.Item
+                                                    leftSection={<IconLink size={16} />}
+                                                    onClick={() => {
+                                                        setShowCoverAddTypeMenu(false);
+                                                        setShowCoverUrlModal(true);
+                                                    }}
+                                                >
+                                                    URL
+                                                    <div className="text-xs text-gray-500">Link an external resource</div>
+                                                </Menu.Item>
+                                            </Menu.Dropdown>
+                                        </Menu>
+                                    )}
+                                </div>
+
+                                {section.coverLink && (
+                                    <div className="mt-2 flex items-center justify-between py-2 px-3 bg-white border border-gray-200 rounded">
+                                        <div>{section.coverLink.label}</div>
+                                        <ActionIcon variant="subtle" color="red" onClick={() => updateSection({ coverLink: undefined })}>
+                                            <IconTrash size={18} />
+                                        </ActionIcon>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Player Link Path */}
+                        {section.type === SectionType.PLAYER && (
+                            <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-[15px] font-medium text-black-purple">Jump Path</h3>
+                                    {!section.link && (
+                                        <Menu opened={showLinkAddTypeMenu} onChange={setShowLinkAddTypeMenu}>
+                                            <Menu.Target>
+                                                <button className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">Add Path</button>
+                                            </Menu.Target>
+                                            <Menu.Dropdown>
+                                                <Menu.Item
+                                                    leftSection={<IconFile size={16} />}
+                                                    onClick={() => {
+                                                        setShowLinkAddTypeMenu(false);
+                                                        setShowLinkPageModal(true);
+                                                    }}
+                                                >
+                                                    Page
+                                                    <div className="text-xs text-gray-500">Link directly to another page</div>
+                                                </Menu.Item>
+                                                <Menu.Item
+                                                    leftSection={<IconLink size={16} />}
+                                                    onClick={() => {
+                                                        setShowLinkAddTypeMenu(false);
+                                                        setShowLinkUrlModal(true);
+                                                    }}
+                                                >
+                                                    URL
+                                                    <div className="text-xs text-gray-500">Link an external resource</div>
+                                                </Menu.Item>
+                                            </Menu.Dropdown>
+                                        </Menu>
+                                    )}
+                                </div>
+
+                                {section.link && (
+                                    <div className="mt-2 flex items-center justify-between py-2 px-3 bg-white border border-gray-200 rounded">
+                                        <div>{section.link.label}</div>
+                                        <ActionIcon variant="subtle" color="red" onClick={() => updateSection({ link: undefined })}>
+                                            <IconTrash size={18} />
+                                        </ActionIcon>
+                                    </div>
+                                )}
+                                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                                    <span className="text-sm font-medium text-black-purple">Disable Playlist Detail Link</span>
+                                    <Switch
+                                        checked={section.params.extend.disablePlaylistLink || false}
+                                        onChange={event => {
+                                            updateSection({
+                                                params: {
+                                                    ...section.params,
+                                                    extend: {
+                                                        ...section.params.extend,
+                                                        disablePlaylistLink: event.currentTarget.checked,
+                                                    },
+                                                },
+                                            });
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {/* Content */}
-                        <div className="mb-4">
-                            <div className="text-sm text-purple-black font-medium mb-3">Content</div>
-                             {contentItem ? (
-                                !showPlaylistData&& <div className="space-y-3 rounded-lg border border-gray-200 p-3">
-                                     {/* Content Type Display */}
-                                     <div className="bg-white flex items-center justify-between cursor-pointer">
-                                         <span className="text-base text-[#1E293B] lowercase first-letter:uppercase">{contentItem.label}</span>
-                                     </div>
- 
-                                     {/* Add Button */}
-                                     {isPlaylistType && (
-                                         <button
-                                             onClick={() =>  setShowPlaylistAdd(true)}
-                                             className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal"
-                                         >
-                                             Add Playlists
-                                         </button>
-                                     )}
-                                 </div>
-                             ) : (
-                                 <div>
-                                     <Menu>
-                                         <Menu.Target>
-                                             <button className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal">Add Content</button>
-                                         </Menu.Target>
-                                         <ContentTypeSelector sectionType={section.type} onSelect={handleContentTypeSelect} />
-                                     </Menu>
-                                 </div>
-                             )}
-                           
-                  
-                            {showPlaylistData && (
-                                <PlaylistData
-                                    widgets={section.params.extend.widgets || []}
-                                    onClose={() => setShowPlaylistData(false)}
-                                    addContent={() => {
-                                        setShowPlaylistAdd(true);
-                                    }}
-                                    updateWidgetDataToSection={updateWidgetDataToSection}
-                                />
-                            )}
-                        </div>
+                        {section.type !== SectionType.TEMPLATE_CREATE && section.type !== SectionType.CREATE && section.type !== SectionType.PLAYER && (
+                            <div className="mb-4">
+                                <div className="text-sm text-purple-black font-medium mb-3">Content</div>
+                                {contentItem ? (
+                                    !showPlaylistData && (
+                                        <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+                                            {/* Content Type Display */}
+                                            <div className="bg-white flex items-center justify-between cursor-pointer">
+                                                <span className="text-base text-[#1E293B] lowercase first-letter:uppercase">{contentItem.label}</span>
+                                            </div>
+
+                                            {/* Add Button */}
+                                            {isPlaylistType && (
+                                                <button
+                                                    onClick={() => setShowPlaylistAdd(true)}
+                                                    className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal"
+                                                >
+                                                    Add Playlists
+                                                </button>
+                                            )}
+                                        </div>
+                                    )
+                                ) : (
+                                    <div>
+                                        <Menu>
+                                            <Menu.Target>
+                                                <button className="w-full px-6 py-2.5 bg-[#6366F1] text-white rounded-xl hover:bg-[#4F46E5] text-base font-normal">
+                                                    Add Content
+                                                </button>
+                                            </Menu.Target>
+                                            <ContentTypeSelector sectionType={section.type} onSelect={handleContentTypeSelect} />
+                                        </Menu>
+                                    </div>
+                                )}
+
+                                {showPlaylistData && (
+                                    <PlaylistData
+                                        widgets={section.params.extend.widgets || []}
+                                        onClose={() => setShowPlaylistData(false)}
+                                        addContent={() => {
+                                            setShowPlaylistAdd(true);
+                                        }}
+                                        updateWidgetDataToSection={updateWidgetDataToSection}
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
-                )}
+                }
                 {/* Playlist Data Modal */}
                 {/* {showPlaylistData && (
                     <PlaylistData
@@ -232,7 +534,23 @@ const NormalEditor: React.FC<NormalEditorProps> = ({ section, onBack, updateSect
                     />
                 )} */}
             </div>
-            <PlaylistSelector key={'normal-editor-playlist-selector'} isOpen={showPlaylistAdd} onClose={() => setShowPlaylistAdd(false)} onAdd={handleAddPlaylistItem} siteId={editWebsite?.id as string} />
+            <PlaylistSelector
+                key={'normal-editor-playlist-selector'}
+                isOpen={showPlaylistAdd}
+                onClose={() => setShowPlaylistAdd(false)}
+                onAdd={handleAddPlaylistItem}
+                siteId={editWebsite?.id as string}
+                selectedPlaylists={(contentItem as DataWidget)?.data || []}
+            />
+
+            {/* Cover jump path modals */}
+            <PageSelector open={showCoverPageModal} onClose={() => setShowCoverPageModal(false)} pages={currentVersion?.pages || []} onSelect={handleAddCoverPageItem} />
+
+            <UrlInputSelector open={showCoverUrlModal} onClose={() => setShowCoverUrlModal(false)} onSelect={handleAddCoverUrlItem} />
+
+            {/* Link path modals */}
+            <PageSelector open={showLinkPageModal} onClose={() => setShowLinkPageModal(false)} pages={currentVersion?.pages || []} onSelect={handleAddLinkPageItem} />
+            <UrlInputSelector open={showLinkUrlModal} onClose={() => setShowLinkUrlModal(false)} onSelect={handleAddLinkUrlItem} />
         </>
     );
 };

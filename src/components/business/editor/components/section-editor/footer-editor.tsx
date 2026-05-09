@@ -282,7 +282,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                             </button>
                         </Menu.Target>
                         <Menu.Dropdown>
-                            <Menu.Item
+                            {/* <Menu.Item
                                 leftSection={<IconPlaylist size={16} />}
                                 onClick={() => {
                                     setShowAddTypeMenu(false);
@@ -291,7 +291,7 @@ const FooterEditor: React.FC<FooterEditorProps> = ({ section, onBack, updateSect
                             >
                                 Playlist
                                 <div className="text-xs text-gray-500">Add existing playlists to section</div>
-                            </Menu.Item>
+                            </Menu.Item> */}
                             <Menu.Item
                                 leftSection={<IconFile size={16} />}
                                 onClick={() => {

@@ -1,5 +1,5 @@
-import { IResponse } from "@/types/public";
-import VideoApi from "./video";
+import { IResponse } from '@/types/public';
+import VideoApi from './video';
 
 /**
  * Retry request
@@ -31,7 +31,6 @@ export const retryRequest = async <T>(requestFn: () => Promise<IResponse<T>>): P
     }
     return null;
 };
-
 
 export const fetchPlaylistFeed = async (page: number, websitePath: string) => {
     let data = {

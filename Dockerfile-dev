@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN mv /app/envConfig/.env.development /app/.env.production
+RUN mv /app/envConfig/.env.shortpress /app/.env.production
 
 RUN yarn build
 

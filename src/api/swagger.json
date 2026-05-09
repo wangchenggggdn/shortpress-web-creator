@@ -22,15 +22,9 @@
         "/api/ads/unit/conf": {
             "get": {
                 "description": "Retrieve ad unit configuration for a specific location in a site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ads"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["ads"],
                 "summary": "Get ad unit configuration",
                 "parameters": [
                     {
@@ -85,15 +79,9 @@
                     }
                 ],
                 "description": "Create a new advertising unit with specified configuration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ads"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["ads"],
                 "summary": "Create a new advertising unit",
                 "parameters": [
                     {
@@ -131,15 +119,9 @@
                     }
                 ],
                 "description": "Get a list of advertising units",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ads"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["ads"],
                 "summary": "List advertising units",
                 "parameters": [
                     {
@@ -176,15 +158,9 @@
                     }
                 ],
                 "description": "Modify an existing advertisement unit",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ads"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["ads"],
                 "summary": "Modify an ad unit",
                 "parameters": [
                     {
@@ -217,15 +193,9 @@
         "/api/analytics/income/statistics": {
             "post": {
                 "description": "Statistics of site transaction income by day",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "analytics"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["analytics"],
                 "summary": "Get site income statistics",
                 "parameters": [
                     {
@@ -263,15 +233,9 @@
         "/api/analytics/income/transactions": {
             "post": {
                 "description": "Get site payment transaction records by time range",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "analytics"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["analytics"],
                 "summary": "Get site payment transaction records",
                 "parameters": [
                     {
@@ -309,15 +273,9 @@
         "/api/analytics/income/transactions/info": {
             "get": {
                 "description": "Get detailed information for a specific transaction ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "analytics"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["analytics"],
                 "summary": "Get transaction record details",
                 "parameters": [
                     {
@@ -354,15 +312,9 @@
         "/api/client/anonymous/register": {
             "post": {
                 "description": "Anonymous Registration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Anonymous Registration",
                 "responses": {
                     "200": {
@@ -377,15 +329,9 @@
         "/api/client/feed": {
             "get": {
                 "description": "Paginate query user feed video data, supports page number and page size parameters",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "User Feed Video Data",
                 "parameters": [
                     {
@@ -442,15 +388,9 @@
         "/api/client/payment/coins/package/list": {
             "get": {
                 "description": "Get all available coin packages for the specified site, for client display",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Get client-side coin package list",
                 "parameters": [
                     {
@@ -474,15 +414,9 @@
         "/api/client/payment/coins/videos/buy": {
             "post": {
                 "description": "Use user's coin account balance to purchase video or playlist viewing rights",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Purchase video with coins",
                 "parameters": [
                     {
@@ -527,15 +461,9 @@
         "/api/client/payment/order/create": {
             "post": {
                 "description": "Create a payment order for purchasing a coin package or subscription, return payment URLs",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Create payment order",
                 "parameters": [
                     {
@@ -561,15 +489,9 @@
         "/api/client/payment/provider/list": {
             "get": {
                 "description": "Get the list of payment service providers supported by the current site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Get payment method list",
                 "parameters": [
                     {
@@ -596,15 +518,9 @@
         "/api/client/payment/user/coins/balance": {
             "get": {
                 "description": "Get current logged-in user's coin account balance at the specified site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Get user coin balance",
                 "parameters": [
                     {
@@ -640,15 +556,9 @@
         "/api/client/payment/user/coins/transactions": {
             "get": {
                 "description": "Get current logged-in user's coin transaction history records",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Get user coin transaction records",
                 "parameters": [
                     {
@@ -701,15 +611,9 @@
         "/api/client/payment/user/coins/videos/transactions": {
             "get": {
                 "description": "Get current logged-in user's video and playlist unlock history records",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-payment"],
                 "summary": "Get user video unlock records",
                 "parameters": [
                     {
@@ -762,15 +666,9 @@
         "/api/client/player/playlist/videos": {
             "get": {
                 "description": "Get Ordered Video List Under Playlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Get Ordered Video List Under Playlist",
                 "parameters": [
                     {
@@ -795,15 +693,9 @@
         "/api/client/playlist/info": {
             "get": {
                 "description": "Get Playlist Details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Get Playlist Details",
                 "parameters": [
                     {
@@ -835,15 +727,9 @@
         "/api/client/playlist/search": {
             "get": {
                 "description": "Search videos by keyword for a given site, with pagination and sorting",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Search videos on the client side",
                 "parameters": [
                     {
@@ -899,15 +785,9 @@
         "/api/client/site/info": {
             "get": {
                 "description": "Get Site Information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Get Site Information",
                 "parameters": [
                     {
@@ -939,15 +819,9 @@
         "/api/client/video/history": {
             "get": {
                 "description": "Returns the video viewing history for the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Get user's video viewing history",
                 "parameters": [
                     {
@@ -1000,15 +874,9 @@
         "/api/client/video/playback/records": {
             "post": {
                 "description": "Report user video playback progress and related information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client-player"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["client-player"],
                 "summary": "Report Video Playback Record",
                 "parameters": [
                     {
@@ -1046,15 +914,9 @@
                     }
                 ],
                 "description": "Complete guides",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Complete guides",
                 "parameters": [
                     {
@@ -1087,15 +949,9 @@
         "/api/creator/login": {
             "post": {
                 "description": "Creator login interface",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Creator login",
                 "parameters": [
                     {
@@ -1126,15 +982,9 @@
                     }
                 ],
                 "description": "Get detailed creator profile information based on creator ID, including nickname, avatar URL, creation time, etc.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Get creator's profile information",
                 "parameters": [
                     {
@@ -1158,15 +1008,9 @@
         "/api/creator/register": {
             "post": {
                 "description": "Currently only supports email registration",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Register a creator",
                 "parameters": [
                     {
@@ -1192,15 +1036,9 @@
         "/api/creator/resetpwd": {
             "post": {
                 "description": "Reset creator password via email.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Reset creator password",
                 "parameters": [
                     {
@@ -1231,15 +1069,9 @@
                     }
                 ],
                 "description": "Get creator's total videos, playlists, and sites count",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Get creator's total videos, playlists, and sites count",
                 "parameters": [
                     {
@@ -1268,15 +1100,9 @@
                     }
                 ],
                 "description": "Creator image upload interface, supports jpg, png, gif and other common image formats",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "creator"
-                ],
+                "consumes": ["multipart/form-data"],
+                "produces": ["application/json"],
+                "tags": ["creator"],
                 "summary": "Upload image",
                 "parameters": [
                     {
@@ -1319,15 +1145,9 @@
         "/api/payment/account/info": {
             "get": {
                 "description": "Get the currently configured payment provider's account information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Get payment account information",
                 "parameters": [
                     {
@@ -1358,15 +1178,9 @@
         "/api/payment/coins/package": {
             "post": {
                 "description": "Modify existing coin package information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Modify coin package",
                 "parameters": [
                     {
@@ -1392,15 +1206,9 @@
         "/api/payment/coins/package/create": {
             "post": {
                 "description": "Create a new coin package for users to purchase",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Create coin package",
                 "parameters": [
                     {
@@ -1426,15 +1234,9 @@
         "/api/payment/coins/package/list": {
             "get": {
                 "description": "Get all coin packages for the specified site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Get coin package list",
                 "parameters": [
                     {
@@ -1458,15 +1260,9 @@
         "/api/payment/conf/info": {
             "get": {
                 "description": "Get site payment configuration information, including configured payment providers and their public keys",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Get payment configuration information",
                 "parameters": [
                     {
@@ -1502,15 +1298,9 @@
         "/api/payment/conf/save": {
             "post": {
                 "description": "Save user's payment provider configuration information, including keys",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Save payment configuration",
                 "parameters": [
                     {
@@ -1536,15 +1326,9 @@
         "/api/payment/conf/test": {
             "post": {
                 "description": "Verify the payment provider's key configuration is valid",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Test payment configuration",
                 "parameters": [
                     {
@@ -1570,15 +1354,9 @@
         "/api/payment/customers/coins/balance": {
             "get": {
                 "description": "Get coin account information for a specific email user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Get coin information for a specific email user",
                 "parameters": [
                     {
@@ -1621,15 +1399,9 @@
         "/api/payment/customers/coins/grant": {
             "post": {
                 "description": "Allow creators to manually add coins to specific users as rewards or compensation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Creator manually adds user coins",
                 "parameters": [
                     {
@@ -1667,15 +1439,9 @@
         "/api/payment/customers/coins/transactions": {
             "get": {
                 "description": "Administrators/creators query a specific user's coin transaction history by email",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Query specific user's coin transaction records",
                 "parameters": [
                     {
@@ -1735,15 +1501,9 @@
         "/api/payment/customers/coins/videos/transactions": {
             "get": {
                 "description": "Administrators/creators query a specific user's video and playlist unlock history by email",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Query specific user's video unlock records",
                 "parameters": [
                     {
@@ -1803,15 +1563,9 @@
         "/api/payment/subscription/create": {
             "post": {
                 "description": "Create a new subscription package for users to subscribe to",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Create subscription package",
                 "parameters": [
                     {
@@ -1837,15 +1591,9 @@
         "/api/payment/subscription/get": {
             "get": {
                 "description": "Get detailed information of a specific subscription package",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Get subscription package details",
                 "parameters": [
                     {
@@ -1876,15 +1624,9 @@
         "/api/payment/subscription/list": {
             "get": {
                 "description": "Get all subscription packages for the specified site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Get subscription package list",
                 "parameters": [
                     {
@@ -1917,15 +1659,9 @@
         "/api/payment/subscription/modify": {
             "post": {
                 "description": "Modify existing subscription package information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "payment"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["payment"],
                 "summary": "Modify subscription package",
                 "parameters": [
                     {
@@ -1963,15 +1699,9 @@
                     }
                 ],
                 "description": "Add multiple videos to the specified playlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Add videos to playlist",
                 "parameters": [
                     {
@@ -2009,15 +1739,9 @@
                     }
                 ],
                 "description": "Batch get detailed information of playlists, including basic information and SEO information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Batch get playlist information",
                 "parameters": [
                     {
@@ -2048,15 +1772,9 @@
         "/api/playlist/change/access/type": {
             "post": {
                 "description": "Modify playlist access type (free, paid, member-exclusive) and price settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Modify playlist access type and payment settings",
                 "parameters": [
                     {
@@ -2087,15 +1805,9 @@
                     }
                 ],
                 "description": "Create a new playlist and its SEO information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Create playlist",
                 "parameters": [
                     {
@@ -2133,15 +1845,9 @@
                     }
                 ],
                 "description": "Delete one or more playlists",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Delete playlist",
                 "parameters": [
                     {
@@ -2179,15 +1885,9 @@
                     }
                 ],
                 "description": "Get detailed information of the specified playlist, including basic information and SEO information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Get playlist information",
                 "parameters": [
                     {
@@ -2224,15 +1924,9 @@
                     }
                 ],
                 "description": "Paginate query all playlist information under specified site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Query playlists under site",
                 "parameters": [
                     {
@@ -2299,15 +1993,9 @@
                     }
                 ],
                 "description": "Modify specific playlist information, including basic information and SEO information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Modify playlist information",
                 "parameters": [
                     {
@@ -2345,15 +2033,9 @@
                     }
                 ],
                 "description": "Remove multiple videos from specified playlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Remove videos from playlist",
                 "parameters": [
                     {
@@ -2391,15 +2073,9 @@
                     }
                 ],
                 "description": "Search videos by keyword, supports pagination",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Search playlists",
                 "parameters": [
                     {
@@ -2480,15 +2156,9 @@
                     }
                 ],
                 "description": "Get videos in the playlist with pagination, supports filtering by status",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Get videos in playlist V2",
                 "parameters": [
                     {
@@ -2549,15 +2219,9 @@
                     }
                 ],
                 "description": "Get the order of videos in playlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Get video order in playlist",
                 "parameters": [
                     {
@@ -2594,15 +2258,9 @@
                     }
                 ],
                 "description": "Order of videos in playlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "playlist"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["playlist"],
                 "summary": "Video order in playlist",
                 "parameters": [
                     {
@@ -2640,15 +2298,9 @@
                     }
                 ],
                 "description": "Add one or more video playlists to the target site.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Add playlists to site",
                 "parameters": [
                     {
@@ -2686,15 +2338,9 @@
                     }
                 ],
                 "description": "Batch query brief site information by site ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Batch get site information",
                 "parameters": [
                     {
@@ -2730,15 +2376,9 @@
                     }
                 ],
                 "description": "Create a site and its default SEO information, including basic site information and SEO configuration.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Create site and default SEO information",
                 "parameters": [
                     {
@@ -2776,15 +2416,9 @@
                     }
                 ],
                 "description": "Query basic site information and corresponding SEO information by site ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Query site and SEO information",
                 "parameters": [
                     {
@@ -2821,15 +2455,9 @@
                     }
                 ],
                 "description": "Paginate query for all site information owned by the current user, including basic site information and status",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Get user's site list",
                 "parameters": [
                     {
@@ -2870,15 +2498,9 @@
                     }
                 ],
                 "description": "Modify site information and SEO configuration, siteId is a required field.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Modify site and SEO information",
                 "parameters": [
                     {
@@ -2916,15 +2538,9 @@
                     }
                 ],
                 "description": "Remove one or more video playlists from the target site.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Remove playlists from site",
                 "parameters": [
                     {
@@ -2962,15 +2578,9 @@
                     }
                 ],
                 "description": "Change a user's status (activate, forbidden, delete) within a site. If deleted, the user is truly removed.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Change user status",
                 "parameters": [
                     {
@@ -3032,15 +2642,9 @@
                     }
                 ],
                 "description": "Retrieve user information for a specific email within a site",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Get user information by email",
                 "parameters": [
                     {
@@ -3085,15 +2689,9 @@
                     }
                 ],
                 "description": "Retrieve users associated with a site with pagination, filtering, and sorting",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "site"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["site"],
                 "summary": "Get users for a specific site",
                 "parameters": [
                     {
@@ -3175,15 +2773,9 @@
         "/api/user/login": {
             "post": {
                 "description": "User login with email and password",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["user"],
                 "summary": "User login",
                 "parameters": [
                     {
@@ -3221,15 +2813,9 @@
                     }
                 ],
                 "description": "Get user profile information",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["user"],
                 "summary": "Get user profile",
                 "parameters": [
                     {
@@ -3260,15 +2846,9 @@
         "/api/user/register": {
             "post": {
                 "description": "Register a new user with email and password",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["user"],
                 "summary": "Register a new user",
                 "parameters": [
                     {
@@ -3306,15 +2886,9 @@
                     }
                 ],
                 "description": "Query brief video information by batch video IDs (note quantity control...)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Batch get brief video information",
                 "parameters": [
                     {
@@ -3350,15 +2924,9 @@
                     }
                 ],
                 "description": "Batch delete specified videos",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Delete videos",
                 "parameters": [
                     {
@@ -3396,15 +2964,9 @@
                     }
                 ],
                 "description": "Query video details by video ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Get video details",
                 "parameters": [
                     {
@@ -3448,15 +3010,9 @@
                     }
                 ],
                 "description": "Search videos by keyword, supports pagination",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Display all videos of current creator",
                 "parameters": [
                     {
@@ -3522,15 +3078,9 @@
                     }
                 ],
                 "description": "Modify basic information of a specified video",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Modify video information",
                 "parameters": [
                     {
@@ -3568,15 +3118,9 @@
                     }
                 ],
                 "description": "Synchronously replace a video",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["multipart/form-data"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Replace video, keeping the same video ID",
                 "parameters": [
                     {
@@ -3613,15 +3157,9 @@
                     }
                 ],
                 "description": "Search videos by keyword, supports pagination",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Search videos",
                 "parameters": [
                     {
@@ -3709,15 +3247,9 @@
                     }
                 ],
                 "description": "Batch upload video files, returns a list of created video VIDs",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "video"
-                ],
+                "consumes": ["multipart/form-data"],
+                "produces": ["application/json"],
+                "tags": ["video"],
                 "summary": "Batch upload videos",
                 "parameters": [
                     {
@@ -3749,12 +3281,7 @@
     "definitions": {
         "shortpress-server_internal_api.AdUnit": {
             "type": "object",
-            "required": [
-                "adNetwork",
-                "name",
-                "page",
-                "siteId"
-            ],
+            "required": ["adNetwork", "name", "page", "siteId"],
             "properties": {
                 "adNetwork": {
                     "type": "string"
@@ -3832,10 +3359,7 @@
         },
         "shortpress-server_internal_api.BuyContentWithCoinsRequest": {
             "type": "object",
-            "required": [
-                "contentId",
-                "contentType"
-            ],
+            "required": ["contentId", "contentType"],
             "properties": {
                 "contentId": {
                     "description": "ID of content to purchase (video or playlist)",
@@ -3844,10 +3368,7 @@
                 "contentType": {
                     "description": "Type of content (video or playlist)",
                     "type": "string",
-                    "enum": [
-                        "video",
-                        "playlist"
-                    ]
+                    "enum": ["video", "playlist"]
                 },
                 "playlistId": {
                     "description": "If content is a video in a playlist",
@@ -3874,12 +3395,7 @@
         },
         "shortpress-server_internal_api.CoinPackageCreateRequest": {
             "type": "object",
-            "required": [
-                "coinAmount",
-                "name",
-                "price",
-                "siteId"
-            ],
+            "required": ["coinAmount", "name", "price", "siteId"],
             "properties": {
                 "coinAmount": {
                     "type": "integer",
@@ -3916,10 +3432,7 @@
         },
         "shortpress-server_internal_api.CoinPackageModifyRequest": {
             "type": "object",
-            "required": [
-                "packageId",
-                "siteId"
-            ],
+            "required": ["packageId", "siteId"],
             "properties": {
                 "description": {
                     "type": "string"
@@ -4031,19 +3544,14 @@
         },
         "shortpress-server_internal_api.CompleteGuidesRequest": {
             "type": "object",
-            "required": [
-                "guides"
-            ],
+            "required": ["guides"],
             "properties": {
                 "guides": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"guide1\"",
-                        "\"guide2\"]"
-                    ]
+                    "example": ["[\"guide1\"", "\"guide2\"]"]
                 }
             }
         },
@@ -4061,10 +3569,7 @@
         },
         "shortpress-server_internal_api.CreatorLoginRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
+            "required": ["email", "password"],
             "properties": {
                 "email": {
                     "description": "Email corresponds to the email field in MySQL table, type VARCHAR(255), cannot be null",
@@ -4170,11 +3675,7 @@
         },
         "shortpress-server_internal_api.GrantCoinsRequest": {
             "type": "object",
-            "required": [
-                "coinAmount",
-                "siteId",
-                "userEmail"
-            ],
+            "required": ["coinAmount", "siteId", "userEmail"],
             "properties": {
                 "coinAmount": {
                     "type": "integer",
@@ -4275,9 +3776,7 @@
         },
         "shortpress-server_internal_api.IncomeStatisticsRequest": {
             "type": "object",
-            "required": [
-                "siteId"
-            ],
+            "required": ["siteId"],
             "properties": {
                 "endTime": {
                     "description": "Optional end timestamp",
@@ -4393,9 +3892,7 @@
         },
         "shortpress-server_internal_api.IncomeTransactionsRequest": {
             "type": "object",
-            "required": [
-                "siteId"
-            ],
+            "required": ["siteId"],
             "properties": {
                 "endTime": {
                     "description": "Optional end timestamp",
@@ -4424,11 +3921,7 @@
         },
         "shortpress-server_internal_api.OrderCreateRequest": {
             "type": "object",
-            "required": [
-                "orderType",
-                "packageId",
-                "siteId"
-            ],
+            "required": ["orderType", "packageId", "siteId"],
             "properties": {
                 "cancelUrl": {
                     "description": "URL to redirect if canceled",
@@ -4439,10 +3932,7 @@
                     "type": "string"
                 },
                 "orderType": {
-                    "enum": [
-                        "coin",
-                        "sub"
-                    ],
+                    "enum": ["coin", "sub"],
                     "allOf": [
                         {
                             "$ref": "#/definitions/shortpress-server_internal_api.OrderType"
@@ -4491,14 +3981,8 @@
         },
         "shortpress-server_internal_api.OrderType": {
             "type": "string",
-            "enum": [
-                "coin",
-                "sub"
-            ],
-            "x-enum-varnames": [
-                "OrderTypeCoinPackage",
-                "OrderTypeSubscription"
-            ]
+            "enum": ["coin", "sub"],
+            "x-enum-varnames": ["OrderTypeCoinPackage", "OrderTypeSubscription"]
         },
         "shortpress-server_internal_api.PayPalConfigInfo": {
             "type": "object",
@@ -4506,6 +3990,14 @@
                 "clientId": {
                     "description": "PayPal client ID",
                     "type": "string"
+                },
+                "clientSecret": {
+                    "description": "PayPal client secret",
+                    "type": "string"
+                },
+                "isSandbox": {
+                    "description": "Whether PayPal uses sandbox mode",
+                    "type": "boolean"
                 }
             }
         },
@@ -4553,6 +4045,24 @@
         "shortpress-server_internal_api.PaymentProviderConfig": {
             "type": "object",
             "properties": {
+                "paypalConf": {
+                    "description": "PayPal configuration",
+                    "type": "object",
+                    "properties": {
+                        "clientId": {
+                            "description": "PayPal client ID",
+                            "type": "string"
+                        },
+                        "clientSecret": {
+                            "description": "PayPal client secret",
+                            "type": "string"
+                        },
+                        "isSandbox": {
+                            "description": "Whether PayPal uses sandbox mode",
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "provider": {
                     "description": "Payment provider name",
                     "type": "string",
@@ -4592,10 +4102,7 @@
         },
         "shortpress-server_internal_api.PlaybackReportRequest": {
             "type": "object",
-            "required": [
-                "progress",
-                "vid"
-            ],
+            "required": ["progress", "vid"],
             "properties": {
                 "cover": {
                     "description": "Video cover image URL",
@@ -4633,10 +4140,7 @@
         },
         "shortpress-server_internal_api.PlaylistAccessChangeRequest": {
             "type": "object",
-            "required": [
-                "accessType",
-                "playlistId"
-            ],
+            "required": ["accessType", "playlistId"],
             "properties": {
                 "accessType": {
                     "description": "1:free 2:paid 3:member-only",
@@ -4660,10 +4164,7 @@
         },
         "shortpress-server_internal_api.PlaylistAddVideosRequest": {
             "type": "object",
-            "required": [
-                "playlistId",
-                "vids"
-            ],
+            "required": ["playlistId", "vids"],
             "properties": {
                 "playlistId": {
                     "description": "Playlist ID",
@@ -4676,19 +4177,13 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"vid-1\"",
-                        "\"vid-2\"]"
-                    ]
+                    "example": ["[\"vid-1\"", "\"vid-2\"]"]
                 }
             }
         },
         "shortpress-server_internal_api.PlaylistDelVideosRequest": {
             "type": "object",
-            "required": [
-                "playlistId",
-                "vids"
-            ],
+            "required": ["playlistId", "vids"],
             "properties": {
                 "playlistId": {
                     "description": "Playlist ID",
@@ -4701,18 +4196,13 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"vid-1\"",
-                        "\"vid-2\"]"
-                    ]
+                    "example": ["[\"vid-1\"", "\"vid-2\"]"]
                 }
             }
         },
         "shortpress-server_internal_api.PlaylistDeleteRequest": {
             "type": "object",
-            "required": [
-                "playlistIds"
-            ],
+            "required": ["playlistIds"],
             "properties": {
                 "playlistIds": {
                     "description": "SiteID\t string   `json:\"siteId\" binding:\"required\" example:\"site-123\"` // Site ID",
@@ -4720,10 +4210,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"playlist-123\"",
-                        "\"playlist-456\"]"
-                    ]
+                    "example": ["[\"playlist-123\"", "\"playlist-456\"]"]
                 }
             }
         },
@@ -4832,10 +4319,7 @@
         },
         "shortpress-server_internal_api.PlaylistVideosOrder": {
             "type": "object",
-            "required": [
-                "playlistId",
-                "sortData"
-            ],
+            "required": ["playlistId", "sortData"],
             "properties": {
                 "playlistId": {
                     "description": "Playlist ID",
@@ -4858,10 +4342,7 @@
         },
         "shortpress-server_internal_api.RegisterCreatorRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
+            "required": ["email", "password"],
             "properties": {
                 "email": {
                     "type": "string",
@@ -4890,10 +4371,7 @@
         },
         "shortpress-server_internal_api.ResetCreatorPwdRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "newPassword"
-            ],
+            "required": ["email", "newPassword"],
             "properties": {
                 "email": {
                     "description": "email corresponds to the email field in MySQL table",
@@ -4921,10 +4399,7 @@
         },
         "shortpress-server_internal_api.SiteAddPlaylistsRequest": {
             "type": "object",
-            "required": [
-                "playlistIds",
-                "siteId"
-            ],
+            "required": ["playlistIds", "siteId"],
             "properties": {
                 "playlistIds": {
                     "description": "Playlist ID array",
@@ -4932,10 +4407,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"playlist-1\"",
-                        "\"playlist-2\"]"
-                    ]
+                    "example": ["[\"playlist-1\"", "\"playlist-2\"]"]
                 },
                 "siteId": {
                     "description": "Site ID, CHAR(36)",
@@ -4960,20 +4432,14 @@
         },
         "shortpress-server_internal_api.SiteDelPlaylistsRequest": {
             "type": "object",
-            "required": [
-                "playlistIds",
-                "siteId"
-            ],
+            "required": ["playlistIds", "siteId"],
             "properties": {
                 "playlistIds": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"playlist-1\"",
-                        "\"playlist-2\"]"
-                    ]
+                    "example": ["[\"playlist-1\"", "\"playlist-2\"]"]
                 },
                 "siteId": {
                     "type": "string",
@@ -5060,6 +4526,10 @@
         "shortpress-server_internal_api.StripeConfig": {
             "type": "object",
             "properties": {
+                "isSandbox": {
+                    "description": "Whether Stripe uses sandbox mode",
+                    "type": "boolean"
+                },
                 "pk": {
                     "description": "Stripe public key",
                     "type": "string",
@@ -5078,6 +4548,10 @@
                 "email": {
                     "description": "Account email",
                     "type": "string"
+                },
+                "isSandbox": {
+                    "description": "Whether Stripe uses sandbox mode",
+                    "type": "boolean"
                 },
                 "pk": {
                     "description": "Stripe public key",
@@ -5140,11 +4614,7 @@
         },
         "shortpress-server_internal_api.UserChangeStatusRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "siteId",
-                "status"
-            ],
+            "required": ["email", "siteId", "status"],
             "properties": {
                 "email": {
                     "description": "Email is the user's email address\nRequired: true\nFormat: email",
@@ -5244,10 +4714,7 @@
         },
         "shortpress-server_internal_api.UserLoginRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
+            "required": ["email", "password"],
             "properties": {
                 "email": {
                     "type": "string"
@@ -5305,10 +4772,7 @@
         },
         "shortpress-server_internal_api.UserRegisterRequest": {
             "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
+            "required": ["email", "password"],
             "properties": {
                 "email": {
                     "type": "string"
@@ -5324,9 +4788,7 @@
         },
         "shortpress-server_internal_api.VideoDeleteRequest": {
             "type": "object",
-            "required": [
-                "vids"
-            ],
+            "required": ["vids"],
             "properties": {
                 "vids": {
                     "description": "List of video IDs to delete",
@@ -5334,10 +4796,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"vid-123\"",
-                        "\"vid-456\"]"
-                    ]
+                    "example": ["[\"vid-123\"", "\"vid-456\"]"]
                 }
             }
         },
@@ -5577,9 +5036,7 @@
         },
         "shortpress-server_internal_api.VideoSortData": {
             "type": "object",
-            "required": [
-                "vids"
-            ],
+            "required": ["vids"],
             "properties": {
                 "vids": {
                     "description": "List of video IDs",
@@ -5587,10 +5044,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"vid-1\"",
-                        "\"vid-2\"]"
-                    ]
+                    "example": ["[\"vid-1\"", "\"vid-2\"]"]
                 }
             }
         },
@@ -5686,10 +5140,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "example": [
-                        "[\"vid-123\"",
-                        "\"vid-456\"]"
-                    ]
+                    "example": ["[\"vid-123\"", "\"vid-456\"]"]
                 }
             }
         }

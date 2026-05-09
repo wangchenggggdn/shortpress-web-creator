@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { SiteContext } from '../useContext/site-context';
-import WebsiteSidebar from '../slider';
-import { getCookie } from '@/libs/fetch/fetchCookie/getCookie';
 import cookieMap from '@/config/cookie-map';
 import Cookies from 'js-cookie';
+import React, { useState } from 'react';
+import WebsiteSidebar from '../slider';
+import { SiteContext } from '../useContext/site-context';
 
 interface WebsiteClientProps {
     params: {
@@ -17,13 +16,13 @@ interface WebsiteClientProps {
 const WebsiteClient: React.FC<WebsiteClientProps> = ({ params, children }) => {
     const [collapsed, setCollapsed] = useState(false);
     const oldUseState = Cookies.get(cookieMap.UserState);
-    // if (oldUseState) {
-    //     console.log('oldUseState:', oldUseState);
-    //     const oldUseStateObj = JSON.parse(decodeURIComponent(oldUseState));
-    //     oldUseStateObj.siteId = params.siteId;
-    //     Cookies.set(cookieMap.UserState, encodeURIComponent(JSON.stringify(oldUseStateObj)));
-    // }
-
+    if (oldUseState) {
+        console.log('oldUseState:', oldUseState);
+        const oldUseStateObj = JSON.parse(decodeURIComponent(oldUseState));
+        oldUseStateObj.siteId = params.siteId;
+        Cookies.set(cookieMap.UserState, encodeURIComponent(JSON.stringify(oldUseStateObj)));
+    }
+    2;
     return (
         <SiteContext.Provider value={{ params }}>
             <div className="flex min-h-screen bg-layout-page">

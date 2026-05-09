@@ -8,6 +8,7 @@ export interface Customer {
     totalSpent?: number;  // Total amount spent
     coinBalance?: number;  // Current coin balance
     premiumExpiresAt?: number;  // VIP expiration timestamp
+    userId: string;
 }
 
 export enum CustomerStatus {

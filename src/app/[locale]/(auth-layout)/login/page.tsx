@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { TextInput, PasswordInput, Button, Text } from '@mantine/core';
-import { IconUser, IconLock, IconEyeOff, IconEye } from '@tabler/icons-react';
-import Link from 'next/link';
 import CreatorApi from '@/api/creator';
 import CookieMap from '@/config/cookie-map';
+import { Button, PasswordInput, Text, TextInput } from '@mantine/core';
+import { IconEye, IconEyeOff, IconLock, IconUser } from '@tabler/icons-react';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 interface LoginPageProps {}
@@ -21,16 +21,16 @@ const LoginPage: React.FC<LoginPageProps> = () => {
         e.preventDefault();
         setLoading(true);
 
-        const res = await CreatorApi.login({email,password});
+        const res = await CreatorApi.login({ email, password });
         if (res.code === 0 && res.data) {
             // Set user state in cookie ,now server setCookie
-            //Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
+            // todo: 注释下面一行
+            Cookies.set(CookieMap.UserState, encodeURIComponent(JSON.stringify(res.data)));
             window.location.href = '/';
         } else {
             toast.error('Login failed: email or password is incorrect');
         }
         setLoading(false);
-      
     };
 
     return (

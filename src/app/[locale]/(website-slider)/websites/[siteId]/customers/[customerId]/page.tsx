@@ -12,7 +12,7 @@ import { Menu, Table, Button } from '@mantine/core';
 import dayjs from 'dayjs';
 import TransactionList from '@/components/business/websites/customer-view/transaction-list';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PaymentAPI } from '@/api/payment';
 import RefillCoinsModal from '@/components/business/websites/customer-view/refill-coins-modal';
 import { UserResponse } from '@/api/respones';
@@ -32,6 +32,8 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const { userInfo } = userStore();
     const { params: siteParams } = useContext(SiteContext);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const userId = searchParams.get('userId');
     useEffect(() => {
         loadCustomerInfo();
     }, [params.customerId]);
@@ -49,6 +51,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                 CustomerApi.getInfo({
                     email: getEmail(),
                     siteId: siteParams.siteId,
+                    userId: userId || '',
                 }),
                 PaymentAPI.getCoinBalance({
                     userEmail: getEmail(),
@@ -124,7 +127,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
             if (!customer || amount <= 0) return;
             await PaymentAPI.grantCoins({
                 siteId: siteParams.siteId,
-                userEmail: customer.email,
+                userEmail: getEmail(),
                 coinAmount: amount,
                 reason: 'Manual refill by admin',
             });
@@ -240,7 +243,9 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                                         <div>
                                             <div className="text-sm text-gray-500">Subscription</div>
                                             <div className="flex items-center gap-2">
-                                                <div className="text-base font-medium">{customer.premiumExpiresAt ? dayjs(customer.premiumExpiresAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}</div>
+                                                <div className="text-base font-medium">
+                                                    {customer.premiumExpiresAt ? dayjs(customer.premiumExpiresAt * 1000).format('YYYY-MM-DD HH:mm') : '-'}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

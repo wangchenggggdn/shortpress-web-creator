@@ -1,31 +1,30 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@mantine/core';
-import { IconArrowLeft } from '@tabler/icons-react';
-import { useParams } from 'next/navigation';
-import Header from '@/components/system/header';
-import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';
-import { IVideo } from '@/types/video';
-import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
-import PlaylistApi from '@/api/playlist';
-import { toast } from 'sonner';
 import { PlaylistArgs, VideoArgs } from '@/api/args';
 import CreatorApi from '@/api/creator';
-import AddContentModal from '@/components/business/playlists/playlist-add-videos-modal';
+import PlaylistApi from '@/api/playlist';
 import VideoApi from '@/api/video';
-import PlaylistVideoItem from '@/components/business/playlists/playlist-video-item';
-import userStore from '@/store/useUserStore';
-import { GuideName } from '@/types/guide';
 import AddVideoButton from '@/components/business/add-video-button';
+import AddContentModal from '@/components/business/playlists/playlist-add-videos-modal';
+import PlaylistDetailEdit from '@/components/business/playlists/playlist-detail-edit';
+import PlaylistVideoItem from '@/components/business/playlists/playlist-video-item';
 import UploadVideoModal from '@/components/business/upload-video-modal';
-import fileUploadStore from '@/store/useFileUploadStore';
-import LoadingData from '@/components/common/loading-data';
 import VideoDetailEdit from '@/components/business/videos/video-detail-edit';
 import ConfirmDialog from '@/components/common/confirm-dialog';
-import { useRouter } from 'next/navigation';
-import profileEventBus from '@/utils/profileEventBus';
+import LoadingData from '@/components/common/loading-data';
+import Header from '@/components/system/header';
+import fileUploadStore from '@/store/useFileUploadStore';
+import userStore from '@/store/useUserStore';
 import { EventName } from '@/types/event';
+import { GuideName } from '@/types/guide';
+import { Playlist, PlaylistVideoOrder } from '@/types/playlist';
+import { IVideo, VideoSourceType } from '@/types/video';
+import profileEventBus from '@/utils/profileEventBus';
+import { Button } from '@mantine/core';
+import { IconArrowLeft, IconTrash } from '@tabler/icons-react';
+import { useParams, useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface PlaylistVideosPageProps {}
 
@@ -47,6 +46,9 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [replaceLoading, setReplaceLoading] = useState(false);
     const [confirmSaveOrderOpen, setConfirmSaveOrderOpen] = useState(false);
+    const [selectionMode, setSelectionMode] = useState(false);
+    const [selectedVideos, setSelectedVideos] = useState<Set<string>>(new Set());
+    const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
     const router = useRouter();
 
     const handleUploadSuccess = useCallback((lastUploadFile: IVideo) => {
@@ -83,13 +85,13 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     }, [videos]);
 
     const fetchVideos = async () => {
-        console.log('--------------------------fetchVideos:',paramsP.id);
+        console.log('--------------------------fetchVideos:', paramsP.id);
         const res = await PlaylistApi.videoOrder(paramsP.id as string);
         orderParamCurrentRef.current = res.data;
         if (res.code !== 0 || (res.data.sortData.vids ?? []).length === 0) {
             setVideos([]);
             return;
-        };
+        }
         const videoIds = res.data.sortData.vids;
         const batchSize = 20;
         const batches = [];
@@ -267,8 +269,11 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 formData.append('file', videoFile);
                 const replaceRes = await VideoApi.replace({ vid: editingVideo?.vid ?? '', formData });
                 if (replaceRes.code === 0) {
-                    videoData.videoPath = replaceRes.data.videoSourceUrl ?? '';
-                    videoData.videoSourceUrl = replaceRes.data.videoSourceUrl ?? '';
+                    videoData.sources?.forEach(source => {
+                        if (source.sourceType === VideoSourceType.LOCAL) {
+                            source.url = replaceRes.data.videoSourceUrl ?? '';
+                        }
+                    });
                 } else {
                     toast.error('Failed to replace video');
                     setSaveLoading(false);
@@ -316,7 +321,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
     };
 
     useEffect(() => {
-        console.log('-----------------playlistId:',playlist?.playlistId);
+        console.log('-----------------playlistId:', playlist?.playlistId);
     }, [playlist]);
 
     const handleTitleOrder = () => {
@@ -326,7 +331,51 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
         setVideos(newVideos);
     };
 
+    const handleToggleSelectionMode = () => {
+        setSelectionMode(!selectionMode);
+        setSelectedVideos(new Set());
+    };
 
+    const handleSelectionChange = (id: string, selected: boolean) => {
+        const newSelected = new Set(selectedVideos);
+        if (selected) {
+            newSelected.add(id);
+        } else {
+            newSelected.delete(id);
+        }
+        setSelectedVideos(newSelected);
+    };
+
+    const handleSelectAll = () => {
+        if (selectedVideos.size === videos.length) {
+            setSelectedVideos(new Set());
+        } else {
+            setSelectedVideos(new Set(videos.map(v => v.vid)));
+        }
+    };
+
+    const handleBatchDelete = () => {
+        if (selectedVideos.size === 0) {
+            toast.warning('Please select videos to remove');
+            return;
+        }
+        setBatchDeleteModalOpen(true);
+    };
+
+    const handleConfirmBatchDelete = async () => {
+        await reloadEditVersion();
+        const selectedIds = Array.from(selectedVideos);
+        orderParamCurrentRef.current!.sortData.vids = orderParamCurrentRef.current!.sortData.vids.filter(
+            vid => !selectedIds.includes(vid)
+        );
+        
+        await PlaylistApi.updateVideosOrder(orderParamCurrentRef.current!);
+        setVideos(videos.filter(v => !selectedVideos.has(v.vid)));
+        setSelectedVideos(new Set());
+        setSelectionMode(false);
+        setBatchDeleteModalOpen(false);
+        toast.success(`${selectedIds.length} video(s) removed from playlist successfully`);
+    };
 
     return (
         <div className="flex flex-col h-screen">
@@ -341,7 +390,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                         >
                             <IconArrowLeft size={20} />
                         </div>
-                        <h1 className="font-medium">
+                        <h1 className="font-medium line-clamp-1">
                             <span className="text-gray-500">Playlists</span> {' / ' + playlist?.title}
                         </h1>
                     </div>
@@ -356,45 +405,86 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
             </Header>
             <div className="px-6 pt-4 flex flex-row items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <span className="text-gray-600">{videos.length} videos</span>
-                    {isEditingOrder && (
+                    {selectionMode ? (
+                        <>
                             <Button
                                 variant="subtle"
-                                color="primary"
-                                onClick={() => {
-                                   handleTitleOrder();
-                                }}
-                                px={'sm'}
+                                onClick={handleSelectAll}
+                                className="hover:text-primary-dark font-medium text-sm"
                             >
-                                Order By Title
+                                {selectedVideos.size === videos.length ? 'Deselect All' : 'Select All'}
                             </Button>
-                        )}
+                            <span className="text-gray-600">{selectedVideos.size} selected</span>
+                        </>
+                    ) : (
+                        <>
+                            <span className="text-gray-600">{videos.length} videos</span>
+                            {isEditingOrder && (
+                                <Button
+                                    variant="subtle"
+                                    color="primary"
+                                    onClick={() => {
+                                        handleTitleOrder();
+                                    }}
+                                    px={'sm'}
+                                >
+                                    Order By Title
+                                </Button>
+                            )}
+                        </>
+                    )}
                 </div>
-                    <div className="flex">
-                       
-                        <Button
-                            variant="subtle"
-                            color={isEditingOrder ? 'red' : 'primary'}
-                            onClick={() => (isEditingOrder ? handleSaveOrder() : setIsEditingOrder(true))}
-                            px={'sm'}
-                        >
-                            {isEditingOrder ? 'Save Order' : 'Edit Order'}
-                        </Button>
-                        {isEditingOrder && (
+                <div className="flex gap-2">
+                    {selectionMode ? (
+                        <>
+                            <Button
+                                onClick={handleBatchDelete}
+                                disabled={selectedVideos.size === 0}
+                                className="flex items-center !bg-red-500 text-white rounded-lg hover:!bg-red-600 disabled:!bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                            >
+                                <div className='flex gap-1'>
+                                    <IconTrash size={16} />
+                                    Remove ({selectedVideos.size})
+                                </div>
+                            </Button>
                             <Button
                                 variant="subtle"
-                                color="primary"
-                                onClick={() => {
-                                    setIsEditingOrder(false);
-                                    fetchVideos();
-                                }}
-                                px={'sm'}
+                                onClick={handleToggleSelectionMode}
+                                className="border border-gray-300 rounded-lg transition-colors"
                             >
                                 Cancel
                             </Button>
-                        )}
-                    </div>
-            
+                        </>
+                    ) : (
+                        <>
+                            {videos.length > 0 && !isEditingOrder && (
+                                <Button
+                                    variant="subtle"
+                                    onClick={handleToggleSelectionMode}
+                                    className="border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                >
+                                    Select
+                                </Button>
+                            )}
+                            <Button variant="subtle" color={isEditingOrder ? 'red' : 'primary'} onClick={() => (isEditingOrder ? handleSaveOrder() : setIsEditingOrder(true))} px={'sm'}>
+                                {isEditingOrder ? 'Save Order' : 'Edit Order'}
+                            </Button>
+                            {isEditingOrder && (
+                                <Button
+                                    variant="subtle"
+                                    color="primary"
+                                    onClick={() => {
+                                        setIsEditingOrder(false);
+                                        fetchVideos();
+                                    }}
+                                    px={'sm'}
+                                >
+                                    Cancel
+                                </Button>
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
             <div className="flex-1">
                 <div className="max-w-full mx-auto p-6">
@@ -405,6 +495,9 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                                 video={video}
                                 index={index}
                                 isEditing={isEditingOrder}
+                                selectionMode={selectionMode}
+                                isSelected={selectedVideos.has(video.vid)}
+                                onSelectionChange={handleSelectionChange}
                                 onEdit={setEditingVideo}
                                 onDelete={handleDeleteVideo}
                                 onOrderChange={handleOrderChange}
@@ -423,10 +516,7 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 </div>
             </div>
             <AddContentModal isOpen={isAddContentOpen} onClose={() => setIsAddContentOpen(false)} onAdd={handleAddContent} playlistId={playlist?.playlistId ?? ''} />
-            <UploadVideoModal
-                opened={isUploadModalOpen}
-                onClose={() => setIsUploadModalOpen(false)}
-            />
+            <UploadVideoModal opened={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} />
             {isEditing && (
                 <>
                     <div className="fixed inset-0 bg-black/20 z-50" onClick={() => setIsEditing(false)} />
@@ -436,21 +526,20 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 </>
             )}
 
-
             <VideoDetailEdit
-                            isOpen={editingVideo !== null}
-                            playlistId={playlist?.playlistId}
-                            isReplace={replaceLoading}
-                            video={editingVideo}
-                            onClose={() => setEditingVideo(null)}
-                            onSave={handleSave}
-                            onDelete={video => {
-                                handleDeleteVideo(video.vid);
-                                setEditingVideo(null);
-                            }}
-                            deleteString={playlist?.playlistId ? 'Remove from playlist' : 'Delete'}
-                            isUploading={saveLoading}
-                        />
+                isOpen={editingVideo !== null}
+                playlistId={playlist?.playlistId}
+                isReplace={replaceLoading}
+                video={editingVideo}
+                onClose={() => setEditingVideo(null)}
+                onSave={handleSave}
+                onDelete={video => {
+                    handleDeleteVideo(video.vid);
+                    setEditingVideo(null);
+                }}
+                deleteString={playlist?.playlistId ? 'Remove from playlist' : 'Delete'}
+                isUploading={saveLoading}
+            />
 
             <ConfirmDialog
                 opened={confirmSaveOrderOpen}
@@ -460,6 +549,16 @@ const PlaylistVideosPage: React.FC<PlaylistVideosPageProps> = () => {
                 confirmColor="primary"
                 title="Save Order"
                 message="Are you sure you want to save the new order?"
+            />
+
+            <ConfirmDialog
+                opened={batchDeleteModalOpen}
+                onClose={() => setBatchDeleteModalOpen(false)}
+                onConfirm={handleConfirmBatchDelete}
+                title="Confirm Batch Remove"
+                message={`Are you sure you want to remove ${selectedVideos.size} video(s) from this playlist?`}
+                confirmText="Remove All"
+                cancelText="Cancel"
             />
         </div>
     );

@@ -10,20 +10,8 @@ import { Menu, Modal, TextInput, Select, Burger } from '@mantine/core';
 import InputModal from '@/components/common/input-modal';
 import WidgetPageItem from '../common/WidgetPageItem';
 
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-} from '@dnd-kit/core';
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import PlaylistSelector from '../common/PlaylistSelector';
 import PageSelector from '../common/PageSelector';
 import UrlInputSelector from '../common/UrlInputSelector';
@@ -41,7 +29,7 @@ const MENU_TYPES = {
     NAV_ITEM: 'nav_item',
     PLAYLIST: 'playlist',
     PAGE: 'page',
-    URL: 'url'
+    URL: 'url',
 } as const;
 
 const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, onBack, updateWidgetDataToSection }) => {
@@ -52,7 +40,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     const [showPlaylistModal, setShowPlaylistModal] = useState(false);
     const [showPageModal, setShowPageModal] = useState(false);
     const [showUrlModal, setShowUrlModal] = useState(false);
-    const { currentVersion,editWebsite, currentPage } = useEditorStore();
+    const { currentVersion, editWebsite, currentPage } = useEditorStore();
     const homePage = currentVersion?.pages.find(page => page.isHome);
 
     const sensors = useSensors(
@@ -63,7 +51,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     );
 
     const getNavItems = (): any[] => {
-        const items = (currentSection?.params.extend.widgets?.find((w: Widget) => w.id === widget.id)??[]).widgets??[];
+        const items = (currentSection?.params.extend.widgets?.find((w: Widget) => w.id === widget.id) ?? []).widgets ?? [];
         return items;
     };
 
@@ -77,15 +65,15 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
 
     const handleIconUpload = async (file: File) => {
         if (!file) return;
-        
+
         setIsLoading(true);
         const formData = new FormData();
         formData.append('file', file);
-        
+
         try {
             const res = await CreatorApi.uploadFile(formData);
             setIsLoading(false);
-            
+
             if (res.code === 0) {
                 const imageUrl = res.data;
                 const items = getNavItems();
@@ -94,9 +82,9 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
                     label: 'Nav Icon',
                     content: MENU_TYPES.NAV,
                     type: WidgetType.DEFAULT,
-                    visible: true
+                    visible: true,
                 };
-                
+
                 navIcon.image = imageUrl;
                 const updatedItems = items.length > 0 ? [navIcon, ...items.slice(1)] : [navIcon];
                 updateWidgetData(updatedItems);
@@ -121,15 +109,15 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             type: WidgetType.DATA,
             data: {
                 type: DataSourceType.PLAYLIST,
-                id: playlistId
-            }
+                id: playlistId,
+            },
         };
-        
+
         updateWidgetData([...items, newItem]);
         setShowPlaylistModal(false);
     };
 
-    const handleAddPageItem = (pageId: string, pageName: string,path:string) => {
+    const handleAddPageItem = (pageId: string, pageName: string, path: string) => {
         const items = getNavItems();
         const newItem: PathWidget = {
             id: createUniqueUUID(items.map(item => item.id)),
@@ -137,9 +125,9 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             content: MENU_TYPES.PAGE,
             visible: true,
             type: WidgetType.PATH,
-            path: path
+            path: path,
         };
-        
+
         updateWidgetData([...items, newItem]);
         setShowPageModal(false);
     };
@@ -151,7 +139,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             type: WidgetType.PATH,
             path: url,
             label: url,
-            visible: true
+            visible: true,
         };
         updateWidgetData([...getNavItems(), newWidget]);
         setShowUrlModal(false);
@@ -159,10 +147,8 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
 
     const handleMenuItemUpdate = (itemId: string, updates: Partial<Widget>) => {
         const items = getNavItems();
-        const updatedItems = items.map(item =>
-            item.id === itemId ? { ...item, ...updates } : item
-        );
-        
+        const updatedItems = items.map(item => (item.id === itemId ? { ...item, ...updates } : item));
+
         updateWidgetData(updatedItems);
     };
 
@@ -170,8 +156,8 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         const { active, over } = event;
         if (active.id !== over.id) {
             const items = getNavItems();
-            const oldIndex = items.findIndex((item) => item.id === active.id);
-            const newIndex = items.findIndex((item) => item.id === over.id);
+            const oldIndex = items.findIndex(item => item.id === active.id);
+            const newIndex = items.findIndex(item => item.id === over.id);
             updateWidgetData(arrayMove(items, oldIndex, newIndex));
         }
     };
@@ -195,7 +181,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         const newItem = {
             ...itemToDuplicate,
             id: createUniqueUUID(items.map(item => item.id)),
-            label: `${itemToDuplicate.label} (Copy)`
+            label: `${itemToDuplicate.label} (Copy)`,
         };
 
         updateWidgetData([...items, newItem]);
@@ -215,7 +201,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
         return true;
     };
 
-    if(getNavItems().length === 0){
+    if (getNavItems().length === 0) {
         return (
             <div className="p-4 bg-white h-full overflow-y-auto">
                 <div className="flex items-center mb-4">
@@ -239,32 +225,34 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
     return (
         <div className="p-4 bg-white h-full overflow-y-auto">
             <div className="flex items-center gap-3 mb-2">
-                <button
-                    onClick={onBack}
-                    className="text-gray-400"
-                >
+                <button onClick={onBack} className="text-gray-400">
                     <IconArrowLeft size={20} />
                 </button>
                 <h2 className="text-[20px] font-semibold text-black-purple">Nav Menu</h2>
             </div>
 
             {/* Nav Icon */}
-            <LogoMenuItem isLoading={isLoading} widget={navIcon} icon={<Burger color='black'  aria-label="Toggle navigation" size={32} />} onUpload={handleIconUpload} onToggle={() => {handleToggle(navIcon.id)}} title={'Nav Icon'}/>
+            <LogoMenuItem
+                isLoading={isLoading}
+                widget={navIcon}
+                icon={<Burger color="black" aria-label="Toggle navigation" size={32} />}
+                onUpload={handleIconUpload}
+                onToggle={() => {
+                    handleToggle(navIcon.id);
+                }}
+                title={'Nav Icon'}
+            />
 
             {/* Menu Items */}
             <div className="mb-4 p-4 bg-white border border-gray-200 rounded-xl max-h-[400px] overflow-y-auto">
-                <div className="flex items-center justify-between mb-4">
+                <div className={`flex items-center justify-between ${navItems.length > 0 ? 'mb-4' : ''}`}>
                     <h3 className="text-[15px] font-medium text-black-purple">Menu Items</h3>
                     <Menu opened={showAddTypeMenu} onChange={setShowAddTypeMenu}>
                         <Menu.Target>
-                            <button
-                                className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
-                            >
-                                Add Menu
-                            </button>
+                            <button className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors">Add Menu</button>
                         </Menu.Target>
                         <Menu.Dropdown>
-                            <Menu.Item
+                            {/* <Menu.Item
                                 leftSection={<IconPlaylist size={16} />}
                                 onClick={() => {
                                     setShowAddTypeMenu(false);
@@ -273,7 +261,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
                             >
                                 Playlist
                                 <div className="text-xs text-gray-500">Add existing playlists to section</div>
-                            </Menu.Item>
+                            </Menu.Item> */}
                             <Menu.Item
                                 leftSection={<IconFile size={16} />}
                                 onClick={() => {
@@ -298,16 +286,9 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
                     </Menu>
                 </div>
 
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                >
-                    <SortableContext
-                        items={navItems}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        {navItems.map((item) => (
+                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={navItems} strategy={verticalListSortingStrategy}>
+                        {navItems.map(item => (
                             <WidgetPageItem
                                 key={item.id}
                                 item={item}
@@ -315,7 +296,7 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
                                 onToggleVisibility={handleToggle}
                                 onDuplicate={handleMenuItemDuplicate}
                                 onDelete={handleMenuItemDelete}
-                                onRename={(item) => {
+                                onRename={item => {
                                     setCurrentMenuItem(item);
                                     setIsRenameModalOpen(true);
                                 }}
@@ -348,21 +329,12 @@ const NavMenuEditor: React.FC<NavMenuEditorProps> = ({ widget, currentSection, o
             />
 
             {/* Page Selection Modal */}
-            <PageSelector
-                open={showPageModal}
-                onClose={() => setShowPageModal(false)}
-                pages={currentVersion?.pages || []}
-                onSelect={handleAddPageItem}
-            />
+            <PageSelector open={showPageModal} onClose={() => setShowPageModal(false)} pages={currentVersion?.pages || []} onSelect={handleAddPageItem} />
 
             {/* URL Input Modal */}
-            <UrlInputSelector
-                open={showUrlModal}
-                onClose={() => setShowUrlModal(false)}
-                onSelect={handleAddUrlItem}
-            />
+            <UrlInputSelector open={showUrlModal} onClose={() => setShowUrlModal(false)} onSelect={handleAddUrlItem} />
         </div>
     );
 };
 
-export default NavMenuEditor; 
+export default NavMenuEditor;

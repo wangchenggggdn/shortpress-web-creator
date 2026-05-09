@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { IconPlayerPlay, IconPlayerPause, IconVolume, IconVolumeOff } from '@tabler/icons-react';
+import { IconPlayerPlay, IconVolume, IconVolumeOff } from '@tabler/icons-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface LocalVideoPlayerProps {
     /** Local video file to play */
@@ -20,29 +20,29 @@ interface LocalVideoPlayerProps {
  * Local video player component for playing File objects
  * Provides play/pause controls and handles local video playback
  */
-const LocalVideoPlayer: React.FC<LocalVideoPlayerProps> = ({
-    file,
-    className = '',
-    isPlaying = false,
-    onPlayPause,
-    onEnded
-}) => {
+const LocalVideoPlayer: React.FC<LocalVideoPlayerProps> = ({ file, className = '', isPlaying = false, onPlayPause, onEnded }) => {
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isMuted, setIsMuted] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // 组件挂载时直接加载视频
+    // Load video when component mounts or file changes
     useEffect(() => {
         if (videoRef.current) {
             setIsLoading(true);
-            videoRef.current.src = URL.createObjectURL(file);
-            videoRef.current.muted = true; // 默认静音
+            setIsVideoLoaded(false);
+
+            const objectUrl = URL.createObjectURL(file);
+            videoRef.current.src = objectUrl;
+            videoRef.current.muted = true; // Default muted
             videoRef.current.load();
+
+            // Cleanup function to revoke object URL to prevent memory leaks
+            return () => {
+                URL.revokeObjectURL(objectUrl);
+            };
         }
     }, [file]);
-
-
 
     const handleVideoLoad = () => {
         setIsVideoLoaded(true);
@@ -52,7 +52,7 @@ const LocalVideoPlayer: React.FC<LocalVideoPlayerProps> = ({
     // Handle play/pause logic
     const handlePlayPause = () => {
         if (!videoRef.current) return;
-        
+
         if (isPlaying) {
             videoRef.current.pause();
             onPlayPause?.(false);
@@ -92,7 +92,7 @@ const LocalVideoPlayer: React.FC<LocalVideoPlayerProps> = ({
                 <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={handlePlayPause}>
                     {/* Fallback Background */}
                     <div className="absolute inset-0 bg-gray-100"></div>
-                    
+
                     {/* Loading Spinner */}
                     {isLoading ? (
                         <div className="relative z-10 bg-black/30 rounded-full p-4">
@@ -105,7 +105,7 @@ const LocalVideoPlayer: React.FC<LocalVideoPlayerProps> = ({
                     )}
                 </div>
             )}
-            
+
             {/* Playback Controls - only show when video is loaded */}
             {isVideoLoaded && (
                 <>

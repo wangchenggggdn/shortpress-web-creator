@@ -38,9 +38,8 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
 
     useEffect(() => {
         console.log('open:', isOpen);
-       playlistId.length>0&& searchRequest();
-    }, [searchQuery, activePage, orderType,playlistId,isOpen]);
-
+        playlistId.length > 0 && searchRequest();
+    }, [searchQuery, activePage, orderType, playlistId, isOpen]);
 
     const searchRequest = async () => {
         setVideoList([]);
@@ -147,7 +146,12 @@ const AddContentModal: React.FC<AddContentModalProps> = ({ isOpen, onClose, onAd
                                             className="absolute top-2 left-2 z-10"
                                         />
                                         <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-200 rounded-md overflow-hidden mb-2">
-                                            {item.cover && <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />}
+                                            {item.cover &&
+                                                (item.cover.toLowerCase().endsWith('.webm') ? (
+                                                    <video src={item.cover} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                                                ) : (
+                                                    <img src={item.cover} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
+                                                ))}
                                         </div>
                                         <div className="absolute text-sm bottom-0 left-0 right-0 h-14 bg-white p-2 rounded-b-md">
                                             <div className="text-black-purple line-clamp-2 text-ellipsis">{item.title}</div>

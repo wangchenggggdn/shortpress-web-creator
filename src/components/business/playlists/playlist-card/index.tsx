@@ -5,6 +5,7 @@ import { Menu, ActionIcon } from '@mantine/core';
 import { IconDots, IconPencil, IconTrash } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { Playlist } from '@/types/playlist';
+import { withResMediaCacheBust } from '@/utils/mediaUrl';
 import { dateFormatSecond } from '@/utils/formatUtil';
 
 /**
@@ -47,7 +48,22 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist, onEdit, onDelete 
             {/* Cover Image Container */}
             <div className="relative aspect-[9/16] rounded-lg overflow-hidden bg-gray-100 shadow-md">
                 {playlist.cover ? (
-                    <img src={playlist.cover} alt={playlist.title} className="w-full h-full object-cover" />
+                    playlist.cover.toLowerCase().includes('.webm') ? (
+                        <video
+                            src={withResMediaCacheBust(playlist.cover, playlist.updatedAt) ?? playlist.cover}
+                            className="w-full h-full object-cover"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                        />
+                    ) : (
+                        <img
+                            src={withResMediaCacheBust(playlist.cover, playlist.updatedAt) ?? playlist.cover}
+                            alt={playlist.title}
+                            className="w-full h-full object-cover"
+                        />
+                    )
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">No Cover</div>
                 )}
