@@ -63,7 +63,6 @@ const formatDateByRange = (date: Date, range: TimeRange): string => {
 };
 
 const mergeDataByRange = (data: AnalyticsResponse.DailyIncome[], range: TimeRange): AnalyticsResponse.DailyIncome[] => {
-    console.log('data:', data);
     if (!data || data.length === 0) return [];
     const mergedData: { [key: string]: AnalyticsResponse.DailyIncome } = {};
 
@@ -74,15 +73,45 @@ const mergeDataByRange = (data: AnalyticsResponse.DailyIncome[], range: TimeRang
             mergedData[key] = {
                 date: key,
                 totalAmount: 0,
-                totalCount: 0,
+                transactionCount: 0,
+                iapAmount: 0,
+                subscriptionAmount: 0,
+                renewalAmount: 0,
             };
         }
 
         mergedData[key].totalAmount += item.totalAmount;
-        mergedData[key].totalCount += item.totalCount;
+        mergedData[key].transactionCount += item.transactionCount;
+        mergedData[key].iapAmount += item.iapAmount;
+        mergedData[key].subscriptionAmount += item.subscriptionAmount;
+        mergedData[key].renewalAmount += item.renewalAmount;
     });
 
     return Object.values(mergedData);
+};
+
+/** When API breakdown is missing or incomplete, attribute remainder to subscription. */
+const normalizeDailyIncome = (item: AnalyticsResponse.DailyIncome): AnalyticsResponse.DailyIncome => {
+    const totalAmount = item.totalAmount ?? 0;
+    const iapAmount = item.iapAmount ?? 0;
+    let subscriptionAmount = item.subscriptionAmount ?? 0;
+    const renewalAmount = item.renewalAmount ?? 0;
+    const breakdownSum = iapAmount + subscriptionAmount + renewalAmount;
+
+    if (totalAmount > 0 && breakdownSum === 0) {
+        subscriptionAmount = totalAmount;
+    } else if (totalAmount > breakdownSum) {
+        subscriptionAmount += totalAmount - breakdownSum;
+    }
+
+    return {
+        ...item,
+        totalAmount,
+        transactionCount: item.transactionCount ?? 0,
+        iapAmount,
+        subscriptionAmount,
+        renewalAmount,
+    };
 };
 
 const transformData = (data: AnalyticsResponse.DailyIncome[], range: TimeRange): { transformedData: AnalyticsResponse.DailyIncome[]; totalAmount: number; totalCount: number } => {
@@ -95,15 +124,11 @@ const transformData = (data: AnalyticsResponse.DailyIncome[], range: TimeRange):
         return dateA - dateB;
     });
 
-    const dailyData = sortedData.map(item => ({
-        date: item.date,
-        totalAmount: item.totalAmount,
-        totalCount: item.totalCount
-    }));
+    const dailyData = sortedData.map(item => normalizeDailyIncome(item));
 
     const transformedData = mergeDataByRange(dailyData, range);
-    const totalAmount = data.reduce((sum, item) => sum + item.totalAmount, 0);
-    const totalCount = data.reduce((sum, item) => sum + item.totalCount, 0);
+    const totalAmount = data.reduce((sum, item) => sum + (item.totalAmount ?? 0), 0);
+    const totalCount = data.reduce((sum, item) => sum + (item.transactionCount ?? 0), 0);
 
     return { transformedData, totalAmount, totalCount };
 };

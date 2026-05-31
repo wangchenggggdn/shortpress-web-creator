@@ -92,7 +92,10 @@ export namespace AnalyticsResponse {
     export interface DailyIncome {
         date: string; // Date in YYYY-MM-DD format
         totalAmount: number; // Income amount
-        totalCount: number; // Transaction count
+        transactionCount: number; // Transaction count
+        iapAmount: number; // In-app purchase (coin package) revenue
+        subscriptionAmount: number; // New subscription revenue
+        renewalAmount: number; // Subscription renewal revenue
     }
 
     /**

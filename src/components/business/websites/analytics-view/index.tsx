@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useContext } from 'react';
-import LineChart from './line-chat';
+import RevenueChart from './line-chat';
 import Header from '@/components/system/header';
 import { useRouter } from 'next/navigation';
 import TransactionTable from './transaction-table';
@@ -37,8 +37,20 @@ const AnalyticsView: React.FC = () => {
     const chartData =
         incomeData?.map(item => ({
             date: item.date,
-            revenue: item.totalAmount,
+            iap: item.iapAmount ?? 0,
+            subscription: item.subscriptionAmount ?? 0,
+            renewal: item.renewalAmount ?? 0,
+            total: item.totalAmount ?? 0,
         })) || [];
+
+    const revenueBreakdown = incomeData?.reduce(
+        (acc, item) => ({
+            iap: acc.iap + (item.iapAmount ?? 0),
+            subscription: acc.subscription + (item.subscriptionAmount ?? 0),
+            renewal: acc.renewal + (item.renewalAmount ?? 0),
+        }),
+        { iap: 0, subscription: 0, renewal: 0 },
+    ) ?? { iap: 0, subscription: 0, renewal: 0 };
 
     return (
         <div className="flex flex-col h-screen">
@@ -75,13 +87,29 @@ const AnalyticsView: React.FC = () => {
                             ))}
                         </div> */}
                     </div>
-                    <div className="text-3xl font-bold text-primary mb-6">${totalAmount.toFixed(2) || '0.00'}</div>
+                    <div className="text-3xl font-bold text-primary mb-4">${totalAmount.toFixed(2) || '0.00'}</div>
+                    <div className="mb-6 flex flex-wrap gap-3">
+                        {[
+                            { label: 'In-App Purchase', amount: revenueBreakdown.iap, color: 'bg-emerald-500' },
+                            { label: 'Subscription', amount: revenueBreakdown.subscription, color: 'bg-primary' },
+                            { label: 'Renewal', amount: revenueBreakdown.renewal, color: 'bg-amber-500' },
+                        ].map(item => (
+                            <div
+                                key={item.label}
+                                className="flex items-center gap-2 rounded-full border border-gray-100 bg-gray-50 px-3 py-1.5 text-sm text-gray-700"
+                            >
+                                <span className={`h-2 w-2 rounded-full ${item.color}`} />
+                                <span>{item.label}</span>
+                                <span className="font-semibold text-gray-900">${item.amount.toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
                     {isLoading ? (
-                        <div className="h-[250px] flex items-center justify-center">
+                        <div className="h-[300px] flex items-center justify-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         </div>
                     ) : (
-                        <LineChart data={chartData} />
+                        <RevenueChart data={chartData} />
                     )}
                 </div>
 
