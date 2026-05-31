@@ -90,18 +90,38 @@ const mergeDataByRange = (data: AnalyticsResponse.DailyIncome[], range: TimeRang
     return Object.values(mergedData);
 };
 
-/** When API breakdown is missing or incomplete, attribute remainder to subscription. */
+/** Reconcile API breakdown with daily total; never move renewal into subscription. */
 const normalizeDailyIncome = (item: AnalyticsResponse.DailyIncome): AnalyticsResponse.DailyIncome => {
     const totalAmount = item.totalAmount ?? 0;
-    const iapAmount = item.iapAmount ?? 0;
+    let iapAmount = item.iapAmount ?? 0;
     let subscriptionAmount = item.subscriptionAmount ?? 0;
     const renewalAmount = item.renewalAmount ?? 0;
-    const breakdownSum = iapAmount + subscriptionAmount + renewalAmount;
+    let breakdownSum = iapAmount + subscriptionAmount + renewalAmount;
 
-    if (totalAmount > 0 && breakdownSum === 0) {
-        subscriptionAmount = totalAmount;
-    } else if (totalAmount > breakdownSum) {
-        subscriptionAmount += totalAmount - breakdownSum;
+    if (totalAmount > breakdownSum) {
+        const remainder = totalAmount - breakdownSum;
+        if (renewalAmount > 0) {
+            subscriptionAmount += remainder;
+        } else if (iapAmount > 0 && subscriptionAmount === 0) {
+            iapAmount += remainder;
+        } else {
+            subscriptionAmount += remainder;
+        }
+        breakdownSum = totalAmount;
+    } else if (breakdownSum > totalAmount && totalAmount > 0) {
+        const ratio = totalAmount / breakdownSum;
+        iapAmount *= ratio;
+        subscriptionAmount *= ratio;
+        // renewalAmount kept proportional via recalc from total
+        const scaledRenewal = renewalAmount * ratio;
+        return {
+            ...item,
+            totalAmount,
+            transactionCount: item.transactionCount ?? 0,
+            iapAmount,
+            subscriptionAmount,
+            renewalAmount: scaledRenewal,
+        };
     }
 
     return {

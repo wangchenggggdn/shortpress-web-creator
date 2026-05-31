@@ -2,8 +2,8 @@
 
 import React from 'react';
 import {
-    AreaChart,
-    Area,
+    ComposedChart,
+    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -24,11 +24,13 @@ interface RevenueChartProps {
     data: RevenueChartDataPoint[];
 }
 
-const SERIES = [
-    { key: 'iap' as const, label: 'In-App Purchase', color: '#10B981', gradientId: 'iapGradient' },
-    { key: 'subscription' as const, label: 'Subscription', color: '#6355FF', gradientId: 'subscriptionGradient' },
-    { key: 'renewal' as const, label: 'Renewal', color: '#F59E0B', gradientId: 'renewalGradient' },
-];
+const TOTAL_LINE_COLOR = '#111827';
+
+const LINE_SERIES = [
+    { key: 'iap' as const, label: 'In-App Purchase', color: '#10B981' },
+    { key: 'subscription' as const, label: 'Subscription', color: '#6355FF' },
+    { key: 'renewal' as const, label: 'Renewal', color: '#F59E0B' },
+] as const;
 
 const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
@@ -38,25 +40,44 @@ const formatChartDate = (value: string) => {
     return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) => {
+const CustomTooltip = ({
+    active,
+    payload,
+    label,
+}: {
+    active?: boolean;
+    payload?: Array<{ name: string; value: number; color: string; dataKey?: string }>;
+    label?: string;
+}) => {
     if (!active || !payload?.length) return null;
 
-    const total = payload.reduce((sum, entry) => sum + (entry.value ?? 0), 0);
+    const entries = [...payload].sort((a, b) => {
+        if (a.dataKey === 'total') return -1;
+        if (b.dataKey === 'total') return 1;
+        return 0;
+    });
 
     return (
         <div className="rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-lg">
             <p className="mb-2 text-sm font-medium text-gray-900">{formatChartDate(label ?? '')}</p>
-            <p className="mb-2 text-base font-semibold text-primary">{formatCurrency(total)}</p>
             <div className="space-y-1">
-                {payload
-                    .filter(entry => entry.value > 0)
+                {entries
+                    .filter(entry => entry.value > 0 || entry.dataKey === 'total')
                     .map(entry => (
-                        <div key={entry.name} className="flex items-center justify-between gap-6 text-sm">
+                        <div key={entry.dataKey ?? entry.name} className="flex items-center justify-between gap-6 text-sm">
                             <span className="flex items-center gap-2 text-gray-600">
-                                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                <span
+                                    className={`inline-block ${entry.dataKey === 'total' ? 'h-0.5 w-4 rounded-full' : 'h-2.5 w-2.5 rounded-full'}`}
+                                    style={{ backgroundColor: entry.color }}
+                                />
                                 {entry.name}
                             </span>
-                            <span className="font-medium text-gray-900">{formatCurrency(entry.value)}</span>
+                            <span
+                                className={`font-medium ${entry.dataKey === 'total' ? 'text-base font-semibold' : ''}`}
+                                style={entry.dataKey === 'total' ? { color: TOTAL_LINE_COLOR } : { color: '#111827' }}
+                            >
+                                {formatCurrency(entry.value)}
+                            </span>
                         </div>
                     ))}
             </div>
@@ -74,17 +95,9 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
     }
 
     return (
-        <div className="h-[300px] w-full rounded-xl bg-gradient-to-b from-primary/[0.03] to-transparent px-1 pt-2">
+        <div className="h-[300px] w-full rounded-xl bg-gradient-to-b from-gray-50/80 to-transparent px-1 pt-2">
             <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
-                    <defs>
-                        {SERIES.map(series => (
-                            <linearGradient key={series.gradientId} id={series.gradientId} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor={series.color} stopOpacity={0.45} />
-                                <stop offset="100%" stopColor={series.color} stopOpacity={0.05} />
-                            </linearGradient>
-                        ))}
-                    </defs>
+                <ComposedChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
                     <XAxis
                         dataKey="date"
@@ -107,24 +120,36 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
                     <Legend
                         verticalAlign="top"
                         align="right"
-                        iconType="circle"
-                        iconSize={8}
+                        iconType="plainline"
+                        iconSize={14}
                         wrapperStyle={{ paddingBottom: 12, fontSize: 12 }}
                     />
-                    {SERIES.map(series => (
-                        <Area
+                    {LINE_SERIES.map(series => (
+                        <Line
                             key={series.key}
                             type="monotone"
                             dataKey={series.key}
                             name={series.label}
-                            stackId="revenue"
                             stroke={series.color}
                             strokeWidth={2}
-                            fill={`url(#${series.gradientId})`}
-                            activeDot={{ r: 4, strokeWidth: 0 }}
+                            dot={{ r: 3, fill: series.color, strokeWidth: 0 }}
+                            activeDot={{ r: 5, stroke: '#fff', strokeWidth: 2 }}
+                            connectNulls
+                            legendType="plainline"
                         />
                     ))}
-                </AreaChart>
+                    <Line
+                        type="monotone"
+                        dataKey="total"
+                        name="Total Revenue"
+                        stroke={TOTAL_LINE_COLOR}
+                        strokeWidth={2.5}
+                        dot={false}
+                        activeDot={{ r: 5, fill: TOTAL_LINE_COLOR, stroke: '#fff', strokeWidth: 2 }}
+                        legendType="plainline"
+                        connectNulls
+                    />
+                </ComposedChart>
             </ResponsiveContainer>
         </div>
     );
