@@ -36,7 +36,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
     const userId = searchParams.get('userId');
     useEffect(() => {
         loadCustomerInfo();
-    }, [params.customerId]);
+    }, [params.customerId, userId]);
 
     const getEmail = () => {
         const base64Email = decodeURIComponent(params.customerId);

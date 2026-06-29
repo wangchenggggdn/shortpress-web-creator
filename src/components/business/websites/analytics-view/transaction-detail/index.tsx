@@ -45,18 +45,17 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
 
                         <Button
                             onClick={() => {
-                                if (!transaction.email) {
+                                if (!transaction.userId) {
                                     return;
                                 }
-                                // First encode to base64
-                                const encodedEmail = btoa(transaction.email);
-                                // Then make it URL safe
+                                const identityEmail = transaction.email || transaction.payerEmail || transaction.userId;
+                                const encodedEmail = btoa(identityEmail);
                                 const urlSafeEmail = encodeURIComponent(encodedEmail);
-                                router.push(`../../customers/${urlSafeEmail}`);
+                                router.push(`../../customers/${urlSafeEmail}?userId=${encodeURIComponent(transaction.userId)}`);
                             }}
                             variant="outline"
                             className="text-sm font-medium"
-                            disabled={!transaction.email}
+                            disabled={!transaction.userId}
                         >
                             View Customer
                         </Button>
