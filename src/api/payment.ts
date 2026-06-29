@@ -145,4 +145,11 @@ export class PaymentAPI {
     static modifySubscription(args: SubscriptionArgs.Modify) {
         return fetch.post<{ packageId: string }>('/api/payment/subscription/modify', args);
     }
+
+    /**
+     * Cancel a customer's active subscription
+     */
+    static cancelCustomerSubscription(args: { siteId: string; subscriptionId: string }) {
+        return fetch.post<IResponse>('/api/payment/customers/subscription/cancel', args);
+    }
 }

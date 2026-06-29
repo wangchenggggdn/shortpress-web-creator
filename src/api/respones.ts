@@ -136,5 +136,7 @@ export namespace AnalyticsResponse {
         relatedId: string; // Related ID
         relatedType: number; // Related type
         userId: string; // User ID
+        isSubscriptionOrder?: boolean; // Whether this is a new subscription order (not renewal)
+        subscriptionId?: string; // Active user subscription ID, shown when cancellable (includes renewal transactions)
     }
 }
