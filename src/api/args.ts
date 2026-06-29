@@ -497,7 +497,7 @@ export namespace AnalyticsArgs {
         endTime?: number; // Unix timestamp in milliseconds
         page?: number; // Page number, default 1
         pageSize?: number; // Items per page, default 10
-        userEmail?: string;
+        userEmail?: string; // Filter by account email or payment email
     }
 
     export interface IncomeTransactionInfo {

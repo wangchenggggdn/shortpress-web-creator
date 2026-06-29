@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import AnalyticsApi from '@/api/analytics';
 import { AnalyticsResponse } from '@/api/respones';
 import { toast } from 'sonner';
@@ -23,6 +23,8 @@ interface UseTransactionListReturn {
     page: number;
     pageSize: number;
     onPageChange: (page: number) => void;
+    emailSearch: string;
+    setEmailSearch: (value: string) => void;
 }
 
 export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTransactionListReturn => {
@@ -34,6 +36,8 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
+    const [emailSearch, setEmailSearch] = useState('');
+    const isFirstEmailSearch = useRef(true);
 
     // Calculate custom time range with day start (00:00:00) and end (23:59:59)
     const calculateCustomTimeRange = useCallback((start: Date, end: Date): [number, number] => {
@@ -93,7 +97,8 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
                 startTime,
                 endTime,
                 page: currentPage || 1,
-                pageSize: pageSize
+                pageSize: pageSize,
+                userEmail: emailSearch.trim() || undefined,
             });
 
             if (response.code === 0 && response.data) {
@@ -114,7 +119,7 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         } finally {
             setIsLoading(false);
         }
-    }, [siteId, getTimeRange, pageSize]);
+    }, [siteId, getTimeRange, pageSize, emailSearch]);
 
     const handleDateChange = useCallback((date: Date | null, isStartDate: boolean) => {
         if (isStartDate) {
@@ -155,6 +160,17 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         fetchData(1);
     }, []);
 
+    useEffect(() => {
+        if (isFirstEmailSearch.current) {
+            isFirstEmailSearch.current = false;
+            return;
+        }
+        if (rangeType === 'custom' && (!startDate || !endDate)) {
+            return;
+        }
+        fetchData(1);
+    }, [emailSearch]);
+
     return {
         transactions,
         isLoading,
@@ -169,5 +185,7 @@ export const useTransactionList = ({ siteId }: UseTransactionListProps): UseTran
         page,
         pageSize,
         onPageChange,
+        emailSearch,
+        setEmailSearch,
     };
 }; 
