@@ -10,9 +10,10 @@ import { useInView } from 'react-intersection-observer';
 
 interface TransactionRecordsProps {
     email: string;
+    userId: string;
 }
 
-const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
+const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email, userId }) => {
     const [loading, setLoading] = useState(false);
     const [transactions, setTransactions] = useState<IncomeTransaction[]>([]);
     const [page, setPage] = useState(1);
@@ -25,7 +26,7 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
     });
 
     const loadTransactions = async (currentPage: number, isLoadMore = false) => {
-        if (loading) return;
+        if (loading || !userId) return;
 
         try {
             setLoading(true);
@@ -33,7 +34,8 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
                 page: currentPage,
                 pageSize,
                 siteId: params.siteId,
-                userEmail: email,
+                userId,
+                userEmail: email || undefined,
             });
 
             const newItems = response.data.items;
@@ -48,8 +50,10 @@ const TransactionRecords: React.FC<TransactionRecordsProps> = ({ email }) => {
     };
 
     useEffect(() => {
+        setPage(1);
+        setHasMore(true);
         loadTransactions(1);
-    }, []);
+    }, [userId, email, params.siteId]);
 
     useEffect(() => {
         if (inView && hasMore && !loading) {

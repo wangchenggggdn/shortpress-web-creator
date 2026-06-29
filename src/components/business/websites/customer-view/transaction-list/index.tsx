@@ -13,9 +13,10 @@ type TabId = (typeof TABS)[number]['id'];
 
 interface TransactionListProps {
     email: string;
+    userId: string;
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ email }) => {
+const TransactionList: React.FC<TransactionListProps> = ({ email, userId }) => {
     const [activeTab, setActiveTab] = useState<TabId>('transactions');
 
     return (
@@ -40,7 +41,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ email }) => {
                 {/* Tab Content */}
                 <div className="p-4 h-full">
                     <div className="mb-6 h-full">
-                        {activeTab === 'transactions' && <TransactionRecords email={email} />}
+                        {activeTab === 'transactions' && <TransactionRecords email={email} userId={userId} />}
                         {activeTab === 'unlock' && <UnlockHistory email={email} />}
                     </div>
                 </div>

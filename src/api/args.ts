@@ -492,6 +492,7 @@ export namespace AnalyticsArgs {
      */
     export interface IncomeTransactions {
         siteId: string;
+        userId?: string;
         startTime?: number; // Unix timestamp in milliseconds
         endTime?: number; // Unix timestamp in milliseconds
         page?: number; // Page number, default 1

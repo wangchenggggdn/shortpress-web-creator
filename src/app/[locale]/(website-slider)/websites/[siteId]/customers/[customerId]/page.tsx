@@ -262,7 +262,7 @@ const CustomerDetailPage: React.FC<CustomerDetailPageProps> = ({ params }) => {
                     )}
                 </div>
                 {/* Transaction List Component */}
-                {customer && <TransactionList email={customer.email} />}
+                {customer && <TransactionList email={customer.email} userId={customer.userId} />}
             </div>
         </div>
     );
