@@ -106,7 +106,8 @@ export namespace AnalyticsResponse {
         amount: number; // Transaction amount
         createdAt: number; // Transaction creation timestamp
         description: string; // Transaction description
-        email: string; // Customer email
+        email: string; // Account email
+        payerEmail?: string; // Payment platform checkout email
         name: string; // Customer name
         provider: string; // Payment provider
     }
@@ -128,7 +129,8 @@ export namespace AnalyticsResponse {
         status: number; // Transaction status
         provider: string; // Payment provider
         createdAt: number; // Transaction creation timestamp
-        email: string; // Customer email
+        email: string; // Account email
+        payerEmail?: string; // Payment platform checkout email
         name: string; // Customer name
         paymentType: number; // Payment type
         relatedId: string; // Related ID
