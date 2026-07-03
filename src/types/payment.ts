@@ -25,6 +25,7 @@ export interface CoinPackage {
     originalPrice?: number; // Original price
     discountPercentage?: number; // Discount percentage
     currency?: string;     // Currency type
+    iosProductId?: string; // App Store product ID
     status: PackageStatus; // Status
     createdAt?: string;    // Creation time
     updatedAt?: string;    // Update time

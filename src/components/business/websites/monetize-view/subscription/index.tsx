@@ -55,26 +55,34 @@ const SubscriptionView: React.FC = () => {
         const updatedList = subscriptions.map(s => (s.packageId === sub.packageId ? updatedSub : s));
         setSubscriptions(updatedList);
         toast.success(`Subscription status updated to ${status}`);
-        PaymentAPI.modifySubscription({ siteId, packageId: sub.packageId??'', status: status === SubscriptionStatus.Active ? 1 : 2 });
+        PaymentAPI.modifySubscription({ siteId, packageId: sub.packageId??'', status: status === SubscriptionStatus.Active ? 1 : 2, iosProductId: sub.iosProductId });
     };
 
     const handleSaveSubscription = async (sub: SubscriptionData) => {
         setIsLoading(true);
         try {
             if (sub.packageId) {
+                const response = await PaymentAPI.modifySubscription({ ...sub, siteId, packageId: sub.packageId ?? '' });
+                if (response.code !== 0) {
+                    toast.error(response.info || 'Failed to update subscription');
+                    return;
+                }
                 const updatedList = subscriptions.map(s => (s.packageId === sub.packageId ? sub : s));
                 setSubscriptions(updatedList);
                 toast.success('Subscription updated successfully');
-                PaymentAPI.modifySubscription({ ...sub, siteId, packageId: sub.packageId??'' });
             } else {
+                const response = await PaymentAPI.createSubscription({ ...sub, siteId });
+                if (response.code !== 0) {
+                    toast.error(response.info || 'Failed to create subscription');
+                    return;
+                }
                 const newSub = {
                     ...sub,
-                    packageId: Math.random().toString(36).slice(2),
+                    packageId: response.data?.packageId || Math.random().toString(36).slice(2),
                     status: 1,
                 };
                 setSubscriptions([...subscriptions, newSub]);
                 toast.success('Subscription created successfully');
-                PaymentAPI.createSubscription({ ...sub, siteId });
             }
         } catch (error) {
             toast.error('Failed to save subscription');

@@ -62,6 +62,7 @@ const PayPerView: React.FC = () => {
             siteId: params.siteId,
             packageId: plan.packageId ?? '',
             status,
+            iosProductId: plan.iosProductId,
         });
     };
 
@@ -69,10 +70,7 @@ const PayPerView: React.FC = () => {
         setIsLoading(true);
         try {
             if (plan.packageId) {
-                const updatedPlans = plans.map(p => (p.packageId === plan.packageId ? plan : p));
-                setPlans(updatedPlans);
-                toast.success('Plan updated successfully');
-                PaymentAPI.modifyCoinPackage({
+                const response = await PaymentAPI.modifyCoinPackage({
                     siteId: params.siteId,
                     packageId: plan.packageId ?? '',
                     status: plan.status,
@@ -83,7 +81,15 @@ const PayPerView: React.FC = () => {
                     discountPercentage: plan.discountPercentage,
                     description: plan.description,
                     features: plan.features,
+                    iosProductId: plan.iosProductId,
                 });
+                if (response.code !== 0) {
+                    toast.error(response.info || 'Failed to update plan');
+                    return;
+                }
+                const updatedPlans = plans.map(p => (p.packageId === plan.packageId ? plan : p));
+                setPlans(updatedPlans);
+                toast.success('Plan updated successfully');
             } else {
                 const response = await PaymentAPI.createCoinPackage({
                     siteId: params.siteId,
@@ -94,7 +100,13 @@ const PayPerView: React.FC = () => {
                     discountPercentage: plan.discountPercentage,
                     description: plan.description,
                     features: plan.features,
+                    iosProductId: plan.iosProductId,
                 });
+
+                if (response.code !== 0) {
+                    toast.error(response.info || 'Failed to create plan');
+                    return;
+                }
 
                 if (response.data?.packageId) {
                     const newPlan = {

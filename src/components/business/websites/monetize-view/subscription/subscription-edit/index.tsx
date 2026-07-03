@@ -35,6 +35,7 @@ interface FormValues {
     description: string;
     coins: number;
     rights: string[];
+    iosProductId: string;
 }
 
 const SubscriptionEdit: React.FC<SubscriptionEditProps> = ({ subscriptionOld, onClose, onSave, isLoading = false }) => {
@@ -52,6 +53,7 @@ const SubscriptionEdit: React.FC<SubscriptionEditProps> = ({ subscriptionOld, on
             description: subscriptionOld?.description || '',
             coins: subscriptionOld?.coins || 0,
             rights: subscriptionOld?.rights || [],
+            iosProductId: subscriptionOld?.iosProductId || '',
         },
         validate: {
             name: value => (!value ? 'Name is required' : null),
@@ -194,6 +196,14 @@ const SubscriptionEdit: React.FC<SubscriptionEditProps> = ({ subscriptionOld, on
                             </div>
 
                             <TextInput label="Description" placeholder="Enter description" {...form.getInputProps('description')} variant="filled" />
+
+                            <TextInput
+                                label="iOS Product ID"
+                                placeholder="e.g. com.example.coins.100"
+                                description="App Store Connect in-app purchase product identifier"
+                                {...form.getInputProps('iosProductId')}
+                                variant="filled"
+                            />
 
                             <Select
                                 label="Status"

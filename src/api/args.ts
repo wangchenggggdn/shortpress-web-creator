@@ -373,6 +373,7 @@ export namespace PaymentArgs {
         discountPercentage?: number; // Optional: Discount percentage
         originalPrice?: number; // Optional: Original price before discount
         features?: string[]; // Optional: Package features
+        iosProductId?: string; // Optional: App Store product ID
     }
 
     /**
@@ -389,6 +390,7 @@ export namespace PaymentArgs {
         originalPrice?: number; // Optional: Original price before discount
         status?: number; // Optional: Package status
         features?: string[]; // Optional: Package features
+        iosProductId?: string; // Optional: App Store product ID
     }
 
     /**
@@ -524,6 +526,7 @@ export namespace SubscriptionArgs {
         status?: number; // 1启用 2禁用
         coins?: number;
         rights?: string[];
+        iosProductId?: string;
     }
 
     /**
@@ -542,6 +545,7 @@ export namespace SubscriptionArgs {
         status?: number;
         coins?: number;
         rights?: string[];
+        iosProductId?: string;
     }
 
     /**

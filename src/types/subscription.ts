@@ -27,5 +27,6 @@ export interface SubscriptionData {
     status: number;
     coins?: number;
     rights?: string[];
+    iosProductId?: string;
     createdAt?: number;
-} 
+}

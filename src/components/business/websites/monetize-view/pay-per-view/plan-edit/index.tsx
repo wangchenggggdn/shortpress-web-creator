@@ -23,6 +23,7 @@ interface FormValues {
     description: string;
     features: string[];
     status: PackageStatus;
+    iosProductId: string;
 }
 
 const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading = false }) => {
@@ -37,6 +38,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
             description: planOld?.description || '',
             features: planOld?.features || [],
             status: status,
+            iosProductId: planOld?.iosProductId || '',
         },
         validate: {
             name: (value: string) => (value.length < 1 ? 'Plan name is required' : null),
@@ -68,6 +70,7 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
             packageId: planOld?.packageId || '',
             siteId: planOld?.siteId || '',
             status: status,
+            iosProductId: values.iosProductId,
         });
     };
 
@@ -160,6 +163,13 @@ const PlanEdit: React.FC<PlanEditProps> = ({ planOld, onClose, onSave, isLoading
                                 variant="filled"
                             />
                             <TextInput label="Description" placeholder="Enter description" {...form.getInputProps('description')} variant="filled" />
+                            <TextInput
+                                label="iOS Product ID"
+                                placeholder="e.g. com.example.coins.100"
+                                description="App Store Connect in-app purchase product identifier"
+                                {...form.getInputProps('iosProductId')}
+                                variant="filled"
+                            />
                             <div>
                                 <label className="block text-sm font-medium mb-2 text-black-purple/90">Features</label>
                                 <div className="space-y-2">
