@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Menu, Badge, Pagination } from '@mantine/core';
-import { IconDots, IconEye, IconPlayerPlay, IconPlayerPause, IconTrash } from '@tabler/icons-react';
+import { IconDots, IconEye, IconPlayerPlay, IconPlayerPause, IconTrash, IconKey } from '@tabler/icons-react';
 import { Customer, CustomerStatus } from '@/types/customer';
 import CustomerApi from '@/api/customer';
 import { toast } from 'sonner';
@@ -13,6 +13,8 @@ import Search from '@/components/common/search';
 import LoadingData from '@/components/common/loading-data';
 import { useRouter } from '@/libs/navigation';
 import { usePathname } from 'next/navigation';
+import ConfirmDialog from '@/components/common/confirm-dialog';
+import ResetPasswordResultModal from './reset-password-result-modal';
 
 interface CustomerListProps {}
 
@@ -23,6 +25,11 @@ const CustomerList: React.FC<CustomerListProps> = () => {
     const [activePage, setActivePage] = useState(1);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+    const [resetResultOpen, setResetResultOpen] = useState(false);
+    const [resetTarget, setResetTarget] = useState<Customer | null>(null);
+    const [resetCredentials, setResetCredentials] = useState({ email: '', password: '' });
+    const [resetting, setResetting] = useState(false);
     const { userInfo } = userStore();
     const pathName = usePathname();
 
@@ -83,6 +90,49 @@ const CustomerList: React.FC<CustomerListProps> = () => {
             console.error('Failed to delete customer:', error);
             toast.error('Failed to delete customer');
         }
+    };
+
+    const handleResetPasswordClick = (customer: Customer) => {
+        setResetTarget(customer);
+        setResetConfirmOpen(true);
+    };
+
+    const handleResetPasswordConfirm = async () => {
+        if (!resetTarget?.email) {
+            toast.error('This customer has no email address');
+            return;
+        }
+
+        try {
+            setResetting(true);
+            const response = await CustomerApi.resetPassword({
+                email: resetTarget.email,
+                siteId: userInfo?.website?.siteId ?? '',
+            });
+
+            if (response.code !== 0 || !response.data) {
+                toast.error(response.info || 'Failed to reset password');
+                return;
+            }
+
+            setResetConfirmOpen(false);
+            setResetCredentials({
+                email: response.data.email,
+                password: response.data.password,
+            });
+            setResetResultOpen(true);
+        } catch (error) {
+            console.error('Failed to reset password:', error);
+            toast.error('Failed to reset password');
+        } finally {
+            setResetting(false);
+        }
+    };
+
+    const handleResetResultClose = () => {
+        setResetResultOpen(false);
+        setResetTarget(null);
+        setResetCredentials({ email: '', password: '' });
     };
 
     const getStatusColor = (status: CustomerStatus) => {
@@ -185,6 +235,15 @@ const CustomerList: React.FC<CustomerListProps> = () => {
                                                                         View Detail
                                                                     </Menu.Item>
                                                                 )}
+                                                                {customer.status !== CustomerStatus.DELETED && customer.email && (
+                                                                    <Menu.Item
+                                                                        leftSection={<IconKey size={14} />}
+                                                                        className="text-black-purple/70"
+                                                                        onClick={() => handleResetPasswordClick(customer)}
+                                                                    >
+                                                                        Reset Password
+                                                                    </Menu.Item>
+                                                                )}
                                                                 {customer.status === CustomerStatus.ACTIVE ? (
                                                                     <Menu.Item
                                                                         leftSection={<IconPlayerPause size={14} />}
@@ -238,6 +297,27 @@ const CustomerList: React.FC<CustomerListProps> = () => {
                     </div>
                 </div>
             </div>
+            <ConfirmDialog
+                opened={resetConfirmOpen}
+                onClose={() => {
+                    if (!resetting) {
+                        setResetConfirmOpen(false);
+                        setResetTarget(null);
+                    }
+                }}
+                onConfirm={handleResetPasswordConfirm}
+                title="Reset Password"
+                message={`Are you sure you want to reset the password for ${resetTarget?.email}? A new password will be generated.`}
+                confirmText={resetting ? 'Resetting...' : 'Reset'}
+                cancelText="Cancel"
+                confirmColor="primary"
+            />
+            <ResetPasswordResultModal
+                opened={resetResultOpen}
+                onClose={handleResetResultClose}
+                email={resetCredentials.email}
+                password={resetCredentials.password}
+            />
         </div>
     );
 };

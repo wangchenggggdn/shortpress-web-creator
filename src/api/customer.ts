@@ -27,6 +27,13 @@ export default class CustomerApi {
     }
 
     /**
+     * Reset customer password
+     */
+    static resetPassword(args: CustomerArgs.ResetPassword) {
+        return fetch.post<CustomerArgs.ResetPasswordResult>('/api/site/user/reset/password', args);
+    }
+
+    /**
      * Get user's coin balance
      */
     static getCoinBalance() {

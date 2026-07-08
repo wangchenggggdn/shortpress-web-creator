@@ -326,6 +326,16 @@ export namespace CustomerArgs {
         status: number; // 2=activate, 3=forbidden, 127=delete
     }
 
+    export interface ResetPassword {
+        email: string;
+        siteId: string;
+    }
+
+    export interface ResetPasswordResult {
+        email: string;
+        password: string;
+    }
+
     export interface GetInfo {
         email: string;
         siteId: string;
