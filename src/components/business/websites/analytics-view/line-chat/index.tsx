@@ -34,10 +34,18 @@ const LINE_SERIES = [
 
 const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
+/** Format YYYY-MM-DD (or already-labeled keys) without UTC→local day shift */
 const formatChartDate = (value: string) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+    if (match) {
+        const month = Number(match[2]);
+        const day = Number(match[3]);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${months[month - 1]} ${day}`;
+    }
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) return value;
-    return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 };
 
 const CustomTooltip = ({

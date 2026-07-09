@@ -495,8 +495,10 @@ export namespace AnalyticsArgs {
      */
     export interface IncomeStatistics {
         siteId: string;
-        startTime: number; // Unix timestamp in milliseconds
-        endTime: number; // Unix timestamp in milliseconds
+        startTime: number; // Unix timestamp in seconds
+        endTime: number; // Unix timestamp in seconds
+        /** Minutes east of UTC for daily bucketing (e.g. UTC-8 => -480, UTC-7 => -420) */
+        timezoneOffset?: number;
     }
 
     /**
