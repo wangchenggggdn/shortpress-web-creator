@@ -91,24 +91,50 @@ const AnalyticsView: React.FC = () => {
                             <h2 className="text-xl font-medium text-gray-900">Total Revenue</h2>
                             <span className="text-3xl font-bold text-primary leading-none">${totalAmount.toFixed(2) || '0.00'}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">Timezone</span>
-                            <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
-                                {CHART_TIMEZONE_OPTIONS.map(option => (
-                                    <button
-                                        key={option.value}
-                                        type="button"
-                                        onClick={() => setChartTimezone(option.value)}
-                                        className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                                            chartTimezone === option.value
-                                                ? 'bg-white text-primary shadow-sm font-medium'
-                                                : 'text-gray-600 hover:text-gray-900'
-                                        }`}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
+                        <div className="flex flex-col items-end gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-500">Timezone</span>
+                                <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
+                                    {CHART_TIMEZONE_OPTIONS.map(option => (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() => setChartTimezone(option.value)}
+                                            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                                                chartTimezone === option.value
+                                                    ? 'bg-white text-primary shadow-sm font-medium'
+                                                    : 'text-gray-600 hover:text-gray-900'
+                                            }`}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    fetchData();
+                                    fetchTransactions();
+                                }}
+                                disabled={isLoading || isTransactionsLoading}
+                                className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1 text-sm text-gray-600 transition-colors hover:border-gray-300 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <svg
+                                    className={`h-3.5 w-3.5 ${isLoading || isTransactionsLoading ? 'animate-spin' : ''}`}
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                                    <polyline points="21 3 21 9 15 9" />
+                                </svg>
+                                Refresh
+                            </button>
                         </div>
                     </div>
                     <div className="mb-6 flex flex-wrap gap-3">
