@@ -87,7 +87,10 @@ const AnalyticsView: React.FC = () => {
                 {/* Income Statistics */}
                 <div className="mb-6 p-6 bg-white rounded-lg shadow-sm">
                     <div className="flex justify-between items-center mb-4 gap-4 flex-wrap">
-                        <h2 className="text-xl font-medium text-gray-900">Total Revenue</h2>
+                        <div className="flex items-center gap-3">
+                            <h2 className="text-xl font-medium text-gray-900">Total Revenue</h2>
+                            <span className="text-3xl font-bold text-primary leading-none">${totalAmount.toFixed(2) || '0.00'}</span>
+                        </div>
                         <div className="flex items-center gap-2">
                             <span className="text-xs text-gray-500">Timezone</span>
                             <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
@@ -107,21 +110,7 @@ const AnalyticsView: React.FC = () => {
                                 ))}
                             </div>
                         </div>
-                        {/* <div className="flex gap-2">
-                            {TIME_RANGES.map(range => (
-                                <button
-                                    key={range.value}
-                                    onClick={() => setTimeRange(range.value)}
-                                    className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                                        timeRange === range.value ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
-                                    }`}
-                                >
-                                    {range.label}
-                                </button>
-                            ))}
-                        </div> */}
                     </div>
-                    <div className="text-3xl font-bold text-primary mb-4">${totalAmount.toFixed(2) || '0.00'}</div>
                     <div className="mb-6 flex flex-wrap gap-3">
                         {[
                             { label: 'In-App Purchase', amount: revenueBreakdown.iap, color: 'bg-emerald-500' },
