@@ -3882,6 +3882,12 @@
                 "name": {
                     "type": "string"
                 },
+                "payerEmail": {
+                    "type": "string"
+                },
+                "pixelId": {
+                    "type": "string"
+                },
                 "provider": {
                     "type": "string"
                 },
