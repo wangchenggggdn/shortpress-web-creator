@@ -109,6 +109,7 @@ export namespace AnalyticsResponse {
         email: string; // Account email
         payerEmail?: string; // Payment platform checkout email
         pixelId?: string; // Facebook pixel ID from user
+        platform?: string; // Client platform: web / ios / android
         name: string; // Customer name
         provider: string; // Payment provider
     }
@@ -132,6 +133,7 @@ export namespace AnalyticsResponse {
         createdAt: number; // Transaction creation timestamp
         email: string; // Account email
         payerEmail?: string; // Payment platform checkout email
+        platform?: string; // Client platform: web / ios / android
         name: string; // Customer name
         paymentType: number; // Payment type
         relatedId: string; // Related ID

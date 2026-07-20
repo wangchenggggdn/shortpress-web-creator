@@ -57,6 +57,7 @@ export interface IncomeTransaction {
     email: string;           // Account email
     payerEmail?: string;     // Payment platform checkout email
     pixelId?: string;        // Facebook pixel ID from user
+    platform?: string;       // Client platform: web / ios / android
     name: string;            // Customer name
     provider: string;        // Payment provider
 }

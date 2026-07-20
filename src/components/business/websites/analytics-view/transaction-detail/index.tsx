@@ -118,6 +118,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
                                 <Table.Th className="text-black-purple/60">Account Email</Table.Th>
                                 <Table.Th className="text-black-purple/60">Payment Email</Table.Th>
                                 <Table.Th className="text-black-purple/60">Method</Table.Th>
+                                <Table.Th className="text-black-purple/60">Platform</Table.Th>
                                 <Table.Th className="text-black-purple/60">Plan</Table.Th>
                                 <Table.Th className="text-black-purple/60">Date</Table.Th>
                             </Table.Tr>
@@ -127,6 +128,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
                                 <Table.Td className="text-black-purple/70">{transaction.email || '—'}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.payerEmail || '—'}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.provider}</Table.Td>
+                                <Table.Td className="text-black-purple/70">{transaction.platform || '—'}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.name}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{dayjs(transaction.createdAt * 1000).format('YYYY-MM-DD HH:mm')}</Table.Td>
                             </Table.Tr>

@@ -46,11 +46,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoa
                     <Table.Thead className="sticky top-0 bg-white z-10">
                         <Table.Tr>
                             <Table.Th>Amount</Table.Th>
-                            <Table.Th>Payment Method</Table.Th>
+                            <Table.Th>Method</Table.Th>
                             <Table.Th>Plan</Table.Th>
                             <Table.Th>Account Email</Table.Th>
                             <Table.Th>Payment Email</Table.Th>
                             <Table.Th>Pixel ID</Table.Th>
+                            <Table.Th>Platform</Table.Th>
                             <Table.Th>Date</Table.Th>
                         </Table.Tr>
                     </Table.Thead>
@@ -63,6 +64,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ transactions, isLoa
                                 <Table.Td>{transaction.email || '—'}</Table.Td>
                                 <Table.Td>{transaction.payerEmail || '—'}</Table.Td>
                                 <Table.Td>{transaction.pixelId || '—'}</Table.Td>
+                                <Table.Td>{transaction.platform || '—'}</Table.Td>
                                 <Table.Td>{new Date(transaction.createdAt * 1000).toLocaleString()}</Table.Td>
                             </Table.Tr>
                         ))}
