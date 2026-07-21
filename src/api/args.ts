@@ -517,6 +517,12 @@ export namespace AnalyticsArgs {
     export interface IncomeTransactionInfo {
         transactionId: string;
     }
+
+    export interface Creations {
+        siteId: string;
+        page?: number;
+        pageSize?: number;
+    }
 }
 
 /**

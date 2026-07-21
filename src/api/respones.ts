@@ -142,4 +142,25 @@ export namespace AnalyticsResponse {
         isSubscriptionOrder?: boolean; // Whether this is a new subscription order (not renewal)
         subscriptionId?: string; // Active user subscription ID, shown when cancellable (includes renewal transactions)
     }
+
+    export interface CreationVideo {
+        url: string;
+        coverUrl?: string;
+    }
+
+    export interface CreationRecord {
+        taskId: string;
+        status: number; // 1=processing, 2=success, 3=failed
+        model: string;
+        videoId?: string;
+        siteId?: string;
+        userId?: string;
+        prompt?: string;
+        referenceImages?: string[];
+        videos?: CreationVideo[];
+        images?: string[];
+        errorMsg?: string;
+        createdAt: number;
+        updatedAt: number;
+    }
 }

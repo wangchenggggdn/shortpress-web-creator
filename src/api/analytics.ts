@@ -32,4 +32,11 @@ export default class AnalyticsApi {
     static getIncomeTransactionInfo(args: AnalyticsArgs.IncomeTransactionInfo) {
         return fetch.get<AnalyticsResponse.IncomeTransactionInfo>('/api/analytics/income/transactions/info', args);
     }
+
+    /**
+     * Get recent user creation records for a site (from generate Redis)
+     */
+    static getCreations(args: AnalyticsArgs.Creations) {
+        return fetch.post<IPaginationResponse<AnalyticsResponse.CreationRecord>>('/api/analytics/creations', args);
+    }
 } 

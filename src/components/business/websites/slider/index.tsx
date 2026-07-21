@@ -7,21 +7,16 @@ import {
     IconBrowser,
     IconChartBar,
     IconChevronLeft,
-    IconArrowBack,
     IconUsers,
     IconSettings,
     IconCoin,
-    IconArrowDown,
     IconChevronDown,
-    IconChevronLeftPipe,
-    IconSquareChevronsLeft,
-    IconChevronsLeft,
     IconPackage,
+    IconMovie,
 } from '@tabler/icons-react';
 import { Avatar, Text, Menu } from '@mantine/core';
 import { Website } from '@/types/website';
 import WebsiteApi from '@/api/website';
-import { text } from 'stream/consumers';
 
 /**
  * Interface for menu item configuration
@@ -33,6 +28,8 @@ interface MenuItem {
     label: string;
     /** Navigation path for the menu item */
     path: string;
+    /** Match nested routes with startsWith when true */
+    matchPrefix?: boolean;
 }
 
 /**
@@ -66,6 +63,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
         { icon: <IconUsers size={20} />, label: 'Customers', path: `/customers` },
         { icon: <IconCoin size={20} />, label: 'Monetization', path: `/monetization` },
         { icon: <IconChartBar size={20} />, label: 'Analytics', path: `/analytics` },
+        { icon: <IconMovie size={20} />, label: 'Creations', path: `/analytics/creations`, matchPrefix: true },
         { icon: <IconSettings size={20} />, label: 'Settings', path: `/settings` },
     ];
 
@@ -83,11 +81,16 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
 
     /**
      * Check if a menu item is active based on current path
-     * @param path Menu item path to check
-     * @returns boolean indicating if the menu item is active
      */
-    const isActive = (path: string) => {
-        return pathname === `/websites/${websiteId}${path}`;
+    const isActive = (item: MenuItem) => {
+        const fullPath = `/websites/${websiteId}${item.path}`;
+        if (item.path === '/analytics') {
+            return pathname === fullPath;
+        }
+        if (item.matchPrefix) {
+            return pathname === fullPath || pathname.startsWith(`${fullPath}/`);
+        }
+        return pathname === fullPath;
     };
 
     useEffect(() => {
@@ -152,6 +155,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                 {/* Navigation Menu */}
                 <div className={`mt-4 flex-1 ${collapsed ? 'pr-2' : 'pr-12'}`}>
                     {menuItems.map((item, index) => {
+                        const active = isActive(item);
                         return (
                             <div
                                 key={item.path + index}
@@ -160,7 +164,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                                 }}
                                 className={`
                        relative flex items-center gap-3 px-4 py-2 my-1 cursor-pointer
-                       ${isActive(item.path) ? 'text-white' : 'text-black-purple'}
+                       ${active ? 'text-white' : 'text-black-purple'}
                        ${!collapsed && 'pl-6'}
                    `}
                             >
@@ -169,7 +173,7 @@ const WebsiteSidebar: React.FC<SidebarProps> = ({ collapsed, onCollapse, website
                            absolute inset-y-0 left-0 w-full
                            bg-primary rounded-r-full
                            transition-transform duration-300 origin-left
-                           ${isActive(item.path) ? 'scale-x-110' : 'scale-x-0'}
+                           ${active ? 'scale-x-110' : 'scale-x-0'}
                        `}
                                 />
                                 <span className="relative z-10 w-6">{item.icon}</span>
