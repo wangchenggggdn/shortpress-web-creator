@@ -26,6 +26,9 @@ const formatTime = (unix: number) => {
     return new Date(unix * 1000).toLocaleString();
 };
 
+const formatCompletedTime = (record: AnalyticsResponse.CreationRecord) =>
+    record.status === 2 || record.status === 3 ? formatTime(record.updatedAt) : '-';
+
 type ResultMedia =
     | { kind: 'video'; url: string; coverUrl?: string }
     | { kind: 'image'; url: string };
@@ -86,6 +89,7 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                 <th className="py-3 pr-4 font-medium">Status</th>
                                 <th className="py-3 pr-4 font-medium">Prompt</th>
                                 <th className="py-3 pr-4 font-medium">Created</th>
+                                <th className="py-3 pr-4 font-medium">Completed</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -99,12 +103,31 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                     >
                                         <td className="py-3 pr-4">
                                             {preview ? (
-                                                <div className="block w-20 h-12 overflow-hidden rounded bg-gray-100">
+                                                <div className="relative block w-20 h-12 overflow-hidden rounded bg-gray-100">
                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img src={preview} alt="" className="w-full h-full object-cover" />
+                                                    {record.referenceImages?.[0] && (
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img
+                                                            src={record.referenceImages[0]}
+                                                            alt="Original image"
+                                                            title="Original image"
+                                                            className="absolute top-1 left-1 w-7 h-7 rounded object-cover border border-white shadow-sm"
+                                                        />
+                                                    )}
                                                 </div>
                                             ) : (
-                                                <div className="w-20 h-12 rounded bg-gray-100" />
+                                                <div className="relative w-20 h-12 rounded bg-gray-100">
+                                                    {record.referenceImages?.[0] && (
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img
+                                                            src={record.referenceImages[0]}
+                                                            alt="Original image"
+                                                            title="Original image"
+                                                            className="absolute top-1 left-1 w-7 h-7 rounded object-cover border border-white shadow-sm"
+                                                        />
+                                                    )}
+                                                </div>
                                             )}
                                         </td>
                                         <td className="py-3 pr-4 font-mono text-xs break-all max-w-[160px]">{record.taskId}</td>
@@ -122,6 +145,7 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                             <div className="line-clamp-3 text-gray-600">{record.prompt || '-'}</div>
                                         </td>
                                         <td className="py-3 pr-4 whitespace-nowrap">{formatTime(record.createdAt)}</td>
+                                        <td className="py-3 pr-4 whitespace-nowrap">{formatCompletedTime(record)}</td>
                                     </tr>
                                 );
                             })}
@@ -153,16 +177,24 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                                 </div>
                                             </div>
                                         )}
-                                        <span
-                                            className={`absolute top-1 left-1 inline-flex px-1.5 py-0.5 rounded-full text-[10px] leading-none ${statusClass(record.status)}`}
-                                        >
+                                        {record.referenceImages?.[0] && (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img
+                                                src={record.referenceImages[0]}
+                                                alt="Original image"
+                                                title="Original image"
+                                                className="absolute top-1.5 left-1.5 w-10 h-10 rounded-md object-cover border-2 border-white shadow-md"
+                                            />
+                                        )}
+                                        <span className={`absolute top-1 right-1 inline-flex px-1.5 py-0.5 rounded-full text-[10px] leading-none ${statusClass(record.status)}`}>
                                             {STATUS_LABEL[record.status] || String(record.status)}
                                         </span>
                                     </div>
                                     <div className="p-1.5 space-y-0.5">
                                         <div className="text-[11px] font-medium text-gray-900 truncate">{record.model || 'Unknown model'}</div>
                                         <div className="text-[10px] text-gray-500 line-clamp-1">{record.prompt || '-'}</div>
-                                        <div className="text-[10px] text-gray-400 truncate">{formatTime(record.createdAt)}</div>
+                                        <div className="text-[10px] text-gray-400 truncate">Created: {formatTime(record.createdAt)}</div>
+                                        <div className="text-[10px] text-gray-400 truncate">Completed: {formatCompletedTime(record)}</div>
                                     </div>
                                 </button>
                             );
