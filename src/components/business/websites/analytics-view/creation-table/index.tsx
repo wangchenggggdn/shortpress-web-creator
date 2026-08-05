@@ -120,7 +120,7 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                                             src={record.referenceImages[0]}
                                                             alt="Original image"
                                                             title="Original image"
-                                                            className="absolute top-1 left-1 w-7 h-7 rounded object-cover border border-white shadow-sm"
+                                                            className="absolute top-1 left-1 w-10 h-10 rounded object-cover border border-white shadow-sm"
                                                         />
                                                     )}
                                                 </div>
@@ -132,7 +132,7 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                                             src={record.referenceImages[0]}
                                                             alt="Original image"
                                                             title="Original image"
-                                                            className="absolute top-1 left-1 w-7 h-7 rounded object-cover border border-white shadow-sm"
+                                                            className="absolute top-1 left-1 w-10 h-10 rounded object-cover border border-white shadow-sm"
                                                         />
                                                     )}
                                                 </div>
@@ -194,7 +194,7 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                                 src={record.referenceImages[0]}
                                                 alt="Original image"
                                                 title="Original image"
-                                                className="absolute top-1.5 left-1.5 w-10 h-10 rounded-md object-cover border-2 border-white shadow-md"
+                                                className="absolute top-1.5 left-1.5 w-14 h-14 rounded-md object-cover border-2 border-white shadow-md"
                                             />
                                         )}
                                         <span className={`absolute top-1 right-1 inline-flex px-1.5 py-0.5 rounded-full text-[10px] leading-none ${statusClass(record.status)}`}>
