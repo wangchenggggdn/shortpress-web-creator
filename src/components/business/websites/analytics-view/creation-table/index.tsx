@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import { Modal } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
+import { toast } from 'sonner';
 import { AnalyticsResponse } from '@/api/respones';
 
 export type CreationViewMode = 'list' | 'grid';
@@ -71,6 +72,18 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
         setActiveIndex(0);
     };
 
+    const copyPrompt = async (event: React.MouseEvent, prompt?: string) => {
+        event.stopPropagation();
+        if (!prompt) return;
+
+        try {
+            await navigator.clipboard.writeText(prompt);
+            toast.success('Prompt copied to clipboard');
+        } catch {
+            toast.error('Failed to copy prompt');
+        }
+    };
+
     return (
         <div className="flex flex-col h-[calc(100vh-200px)] overflow-hidden">
             <div className="overflow-auto flex-1">
@@ -135,7 +148,13 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                             {record.errorMsg ? <div className="mt-1 text-xs text-red-500 max-w-[180px] break-words">{record.errorMsg}</div> : null}
                                         </td>
                                         <td className="py-3 pr-4 max-w-[280px]">
-                                            <div className="line-clamp-3 text-gray-600">{record.prompt || '-'}</div>
+                                            <div
+                                                className={record.prompt ? 'line-clamp-2 text-gray-600 cursor-copy hover:text-gray-900' : 'line-clamp-2 text-gray-600'}
+                                                title={record.prompt ? 'Click to copy prompt' : undefined}
+                                                onClick={event => copyPrompt(event, record.prompt)}
+                                            >
+                                                {record.prompt || '-'}
+                                            </div>
                                         </td>
                                         <td className="py-3 pr-4 whitespace-nowrap">{formatDuration(record)}</td>
                                     </tr>
@@ -184,7 +203,15 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                     </div>
                                     <div className="p-1.5 space-y-0.5">
                                         <div className="text-[11px] font-medium text-gray-900 truncate">{record.model || 'Unknown model'}</div>
-                                        <div className="text-[10px] text-gray-500 line-clamp-1">{record.prompt || '-'}</div>
+                                        <div
+                                            className={
+                                                record.prompt ? 'text-[10px] text-gray-500 line-clamp-2 cursor-copy hover:text-gray-700' : 'text-[10px] text-gray-500 line-clamp-2'
+                                            }
+                                            title={record.prompt ? 'Click to copy prompt' : undefined}
+                                            onClick={event => copyPrompt(event, record.prompt)}
+                                        >
+                                            {record.prompt || '-'}
+                                        </div>
                                         <div className="text-[10px] text-gray-400 truncate">Duration: {formatDuration(record)}</div>
                                     </div>
                                 </button>
