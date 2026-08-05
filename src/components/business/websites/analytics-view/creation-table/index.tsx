@@ -21,17 +21,20 @@ const STATUS_LABEL: Record<number, string> = {
     3: 'Failed',
 };
 
-const formatTime = (unix: number) => {
-    if (!unix) return '-';
-    return new Date(unix * 1000).toLocaleString();
+const formatDuration = (record: AnalyticsResponse.CreationRecord) => {
+    if ((record.status !== 2 && record.status !== 3) || !record.createdAt || !record.updatedAt) return '-';
+
+    const totalSeconds = Math.max(0, record.updatedAt - record.createdAt);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+    if (minutes > 0) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
 };
 
-const formatCompletedTime = (record: AnalyticsResponse.CreationRecord) =>
-    record.status === 2 || record.status === 3 ? formatTime(record.updatedAt) : '-';
-
-type ResultMedia =
-    | { kind: 'video'; url: string; coverUrl?: string }
-    | { kind: 'image'; url: string };
+type ResultMedia = { kind: 'video'; url: string; coverUrl?: string } | { kind: 'image'; url: string };
 
 const collectResultMedia = (record: AnalyticsResponse.CreationRecord): ResultMedia[] => {
     const items: ResultMedia[] = [];
@@ -48,8 +51,7 @@ const collectResultMedia = (record: AnalyticsResponse.CreationRecord): ResultMed
     return items;
 };
 
-const previewOf = (record: AnalyticsResponse.CreationRecord) =>
-    record.videos?.[0]?.coverUrl || record.videos?.[0]?.url || record.images?.[0] || record.referenceImages?.[0] || '';
+const previewOf = (record: AnalyticsResponse.CreationRecord) => record.videos?.[0]?.coverUrl || record.videos?.[0]?.url || record.images?.[0] || record.referenceImages?.[0] || '';
 
 const statusClass = (status: number) => {
     if (status === 2) return 'bg-green-50 text-green-700';
@@ -57,13 +59,7 @@ const statusClass = (status: number) => {
     return 'bg-amber-50 text-amber-700';
 };
 
-const CreationTable: React.FC<CreationTableProps> = ({
-    records,
-    isLoading,
-    hasMore,
-    onLoadMore,
-    viewMode,
-}) => {
+const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMore, onLoadMore, viewMode }) => {
     const [selected, setSelected] = useState<AnalyticsResponse.CreationRecord | null>(null);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -88,8 +84,7 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                 <th className="py-3 pr-4 font-medium">Model</th>
                                 <th className="py-3 pr-4 font-medium">Status</th>
                                 <th className="py-3 pr-4 font-medium">Prompt</th>
-                                <th className="py-3 pr-4 font-medium">Created</th>
-                                <th className="py-3 pr-4 font-medium">Completed</th>
+                                <th className="py-3 pr-4 font-medium">Duration</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -137,15 +132,12 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                             <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${statusClass(record.status)}`}>
                                                 {STATUS_LABEL[record.status] || String(record.status)}
                                             </span>
-                                            {record.errorMsg ? (
-                                                <div className="mt-1 text-xs text-red-500 max-w-[180px] break-words">{record.errorMsg}</div>
-                                            ) : null}
+                                            {record.errorMsg ? <div className="mt-1 text-xs text-red-500 max-w-[180px] break-words">{record.errorMsg}</div> : null}
                                         </td>
                                         <td className="py-3 pr-4 max-w-[280px]">
                                             <div className="line-clamp-3 text-gray-600">{record.prompt || '-'}</div>
                                         </td>
-                                        <td className="py-3 pr-4 whitespace-nowrap">{formatTime(record.createdAt)}</td>
-                                        <td className="py-3 pr-4 whitespace-nowrap">{formatCompletedTime(record)}</td>
+                                        <td className="py-3 pr-4 whitespace-nowrap">{formatDuration(record)}</td>
                                     </tr>
                                 );
                             })}
@@ -193,8 +185,7 @@ const CreationTable: React.FC<CreationTableProps> = ({
                                     <div className="p-1.5 space-y-0.5">
                                         <div className="text-[11px] font-medium text-gray-900 truncate">{record.model || 'Unknown model'}</div>
                                         <div className="text-[10px] text-gray-500 line-clamp-1">{record.prompt || '-'}</div>
-                                        <div className="text-[10px] text-gray-400 truncate">Created: {formatTime(record.createdAt)}</div>
-                                        <div className="text-[10px] text-gray-400 truncate">Completed: {formatCompletedTime(record)}</div>
+                                        <div className="text-[10px] text-gray-400 truncate">Duration: {formatDuration(record)}</div>
                                     </div>
                                 </button>
                             );
