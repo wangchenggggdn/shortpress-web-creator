@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { TextInput } from '@mantine/core';
-import { IconSearch } from '@tabler/icons-react';
+import { ActionIcon, TextInput } from '@mantine/core';
+import { IconSearch, IconX } from '@tabler/icons-react';
 
 interface SearchProps {
     value: string;
@@ -16,12 +16,23 @@ const Search: React.FC<SearchProps> = ({ value, onChange, placeholder = 'Search'
     const [inputValue, setInputValue] = useState(value);
 
     useEffect(() => {
+        setInputValue(value);
+    }, [value]);
+
+    useEffect(() => {
         const timer = setTimeout(() => {
-            onChange(inputValue);
+            if (inputValue !== value) {
+                onChange(inputValue);
+            }
         }, delay);
 
         return () => clearTimeout(timer);
-    }, [inputValue, delay]);
+    }, [inputValue, delay, onChange, value]);
+
+    const handleClear = () => {
+        setInputValue('');
+        onChange('');
+    };
 
     return (
         <div className="relative z-10">
@@ -31,7 +42,16 @@ const Search: React.FC<SearchProps> = ({ value, onChange, placeholder = 'Search'
                 onChange={e => {
                     setInputValue(e.currentTarget.value);
                 }}
-                rightSection={<IconSearch size={16} className="text-gray-500" />}
+                rightSectionPointerEvents="all"
+                rightSection={
+                    inputValue ? (
+                        <ActionIcon variant="subtle" color="gray" radius="xl" size="sm" aria-label="Clear search" onClick={handleClear}>
+                            <IconX size={14} />
+                        </ActionIcon>
+                    ) : (
+                        <IconSearch size={16} className="text-gray-500" />
+                    )
+                }
                 variant="unstyled"
                 className={className}
                 styles={theme => ({

@@ -28,14 +28,14 @@ const CreationList: React.FC = () => {
                     <div className="flex justify-between items-center py-4 gap-4">
                         <div className="text-sm text-gray-500">
                             {userIdSearch.trim()
-                                ? `Creations for user ${userIdSearch.trim()} (last 24 hours)`
+                                ? `Creations matching user ID “${userIdSearch.trim()}” (last 24 hours)`
                                 : 'Recent user creations from Redis (last 24 hours)'}
                         </div>
                         <div className="flex items-center gap-3">
                             <Search
                                 value={userIdSearch}
                                 onChange={setUserIdSearch}
-                                placeholder="Search by User ID"
+                                placeholder="Search by User ID (fuzzy)"
                                 className="w-72"
                             />
                             <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">

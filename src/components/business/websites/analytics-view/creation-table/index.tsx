@@ -72,15 +72,15 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
         setActiveIndex(0);
     };
 
-    const copyPrompt = async (event: React.MouseEvent, prompt?: string) => {
+    const copyText = async (event: React.MouseEvent, text?: string, label = 'Text') => {
         event.stopPropagation();
-        if (!prompt) return;
+        if (!text) return;
 
         try {
-            await navigator.clipboard.writeText(prompt);
-            toast.success('Prompt copied to clipboard');
+            await navigator.clipboard.writeText(text);
+            toast.success(`${label} copied to clipboard`);
         } catch {
-            toast.error('Failed to copy prompt');
+            toast.error(`Failed to copy ${label.toLowerCase()}`);
         }
     };
 
@@ -139,7 +139,17 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                             )}
                                         </td>
                                         <td className="py-3 pr-4 font-mono text-xs break-all max-w-[160px]">{record.taskId}</td>
-                                        <td className="py-3 pr-4 font-mono text-xs break-all max-w-[140px]">{record.userId || '-'}</td>
+                                        <td
+                                            className={
+                                                record.userId
+                                                    ? 'py-3 pr-4 font-mono text-xs break-all max-w-[140px] cursor-copy hover:text-primary'
+                                                    : 'py-3 pr-4 font-mono text-xs break-all max-w-[140px]'
+                                            }
+                                            title={record.userId ? 'Click to copy user ID' : undefined}
+                                            onClick={event => copyText(event, record.userId, 'User ID')}
+                                        >
+                                            {record.userId || '-'}
+                                        </td>
                                         <td className="py-3 pr-4">{record.model || '-'}</td>
                                         <td className="py-3 pr-4">
                                             <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${statusClass(record.status)}`}>
@@ -151,7 +161,7 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                             <div
                                                 className={record.prompt ? 'line-clamp-2 text-gray-600 cursor-copy hover:text-gray-900' : 'line-clamp-2 text-gray-600'}
                                                 title={record.prompt ? 'Click to copy prompt' : undefined}
-                                                onClick={event => copyPrompt(event, record.prompt)}
+                                                onClick={event => copyText(event, record.prompt, 'Prompt')}
                                             >
                                                 {record.prompt || '-'}
                                             </div>
@@ -208,7 +218,7 @@ const CreationTable: React.FC<CreationTableProps> = ({ records, isLoading, hasMo
                                                 record.prompt ? 'text-[10px] text-gray-500 line-clamp-2 cursor-copy hover:text-gray-700' : 'text-[10px] text-gray-500 line-clamp-2'
                                             }
                                             title={record.prompt ? 'Click to copy prompt' : undefined}
-                                            onClick={event => copyPrompt(event, record.prompt)}
+                                            onClick={event => copyText(event, record.prompt, 'Prompt')}
                                         >
                                             {record.prompt || '-'}
                                         </div>
