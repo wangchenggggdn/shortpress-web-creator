@@ -520,6 +520,7 @@ export namespace AnalyticsArgs {
 
     export interface Creations {
         siteId: string;
+        userId?: string;
         page?: number;
         pageSize?: number;
     }

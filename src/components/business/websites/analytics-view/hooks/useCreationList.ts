@@ -14,6 +14,8 @@ interface UseCreationListReturn {
     total: number;
     page: number;
     pageSize: number;
+    userIdSearch: string;
+    setUserIdSearch: (value: string) => void;
     onPageChange: (page: number) => void;
     refresh: () => void;
 }
@@ -23,6 +25,7 @@ export const useCreationList = ({ siteId }: UseCreationListProps): UseCreationLi
     const [isLoading, setIsLoading] = useState(false);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
+    const [userIdSearch, setUserIdSearch] = useState('');
     const pageSize = 20;
 
     const fetchData = useCallback(
@@ -32,6 +35,7 @@ export const useCreationList = ({ siteId }: UseCreationListProps): UseCreationLi
             try {
                 const response = await AnalyticsApi.getCreations({
                     siteId,
+                    userId: userIdSearch.trim() || undefined,
                     page: currentPage,
                     pageSize,
                 });
@@ -53,7 +57,7 @@ export const useCreationList = ({ siteId }: UseCreationListProps): UseCreationLi
                 setIsLoading(false);
             }
         },
-        [siteId, pageSize],
+        [siteId, pageSize, userIdSearch],
     );
 
     useEffect(() => {
@@ -66,6 +70,8 @@ export const useCreationList = ({ siteId }: UseCreationListProps): UseCreationLi
         total,
         page,
         pageSize,
+        userIdSearch,
+        setUserIdSearch,
         onPageChange: nextPage => {
             fetchData(nextPage, false);
         },

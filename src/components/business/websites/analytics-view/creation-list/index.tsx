@@ -6,11 +6,12 @@ import { IconLayoutGrid, IconList } from '@tabler/icons-react';
 import { SiteContext } from '@/components/business/websites/useContext/site-context';
 import { useCreationList } from '../hooks/useCreationList';
 import CreationTable, { CreationViewMode } from '../creation-table';
+import Search from '@/components/common/search';
 
 const CreationList: React.FC = () => {
     const { params } = React.useContext(SiteContext);
     const siteId = params.siteId;
-    const { records, isLoading, total, page, pageSize, onPageChange, refresh } = useCreationList({ siteId });
+    const { records, isLoading, total, page, pageSize, userIdSearch, setUserIdSearch, onPageChange, refresh } = useCreationList({ siteId });
     const [viewMode, setViewMode] = useState<CreationViewMode>('grid');
 
     return (
@@ -25,8 +26,18 @@ const CreationList: React.FC = () => {
             <div className="flex-1 min-h-0 px-6 flex flex-col">
                 <div className="h-full w-full flex flex-col">
                     <div className="flex justify-between items-center py-4 gap-4">
-                        <div className="text-sm text-gray-500">Recent user creations from Redis (last 24 hours)</div>
+                        <div className="text-sm text-gray-500">
+                            {userIdSearch.trim()
+                                ? `Creations for user ${userIdSearch.trim()} (last 24 hours)`
+                                : 'Recent user creations from Redis (last 24 hours)'}
+                        </div>
                         <div className="flex items-center gap-3">
+                            <Search
+                                value={userIdSearch}
+                                onChange={setUserIdSearch}
+                                placeholder="Search by User ID"
+                                className="w-72"
+                            />
                             <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
                                 <button
                                     type="button"
