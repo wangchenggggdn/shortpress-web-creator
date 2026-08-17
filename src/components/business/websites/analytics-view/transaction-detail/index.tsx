@@ -115,6 +115,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
                     <Table withRowBorders={false}>
                         <Table.Thead>
                             <Table.Tr>
+                                <Table.Th className="text-black-purple/60">User ID</Table.Th>
                                 <Table.Th className="text-black-purple/60">Account Email</Table.Th>
                                 <Table.Th className="text-black-purple/60">Payment Email</Table.Th>
                                 <Table.Th className="text-black-purple/60">Method</Table.Th>
@@ -125,6 +126,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = ({ transaction }) =>
                         </Table.Thead>
                         <Table.Tbody>
                             <Table.Tr>
+                                <Table.Td className="text-black-purple/70 font-mono text-xs break-all">{transaction.userId || '—'}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.email || '—'}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.payerEmail || '—'}</Table.Td>
                                 <Table.Td className="text-black-purple/70">{transaction.provider}</Table.Td>
